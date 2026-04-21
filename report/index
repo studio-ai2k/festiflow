@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050608">
+<title>Festiflow — Rapport d'avancement | studio AI2K</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;600;700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#050608;--brd:#161c28;--brdh:#222a3a;--t1:#eaecf0;--t2:#8a92a4;--t3:#454d60;--acc:#00ffaa;--adim:rgba(0,255,170,.1);--aglow:rgba(0,255,170,.04);--amb:#ffb84d;--ambdim:rgba(255,184,77,.1);--red:#ed4245;--mono:'Azeret Mono',monospace;--sans:'Outfit',sans-serif}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t1);font-family:var(--sans);line-height:1.65;overflow:hidden;-webkit-font-smoothing:antialiased}
+@keyframes pageIn{to{opacity:1}}
+::selection{background:var(--acc);color:var(--bg)}
+canvas#P{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+.W{position:relative;z-index:1}
+.C{max-width:1140px;margin:0 auto;padding:0 clamp(20px,5vw,64px)}
+section{padding:clamp(80px,12vh,140px) 0;position:relative}
+section:not(.hero)::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,rgba(0,255,170,.3),var(--brd) 40%,var(--brd));transform:scaleX(0);transform-origin:left;transition:transform 1.5s cubic-bezier(.16,1,.3,1) .3s}
+section:not(.hero):nth-of-type(even)::before{transform-origin:right;background:linear-gradient(270deg,rgba(0,255,170,.3),var(--brd) 40%,var(--brd))}
+section.vi::before{transform:scaleX(1)}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+
+/* ═══ NAV — identical to website ═══ */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;height:64px;display:flex;align-items:center;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);background:rgba(5,6,8,.35);border-bottom:1px solid var(--brd);transition:background .3s,border-color .3s}
+nav.scrolled{background:rgba(5,6,8,.5)}
+nav .C{display:flex;justify-content:center;align-items:center;position:relative}
+.nav-left,.nav-right{display:flex;gap:24px;list-style:none;position:absolute;transition:opacity .3s;opacity:0;pointer-events:none}
+nav.scrolled .nav-left,nav.scrolled .nav-right{opacity:1;pointer-events:auto}
+.nav-left{right:calc(50% + 80px)}.nav-right{left:calc(50% + 80px)}
+.nav-left a,.nav-right a{font-family:var(--mono);font-size:11px;color:var(--t2);text-decoration:none;text-transform:uppercase;letter-spacing:1px;transition:color .2s;position:relative}
+.nav-left a::after,.nav-right a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--acc);transition:width .3s cubic-bezier(.16,1,.3,1)}
+.nav-left a:hover,.nav-right a:hover{color:var(--acc)}
+.nav-left a:hover::after,.nav-right a:hover::after{width:100%}
+.nav-anchor{width:1px;height:1px}
+.conf-badge{font-family:var(--mono);font-size:9px;color:var(--red);border:1px solid rgba(237,66,69,.25);padding:3px 10px;letter-spacing:1.5px;text-transform:uppercase;position:absolute;right:0}
+#fLogo{position:fixed;z-index:250;pointer-events:none;font-family:var(--sans);font-weight:900;color:var(--t1);line-height:1;white-space:nowrap;will-change:transform;transform-origin:top left;letter-spacing:-2px}
+#fLogo span{color:var(--acc)}
+.nav-pill{display:none;position:fixed;bottom:28px;right:20px;z-index:601;background:none;border:none;padding:12px;cursor:pointer}
+.nav-pill i{display:block;width:20px;height:1.5px;background:var(--acc);margin:4px 0;transition:all .3s}
+.nav-pill.active i:nth-child(1){transform:rotate(45deg) translate(4px,4px)}
+.nav-pill.active i:nth-child(2){opacity:0}
+.nav-pill.active i:nth-child(3){transform:rotate(-45deg) translate(4px,-4px)}
+.nl-mobile{position:fixed;top:64px;right:0;bottom:0;width:auto;padding:0 20px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:20px;z-index:600;list-style:none;pointer-events:none;background:rgba(5,6,8,0);backdrop-filter:blur(0px);-webkit-backdrop-filter:blur(0px);opacity:0;transition:opacity .3s,background .5s ease .4s,backdrop-filter .5s ease .4s,-webkit-backdrop-filter .5s ease .4s}
+.nl-mobile.op{opacity:1;pointer-events:auto}
+.nl-mobile.frosted{background:rgba(5,6,8,.05);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.nl-mobile li{opacity:0;transform:translateY(-60px) rotateX(90deg);filter:blur(12px);transition:opacity .6s ease,transform .7s cubic-bezier(.16,1,.3,1),filter .5s ease;pointer-events:none;transform-origin:top center;perspective:400px}
+.nl-mobile.op li{opacity:1;transform:translateY(0) rotateX(0deg);filter:blur(0);pointer-events:auto}
+.nl-mobile.op li:nth-child(1){transition-delay:0s}
+.nl-mobile.op li:nth-child(2){transition-delay:.06s}
+.nl-mobile.op li:nth-child(3){transition-delay:.12s}
+.nl-mobile.op li:nth-child(4){transition-delay:.18s}
+.nl-mobile.op li:nth-child(5){transition-delay:.24s}
+.nl-mobile a{font-family:var(--sans);font-size:16px;font-weight:700;color:var(--t2);text-decoration:none;letter-spacing:-.2px;line-height:1.2;transition:color .2s;text-align:right}
+.nl-mobile a:hover{color:var(--acc)}
+.hero-ghost{font-family:var(--sans);font-size:clamp(40px,6.5vw,60px);font-weight:900;letter-spacing:-2px;line-height:1;margin-bottom:20px;visibility:hidden}
+
+/* ═══ TYPOGRAPHY ═══ */
+.slb{font-family:var(--mono);font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:4px;margin-bottom:20px}
+.st{font-size:clamp(30px,4.5vw,48px);font-weight:800;letter-spacing:-1.5px;line-height:1.1;margin-bottom:20px}
+.st em{font-style:normal;color:var(--acc)}
+.ss{font-size:16px;color:var(--t2);max-width:560px;line-height:1.8}
+.si{font-family:var(--mono);font-size:11px;color:var(--acc);background:var(--adim);border:1px solid rgba(0,255,170,.15);display:inline-block;padding:5px 14px;margin-bottom:24px;letter-spacing:1.5px;text-transform:uppercase}
+
+/* ═══ HERO ═══ */
+.hero{min-height:100vh;display:flex;align-items:center;position:relative;padding-top:60px}
+.hal{position:absolute;top:0;left:50%;width:1px;height:40vh;background:linear-gradient(180deg,var(--acc),transparent);opacity:.15}
+.hc{position:relative;z-index:2}
+.he{font-family:var(--mono);font-size:12px;color:var(--t3);letter-spacing:3px;text-transform:uppercase;margin-bottom:28px;opacity:0;animation:fi .8s ease forwards .3s}
+.hero-headline{font-size:clamp(30px,5vw,58px);font-weight:800;line-height:1.08;letter-spacing:-2px;margin-bottom:28px;opacity:0;animation:fi .8s ease forwards .4s}
+.hero-headline em{font-style:normal;color:var(--acc);position:relative}
+.hero-headline em::after{content:'';position:absolute;bottom:2px;left:0;right:0;height:3px;background:var(--acc);opacity:.3}
+.hs{font-size:clamp(16px,2vw,20px);color:var(--t2);max-width:540px;line-height:1.75;margin-bottom:48px;opacity:0;animation:fi .8s ease forwards .5s}
+.hero-meta{display:flex;gap:32px;opacity:0;animation:fi .8s ease forwards .7s}
+.hero-meta-item{display:flex;flex-direction:column;gap:4px}
+.hero-meta-item .val{font-family:var(--sans);font-size:28px;font-weight:800;color:var(--t1);letter-spacing:-1px}
+.hero-meta-item .lbl{font-family:var(--mono);font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:1.5px}
+.hcta{display:flex;gap:24px;align-items:center;margin-top:32px;opacity:0;animation:fi .8s ease forwards .9s}
+.hcta a{font-family:var(--mono);font-size:12px;text-decoration:none;letter-spacing:.8px;text-transform:uppercase;transition:color .3s;color:var(--t3)}
+.hcta a:hover{color:var(--acc)}
+.sh{position:absolute;bottom:40px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;animation:fi 1s ease forwards 1.2s}
+.sh>span{font-family:var(--mono);font-size:9px;color:var(--t3);letter-spacing:2px;text-transform:uppercase}
+.shl{width:1px;height:40px;background:linear-gradient(180deg,var(--acc),transparent);animation:scrollPulse 2s ease infinite}
+@keyframes scrollPulse{0%,100%{opacity:.3;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.3)}}
+
+/* ═══ PROGRESS STATS ═══ */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:64px}
+.stat-box{background:rgba(25,30,40,.6);border:1px solid rgba(255,255,255,.06);border-radius:6px;padding:32px 28px;text-align:center;transition:background .6s,border-color .6s,box-shadow .6s}
+.stat-box:hover{background:rgba(15,30,25,.65);border-color:rgba(0,255,170,.1);box-shadow:0 0 60px rgba(0,255,170,.04) inset}
+.stat-num{font-size:36px;font-weight:900;letter-spacing:-1px;margin-bottom:4px}
+.stat-num.green{color:var(--acc)}
+.stat-num.amber{color:var(--amb)}
+.stat-num.dim{color:var(--t3)}
+.stat-label{font-family:var(--mono);font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:1.5px}
+
+/* ═══ MODULE MAP ═══ */
+.mod-section{margin-bottom:40px}
+.mod-section-label{font-family:var(--mono);font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:3px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--brd)}
+.mod-section-toggle{display:flex;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--brd);cursor:pointer;transition:border-color .3s}
+.mod-section-toggle:hover{border-color:var(--brdh)}
+
+/* ═══ STAGGER REVEAL ═══ */
+@keyframes staggerIn{from{opacity:1}to{opacity:1}}
+.stagger-in>*{opacity:1}
+.mod-toggle-label{font-family:var(--mono);font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:3px}
+.mod-toggle-plus{font-size:18px;color:var(--t3);margin-left:auto;transition:transform .3s;line-height:1}
+.mod-toggle-plus.open{transform:rotate(45deg)}
+.mod-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.mod-card{background:rgba(25,30,40,.6);border:1px solid rgba(255,255,255,.06);border-radius:6px;padding:24px 22px;transition:background .6s,border-color .6s,box-shadow .6s;position:relative;overflow:hidden}
+.mod-card:hover{background:rgba(15,30,25,.65);border-color:rgba(0,255,170,.1);box-shadow:0 0 60px rgba(0,255,170,.04) inset}
+.mod-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.mod-card-name{font-size:16px;font-weight:700;letter-spacing:-.3px}
+.mod-badge{font-family:var(--mono);font-size:9px;font-weight:600;padding:3px 10px;border-radius:4px;text-transform:uppercase;letter-spacing:1px}
+.mod-badge.live{background:rgba(0,255,170,.1);color:var(--acc);border:1px solid rgba(0,255,170,.15)}
+.mod-badge.proto{background:var(--ambdim);color:var(--amb);border:1px solid rgba(255,184,77,.15)}
+.mod-badge.planned{background:rgba(255,255,255,.03);color:var(--t3);border:1px solid rgba(255,255,255,.06)}
+.mod-card-desc{font-size:13px;color:var(--t2);line-height:1.65;margin-bottom:14px}
+.mod-card-link{font-family:var(--mono);font-size:11px;color:var(--acc);text-decoration:none;letter-spacing:.5px;transition:opacity .2s;display:inline-flex;align-items:center;gap:6px}
+.mod-card-link:hover{opacity:.7}
+.mod-card.is-planned{opacity:.5}
+.mod-card.is-planned:hover{opacity:.7}
+
+/* ═══ ROADMAP PIPELINE ═══ */
+.pipeline{margin-top:64px;position:relative}
+.pipe-line{position:absolute;top:24px;left:4%;right:4%;height:1px;background:var(--brd)}
+.pipe-line-fill{position:absolute;top:24px;left:4%;right:4%;height:1px;background:var(--acc);transform:scaleX(0);transform-origin:left;transition:transform 1.2s cubic-bezier(.16,1,.3,1)}
+.pipeline.vis .pipe-line-fill{transform:scaleX(.33)}
+.pipe-steps{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;position:relative;z-index:2}
+.pipe-step{text-align:center}
+.pipe-dot{width:48px;height:48px;border-radius:50%;border:2px solid var(--brd);background:rgba(5,6,8,.8);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-family:var(--mono);font-size:9px;font-weight:600;color:var(--t3);transition:all .4s}
+.pipe-step:hover .pipe-dot{border-color:var(--acc);color:var(--acc);box-shadow:0 0 20px var(--adim),0 0 40px var(--aglow)}
+.pipe-step.done .pipe-dot{border-color:var(--acc);color:var(--acc)}
+.pipe-step.active .pipe-dot{border-color:var(--amb);color:var(--amb);box-shadow:0 0 20px var(--ambdim)}
+.pipe-step h3{font-size:13px;font-weight:700;margin-bottom:4px;letter-spacing:-.2px}
+.pipe-step p{font-size:11px;color:var(--t2);line-height:1.5;max-width:140px;margin:0 auto}
+.pipe-step.done h3{color:var(--acc)}
+.pipe-step.active h3{color:var(--amb)}
+.fly-steps .pipe-step{opacity:1}
+.fly-steps.vis .pipe-step{opacity:1}
+.fly-steps.vis .pipe-step:nth-child(1){transition-delay:.1s}
+.fly-steps.vis .pipe-step:nth-child(2){transition-delay:.18s}
+.fly-steps.vis .pipe-step:nth-child(3){transition-delay:.26s}
+.fly-steps.vis .pipe-step:nth-child(4){transition-delay:.34s}
+.fly-steps.vis .pipe-step:nth-child(5){transition-delay:.42s}
+.fly-steps.vis .pipe-step:nth-child(6){transition-delay:.50s}
+.fly-steps.vis .pipe-step:nth-child(7){transition-delay:.58s}
+.fly-steps.vis .pipe-step:nth-child(8){transition-delay:.66s}
+
+/* ═══ CHANGELOG ═══ */
+.changelog{margin-top:64px;display:flex;flex-direction:column;gap:0}
+.cl-entry{display:grid;grid-template-columns:140px 1fr;gap:24px;padding:20px 0;border-bottom:1px solid var(--brd);transition:background .3s}
+.cl-entry:first-child{border-top:1px solid var(--brd)}
+.cl-date{font-family:var(--mono);font-size:11px;color:var(--t3);letter-spacing:.5px;padding-top:3px}
+.cl-content h4{font-size:15px;font-weight:700;margin-bottom:6px;letter-spacing:-.2px}
+.cl-content p{font-size:14px;color:var(--t2);line-height:1.7}
+.cl-tag{font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:.8px;margin-right:6px}
+.cl-tag.new{background:var(--adim);color:var(--acc);border:1px solid rgba(0,255,170,.12)}
+.cl-tag.update{background:rgba(88,101,242,.08);color:#7c85f2;border:1px solid rgba(88,101,242,.12)}
+.cl-tag.fix{background:rgba(237,66,69,.06);color:#f06467;border:1px solid rgba(237,66,69,.1)}
+
+/* ═══ FEEDBACK ═══ */
+.feedback-box{margin-top:64px;background:rgba(25,30,40,.6);border:1px solid rgba(255,255,255,.06);border-radius:6px;padding:clamp(40px,5vw,72px);position:relative;overflow:hidden;--px:50%;--py:50%}
+.feedback-box::before{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,170,.08),transparent 70%);left:var(--px);top:var(--py);transform:translate(-50%,-50%);opacity:0;transition:opacity .5s;pointer-events:none}
+.feedback-box:hover::before{opacity:1}
+.feedback-box:hover{border-color:rgba(0,255,170,.08)}
+.feedback-box h3{font-size:clamp(20px,3vw,28px);font-weight:800;letter-spacing:-.8px;margin-bottom:8px}
+.feedback-box>p{font-size:14px;color:var(--t2);line-height:1.75;max-width:480px;margin-bottom:28px}
+.fb-form{display:flex;flex-direction:column;gap:12px;max-width:600px}
+.fb-input{font-family:var(--sans);font-size:14px;color:var(--t1);background:rgba(255,255,255,.04);border:1px solid var(--brd);border-radius:4px;padding:12px 16px;outline:none;transition:border-color .3s;resize:none}
+.fb-input:focus{border-color:rgba(0,255,170,.3)}
+.fb-input::placeholder{color:var(--t3)}
+.fb-row{display:flex;gap:12px}
+.fb-row .fb-input{flex:1}
+.btn{font-family:var(--mono);font-size:12px;padding:14px 28px;text-decoration:none;letter-spacing:.8px;text-transform:uppercase;transition:all .4s;cursor:pointer;display:inline-block;background:transparent;color:var(--t2);border:1px solid var(--brd);position:relative;overflow:hidden;z-index:1}
+.btn::before{content:'';position:absolute;top:0;left:0;width:0;height:100%;background:var(--acc);z-index:-1;transition:width .4s cubic-bezier(.16,1,.3,1)}
+.btn:hover{border-color:var(--acc);color:var(--bg)}
+.btn:hover::before{width:100%}
+.fb-success{display:none;font-family:var(--mono);font-size:12px;color:var(--acc);letter-spacing:.5px;margin-top:8px}
+.fb-entry.fb-done{opacity:.45}
+.fb-entry.fb-done .fb-entry-message{text-decoration:line-through;text-decoration-color:var(--t3)}
+.fb-status-done{font-family:var(--mono);font-size:9px;color:var(--acc);letter-spacing:.5px;margin-left:8px;text-transform:uppercase}
+.fb-mark-done{background:none;border:1px solid rgba(0,255,170,.15);color:var(--acc);font-size:11px;padding:2px 8px;border-radius:4px;cursor:pointer;margin-left:8px;transition:all .2s;font-family:var(--mono)}
+.fb-mark-done:hover{background:rgba(0,255,170,.1);border-color:rgba(0,255,170,.3)}
+
+/* ═══ MORE INDICATOR ═══ */
+.more-indicator{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:40px;cursor:pointer}
+.more-indicator span{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--t3)}
+
+/* ═══ LOGIN GATE ═══ */
+.pw-overlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:10000;transition:opacity .4s}
+.pw-modal{position:relative;z-index:1;background:rgba(10,14,20,.3);border:1px solid rgba(0,255,170,.1);border-radius:20px;padding:32px 28px;width:320px;box-shadow:0 32px 80px rgba(0,0,0,.2);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);text-align:center}
+.pw-studio-logo{font-family:var(--sans);font-weight:900;font-size:14px;letter-spacing:-.5px;color:rgba(255,255,255,.3);margin-bottom:20px}
+.pw-studio-logo span{color:rgba(0,255,170,.4)}
+.pw-modal-logo{width:72px;height:72px;border-radius:50%;object-fit:cover;margin:0 auto 16px;display:block}
+.pw-modal-title{font-size:18px;font-weight:700;color:#fff;margin-bottom:4px}
+.pw-modal-sub{font-size:12px;color:var(--t2);margin-bottom:24px}
+.pw-field{width:100%;padding:13px 16px;background:linear-gradient(135deg,rgba(0,255,170,.06),rgba(0,255,170,.03));border:1px solid rgba(0,255,170,.15);border-radius:10px;margin-bottom:10px;cursor:text;position:relative;min-height:46px;display:flex;align-items:center;transition:border-color .2s,box-shadow .2s}
+.pw-field:hover{border-color:rgba(0,255,170,.4);box-shadow:0 0 16px rgba(0,255,170,.1)}
+.pw-dots{color:#fff;font-size:18px;letter-spacing:4px;line-height:1}
+.pw-placeholder{color:var(--t3);font-size:14px}
+.pw-error{font-size:11px;color:#ff4d4d;margin-bottom:8px;min-height:14px;text-align:left}
+.pw-btn{-webkit-appearance:none;appearance:none;width:100%;padding:14px;background:rgba(10,14,20,.3);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:#fff;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;letter-spacing:.5px;transition:border-color .2s,box-shadow .2s}
+.pw-btn:hover{border-color:rgba(0,255,170,.4);box-shadow:0 0 16px rgba(0,255,170,.1)}
+.pw-footer{margin-top:16px;font-size:.65em;color:rgba(255,255,255,.25)}
+.pw-footer a{color:rgba(255,255,255,.25);text-decoration:none;transition:color .2s}
+.pw-footer a:hover{color:var(--acc)}
+@keyframes pwShake{0%{transform:translateX(0)}15%{transform:translateX(-4px)}30%{transform:translateX(4px)}45%{transform:translateX(-3px)}60%{transform:translateX(3px)}75%{transform:translateX(-1px)}100%{transform:translateX(0)}}
+
+/* ═══ FEEDBACK FEED ═══ */
+.fb-feed{margin-bottom:48px}
+.fb-feed-empty{font-family:var(--mono);font-size:12px;color:var(--t3);letter-spacing:.5px;padding:24px 0}
+.fb-feed-list{display:flex;flex-direction:column;gap:0}
+.fb-entry{display:grid;grid-template-columns:140px 1fr;gap:24px;padding:20px 0;border-bottom:1px solid var(--brd)}
+.fb-entry:first-child{border-top:1px solid var(--brd)}
+.fb-entry-meta{display:flex;flex-direction:column;gap:4px;padding-top:2px}
+.fb-entry-date{font-family:var(--mono);font-size:11px;color:var(--t3);letter-spacing:.5px}
+.fb-entry-author{font-size:13px;font-weight:600;color:var(--t2)}
+.fb-entry-body{display:flex;flex-direction:column;gap:8px}
+.fb-entry-tags{display:flex;gap:6px;flex-wrap:wrap}
+.fb-entry-tag{font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:.8px}
+.fb-entry-tag.mod{background:var(--adim);color:var(--acc);border:1px solid rgba(0,255,170,.12)}
+.fb-entry-tag.src{background:rgba(255,255,255,.03);color:var(--t3);border:1px solid rgba(255,255,255,.06)}
+.fb-entry-tag.evt{background:var(--ambdim);color:var(--amb);border:1px solid rgba(255,184,77,.12)}
+.fb-entry-message{font-size:14px;color:var(--t2);line-height:1.7}
+.fb-feed-count{font-family:var(--mono);font-size:11px;color:var(--t3);letter-spacing:.5px;margin-bottom:16px}
+
+/* Module card feedback badge */
+.mod-fb-count{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:10px;background:rgba(0,255,170,.08);color:var(--acc);border:1px solid rgba(0,255,170,.12);margin-left:6px;display:inline-flex;align-items:center;gap:4px}
+.mod-fb-count svg{width:10px;height:10px;stroke:var(--acc);fill:none;stroke-width:2}
+.mod-priority{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:.8px;background:rgba(237,66,69,.08);color:var(--red);border:1px solid rgba(237,66,69,.15);margin-left:6px}
+.mod-priority svg{width:12px;height:12px;flex-shrink:0}
+.mod-essential{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:.8px;background:rgba(56,120,255,.1);color:#3878ff;border:1px solid rgba(56,120,255,.2);margin-left:6px}
+.mod-essential svg{width:12px;height:12px;flex-shrink:0}
+
+@media(max-width:680px){
+  .fb-entry{grid-template-columns:1fr}.fb-entry-meta{flex-direction:row;gap:12px;padding-bottom:4px}
+}
+
+/* ═══ REVEALS ═══ */
+.rv{opacity:1}
+.rv.vi{opacity:1}
+.rv-stagger>*{opacity:1}
+.rv-stagger.vi>*:nth-child(1){opacity:1}
+.rv-stagger.vi>*:nth-child(2){opacity:1}
+.rv-stagger.vi>*:nth-child(3){opacity:1}
+.rv-stagger.vi>*:nth-child(4){opacity:1}
+.rv-stagger.vi>*:nth-child(5){opacity:1}
+.rv-stagger.vi>*:nth-child(6){opacity:1}
+.rv-stagger.vi>*:nth-child(7){opacity:1}
+
+/* ═══ FOOTER ═══ */
+footer{border-top:1px solid var(--brd);padding:36px 0}
+.fr{display:flex;justify-content:space-between;align-items:center}
+.fr p{font-family:var(--mono);font-size:10px;color:var(--t3);letter-spacing:.5px}
+.fr a{font-family:var(--mono);font-size:10px;color:var(--t3);letter-spacing:.5px;text-decoration:none;transition:color .2s}
+.fr a:hover{color:var(--acc)}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:960px){
+  section{padding:clamp(56px,10vh,100px) 0}
+  nav{background:rgba(5,6,8,.95)}
+  .stat-row{grid-template-columns:repeat(2,1fr)}
+  .mod-grid{grid-template-columns:1fr 1fr}
+  .pipe-steps{grid-template-columns:repeat(4,1fr);gap:16px}.pipe-line,.pipe-line-fill{display:none}
+  .cl-entry{grid-template-columns:1fr}.cl-date{padding-bottom:4px}
+  .hero-meta{flex-wrap:wrap;gap:24px}
+  .nav-left,.nav-right{display:none}.nav-pill{display:block}
+  .conf-badge{display:none}
+  .st{font-size:clamp(26px,6vw,40px)}
+}
+@media(max-width:680px){
+  section{padding:clamp(48px,8vh,80px) 0}
+  .stat-row{grid-template-columns:1fr 1fr;gap:10px}.stat-box{padding:24px 18px}.stat-num{font-size:28px}
+  .mod-grid{grid-template-columns:1fr}
+  .pipe-steps{grid-template-columns:repeat(3,1fr)}.pipe-dot{width:40px;height:40px;font-size:9px}.pipe-step h3{font-size:12px}.pipe-step p{font-size:10px}
+  .hero-ghost{font-size:clamp(34px,10vw,48px)}.hero-headline{font-size:clamp(26px,7vw,40px)}.hs{font-size:15px}
+  .feedback-box{padding:28px 22px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN GATE -->
+<div class="pw-overlay" id="pwGate">
+  <canvas id="pwParticles" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></canvas>
+  <div class="pw-modal" id="pwModal">
+    <div class="pw-studio-logo">studio AI<span>2K</span></div>
+    <img src="LOGO_ROND_JAUNE.png" class="pw-modal-logo" alt="Festiflow">
+    <div class="pw-modal-title">Festiflow</div>
+    <div class="pw-modal-sub">Rapport d'avancement · studio AI2K</div>
+    <div class="pw-field" id="pwField" onclick="document.getElementById('pwInput').focus()">
+      <input type="password" id="pwInput" style="position:absolute;opacity:0;width:1px;height:1px" onkeydown="if(event.key==='Enter')pwCheck()" oninput="pwDots(this.value)">
+      <span class="pw-placeholder" id="pwDisplay">Mot de passe</span>
+    </div>
+    <div class="pw-error" id="pwError"></div>
+    <button class="pw-btn" onclick="pwCheck()">Accéder →</button>
+    <div class="pw-footer">Accès réservé · <a href="https://ai2k.dev">ai2k.dev</a></div>
+  </div>
+</div>
+
+<canvas id="P"></canvas>
+<div id="fLogo">studio AI<span>2K</span></div>
+<div class="W">
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="C">
+    <ul class="nav-left"><li><a href="#progress">Progress</a></li><li><a href="#modules">Modules</a></li><li><a href="#roadmap">Roadmap</a></li></ul>
+    <div class="nav-anchor" id="navAnchor"></div>
+    <ul class="nav-right"><li><a href="#feedback">Retours</a></li><li><a href="#changelog">Changelog</a></li></ul>
+  </div>
+</nav>
+<button class="nav-pill" id="navPill"><i></i><i></i><i></i></button>
+<ul class="nl-mobile" id="nLM"><li><a href="#progress" data-text="Progress">Progress</a></li><li><a href="#modules" data-text="Modules">Modules</a></li><li><a href="#roadmap" data-text="Roadmap">Roadmap</a></li><li><a href="#feedback" data-text="Retours">Retours</a></li><li><a href="#changelog" data-text="Changelog">Changelog</a></li></ul>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hal"></div>
+  <div class="C"><div class="hc">
+    <div class="hero-ghost" id="hGhost">studio AI2K</div>
+    <p class="he">Rapport d'avancement — Avril 2026</p>
+    <h2 class="hero-headline">Festiflow — suivi <em>projet.</em></h2>
+    <p class="hs">Suite de gestion événementielle pour Madame Loyal Festivals. Application web unifiée — proof of concept en interne, puis lancement en tant que produit SaaS vertical pour l'industrie événementielle.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><span class="val" id="kpiTotal">—</span><span class="lbl">Modules total</span></div>
+      <div class="hero-meta-item"><span class="val" style="color:var(--acc)" id="kpiLive">—</span><span class="lbl">Opérationnels</span></div>
+      <div class="hero-meta-item"><span class="val" style="color:var(--t3)" id="kpiPlanned">—</span><span class="lbl">Planifiés</span></div>
+    </div>
+    <div class="hcta"><a href="#feedback">Retours →</a></div>
+  </div></div>
+  <div class="sh"><span>Scroll</span><div class="shl"></div></div>
+</section>
+
+<!-- PROGRESS -->
+<section id="progress"><div class="C">
+  <div class="rv">
+    <p class="slb">Progress</p>
+    <h2 class="st">Où en <em>est-on.</em></h2>
+  </div>
+  <p class="rv" style="font-size:15px;color:var(--t2);line-height:1.75;max-width:640px;margin-top:32px">Festiflow est né d'outils isolés construits pour Madame Loyal. L'objectif : une plateforme unifiée, d'abord en interne, puis en SaaS pour l'industrie événementielle.</p>
+
+  <div id="progressCards" style="display:none;margin-top:32px;flex-direction:column;gap:16px">
+
+    <div class="rv" style="background:rgba(25,30,40,.6);border:1px solid rgba(255,255,255,.06);border-radius:6px;padding:32px 28px">
+      <div class="si">Origines</div>
+      <h3 style="font-size:18px;font-weight:800;letter-spacing:-.5px;margin-bottom:12px">Le projet a démarré par des outils standalone</h3>
+      <p style="font-size:15px;color:var(--t2);line-height:1.75">Festiflow est né du besoin concret de remplacer les fichiers Excel et Google Sheets utilisés pour gérer les opérations de Madame Loyal Festivals. Les premiers outils — Billetterie, Budget et Médias (Dropbox Manager) — ont été construits en HTML standalone pour répondre aux urgences opérationnelles. La Billetterie a prouvé le concept : import CSV manuel des données DICE et Shotgun, courbes de ventes cumulatives, projections multi-scénarios — le tout opérationnel et utilisé en production. Le succès de ces standalones a validé la décision de construire une plateforme complète.</p>
+    </div>
+
+    <div class="rv" style="background:rgba(25,30,40,.6);border:1px solid rgba(255,255,255,.06);border-radius:6px;padding:32px 28px">
+      <div class="si" style="color:var(--amb);background:var(--ambdim);border-color:rgba(255,184,77,.15)">Phase actuelle</div>
+      <h3 style="font-size:18px;font-weight:800;letter-spacing:-.5px;margin-bottom:12px">Design React — module par module</h3>
+      <p style="font-size:15px;color:var(--t2);line-height:1.75;margin-bottom:16px">Chaque module est designé en React avec le design system Festiflow avant d'être migré sur le serveur. Le shell (navigation, structure, composants de base) est en cours de finalisation. Le Budget sera le premier module à passer en design React complet, suivi des Contacts. Les modules restants seront designés progressivement — certains migreront vers le serveur en parallèle dès que l'infrastructure sera prête.</p>
+      <p style="font-size:15px;color:var(--t2);line-height:1.75">Cette approche permet au CEO de valider chaque module visuellement et fonctionnellement avant le développement serveur — pas de surprises à la livraison.</p>
+    </div>
+
+    <div class="rv" style="background:rgba(25,30,40,.6);border:1px solid rgba(255,255,255,.06);border-radius:6px;padding:32px 28px">
+      <div class="si" style="color:var(--t2);background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)">Migration serveur</div>
+      <h3 style="font-size:18px;font-weight:800;letter-spacing:-.5px;margin-bottom:12px">C'est là que tout prend vie</h3>
+      <p style="font-size:15px;color:var(--t2);line-height:1.75;margin-bottom:16px">La phase design produit l'interface — la migration serveur est là où le vrai travail d'ingénierie commence. Chaque module designé doit être connecté à une infrastructure réelle : création des bases de données, définition des schémas, construction des APIs, connexion entre modules. Un contact saisi dans le Registre doit apparaître dans le Catering, le Transport et l'Hébergement — ça implique des relations de données, des endpoints partagés et une logique métier qui relie tout.</p>
+      <p style="font-size:15px;color:var(--t2);line-height:1.75;margin-bottom:16px">Le travail se fait module par module, étape par étape. Le Budget sera le premier à être opérationnel sur le serveur — base de données, API, import Qonto automatisé, données réelles. Les Contacts suivront comme fondation partagée. Puis chaque nouveau module se branche sur l'existant, partageant les mêmes bases de données et communiquant via des APIs internes. Les standalones HTML actuels seront progressivement remplacés par leurs versions React connectées.</p>
+
+      <div style="font-family:var(--mono);font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">Stack technique</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:13px;font-weight:600;color:var(--t1)">Frontend</span><span style="font-size:12px;color:var(--t3)">React 18, Vite, Tailwind CSS, shadcn/ui, Framer Motion</span></div>
+        <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:13px;font-weight:600;color:var(--t1)">Backend</span><span style="font-size:12px;color:var(--t3)">Python, FastAPI, SQLAlchemy, Alembic</span></div>
+        <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:13px;font-weight:600;color:var(--t1)">Database</span><span style="font-size:12px;color:var(--t3)">PostgreSQL — multi-tenant ready</span></div>
+        <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:13px;font-weight:600;color:var(--t1)">Serveur</span><span style="font-size:12px;color:var(--t3)">Hetzner VPS, Ubuntu 24.04, Nginx, SSL</span></div>
+        <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:13px;font-weight:600;color:var(--t1)">UI</span><span style="font-size:12px;color:var(--t3)">TanStack Table + Query, Recharts, Zod, React Hook Form</span></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="more-indicator rv" onclick="toggleProgressCards()"><span id="progressMoreTxt">More</span><div class="shl"></div></div>
+</div></section>
+
+<!-- MODULES -->
+<section id="modules"><div class="C">
+  <div class="rv">
+    <p class="slb">Modules</p>
+    <h2 class="st"><span id="moduleHeadingCount">19</span> modules, une seule <em>application.</em></h2>
+    <p class="ss">Chaque module est cliquable. Les liens s'activent au fur et à mesure du développement — chaque module designé en React est répliqué en HTML interactif pour review. Les standalones renvoient vers les outils en production.</p>
+  </div>
+  <div id="moduleMap" style="margin-top:64px"></div>
+</div></section>
+
+<!-- ROADMAP -->
+<section id="roadmap"><div class="C">
+  <div class="rv">
+    <p class="slb">Roadmap</p>
+    <h2 class="st">Le chemin vers le <em>produit.</em></h2>
+    <p class="ss" style="margin-top:8px">8 phases — de la validation terrain au lancement SaaS.</p>
+  </div>
+
+  <!-- SLIM BAR — always visible -->
+  <div class="rv" style="margin-top:32px">
+    <div style="display:flex;gap:4px;margin-bottom:6px">
+      <div style="flex:1;height:6px;background:var(--acc);border-radius:3px" title="Standalones 100%"></div>
+      <div style="flex:1;height:6px;background:var(--acc);border-radius:3px" title="Vision SaaS 100%"></div>
+      <div style="flex:1;height:6px;background:rgba(0,255,170,.5);border-radius:3px" title="Spécifications 60%"></div>
+      <div style="flex:1;height:6px;background:rgba(0,255,170,.15);border-radius:3px" title="Design React 5%"></div>
+      <div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px" title="Serveur 0%"></div>
+      <div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px" title="Intégration 0%"></div>
+      <div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px" title="Déploiement ML 0%"></div>
+      <div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px" title="SaaS 0%"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--t3);letter-spacing:.5px">
+      <span>Standalones</span><span>Specs</span><span>React</span><span>Serveur</span><span>SaaS</span>
+    </div>
+  </div>
+
+  <!-- FULL PIPELINE — hidden by default -->
+  <div id="roadmapFull" style="display:none">
+    <div class="pipeline fly-steps">
+      <div class="pipe-line"></div><div class="pipe-line-fill"></div>
+      <div class="pipe-steps">
+        <div class="pipe-step done"><div class="pipe-dot">100%</div><h3>Standalones</h3><p>Outils HTML opérationnels — Billetterie, Budget, Médias. Proof of concept terrain.</p></div>
+        <div class="pipe-step done"><div class="pipe-dot">100%</div><h3>Vision SaaS</h3><p>Décision de construire une plateforme unifiée. Architecture 19 modules définie.</p></div>
+        <div class="pipe-step active"><div class="pipe-dot">60%</div><h3>Spécifications</h3><p>Brief technique par module en cours. Audit de cohérence. Design system et tokens définis.</p></div>
+        <div class="pipe-step active"><div class="pipe-dot">5%</div><h3>Design React</h3><p>Shell en cours. Budget en priorité, puis Contacts. Modules designés progressivement.</p></div>
+        <div class="pipe-step"><div class="pipe-dot">0%</div><h3>Serveur</h3><p>Infrastructure Hetzner, FastAPI, PostgreSQL. Budget premier module en production.</p></div>
+        <div class="pipe-step"><div class="pipe-dot">0%</div><h3>Intégration</h3><p>Migration des standalones. Données réelles. Multi-événement. Accès par rôle.</p></div>
+        <div class="pipe-step"><div class="pipe-dot">0%</div><h3>Déploiement ML</h3><p>Test en conditions réelles avec l'équipe Madame Loyal. Retours terrain, ajustements, validation.</p></div>
+        <div class="pipe-step"><div class="pipe-dot">0%</div><h3>SaaS</h3><p>Multi-tenant, onboarding, commercialisation. Festiflow devient un produit.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="more-indicator rv" onclick="toggleRoadmapFull()"><span id="roadmapMoreTxt">More</span><div class="shl"></div></div>
+
+  <div style="margin-top:48px;padding:32px 28px;background:rgba(25,30,40,.6);border:1px solid rgba(255,255,255,.06);border-radius:6px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <span style="font-family:var(--mono);font-size:11px;color:var(--acc);background:var(--adim);border:1px solid rgba(0,255,170,.15);padding:5px 14px;letter-spacing:1.5px;text-transform:uppercase">Prochaine livraison</span>
+    </div>
+    <h3 style="font-size:18px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px">Intégration des pages complémentaires Budget</h3>
+    <p style="font-size:14px;color:var(--t2);line-height:1.75;max-width:560px">Les pages Fiche événement et Documents ont été prototypées cette semaine. Prochaine étape : intégration dans les sessions Budget existantes.</p>
+  </div>
+</div></section>
+
+<!-- FEEDBACK -->
+<section id="feedback"><div class="C">
+  <div class="rv">
+    <p class="slb">Feedback</p>
+    <h2 class="st">Vos <em>retours.</em></h2>
+  </div>
+
+  <!-- Feedback feed -->
+  <div class="fb-feed rv" id="fbFeed">
+    <div class="fb-feed-empty" id="fbFeedEmpty">Chargement des retours...</div>
+    <div class="fb-feed-list" id="fbFeedList"></div>
+  </div>
+
+  <div class="feedback-box rv" id="fbBox">
+    <h3>Un commentaire, une question, une priorité ?</h3>
+    <p>Écrivez directement ici. Chaque message est horodaté et sauvegardé pour suivi.</p>
+    <div class="fb-form" id="fbForm">
+      <div class="fb-row">
+        <input class="fb-input" type="text" id="fbName" placeholder="Nom">
+        <select class="fb-input" id="fbModule" style="cursor:pointer">
+          <option value="Général">Général</option>
+        </select>
+      </div>
+      <textarea class="fb-input" id="fbMessage" rows="4" placeholder="Votre feedback..."></textarea>
+      <div>
+        <button class="btn" type="button" onclick="submitFeedback()">Envoyer</button>
+        <p class="fb-success" id="fbSuccess">✓ Feedback envoyé. Merci.</p>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- CHANGELOG -->
+<section id="changelog"><div class="C">
+  <div class="rv">
+    <p class="slb">Changelog</p>
+    <h2 class="st">Dernières <em>livraisons.</em></h2>
+  </div>
+  <div class="changelog rv">
+
+    <!-- RECENT — last 2 weeks, always visible -->
+    <div class="cl-entry">
+      <div class="cl-date">Semaine 13 — 17 avr</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag update">Update</span>Billetterie v6.2 — Navbar BudgetFlow & upload repensé</h4>
+        <p>Application du design système BudgetFlow à la Billetterie : session switcher, onglets de section, page Détails événement. Page d'upload redessinée avec navigation contextuelle et timestamp de dernière mise à jour. 5 corrections : nav sticky, variables CSS, graphique revenus, shading, lisibilité.</p>
+      </div>
+    </div>
+
+    <div class="cl-entry">
+      <div class="cl-date">Semaine 13 — 17 avr</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag new">New</span>Budget v3.3 — Session Générale & récurrence</h4>
+        <p>Création de la session Générale (frais de structure) avec 10 départements. Toggle Mensuel/Annuel sur le Bilan P&L. Récurrence par ligne de budget (ponctuel vs mensuel). Popup de confirmation avant import Qonto. Déplacement cross-session. Structure globale en place — en attente de retours.</p>
+      </div>
+    </div>
+
+    <div class="cl-entry">
+      <div class="cl-date">Semaine 13 — 17 avr</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag new">New</span>Budget — Prototypes Fiche événement & Documents</h4>
+        <p>Première version des pages complémentaires Fiche événement et Documents. Prototypées cette semaine — intégration dans les sessions Budget à venir.</p>
+      </div>
+    </div>
+
+    <div class="cl-entry">
+      <div class="cl-date">Semaine 12 — 13 avr</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag update">Update</span>Billetterie v5.2 — Intégration EPK 2023 & nouveau mode de comparaison</h4>
+        <p>Adaptation complète du pipeline pour comparer EPK 2026 avec la référence EPK 2023 (Shotgun uniquement, 263 jours de vente). Nouveau mode de comparaison par ancrage date-événement pour aligner deux timelines différentes. Mapping automatique des jours (Ven+Sam → Sam+Dim), classification ticket GOLD → VIP, détection auto de la date de lancement. Shell supprimé du standalone — template épuré avec login. Fix CSS mobile et correction crash pipeline Bordeaux.</p>
+      </div>
+    </div>
+
+    <div class="cl-entry">
+      <div class="cl-date">Semaine 7 — 11 avr</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag update">Update</span>Budget v3 — Release opérationnelle</h4>
+        <p>Refonte complète de l'interface : nouveau système de navigation, tables simplifiées (HT uniquement, TVA en drawer). Système "À Trier" pour les transactions incertaines. Linking des recettes. Assign searchable optimisé iPad. Import Qonto incrémental avec matching intelligent. 6 bugs critiques corrigés (cache, préfixes, ghost lines). Optimisé mobile pour iPhone 17 Pro Max — dis-moi quel téléphone tu utilises pour optimiser le tien.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- OLDER — hidden by default -->
+  <div class="changelog" id="clOlder" style="display:none">
+
+    <div class="cl-entry">
+      <div class="cl-date">Semaine 5 — 7 avr</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag update">Update</span>Shell — Exploration design & composants</h4>
+        <p>Progression sur la librairie de composants React. Exploration de plusieurs directions visuelles pour affiner le design system. Mise à jour de l'ordre de build : Budget en priorité, puis Contacts.</p>
+      </div>
+    </div>
+
+    <div class="cl-entry">
+      <div class="cl-date">Semaine 31 mars — 6 avr</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag update">Update</span>Shell React — En cours</h4>
+        <p>Passage du shell HTML vers React. Design tokens, card system et typographie unifiés. Navigation, rail, event switcher, dashboard en place.</p>
+      </div>
+    </div>
+
+    <div class="cl-entry">
+      <div class="cl-date">Semaine 24 — 28 mars</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag update">Update</span>Spécifications & préparation migration</h4>
+        <p>Rédaction des spécifications techniques par module en vue de la migration serveur. Documentation des connexions inter-modules et magic links. Specs Newsletter, Artistes, Médias.</p>
+      </div>
+    </div>
+
+    <div class="cl-entry">
+      <div class="cl-date">Semaine 24 — 28 mars</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag update">Update</span>Dropbox Manager — Intégration API & backup</h4>
+        <p>Intégration shell HTML pour le module Médias. Connexion API Dropbox, gestion des tokens, système de backup. Continuation du développement des fonctionnalités photographes/vidéastes.</p>
+      </div>
+    </div>
+
+    <div class="cl-entry">
+      <div class="cl-date">Semaine 17 — 21 mars</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag new">New</span>Communication — Calendrier & Campagnes</h4>
+        <p>Conception des modules Calendrier (timeline, fonctions, sidepanel, tabs, redesign nav bar) et Campagnes. Premières versions avec le shell HTML.</p>
+      </div>
+    </div>
+
+    <div class="cl-entry">
+      <div class="cl-date">Semaine 17 — 21 mars</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag update">Update</span>Budget — CEO view & card redesign</h4>
+        <p>Refonte majeure du Budget : vue CEO mindset, intégration Qonto relevé de compte, redesign des tabs et cards, sidepanels par département, section dépenses imprévues. Version v12.1.</p>
+      </div>
+    </div>
+
+    <div class="cl-entry">
+      <div class="cl-date">Semaine 10 — 14 mars</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag new">New</span>Billetterie — Dashboard finalisé</h4>
+        <p>Version finale du dashboard Billetterie Paris XXL : import CSV, page upload avec mot de passe, railway API. Corrections CSS cross-template et génération HTML.</p>
+      </div>
+    </div>
+
+    <div class="cl-entry">
+      <div class="cl-date">Semaine 10 — 14 mars</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag new">New</span>Staff — Prototype base RH</h4>
+        <p>Création du mockup Staff : page Database RH compatible PostgreSQL, admin view, structure de page, logique staffing, side panel communication. Fondation pour le module Registre.</p>
+      </div>
+    </div>
+
+    <div class="cl-entry">
+      <div class="cl-date">Semaine 10 — 14 mars</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag update">Update</span>Budget — Sidepanels & transactions</h4>
+        <p>Ajout des sidepanels d'édition, estimation et transactions par département. Toggle HT/TTC. Script Google pour import Qonto manuel. Bug fixes et mise à jour du script Python.</p>
+      </div>
+    </div>
+
+    <div class="cl-entry">
+      <div class="cl-date">Semaine 3 — 7 mars</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag new">New</span>Billetterie — Premier dashboard</h4>
+        <p>Implémentation du premier dashboard Billetterie. Import DICE & Shotgun, premières courbes de vente et métriques clés.</p>
+      </div>
+    </div>
+
+    <div class="cl-entry">
+      <div class="cl-date">Semaine 3 — 7 mars</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag new">New</span>Budget — Création initiale</h4>
+        <p>Démarrage du module Budget basé sur Google Sheets. Connexion API, interface HTML, structure de base. Création en parallèle du Dropbox Manager.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MORE BUTTON — website style -->
+  <div class="more-indicator rv" id="clMoreBtn" onclick="toggleOlderChangelog()">
+    <span id="clMoreTxt">More</span>
+    <div class="shl" id="clMoreLine"></div>
+  </div>
+
+</div></section>
+
+<!-- FOOTER -->
+<footer><div class="C"><div class="fr">
+  <p>&copy; 2026 studio AI2K. All rights reserved.</p>
+  <p>Dernière mise à jour : Semaine 13 — 17 avr</p>
+  <a href="https://ai2k.dev">ai2k.dev</a>
+</div></div></footer>
+
+</div>
+
+<script>
+/* ═══ FLYING LOGO — identical to website ═══ */
+var fLogo=document.getElementById('fLogo'),hGhost=document.getElementById('hGhost'),navAnchor=document.getElementById('navAnchor'),navEl=document.getElementById('nav');
+var hero={x:0,y:0,size:0,ls:-2},navPos={x:0,y:0,size:18,ls:-0.5},ready=false,SCROLL_START=100,SCROLL_END=300;
+function measure(){var s=window.scrollY,hr=hGhost.getBoundingClientRect();hero.x=hr.left;hero.y=hr.top+s;hero.size=parseFloat(getComputedStyle(hGhost).fontSize);fLogo.style.fontSize=hero.size+'px';fLogo.style.letterSpacing=hero.ls+'px';var heroW=fLogo.offsetWidth;var scaleRatio=navPos.size/hero.size;var navW=heroW*scaleRatio;var nr=navAnchor.getBoundingClientRect();navPos.x=nr.left+nr.width/2-navW/2;navPos.y=Math.round((64-navPos.size)/2);ready=true}
+function ease(t){return t<.5?4*t*t*t:(t-1)*(2*t-2)*(2*t-2)+1}
+function renderLogo(){if(!ready){requestAnimationFrame(renderLogo);return}var s=window.scrollY,raw=Math.max(0,Math.min(1,(s-SCROLL_START)/(SCROLL_END-SCROLL_START))),t=ease(raw),r=navPos.size/hero.size,sc=1+(r-1)*t,hy=hero.y-s,x=hero.x+(navPos.x-hero.x)*t,y=hy+(navPos.y-hy)*t,ls=hero.ls+(navPos.ls-hero.ls)*t;if(raw>=1){x=navPos.x;y=navPos.y;sc=r;ls=navPos.ls}if(raw<=0){x=hero.x;y=hy;sc=1;ls=hero.ls}fLogo.style.transform='translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,0) scale('+sc.toFixed(5)+')';fLogo.style.letterSpacing=ls.toFixed(2)+'px';if(raw>.05)navEl.classList.add('scrolled');else navEl.classList.remove('scrolled');requestAnimationFrame(renderLogo)}
+function initLogo(){measure();renderLogo()}
+window.addEventListener('resize',measure);
+var lastVH=window.innerHeight;setInterval(function(){if(window.innerHeight!==lastVH){lastVH=window.innerHeight;measure()}},300);
+document.fonts.ready.then(function(){setTimeout(initLogo,50)});if(document.readyState==='complete')initLogo();else window.addEventListener('load',initLogo);
+
+/* ═══ MOBILE NAV — identical to website ═══ */
+var navMenu=document.getElementById('nLM'),navPill=document.getElementById('navPill');
+var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&';
+function scramble(el,final,dur){var len=final.length,t0s=performance.now();function step(now){var t=Math.min(1,(now-t0s)/dur),r='';for(var i=0;i<len;i++)r+=t>((i+1)/len)*.7?final[i]:chars[Math.floor(Math.random()*chars.length)];el.textContent=r;if(t<1)requestAnimationFrame(step);else el.textContent=final}requestAnimationFrame(step)}
+function openMobileNav(){navMenu.classList.add('op');navMenu.classList.remove('frosted');navPill.classList.add('active');var links=navMenu.querySelectorAll('a'),total=links.length*60+400;links.forEach(function(a,i){setTimeout(function(){scramble(a,a.getAttribute('data-text'),400)},i*60)});setTimeout(function(){navMenu.classList.add('frosted')},total)}
+function closeMobileNav(){navMenu.classList.remove('op','frosted');navPill.classList.remove('active')}
+function toggleMobileNav(){navMenu.classList.contains('op')?closeMobileNav():openMobileNav()}
+navPill.addEventListener('click',toggleMobileNav);
+document.querySelectorAll('.nl-mobile a,.nav-left a,.nav-right a').forEach(function(a){a.addEventListener('click',closeMobileNav)});
+window.addEventListener('resize',function(){if(innerWidth>960)closeMobileNav()});
+
+/* ═══ PARTICLES — identical to website ═══ */
+var c=document.getElementById('P'),ctx=c.getContext('2d'),pts=[],mx={x:-1e3,y:-1e3},WW,HH;
+function rs(){WW=c.width=innerWidth;HH=c.height=innerHeight}rs();addEventListener('resize',rs);
+document.addEventListener('mousemove',function(e){mx.x=e.clientX;mx.y=e.clientY});
+var cx=WW/2,cy=HH/2,t0=performance.now();
+function Pt(){this.tx=Math.random()*WW;this.ty=Math.random()*HH;this.x=cx;this.y=cy;this.delay=Math.random()*300;var a=Math.random()*Math.PI*2,f=5+Math.random()*10;this.vx=Math.cos(a)*f;this.vy=Math.sin(a)*f;this.r=Math.random()*1.5+.5;this.a=Math.random()*.25+.04;this.born=false;this.s=false;this.trail=[]}
+Pt.prototype.u=function(){var elapsed=performance.now()-t0;if(!this.born){if(elapsed>this.delay)this.born=true;else return}if(!this.s){this.vx*=.96;this.vy*=.96;this.x+=this.vx;this.y+=this.vy;this.trail.push({x:this.x,y:this.y});if(this.trail.length>8)this.trail.shift();if(elapsed>600){this.x+=(this.tx-this.x)*.04;this.y+=(this.ty-this.y)*.04}var dx=this.x-this.tx,dy=this.y-this.ty;if(Math.abs(this.vx)<.15&&Math.abs(this.vy)<.15&&Math.sqrt(dx*dx+dy*dy)<3){this.s=true;this.x=this.tx;this.y=this.ty;this.vx=(Math.random()-.5)*.3;this.vy=(Math.random()-.5)*.3;this.trail=[]}}else{this.x+=this.vx;this.y+=this.vy;var dx=this.x-mx.x,dy=this.y-mx.y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){var f=(120-d)/120*.8;this.vx+=dx/d*f;this.vy+=dy/d*f}this.vx*=.98;this.vy*=.98;if(this.x<-10)this.x=WW+10;if(this.x>WW+10)this.x=-10;if(this.y<-10)this.y=HH+10;if(this.y>HH+10)this.y=-10}};
+Pt.prototype.d=function(){if(!this.born)return;if(!this.s&&this.trail.length>1){for(var i=1;i<this.trail.length;i++){ctx.beginPath();ctx.moveTo(this.trail[i-1].x,this.trail[i-1].y);ctx.lineTo(this.trail[i].x,this.trail[i].y);ctx.strokeStyle='rgba(0,255,170,'+(i/this.trail.length*.15)+')';ctx.lineWidth=.5;ctx.stroke()}}ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle='rgba(0,255,170,'+this.a+')';ctx.fill()};
+var cnt=Math.min(Math.floor(WW*HH/10000),140);
+function dl(){for(var i=0;i<pts.length;i++){if(!pts[i].s)continue;for(var j=i+1;j<pts.length;j++){if(!pts[j].s)continue;var dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<100){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle='rgba(0,255,170,'+(0.12*(1-d/100))+')';ctx.lineWidth=.5;ctx.stroke()}}}}
+function an(){ctx.clearRect(0,0,WW,HH);for(var i=0;i<pts.length;i++){pts[i].u();pts[i].d()}dl();requestAnimationFrame(an)}
+function startMainParticles(){t0=performance.now();for(var i=0;i<cnt;i++)pts.push(new Pt());an()}
+
+/* ═══ REVEALS — identical to website ═══ */
+var obs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('vi');e.target.classList.add('vis')}})},{threshold:.12});
+document.querySelectorAll('.rv,.rv-stagger,.fly-in,.fly-steps,section').forEach(function(el){obs.observe(el)});
+document.querySelectorAll('a[href^="#"]').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();closeMobileNav();var t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth'})})});
+
+/* ═══ PROXIMITY LIGHT — feedback box ═══ */
+var fbBox=document.getElementById('fbBox');
+if(fbBox){fbBox.addEventListener('mousemove',function(e){var r=fbBox.getBoundingClientRect();fbBox.style.setProperty('--px',(e.clientX-r.left)+'px');fbBox.style.setProperty('--py',(e.clientY-r.top)+'px')});}
+
+/* ═══ MODULE MAP — render ═══ */
+var MODULES = [
+  { section: "Général", items: [
+    { name: "Dashboard", status: "proto", desc: "Shell de l'application — fondation visuelle de tous les modules. Design system, typographie, composants, navigation et structure de référence.", link: "", essential: true },
+    { name: "Événements", status: "planned", desc: "Hub de configuration événement — source de vérité pour tous les modules.", link: "" },
+  ]},
+  { section: "Finance", items: [
+    { name: "Billetterie", status: "live", desc: "v6.2 — Navbar BudgetFlow intégrée, page Détails événement, upload repensé avec session switcher, corrections graphiques revenue & vélocité. Pipeline multi-événement opérationnel.", links: [{label:"Bordeaux",url:"https://madameloyal.github.io/festiflow/bordeaux.html"},{label:"EPK",url:"https://madameloyal.github.io/festiflow/epk.html"},{label:"Upload CSV",url:"https://madameloyal.github.io/festiflow/upload.html"}], standalone: true },
+    { name: "Budget", status: "live", desc: "v3.3 — 4 sessions opérationnelles, toggle Mensuel/Annuel, récurrence par ligne, import sécurisé, matching intelligent. Session Générale en place — structure prête, en attente de retours.", links: [{label:"Paris XXL",url:"https://madameloyal.github.io/budgetflow/budget_pa.html"},{label:"Bordeaux",url:"https://madameloyal.github.io/budgetflow/budget_bdx.html"},{label:"EPK",url:"https://madameloyal.github.io/budgetflow/budget_epk.html"},{label:"Générale",url:"https://madameloyal.github.io/budgetflow/budget_general.html"}], priority: true, standalone: true },
+    { name: "Demande d'Achat", status: "planned", desc: "Demandes d'achat & abonnements — formulaire employé, validation CEO, sync Budget.", link: "" },
+    { name: "Partenaires", status: "planned", desc: "CRM sponsors — pipeline, contrats, contreparties, rapport post-event.", link: "" },
+  ]},
+  { section: "Staffing · Événement", items: [
+    { name: "Registre", status: "proto", desc: "Centre de commande staffing — affectation par pôle, magic links.", link: "" },
+    { name: "Présence", status: "planned", desc: "Grille de présence jour par jour, pointage terrain.", link: "" },
+    { name: "Catering", status: "planned", desc: "Hub restauration — régimes, planning repas, coûts.", link: "" },
+    { name: "Transport", status: "planned", desc: "Logistique transport staff — billets, trajets, budget.", link: "" },
+    { name: "Hébergement", status: "planned", desc: "Rooming list, attribution chambres, budget nuitées.", link: "" },
+  ]},
+  { section: "Système", items: [
+    { name: "Contacts", status: "proto", desc: "Base de données unique — fondation de tous les modules.", link: "" },
+    { name: "Admin", status: "planned", desc: "Comptes utilisateurs, rôles, permissions, audit trail.", link: "" },
+  ]},
+  { section: "Programmation", items: [
+    { name: "Artistes", status: "planned", desc: "Bookings, cachets, riders, agences et scouting.", link: "" },
+  ]},
+  { section: "Opérations", items: [
+    { name: "Atelier", status: "planned", desc: "Inventaire matériel, factures internes, cartes de crédit.", link: "" },
+    { name: "Guest List", status: "planned", desc: "Guest lists, magic links, fusion door list, check-in.", link: "" },
+  ]},
+  { section: "Communication", items: [
+    { name: "Calendrier", status: "proto", desc: "Planning communication — 4 vues, charge par membre.", link: "" },
+    { name: "Campagnes", status: "planned", desc: "Hub stratégique — réseaux sociaux, newsletters Brevo, presse.", link: "" },
+    { name: "Médias", status: "live", desc: "Standalone opérationnel — Dropbox Manager, liens upload, suivi livrables. Intégration React après migration.", link: "https://madameloyal.github.io/dropboxmanager/", standalone: true },
+    { name: "FAQ", status: "planned", desc: "Knowledge base collaborative + analytics chatbot Chatbase.", link: "" },
+  ]},
+];
+
+var SHELL_LINK = "festiflow-shell.html";
+
+function renderModules() {
+  var el = document.getElementById('moduleMap');
+  var html = '';
+  var expandedSections = ['Général', 'Finance'];
+  MODULES.forEach(function(section, sIdx) {
+    var isExpanded = expandedSections.indexOf(section.section) > -1;
+    var countText = section.items.length + ' module' + (section.items.length > 1 ? 's' : '');
+    html += '<div class="mod-section rv">';
+    if (isExpanded) {
+      html += '<div class="mod-section-label">' + section.section + ' <span style="font-weight:400;letter-spacing:1px">/ ' + countText + '</span></div>';
+      html += '<div class="mod-grid">';
+    } else {
+      html += '<div class="mod-section-toggle" onclick="toggleModSection(this)">';
+      html += '<span class="mod-toggle-label">' + section.section + ' <span style="font-weight:400;letter-spacing:1px">/ ' + countText + '</span></span>';
+      html += '<span class="mod-toggle-plus">+</span>';
+      html += '</div>';
+      html += '<div class="mod-grid" style="display:none;margin-top:16px">';
+    }
+    section.items.forEach(function(m) {
+      var cls = m.status === 'planned' ? 'mod-card is-planned' : 'mod-card';
+      var badgeCls = m.status === 'live' ? 'mod-badge live' : m.status === 'proto' ? 'mod-badge proto' : 'mod-badge planned';
+      var badgeText = m.status === 'live' ? 'Live' : m.status === 'proto' ? 'Prototype' : 'Planifié';
+      var link = '';
+      if (m.name === 'Dashboard') {
+        link = '<a href="' + SHELL_LINK + '" class="mod-card-link" target="_blank">Voir le shell →</a>';
+      } else if (m.links && m.links.length) {
+        link = '<div style="display:flex;gap:12px;flex-wrap:wrap">' + m.links.map(function(l) {
+          return '<a href="' + l.url + '" class="mod-card-link" target="_blank">' + l.label + ' →</a>';
+        }).join('') + '</div>';
+      } else if (m.link && m.standalone) {
+        link = '<a href="' + m.link + '" class="mod-card-link" target="_blank">Standalone HTML →</a>';
+      } else if (m.link) {
+        link = '<a href="' + m.link + '" class="mod-card-link" target="_blank">Voir →</a>';
+      }
+      var priorityBadge = m.priority ? '<span class="mod-priority"><svg viewBox="0 0 24 24" fill="#ed4245" stroke="none"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>Priorité</span>' : '';
+      var essentialBadge = m.essential ? '<span class="mod-essential"><svg viewBox="0 0 24 24" fill="#3878ff" stroke="none"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>Essentiel</span>' : '';
+      html += '<div class="' + cls + '">';
+      html += '<div class="mod-card-top"><span class="mod-card-name">' + m.name + '</span>' + priorityBadge + essentialBadge + '<span class="' + badgeCls + '">' + badgeText + '</span></div>';
+      html += '<p class="mod-card-desc">' + m.desc + '</p>';
+      html += link;
+      html += '</div>';
+    });
+    html += '</div></div>';
+  });
+  el.innerHTML = html;
+  document.querySelectorAll('.mod-section.rv').forEach(function(el) { obs.observe(el); });
+}
+
+function toggleModSection(toggle) {
+  var grid = toggle.nextElementSibling;
+  var plus = toggle.querySelector('.mod-toggle-plus');
+  if (grid.style.display === 'none') {
+    grid.style.display = '';
+    grid.classList.add('stagger-in');
+    var children = grid.children;
+    for (var i = 0; i < children.length; i++) {
+      children[i].style.animationDelay = (i * 100) + 'ms';
+    }
+    plus.classList.add('open');
+  } else {
+    grid.style.display = 'none';
+    grid.classList.remove('stagger-in');
+    plus.classList.remove('open');
+  }
+}
+renderModules();
+
+// Calculate and populate KPIs dynamically from MODULES array
+var allItems = MODULES.flatMap(function(s) { return s.items; });
+var totalModules = allItems.length;
+var liveModules = allItems.filter(function(m) { return m.status === 'live'; }).length;
+var plannedModules = allItems.filter(function(m) { return m.status === 'planned'; }).length;
+document.getElementById('kpiTotal').textContent = totalModules;
+document.getElementById('kpiLive').textContent = liveModules;
+document.getElementById('kpiPlanned').textContent = plannedModules;
+document.getElementById('moduleHeadingCount').textContent = totalModules;
+
+// Populate feedback module dropdown dynamically
+var fbSelect = document.getElementById('fbModule');
+MODULES.forEach(function(section) {
+  section.items.forEach(function(m) {
+    var opt = document.createElement('option');
+    opt.value = m.name;
+    opt.textContent = m.name;
+    fbSelect.appendChild(opt);
+  });
+});
+var otherOpt = document.createElement('option');
+otherOpt.value = 'Autre';
+otherOpt.textContent = 'Autre';
+fbSelect.appendChild(otherOpt);
+
+/* ═══ FEEDBACK SYSTEM ═══ */
+// Replace with your Google Apps Script Web App URL (POST endpoint)
+var FEEDBACK_URL = 'https://script.google.com/macros/s/AKfycbyFrUyjXeKXQE7SSVPlC_2pgfAHAVgpuLJxWdI768XQGDssdHe7YOwxx4w0YG2eEFhw/exec';
+// Replace with your Google Sheet ID — the sheet must be "published to web" for reading
+// Go to File > Share > Publish to web > select Sheet1 > CSV
+var SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTMV_JDEp3x0sDUMsTW7DBGbwdPW5Tf41MLsbkrO40cWHu71OoUPFqj_8gPVir5x4o6yXpEJ1CpayeI/pub?output=csv';
+
+// Local feedback store (for optimistic display before Sheet syncs)
+var allFeedback = [];
+var IS_ADMIN = window.location.search.indexOf('admin=1') > -1;
+
+function parseFeedbackCSV(csv) {
+  var lines = csv.split('\n');
+  if (lines.length < 2) return [];
+  var header = lines[0].split(',').map(function(h) { return h.replace(/"/g, '').trim().toLowerCase(); });
+  var nameIdx = header.indexOf('name');
+  var moduleIdx = header.indexOf('module');
+  var eventIdx = header.indexOf('event');
+  var sourceIdx = header.indexOf('source');
+  var messageIdx = header.indexOf('message');
+  var tsIdx = header.indexOf('timestamp');
+  var statusIdx = header.indexOf('status');
+  var results = [];
+  for (var i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    var cols = [];
+    var current = '';
+    var inQuote = false;
+    for (var c = 0; c < lines[i].length; c++) {
+      var ch = lines[i][c];
+      if (ch === '"') { inQuote = !inQuote; }
+      else if (ch === ',' && !inQuote) { cols.push(current.trim()); current = ''; }
+      else { current += ch; }
+    }
+    cols.push(current.trim());
+    results.push({
+      name: (cols[nameIdx] || '').replace(/^"|"$/g, ''),
+      module: (cols[moduleIdx] || '').replace(/^"|"$/g, ''),
+      event: (cols[eventIdx] || '').replace(/^"|"$/g, ''),
+      source: (cols[sourceIdx] || '').replace(/^"|"$/g, ''),
+      message: (cols[messageIdx] || '').replace(/^"|"$/g, ''),
+      timestamp: (cols[tsIdx] || '').replace(/^"|"$/g, ''),
+      status: statusIdx > -1 ? (cols[statusIdx] || '').replace(/^"|"$/g, '') : '',
+      row: i + 1
+    });
+  }
+  return results;
+}
+
+function formatFbDate(ts) {
+  if (!ts) return '';
+  try {
+    var d = new Date(ts);
+    return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) + ' · ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  } catch(e) { return ts; }
+}
+
+function renderFeedbackFeed() {
+  var list = document.getElementById('fbFeedList');
+  var empty = document.getElementById('fbFeedEmpty');
+  // Sort newest first
+  var sorted = allFeedback.slice().sort(function(a, b) {
+    return new Date(b.timestamp) - new Date(a.timestamp);
+  });
+  if (sorted.length === 0) {
+    empty.textContent = 'Aucun retour pour le moment.';
+    empty.style.display = '';
+    list.innerHTML = '';
+    return;
+  }
+  empty.style.display = 'none';
+
+  function renderEntry(fb) {
+    var tags = '';
+    if (fb.module) tags += '<span class="fb-entry-tag mod">' + fb.module + '</span>';
+    if (fb.event) tags += '<span class="fb-entry-tag evt">' + fb.event + '</span>';
+    if (fb.source) tags += '<span class="fb-entry-tag src">' + fb.source + '</span>';
+    var isDone = fb.status === 'done';
+    var doneClass = isDone ? ' fb-done' : '';
+    var doneBadge = isDone ? '<span class="fb-status-done">✓ traité</span>' : '';
+    var adminBtn = (IS_ADMIN && !isDone && fb.row) ? '<button class="fb-mark-done" onclick="markFbDone(' + fb.row + ',this)">✓</button>' : '';
+    return '<div class="fb-entry' + doneClass + '">' +
+      '<div class="fb-entry-meta">' +
+        '<div class="fb-entry-date">' + formatFbDate(fb.timestamp) + doneBadge + '</div>' +
+        '<div class="fb-entry-author">' + (fb.name || 'Anonyme') + adminBtn + '</div>' +
+      '</div>' +
+      '<div class="fb-entry-body">' +
+        (tags ? '<div class="fb-entry-tags">' + tags + '</div>' : '') +
+        '<div class="fb-entry-message">' + fb.message + '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  var recent = sorted.slice(0, 2);
+  var older = sorted.slice(2);
+  var html = '<div class="fb-feed-count">' + sorted.length + ' retour' + (sorted.length > 1 ? 's' : '') + '</div>';
+  html += recent.map(renderEntry).join('');
+  if (older.length > 0) {
+    html += '<div id="fbOlder" style="display:none">' + older.map(renderEntry).join('') + '</div>';
+    html += '<div class="more-indicator" id="fbMoreBtn" onclick="toggleOlderFeedback()"><span id="fbMoreTxt">More</span><div class="shl" id="fbMoreLine"></div></div>';
+  }
+  list.innerHTML = html;
+}
+
+function renderModuleBadges() {
+  // Count feedback per module
+  var counts = {};
+  allFeedback.forEach(function(fb) {
+    if (fb.module) {
+      counts[fb.module] = (counts[fb.module] || 0) + 1;
+    }
+  });
+  // Inject badges into module cards
+  document.querySelectorAll('.mod-card-name').forEach(function(el) {
+    var name = el.textContent.trim();
+    // Remove existing badge if any
+    var existing = el.parentElement.querySelector('.mod-fb-count');
+    if (existing) existing.remove();
+    if (counts[name]) {
+      var badge = document.createElement('span');
+      badge.className = 'mod-fb-count';
+      badge.innerHTML = '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg>' + counts[name];
+      el.parentElement.insertBefore(badge, el.parentElement.querySelector('.mod-badge'));
+    }
+  });
+}
+
+function loadFeedback() {
+  if (!SHEET_CSV_URL) {
+    document.getElementById('fbFeedEmpty').textContent = 'Configurez SHEET_CSV_URL pour afficher les retours.';
+    return;
+  }
+  fetch(SHEET_CSV_URL)
+    .then(function(r) { return r.text(); })
+    .then(function(csv) {
+      allFeedback = parseFeedbackCSV(csv);
+      renderFeedbackFeed();
+      renderModuleBadges();
+    })
+    .catch(function() {
+      document.getElementById('fbFeedEmpty').textContent = 'Impossible de charger les retours.';
+    });
+}
+
+function submitFeedback() {
+  var name = document.getElementById('fbName').value.trim();
+  var module = document.getElementById('fbModule').value;
+  var message = document.getElementById('fbMessage').value.trim();
+  if (!message) { document.getElementById('fbMessage').focus(); return; }
+
+  var entry = { name: name || 'Anonyme', module: module, event: '', source: 'dashboard', message: message, timestamp: new Date().toISOString() };
+
+  if (FEEDBACK_URL) {
+    fetch(FEEDBACK_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry)
+    });
+  }
+
+  // Optimistic local update
+  allFeedback.push(entry);
+  renderFeedbackFeed();
+  renderModuleBadges();
+
+  document.getElementById('fbSuccess').style.display = 'block';
+  document.getElementById('fbMessage').value = '';
+  setTimeout(function() { document.getElementById('fbSuccess').style.display = 'none'; }, 4000);
+}
+
+// Render mock/local feedback immediately, then try loading from Sheet
+renderFeedbackFeed();
+renderModuleBadges();
+
+// Load feedback from Google Sheet (will overwrite mock data when configured)
+loadFeedback();
+
+/* ═══ PROGRESS MORE/LESS ═══ */
+var progressExpanded = false;
+function toggleProgressCards() {
+  var cards = document.getElementById('progressCards');
+  var txt = document.getElementById('progressMoreTxt');
+  progressExpanded = !progressExpanded;
+  if (progressExpanded) {
+    cards.style.display = 'flex';
+    cards.classList.add('stagger-in');
+    var children = cards.children;
+    for (var i = 0; i < children.length; i++) {
+      children[i].style.animationDelay = (i * 150) + 'ms';
+    }
+    txt.textContent = 'Less';
+  } else {
+    cards.style.display = 'none';
+    cards.classList.remove('stagger-in');
+    txt.textContent = 'More';
+  }
+}
+
+var roadmapExpanded = false;
+function toggleRoadmapFull() {
+  var full = document.getElementById('roadmapFull');
+  var txt = document.getElementById('roadmapMoreTxt');
+  roadmapExpanded = !roadmapExpanded;
+  if (roadmapExpanded) {
+    full.style.display = '';
+    txt.textContent = 'Less';
+  } else {
+    full.style.display = 'none';
+    txt.textContent = 'More';
+  }
+}
+
+/* ═══ CHANGELOG MORE/LESS ═══ */
+var clExpanded = false;
+function toggleOlderChangelog() {
+  var older = document.getElementById('clOlder');
+  var txt = document.getElementById('clMoreTxt');
+  var line = document.getElementById('clMoreLine');
+  clExpanded = !clExpanded;
+  if (clExpanded) {
+    older.style.display = '';
+    older.classList.add('stagger-in');
+    var children = older.children;
+    for (var i = 0; i < children.length; i++) {
+      children[i].style.animationDelay = (i * 120) + 'ms';
+    }
+    txt.textContent = 'Less';
+    line.style.transform = 'rotate(180deg)';
+  } else {
+    older.style.display = 'none';
+    older.classList.remove('stagger-in');
+    txt.textContent = 'More';
+    line.style.transform = '';
+  }
+}
+
+/* ═══ FEEDBACK MORE/LESS ═══ */
+var fbExpanded = false;
+function toggleOlderFeedback() {
+  var older = document.getElementById('fbOlder');
+  var txt = document.getElementById('fbMoreTxt');
+  var line = document.getElementById('fbMoreLine');
+  if (!older) return;
+  fbExpanded = !fbExpanded;
+  if (fbExpanded) {
+    older.style.display = '';
+    txt.textContent = 'Less';
+    line.style.transform = 'rotate(180deg)';
+  } else {
+    older.style.display = 'none';
+    txt.textContent = 'More';
+    line.style.transform = '';
+  }
+}
+/* ═══ LOGIN GATE ═══ */
+var PW='festipass';
+var pwUnlocked=sessionStorage.getItem('pw_ok')==='1';
+if(pwUnlocked){document.getElementById('pwGate').style.display='none';document.body.style.overflow='auto';document.body.style.animation='pageIn 1s ease .2s forwards';startMainParticles()}
+else{
+  // Login particles
+  var pc=document.getElementById('pwParticles'),pctx=pc.getContext('2d'),ppts=[],pmx={x:-1e3,y:-1e3},pWW,pHH;
+  function prs(){pWW=pc.width=innerWidth;pHH=pc.height=innerHeight}prs();addEventListener('resize',prs);
+  document.addEventListener('mousemove',function(e){pmx.x=e.clientX;pmx.y=e.clientY});
+  var pcx=pWW/2,pcy=pHH/2,pt0=performance.now();
+  function PPt(){this.tx=Math.random()*pWW;this.ty=Math.random()*pHH;this.x=pcx;this.y=pcy;this.delay=Math.random()*300;var a=Math.random()*Math.PI*2,f=5+Math.random()*10;this.vx=Math.cos(a)*f;this.vy=Math.sin(a)*f;this.r=Math.random()*1.5+.5;this.a=Math.random()*.25+.04;this.born=false;this.s=false;this.trail=[]}
+  PPt.prototype.u=function(){var elapsed=performance.now()-pt0;if(!this.born){if(elapsed>this.delay)this.born=true;else return}if(!this.s){this.vx*=.96;this.vy*=.96;this.x+=this.vx;this.y+=this.vy;this.trail.push({x:this.x,y:this.y});if(this.trail.length>8)this.trail.shift();if(elapsed>600){this.x+=(this.tx-this.x)*.04;this.y+=(this.ty-this.y)*.04}var dx=this.x-this.tx,dy=this.y-this.ty;if(Math.abs(this.vx)<.15&&Math.abs(this.vy)<.15&&Math.sqrt(dx*dx+dy*dy)<3){this.s=true;this.x=this.tx;this.y=this.ty;this.vx=(Math.random()-.5)*.3;this.vy=(Math.random()-.5)*.3;this.trail=[]}}else{this.x+=this.vx;this.y+=this.vy;var dx=this.x-pmx.x,dy=this.y-pmx.y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){var f=(120-d)/120*.8;this.vx+=dx/d*f;this.vy+=dy/d*f}this.vx*=.98;this.vy*=.98;if(this.x<-10)this.x=pWW+10;if(this.x>pWW+10)this.x=-10;if(this.y<-10)this.y=pHH+10;if(this.y>pHH+10)this.y=-10}};
+  PPt.prototype.d=function(){if(!this.born)return;if(!this.s&&this.trail.length>1){for(var i=1;i<this.trail.length;i++){pctx.beginPath();pctx.moveTo(this.trail[i-1].x,this.trail[i-1].y);pctx.lineTo(this.trail[i].x,this.trail[i].y);pctx.strokeStyle='rgba(0,255,170,'+(i/this.trail.length*.15)+')';pctx.lineWidth=.5;pctx.stroke()}}pctx.beginPath();pctx.arc(this.x,this.y,this.r,0,Math.PI*2);pctx.fillStyle='rgba(0,255,170,'+this.a+')';pctx.fill()};
+  var pcnt=Math.min(Math.floor(pWW*pHH/12000),100);for(var i=0;i<pcnt;i++)ppts.push(new PPt());
+  function pdl(){for(var i=0;i<ppts.length;i++){if(!ppts[i].s)continue;for(var j=i+1;j<ppts.length;j++){if(!ppts[j].s)continue;var dx=ppts[i].x-ppts[j].x,dy=ppts[i].y-ppts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<100){pctx.beginPath();pctx.moveTo(ppts[i].x,ppts[i].y);pctx.lineTo(ppts[j].x,ppts[j].y);pctx.strokeStyle='rgba(0,255,170,'+(0.12*(1-d/100))+')';pctx.lineWidth=.5;pctx.stroke()}}}}
+  var pwAnimId;function pan(){pctx.clearRect(0,0,pWW,pHH);for(var i=0;i<ppts.length;i++){ppts[i].u();ppts[i].d()}pdl();pwAnimId=requestAnimationFrame(pan)}pan();
+}
+
+function pwDots(val){
+  var d=document.getElementById('pwDisplay');
+  d.className=val.length?'pw-dots':'pw-placeholder';
+  d.textContent=val.length?'\u25CF'.repeat(val.length):'Mot de passe';
+}
+
+function pwCheck(){
+  var val=document.getElementById('pwInput').value.trim();
+  var error=document.getElementById('pwError');
+  if(!val)return;
+  if(val===PW){
+    sessionStorage.setItem('pw_ok','1');
+    var gate=document.getElementById('pwGate');
+    gate.style.opacity='0';
+    if(typeof pwAnimId!=='undefined')cancelAnimationFrame(pwAnimId);
+    document.body.style.overflow='auto';document.body.style.animation='pageIn 1s ease .2s forwards';startMainParticles();setTimeout(function(){gate.style.display='none';measure()},400);
+  } else {
+    error.textContent='Mot de passe incorrect';
+    document.getElementById('pwInput').value='';
+    pwDots('');
+    var modal=document.getElementById('pwModal');
+    modal.style.animation='none';
+    void modal.offsetHeight;
+    modal.style.animation='pwShake .4s ease';
+    document.getElementById('pwField').style.borderColor='rgba(255,77,77,.4)';
+    setTimeout(function(){
+      error.textContent='';
+      document.getElementById('pwField').style.borderColor='';
+    },2000);
+  }
+}
+
+/* ═══ ADMIN: MARK FEEDBACK AS DONE ═══ */
+function markFbDone(row, btn) {
+  btn.textContent = '…';
+  btn.disabled = true;
+  // Use POST with form-encoded data (works with no-cors)
+  var formData = new FormData();
+  formData.append('action', 'markDone');
+  formData.append('row', row);
+  fetch(FEEDBACK_URL, {
+    method: 'POST', mode: 'no-cors',
+    body: formData
+  });
+  // Optimistic update
+  var entry = allFeedback.find(function(fb) { return fb.row === row; });
+  if (entry) entry.status = 'done';
+  renderFeedbackFeed();
+}
+</script>
+</body>
+</html>

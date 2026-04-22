@@ -1,12 +1,10 @@
 <!--
   Festiflow — Client-Facing Progress Report
-  v5.0.7 — Report reconciliation: deployed content + v5.0.4 code merged.
-  Content: Semaine 17 catch-up (Billetterie v6.4, Festiflow reorg).
-  Code: v5.0.4 unified feedback payload. TODO-LEO URL markers pending
-  Leo's business-account Apps Script redeploy + master sheet creation
-  (coordinated in guide chat post-session).
+  v5.0.8 — Feedback backend operational. FEEDBACK_URL + SHEET_CSV_URL
+  pasted from leonard@ai2k.dev Workspace Apps Script + master sheet.
+  End-to-end feedback flow smoke-tested against live /report.
 
-  Part of Festiflow master zip (festiflow-v5.0.7/). Deployed to:
+  Part of Festiflow master zip (festiflow-v5.0.8/). Deployed to:
   festiflow.studioai2k.com/report (served from studio-ai2k/festiflow repo)
 
   Editorial rules: see ../EDITORIAL_RULES.md.
@@ -844,17 +842,10 @@ otherOpt.textContent = 'Autre';
 fbSelect.appendChild(otherOpt);
 
 /* ═══ FEEDBACK SYSTEM ═══ */
-// v5.0.7 — unified AI2K Feedback backend. Backend being migrated this
-// session from rauchleonard@gmail.com (personal) to a business AI2K
-// Google account. See docs/FEEDBACK_BACKEND.md for setup + schema.
-// Leo replaces these two URLs after Apps Script deployment (§5.3) and
-// CSV publish (§5.4) on the business account — coordinated in the
-// guide chat post-session.
-// TODO-LEO: paste new Apps Script Web App URL here (from deployment §5.3)
-var FEEDBACK_URL = 'https://script.google.com/macros/s/AKfycbyFrUyjXeKXQE7SSVPlC_2pgfAHAVgpuLJxWdI768XQGDssdHe7YOwxx4w0YG2eEFhw/exec';
-// TODO-LEO: paste new festiflow-tab CSV URL here (from publish §5.4).
-// The published URL must be the festiflow tab specifically, NOT entire doc.
-var SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTMV_JDEp3x0sDUMsTW7DBGbwdPW5Tf41MLsbkrO40cWHu71OoUPFqj_8gPVir5x4o6yXpEJ1CpayeI/pub?output=csv';
+// v5.0.8 — unified AI2K Feedback backend, deployed to leonard@ai2k.dev
+// Workspace. See docs/FEEDBACK_BACKEND.md for setup + schema.
+var FEEDBACK_URL = 'https://script.google.com/macros/s/AKfycbzjh1HoKKaVDgcTkEX0-ANKGDyO-uH78oK4qke0GAkrD8OHl-E5mrsKly3MT2WCN5srXA/exec';
+var SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSH2A8GjYqqGhAQ20hWpCbdyhO7rvt08wyvz9B-0ITpMshvbDGnRm554xQBsjcLmQH2HYa2LiphrU0E/pub?gid=75731716&single=true&output=csv';
 
 // Local feedback store (for optimistic display before Sheet syncs)
 var allFeedback = [];

@@ -1,3 +1,19 @@
+<!--
+  Festiflow — Client-Facing Progress Report
+  v5.0.7 — Report reconciliation: deployed content + v5.0.4 code merged.
+  Content: Semaine 17 catch-up (Billetterie v6.4, Festiflow reorg).
+  Code: v5.0.4 unified feedback payload. TODO-LEO URL markers pending
+  Leo's business-account Apps Script redeploy + master sheet creation
+  (coordinated in guide chat post-session).
+
+  Part of Festiflow master zip (festiflow-v5.0.7/). Deployed to:
+  festiflow.studioai2k.com/report (served from studio-ai2k/festiflow repo)
+
+  Editorial rules: see ../EDITORIAL_RULES.md.
+  Content update workflow: see ../MAINTENANCE.md.
+  Scoring methodology: see ../ROADMAP_EVAL.md.
+  Feedback backend setup: see ../docs/FEEDBACK_BACKEND.md.
+-->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -483,6 +499,22 @@ footer{border-top:1px solid var(--brd);padding:36px 0}
 
     <!-- RECENT — last 2 weeks, always visible -->
     <div class="cl-entry">
+      <div class="cl-date">Semaine 17 — 22 avr</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag update">Update</span>Billetterie v6.4 — Anonymisation des CSV de comparaison</h4>
+        <p>Les CSV de comparaison sont désormais anonymisés en amont. Le script a été revu pour travailler uniquement sur des fichiers fusionnés, déposés en base. Renforcement sécurité côté pipeline.</p>
+      </div>
+    </div>
+
+    <div class="cl-entry">
+      <div class="cl-date">Semaine 17 — 22 avr</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag update">Update</span>Festiflow — Réorganisation de l'arborescence</h4>
+        <p>Les dossiers du projet ont été réorganisés pour que tous les liens pointent vers des emplacements cohérents sous festiflow.studioai2k.com.</p>
+      </div>
+    </div>
+
+    <div class="cl-entry">
       <div class="cl-date">Semaine 13 — 17 avr</div>
       <div class="cl-content">
         <h4><span class="cl-tag update">Update</span>Billetterie v6.2 — Navbar BudgetFlow & upload repensé</h4>
@@ -628,7 +660,7 @@ footer{border-top:1px solid var(--brd);padding:36px 0}
 <!-- FOOTER -->
 <footer><div class="C"><div class="fr">
   <p>&copy; 2026 studio AI2K. All rights reserved.</p>
-  <p>Dernière mise à jour : Semaine 13 — 17 avr</p>
+  <p>Dernière mise à jour : Semaine 17 — 22 avr</p>
   <a href="https://ai2k.dev">ai2k.dev</a>
 </div></div></footer>
 
@@ -717,7 +749,7 @@ var MODULES = [
   ]},
 ];
 
-var SHELL_LINK = "festiflow-shell.html";
+var SHELL_LINK = "https://festiflow.studioai2k.com/shell/";
 
 function renderModules() {
   var el = document.getElementById('moduleMap');
@@ -812,10 +844,16 @@ otherOpt.textContent = 'Autre';
 fbSelect.appendChild(otherOpt);
 
 /* ═══ FEEDBACK SYSTEM ═══ */
-// Replace with your Google Apps Script Web App URL (POST endpoint)
+// v5.0.7 — unified AI2K Feedback backend. Backend being migrated this
+// session from rauchleonard@gmail.com (personal) to a business AI2K
+// Google account. See docs/FEEDBACK_BACKEND.md for setup + schema.
+// Leo replaces these two URLs after Apps Script deployment (§5.3) and
+// CSV publish (§5.4) on the business account — coordinated in the
+// guide chat post-session.
+// TODO-LEO: paste new Apps Script Web App URL here (from deployment §5.3)
 var FEEDBACK_URL = 'https://script.google.com/macros/s/AKfycbyFrUyjXeKXQE7SSVPlC_2pgfAHAVgpuLJxWdI768XQGDssdHe7YOwxx4w0YG2eEFhw/exec';
-// Replace with your Google Sheet ID — the sheet must be "published to web" for reading
-// Go to File > Share > Publish to web > select Sheet1 > CSV
+// TODO-LEO: paste new festiflow-tab CSV URL here (from publish §5.4).
+// The published URL must be the festiflow tab specifically, NOT entire doc.
 var SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTMV_JDEp3x0sDUMsTW7DBGbwdPW5Tf41MLsbkrO40cWHu71OoUPFqj_8gPVir5x4o6yXpEJ1CpayeI/pub?output=csv';
 
 // Local feedback store (for optimistic display before Sheet syncs)
@@ -961,7 +999,21 @@ function submitFeedback() {
   var message = document.getElementById('fbMessage').value.trim();
   if (!message) { document.getElementById('fbMessage').focus(); return; }
 
-  var entry = { name: name || 'Anonyme', module: module, event: '', source: 'dashboard', message: message, timestamp: new Date().toISOString() };
+  // v5.0.4: payload carries both canonical 08 §4 fields AND legacy fields.
+  // The unified Apps Script accepts both. Legacy fields (event, source)
+  // stay until the shared widget retrofit per 08 §11.
+  var entry = {
+    project: 'festiflow',
+    context: 'report',
+    module: module,
+    name: name || 'Anonyme',
+    message: message,
+    timestamp: new Date().toISOString(),
+    userAgent: navigator.userAgent || '',
+    url: window.location.href || '',
+    event: '',
+    source: 'dashboard'
+  };
 
   if (FEEDBACK_URL) {
     fetch(FEEDBACK_URL, {

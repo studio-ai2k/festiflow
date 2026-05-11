@@ -1,10 +1,15 @@
 <!--
   Festiflow — Client-Facing Progress Report
-  v5.0.8 — Feedback backend operational. FEEDBACK_URL + SHEET_CSV_URL
-  pasted from leonard@ai2k.dev Workspace Apps Script + master sheet.
-  End-to-end feedback flow smoke-tested against live /report.
+  v5.1.5 — Major refresh. Narrative shifted to V1 standalone focus
+  (BudgetFlow + Module Dates shell + Régul + Templates + Restructure
+  Générale + Auth + Postgres). Pipeline restructured 8 steps → 6 steps
+  with V1 as destination; SaaS moved from pipeline to closing text card
+  aside. Sessions Briefing (Geoffrey trip mai 2026) added as 100%-complete
+  step. Pre-pivot narrative cleared (Vision SaaS · Architecture 20 modules
+  · Design React · Hetzner FastAPI). Briefs Budget section dropped.
+  Source-only refresh; deployed surface update separate.
 
-  Part of Festiflow master zip (festiflow-v5.0.8/). Deployed to:
+  Part of Festiflow master zip (festiflow-v5.1.5/). Deployed to:
   festiflow.studioai2k.com/report (served from studio-ai2k/festiflow repo)
 
   Editorial rules: see ../EDITORIAL_RULES.md.
@@ -143,7 +148,7 @@ nav.scrolled .nav-left,nav.scrolled .nav-right{opacity:1;pointer-events:auto}
 .pipe-line{position:absolute;top:24px;left:4%;right:4%;height:1px;background:var(--brd)}
 .pipe-line-fill{position:absolute;top:24px;left:4%;right:4%;height:1px;background:var(--acc);transform:scaleX(0);transform-origin:left;transition:transform 1.2s cubic-bezier(.16,1,.3,1)}
 .pipeline.vis .pipe-line-fill{transform:scaleX(.33)}
-.pipe-steps{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;position:relative;z-index:2}
+.pipe-steps{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;position:relative;z-index:2}
 .pipe-step{text-align:center}
 .pipe-dot{width:48px;height:48px;border-radius:50%;border:2px solid var(--brd);background:rgba(5,6,8,.8);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-family:var(--mono);font-size:9px;font-weight:600;color:var(--t3);transition:all .4s}
 .pipe-step:hover .pipe-dot{border-color:var(--acc);color:var(--acc);box-shadow:0 0 20px var(--adim),0 0 40px var(--aglow)}
@@ -161,8 +166,6 @@ nav.scrolled .nav-left,nav.scrolled .nav-right{opacity:1;pointer-events:auto}
 .fly-steps.vis .pipe-step:nth-child(4){transition-delay:.34s}
 .fly-steps.vis .pipe-step:nth-child(5){transition-delay:.42s}
 .fly-steps.vis .pipe-step:nth-child(6){transition-delay:.50s}
-.fly-steps.vis .pipe-step:nth-child(7){transition-delay:.58s}
-.fly-steps.vis .pipe-step:nth-child(8){transition-delay:.66s}
 
 /* ═══ CHANGELOG ═══ */
 .changelog{margin-top:64px;display:flex;flex-direction:column;gap:0}
@@ -336,9 +339,9 @@ footer{border-top:1px solid var(--brd);padding:36px 0}
   <div class="hal"></div>
   <div class="C"><div class="hc">
     <div class="hero-ghost" id="hGhost">studio AI2K</div>
-    <p class="he">Rapport d'avancement — Avril 2026</p>
+    <p class="he">Rapport d'avancement — Mai 2026</p>
     <h2 class="hero-headline">Festiflow — suivi <em>projet.</em></h2>
-    <p class="hs">Suite de gestion événementielle pour Madame Loyal Festivals. Application web unifiée — proof of concept en interne, puis lancement en tant que produit SaaS vertical pour l'industrie événementielle.</p>
+    <p class="hs">Focus actuel : BudgetFlow V1 standalone · 4 semaines de build pour livrer l'outil cœur opérationnel à Madame Loyal.</p>
     <div class="hero-meta">
       <div class="hero-meta-item"><span class="val" id="kpiTotal">—</span><span class="lbl">Modules total</span></div>
       <div class="hero-meta-item"><span class="val" style="color:var(--acc)" id="kpiLive">—</span><span class="lbl">Opérationnels</span></div>
@@ -355,7 +358,7 @@ footer{border-top:1px solid var(--brd);padding:36px 0}
     <p class="slb">Progress</p>
     <h2 class="st">Où en <em>est-on.</em></h2>
   </div>
-  <p class="rv" style="font-size:15px;color:var(--t2);line-height:1.75;max-width:640px;margin-top:32px">Festiflow est né d'outils isolés construits pour Madame Loyal. L'objectif : une plateforme unifiée, d'abord en interne, puis en SaaS pour l'industrie événementielle.</p>
+  <p class="rv" style="font-size:15px;color:var(--t2);line-height:1.75;max-width:640px;margin-top:32px">Festiflow est né d'outils isolés construits pour Madame Loyal. L'approche a évolué : plutôt qu'une plateforme unifiée lointaine, des modules standalone qui mûrissent à leur rythme — BudgetFlow V1 en premier.</p>
 
   <div id="progressCards" style="display:none;margin-top:32px;flex-direction:column;gap:16px">
 
@@ -367,25 +370,14 @@ footer{border-top:1px solid var(--brd);padding:36px 0}
 
     <div class="rv" style="background:rgba(25,30,40,.6);border:1px solid rgba(255,255,255,.06);border-radius:6px;padding:32px 28px">
       <div class="si" style="color:var(--amb);background:var(--ambdim);border-color:rgba(255,184,77,.15)">Phase actuelle</div>
-      <h3 style="font-size:18px;font-weight:800;letter-spacing:-.5px;margin-bottom:12px">Design React — module par module</h3>
-      <p style="font-size:15px;color:var(--t2);line-height:1.75;margin-bottom:16px">Chaque module est designé en React avec le design system Festiflow avant d'être migré sur le serveur. Le shell (navigation, structure, composants de base) est en cours de finalisation. Le Budget sera le premier module à passer en design React complet, suivi des Contacts. Les modules restants seront designés progressivement — certains migreront vers le serveur en parallèle dès que l'infrastructure sera prête.</p>
-      <p style="font-size:15px;color:var(--t2);line-height:1.75">Cette approche permet au CEO de valider chaque module visuellement et fonctionnellement avant le développement serveur — pas de surprises à la livraison.</p>
+      <h3 style="font-size:18px;font-weight:800;letter-spacing:-.5px;margin-bottom:12px">BudgetFlow V1 — premier module en production</h3>
+      <p style="font-size:15px;color:var(--t2);line-height:1.75">BudgetFlow standalone V1 est le module qui se construit actuellement. Backend Postgres sur Railway, auth Google OAuth + magic-link, intégration Qonto native, workflow consolidé pour Chloé et les chefs de pôle. Première version utilisable au quotidien par toute l'équipe Madame Loyal.</p>
     </div>
 
     <div class="rv" style="background:rgba(25,30,40,.6);border:1px solid rgba(255,255,255,.06);border-radius:6px;padding:32px 28px">
       <div class="si" style="color:var(--t2);background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)">Migration serveur</div>
-      <h3 style="font-size:18px;font-weight:800;letter-spacing:-.5px;margin-bottom:12px">C'est là que tout prend vie</h3>
-      <p style="font-size:15px;color:var(--t2);line-height:1.75;margin-bottom:16px">La phase design produit l'interface — la migration serveur est là où le vrai travail d'ingénierie commence. Chaque module designé doit être connecté à une infrastructure réelle : création des bases de données, définition des schémas, construction des APIs, connexion entre modules. Un contact saisi dans le Registre doit apparaître dans le Catering, le Transport et l'Hébergement — ça implique des relations de données, des endpoints partagés et une logique métier qui relie tout.</p>
-      <p style="font-size:15px;color:var(--t2);line-height:1.75;margin-bottom:16px">Le travail se fait module par module, étape par étape. Le Budget sera le premier à être opérationnel sur le serveur — base de données, API, import Qonto automatisé, données réelles. Les Contacts suivront comme fondation partagée. Puis chaque nouveau module se branche sur l'existant, partageant les mêmes bases de données et communiquant via des APIs internes. Les standalones HTML actuels seront progressivement remplacés par leurs versions React connectées.</p>
-
-      <div style="font-family:var(--mono);font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">Stack technique</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:13px;font-weight:600;color:var(--t1)">Frontend</span><span style="font-size:12px;color:var(--t3)">React 18, Vite, Tailwind CSS, shadcn/ui, Framer Motion</span></div>
-        <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:13px;font-weight:600;color:var(--t1)">Backend</span><span style="font-size:12px;color:var(--t3)">Python, FastAPI, SQLAlchemy, Alembic</span></div>
-        <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:13px;font-weight:600;color:var(--t1)">Database</span><span style="font-size:12px;color:var(--t3)">PostgreSQL — multi-tenant ready</span></div>
-        <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:13px;font-weight:600;color:var(--t1)">Serveur</span><span style="font-size:12px;color:var(--t3)">Hetzner VPS, Ubuntu 24.04, Nginx, SSL</span></div>
-        <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:13px;font-weight:600;color:var(--t1)">UI</span><span style="font-size:12px;color:var(--t3)">TanStack Table + Query, Recharts, Zod, React Hook Form</span></div>
-      </div>
+      <h3 style="font-size:18px;font-weight:800;letter-spacing:-.5px;margin-bottom:12px">Chaque module à son rythme</h3>
+      <p style="font-size:15px;color:var(--t2);line-height:1.75">Chaque module Festiflow évolue indépendamment, à son propre rythme, avec sa propre base de code et son propre déploiement. BudgetFlow d'abord parce que c'est le plus mûr et le plus utilisé au quotidien. Module Dates suit comme shell qui orchestre les events. Les autres modules (Demande d'Achat, App Partenaires, Suivi Ticketing) viendront ensuite, chacun connecté aux autres via APIs internes mais déployé de façon autonome. Plus de monolithe unifié — une approche modulaire qui permet à chaque outil de mûrir sans bloquer les autres.</p>
     </div>
 
   </div>
@@ -396,8 +388,8 @@ footer{border-top:1px solid var(--brd);padding:36px 0}
 <section id="modules"><div class="C">
   <div class="rv">
     <p class="slb">Modules</p>
-    <h2 class="st"><span id="moduleHeadingCount">19</span> modules, une seule <em>application.</em></h2>
-    <p class="ss">Chaque module est cliquable. Les liens s'activent au fur et à mesure du développement — chaque module designé en React est répliqué en HTML interactif pour review. Les standalones renvoient vers les outils en production.</p>
+    <h2 class="st">BudgetFlow V1 · <em>4 semaines.</em></h2>
+    <p class="ss">Build · Tests · Opérationnel · Itération. Une livraison concrète plutôt qu'une vision lointaine.</p>
   </div>
   <div id="moduleMap" style="margin-top:64px"></div>
 </div></section>
@@ -407,23 +399,21 @@ footer{border-top:1px solid var(--brd);padding:36px 0}
   <div class="rv">
     <p class="slb">Roadmap</p>
     <h2 class="st">Le chemin vers le <em>produit.</em></h2>
-    <p class="ss" style="margin-top:8px">8 phases — de la validation terrain au lancement SaaS.</p>
+    <p class="ss" style="margin-top:8px">6 phases — vers la V1 standalone opérationnelle.</p>
   </div>
 
   <!-- SLIM BAR — always visible -->
   <div class="rv" style="margin-top:32px">
     <div style="display:flex;gap:4px;margin-bottom:6px">
-      <div style="flex:1;height:6px;background:var(--acc);border-radius:3px" title="Standalones 100%"></div>
-      <div style="flex:1;height:6px;background:var(--acc);border-radius:3px" title="Vision SaaS 100%"></div>
-      <div style="flex:1;height:6px;background:rgba(0,255,170,.5);border-radius:3px" title="Spécifications 60%"></div>
-      <div style="flex:1;height:6px;background:rgba(0,255,170,.15);border-radius:3px" title="Design React 5%"></div>
-      <div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px" title="Serveur 0%"></div>
-      <div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px" title="Intégration 0%"></div>
-      <div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px" title="Déploiement ML 0%"></div>
-      <div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px" title="SaaS 0%"></div>
+      <div style="flex:1;height:6px;background:var(--acc);border-radius:3px" title="Fondation opérationnelle 100%"></div>
+      <div style="flex:1;height:6px;background:var(--acc);border-radius:3px" title="Vision architecture 100%"></div>
+      <div style="flex:1;height:6px;background:var(--acc);border-radius:3px" title="Sessions Briefing 100%"></div>
+      <div style="flex:1;height:6px;background:rgba(0,255,170,.20);border-radius:3px" title="V1 Build 5%"></div>
+      <div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px" title="V1 Tests 0%"></div>
+      <div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px" title="V1 Opérationnel 0%"></div>
     </div>
     <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--t3);letter-spacing:.5px">
-      <span>Standalones</span><span>Specs</span><span>React</span><span>Serveur</span><span>SaaS</span>
+      <span>Fondation</span><span>Architecture</span><span>Briefing</span><span>Build</span><span>Tests</span><span>Opérationnel</span>
     </div>
   </div>
 
@@ -432,26 +422,34 @@ footer{border-top:1px solid var(--brd);padding:36px 0}
     <div class="pipeline fly-steps">
       <div class="pipe-line"></div><div class="pipe-line-fill"></div>
       <div class="pipe-steps">
-        <div class="pipe-step done"><div class="pipe-dot">100%</div><h3>Standalones</h3><p>Outils HTML opérationnels — Billetterie, Budget, Médias. Proof of concept terrain.</p></div>
-        <div class="pipe-step done"><div class="pipe-dot">100%</div><h3>Vision SaaS</h3><p>Décision de construire une plateforme unifiée. Architecture 19 modules définie.</p></div>
-        <div class="pipe-step active"><div class="pipe-dot">60%</div><h3>Spécifications</h3><p>Brief technique par module en cours. Audit de cohérence. Design system et tokens définis.</p></div>
-        <div class="pipe-step active"><div class="pipe-dot">5%</div><h3>Design React</h3><p>Shell en cours. Budget en priorité, puis Contacts. Modules designés progressivement.</p></div>
-        <div class="pipe-step"><div class="pipe-dot">0%</div><h3>Serveur</h3><p>Infrastructure Hetzner, FastAPI, PostgreSQL. Budget premier module en production.</p></div>
-        <div class="pipe-step"><div class="pipe-dot">0%</div><h3>Intégration</h3><p>Migration des standalones. Données réelles. Multi-événement. Accès par rôle.</p></div>
-        <div class="pipe-step"><div class="pipe-dot">0%</div><h3>Déploiement ML</h3><p>Test en conditions réelles avec l'équipe Madame Loyal. Retours terrain, ajustements, validation.</p></div>
-        <div class="pipe-step"><div class="pipe-dot">0%</div><h3>SaaS</h3><p>Multi-tenant, onboarding, commercialisation. Festiflow devient un produit.</p></div>
+        <div class="pipe-step done"><div class="pipe-dot">100%</div><h3>Fondation opérationnelle</h3><p>Outils HTML standalone livrés — BudgetFlow, Billetterie, Médias. Proof of concept terrain sur cas réels.</p></div>
+        <div class="pipe-step done"><div class="pipe-dot">100%</div><h3>Vision architecture</h3><p>Pivot vers umbrella program : standalones par module, déploiement indépendant, communication via APIs internes.</p></div>
+        <div class="pipe-step done"><div class="pipe-dot">100%</div><h3>Sessions Briefing</h3><p>3 sessions de travail avec Geoffrey (mai 2026) — scope V1 verrouillé, ordre post-V1 acté, features killed décidées.</p></div>
+        <div class="pipe-step active"><div class="pipe-dot">5%</div><h3>V1 Build</h3><p>BudgetFlow consolidé + Régul Inter-Sociétés + Banque de Templates + Restructure Générale + Module Dates shell + Auth + Migration Postgres sur Railway.</p></div>
+        <div class="pipe-step"><div class="pipe-dot">0%</div><h3>V1 Tests</h3><p>Semaine de tests avec Madame Loyal sur cas réels (factures, Qonto, DA, partenaires).</p></div>
+        <div class="pipe-step"><div class="pipe-dot">0%</div><h3>V1 Opérationnel</h3><p>Utilisation quotidienne par Geoffrey, Chloé, chefs de pôle. Premier module en production sérieuse.</p></div>
       </div>
     </div>
   </div>
 
   <div class="more-indicator rv" onclick="toggleRoadmapFull()"><span id="roadmapMoreTxt">More</span><div class="shl"></div></div>
+</div></section>
 
-  <div style="margin-top:48px;padding:32px 28px;background:rgba(25,30,40,.6);border:1px solid rgba(255,255,255,.06);border-radius:6px">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-      <span style="font-family:var(--mono);font-size:11px;color:var(--acc);background:var(--adim);border:1px solid rgba(0,255,170,.15);padding:5px 14px;letter-spacing:1.5px;text-transform:uppercase">Prochaine livraison</span>
-    </div>
-    <h3 style="font-size:18px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px">Intégration des pages complémentaires Budget</h3>
-    <p style="font-size:14px;color:var(--t2);line-height:1.75;max-width:560px">Les pages Fiche événement et Documents ont été prototypées cette semaine. Prochaine étape : intégration dans les sessions Budget existantes.</p>
+<!-- AFTER V1 -->
+<section id="next"><div class="C">
+  <div class="rv">
+    <p class="slb">Next</p>
+    <h2 class="st">Et après la <em>V1 ?</em></h2>
+  </div>
+  <div class="rv" style="margin-top:32px;max-width:720px">
+    <p style="font-size:15px;color:var(--t2);line-height:1.75;margin-bottom:16px">Une fois la V1 opérationnelle, le focus se déplace vers la <strong style="color:var(--t1)">V2</strong> — modules complémentaires construits dans l'ordre acté pendant les sessions briefing :</p>
+    <ul style="font-size:15px;color:var(--t2);line-height:1.75;margin-bottom:24px;padding-left:24px">
+      <li><strong style="color:var(--t1)">Demande d'Achat</strong> — workflow Chloé + chefs de pôle, gate de validation</li>
+      <li><strong style="color:var(--t1)">App Partenaires</strong> — input Margot, queue partenaires → Générale-Sponsors</li>
+      <li><strong style="color:var(--t1)">Suivi Ticketing enrichi</strong> — intégration Billetterie standalone</li>
+    </ul>
+    <p style="font-size:15px;color:var(--t2);line-height:1.75;margin-bottom:16px">Cette page sera réécrite à ce moment-là pour suivre la V2 comme elle suit la V1 aujourd'hui.</p>
+    <p style="font-size:15px;color:var(--t2);line-height:1.75">La vision long-terme reste une plateforme <strong style="color:var(--t1)">multi-organisations (SaaS)</strong> pour ouvrir Festiflow à d'autres producteurs au-delà de Madame Loyal — à définir quand le temps viendra, après que la V2 ait fait ses preuves terrain.</p>
   </div>
 </div></section>
 
@@ -497,6 +495,30 @@ footer{border-top:1px solid var(--brd);padding:36px 0}
 
     <!-- RECENT — last 2 weeks, always visible -->
     <div class="cl-entry">
+      <div class="cl-date">Semaine 19 — 10 mai</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag update">Update</span>Sessions Briefing · scope V1 verrouillé</h4>
+        <p>3 sessions de travail (5–7 mai 2026, mardi à jeudi) avec Geoffrey, Madame Loyal. Architecture V1 verrouillée : BudgetFlow consolidé (les 4 HTML actuels en 1 app) + Régul Inter-Sociétés en mode minimal + Banque de Templates en mode "complete template" + Restructure de la Générale (12 mois × 10 catégories) + Module Dates shell + Auth Google OAuth + magic-link + Migration backend Postgres sur Railway. Ordre post-V1 acté : Demande d'Achat → App Partenaires → Suivi Ticketing. Features killed : Rappels Auto, Coproduction tracking, Mode ratios templates. Synthèse complète envoyée à Madame Loyal.</p>
+      </div>
+    </div>
+
+    <div class="cl-entry">
+      <div class="cl-date">Semaine 18 — 28 avr</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag new">New</span>Budget — Pages Fiche événement et Factures intégrées</h4>
+        <p>Pages complémentaires Fiche événement et Factures maintenant disponibles sur les sessions Paris XXL, EPK et Bordeaux. Liste des Factures également disponible sur la session Générale.</p>
+      </div>
+    </div>
+
+    <div class="cl-entry">
+      <div class="cl-date">Semaine 18 — 28 avr</div>
+      <div class="cl-content">
+        <h4><span class="cl-tag update">Update</span>Festiflow — Cadre méthodologique adapté à l'échelle du projet</h4>
+        <p>Le cadre méthodologique AI2K a été adapté à l'échelle Festiflow — discipline interne renforcée (suivi des décisions, versioning, état du projet) pour soutenir la croissance et la maturité du tooling.</p>
+      </div>
+    </div>
+
+    <div class="cl-entry">
       <div class="cl-date">Semaine 17 — 22 avr</div>
       <div class="cl-content">
         <h4><span class="cl-tag update">Update</span>Billetterie v6.4 — Anonymisation des CSV de comparaison</h4>
@@ -511,6 +533,11 @@ footer{border-top:1px solid var(--brd);padding:36px 0}
         <p>Les dossiers du projet ont été réorganisés pour que tous les liens pointent vers des emplacements cohérents sous festiflow.studioai2k.com.</p>
       </div>
     </div>
+
+  </div>
+
+  <!-- OLDER — hidden by default -->
+  <div class="changelog" id="clOlder" style="display:none">
 
     <div class="cl-entry">
       <div class="cl-date">Semaine 13 — 17 avr</div>
@@ -551,11 +578,6 @@ footer{border-top:1px solid var(--brd);padding:36px 0}
         <p>Refonte complète de l'interface : nouveau système de navigation, tables simplifiées (HT uniquement, TVA en drawer). Système "À Trier" pour les transactions incertaines. Linking des recettes. Assign searchable optimisé iPad. Import Qonto incrémental avec matching intelligent. 6 bugs critiques corrigés (cache, préfixes, ghost lines). Optimisé mobile pour iPhone 17 Pro Max — dis-moi quel téléphone tu utilises pour optimiser le tien.</p>
       </div>
     </div>
-
-  </div>
-
-  <!-- OLDER — hidden by default -->
-  <div class="changelog" id="clOlder" style="display:none">
 
     <div class="cl-entry">
       <div class="cl-date">Semaine 5 — 7 avr</div>
@@ -658,7 +680,7 @@ footer{border-top:1px solid var(--brd);padding:36px 0}
 <!-- FOOTER -->
 <footer><div class="C"><div class="fr">
   <p>&copy; 2026 studio AI2K. All rights reserved.</p>
-  <p>Dernière mise à jour : Semaine 17 — 22 avr</p>
+  <p>Dernière mise à jour : Semaine 19 — 10 mai · v5.1.5</p>
   <a href="https://ai2k.dev">ai2k.dev</a>
 </div></div></footer>
 
@@ -717,7 +739,7 @@ var MODULES = [
   ]},
   { section: "Finance", items: [
     { name: "Billetterie", status: "live", desc: "v6.2 — Navbar BudgetFlow intégrée, page Détails événement, upload repensé avec session switcher, corrections graphiques revenue & vélocité. Pipeline multi-événement opérationnel.", links: [{label:"Bordeaux",url:"https://madameloyal.github.io/festiflow/bordeaux.html"},{label:"EPK",url:"https://madameloyal.github.io/festiflow/epk.html"},{label:"Upload CSV",url:"https://madameloyal.github.io/festiflow/upload.html"}], standalone: true },
-    { name: "Budget", status: "live", desc: "v3.3 — 4 sessions opérationnelles, toggle Mensuel/Annuel, récurrence par ligne, import sécurisé, matching intelligent. Session Générale en place — structure prête, en attente de retours.", links: [{label:"Paris XXL",url:"https://madameloyal.github.io/budgetflow/budget_pa.html"},{label:"Bordeaux",url:"https://madameloyal.github.io/budgetflow/budget_bdx.html"},{label:"EPK",url:"https://madameloyal.github.io/budgetflow/budget_epk.html"},{label:"Générale",url:"https://madameloyal.github.io/budgetflow/budget_general.html"}], priority: true, standalone: true },
+    { name: "Budget", status: "live", desc: "v3.3 — 4 sessions opérationnelles, toggle Mensuel/Annuel, récurrence par ligne, import sécurisé, matching intelligent. Pages Fiche événement et Factures intégrées sur Paris XXL, EPK et Bordeaux. Liste des Factures également disponible sur Générale.", links: [{label:"Paris XXL",url:"https://madameloyal.github.io/budgetflow/budget_pa.html"},{label:"Bordeaux",url:"https://madameloyal.github.io/budgetflow/budget_bdx.html"},{label:"EPK",url:"https://madameloyal.github.io/budgetflow/budget_epk.html"},{label:"Générale",url:"https://madameloyal.github.io/budgetflow/budget_general.html"}], priority: true, standalone: true },
     { name: "Demande d'Achat", status: "planned", desc: "Demandes d'achat & abonnements — formulaire employé, validation CEO, sync Budget.", link: "" },
     { name: "Partenaires", status: "planned", desc: "CRM sponsors — pipeline, contrats, contreparties, rapport post-event.", link: "" },
   ]},
@@ -824,7 +846,6 @@ var plannedModules = allItems.filter(function(m) { return m.status === 'planned'
 document.getElementById('kpiTotal').textContent = totalModules;
 document.getElementById('kpiLive').textContent = liveModules;
 document.getElementById('kpiPlanned').textContent = plannedModules;
-document.getElementById('moduleHeadingCount').textContent = totalModules;
 
 // Populate feedback module dropdown dynamically
 var fbSelect = document.getElementById('fbModule');

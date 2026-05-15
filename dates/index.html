@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Festiflow — Événements</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     TOP PROGRAM NAV (.pnav) — cross-module program-level navigation
+     Soft-locked design system extension this ship. See DESIGN_LOG.md.
+     ════════════════════════════════════════════════════════════════════ -->
+<header class="pnav">
+  <div class="pnav-inner">
+    <a class="pnav-brand" href="#/liste">Festiflow</a>
+
+    <a class="pnav-item on" href="#/liste">Événements</a>
+
+    <!-- BudgetFlow link points to legacy hosted URL until v5.2.x repo merge.
+         Per ADR-0009 §single-repo path-based deploy, future path is /budget/. -->
+    <a class="pnav-item" href="https://madameloyal.github.io/budgetflow/" target="_blank" rel="noopener">BudgetFlow</a>
+
+    <span class="pnav-item pl">Admin</span>
+    <span class="pnav-item pl">Demande d'Achat</span>
+    <span class="pnav-item pl">Partenaires</span>
+
+    <span class="pnav-spacer"></span>
+
+    <!-- Session switcher — persistent, hash-router-aware via ?session= -->
+    <div class="sw" id="sw">
+      <button class="sw-btn" id="sw-btn" type="button" aria-haspopup="listbox" aria-expanded="false">
+        <span class="sw-btn-label">Session</span>
+        <span class="sw-btn-name" id="sw-btn-name">—</span>
+        <svg class="sw-btn-chev" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+          <path d="M2 4 L5 7 L8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="sw-menu" id="sw-menu" role="listbox">
+        <!-- Options injected by app.js from MD.getEvents() filtered to non-sandbox active events + Générale -->
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     LOWER MODULE NAV (.mnav) — Module Dates sub-surfaces
+     Liste · Calendrier · Templates · Anciens
+     ════════════════════════════════════════════════════════════════════ -->
+<nav class="mnav">
+  <div class="mnav-inner">
+    <a class="mnav-item on" href="#/liste" data-route="liste">Liste</a>
+    <a class="mnav-item" href="#/calendrier" data-route="calendrier">Calendrier</a>
+    <a class="mnav-item" href="#/templates" data-route="templates">Templates</a>
+    <a class="mnav-item" href="#/anciens" data-route="anciens">Anciens</a>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     PAGES — only one .page.on at a time; router toggles
+     ════════════════════════════════════════════════════════════════════ -->
+<main class="wrap">
+
+  <!-- ── LISTE (default view) ─────────────────────────────────────────── -->
+  <section class="page on" id="page-liste" data-route="liste">
+    <div class="page-hdr">
+      <div>
+        <h1 class="page-title">Événements</h1>
+        <p class="page-sub">Tous les événements actifs et à venir.</p>
+      </div>
+      <button class="btn primary" id="btn-new-event" type="button">+ Nouvel événement</button>
+    </div>
+
+    <!-- Filter chip row + sandbox toggle.
+         Chip filters: À venir / En cours / Passés (mutually exclusive set; default À venir).
+         Sandbox toggle: OFF by default (Leo-pending decision logged in DESIGN_LOG #4 sandbox-toggle). -->
+    <div class="echip-row" id="echip-row">
+      <button class="echip on" data-filter="upcoming" type="button">À venir</button>
+      <button class="echip" data-filter="live" type="button">En cours</button>
+      <button class="echip" data-filter="past" type="button">Passés</button>
+
+      <span class="echip-sep" aria-hidden="true"></span>
+
+      <button class="stog" id="sandbox-toggle" type="button" aria-pressed="false">
+        <span class="stog-dot"></span>
+        <span>Afficher les sandbox</span>
+      </button>
+    </div>
+
+    <!-- Event card grid — populated by app.js from MD.getEvents() -->
+    <div class="egrid" id="egrid-liste">
+      <!-- Cards injected by app.js -->
+    </div>
+
+    <!-- Empty state — shown when filtered set is empty -->
+    <div class="empty-state" id="empty-liste" hidden>
+      <p>Aucun événement à afficher pour ce filtre.</p>
+    </div>
+  </section>
+
+  <!-- ── CALENDRIER ────────────────────────────────────────────────────── -->
+  <section class="page" id="page-calendrier" data-route="calendrier">
+    <div class="page-hdr">
+      <div>
+        <h1 class="page-title">Calendrier</h1>
+        <p class="page-sub">Vue chronologique des événements à venir et en cours.</p>
+      </div>
+      <button class="btn primary" id="btn-new-event-cal" type="button">+ Nouvel événement</button>
+    </div>
+
+    <div class="ecal" id="ecal">
+      <!-- Month groups injected by app.js -->
+    </div>
+
+    <div class="empty-state" id="empty-cal" hidden>
+      <p>Aucun événement programmé.</p>
+    </div>
+  </section>
+
+  <!-- ── TEMPLATES ────────────────────────────────────────────────────── -->
+  <section class="page" id="page-templates" data-route="templates">
+    <div class="page-hdr">
+      <div>
+        <h1 class="page-title">Templates</h1>
+        <p class="page-sub">
+          Modèles d'événements sauvegardés. Sourcés depuis BudgetFlow.
+          <span class="page-sub-note">V1 : surface de lecture uniquement, création depuis la fiche événement.</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="tpl-list" id="tpl-list">
+      <!-- Template cards injected by app.js -->
+    </div>
+
+    <div class="empty-state" id="empty-tpl" hidden>
+      <p>Aucun template enregistré pour l'instant.</p>
+      <p class="empty-state-hint">Pour créer un template, ouvre un événement et clique sur « Sauvegarder comme template ».</p>
+    </div>
+  </section>
+
+  <!-- ── ANCIENS ──────────────────────────────────────────────────────── -->
+  <section class="page" id="page-anciens" data-route="anciens">
+    <div class="page-hdr">
+      <div>
+        <h1 class="page-title">Événements passés</h1>
+        <p class="page-sub">Archive des éditions précédentes.</p>
+      </div>
+    </div>
+
+    <div class="egrid" id="egrid-anciens">
+      <!-- Past event cards injected by app.js -->
+    </div>
+
+    <div class="empty-state" id="empty-anciens" hidden>
+      <p>Aucun événement passé.</p>
+    </div>
+  </section>
+
+</main>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     EVENT CREATE / EDIT MODAL
+     Per session-open decision (DESIGN_LOG): modal-within-index.html for v0.1.0
+     mockup phase. Form structure follows briefs/evenements.md §4 ten-section
+     layout. Validation contract per brief §11.
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="emodal-overlay" id="emodal-overlay" hidden>
+  <div class="emodal" id="emodal" role="dialog" aria-modal="true" aria-labelledby="emodal-title">
+    <header class="emodal-hdr">
+      <h2 class="emodal-title" id="emodal-title">Nouvel événement</h2>
+      <button class="emodal-close" id="emodal-close" type="button" aria-label="Fermer">
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+          <path d="M2 2 L12 12 M12 2 L2 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </header>
+
+    <div class="emodal-body">
+      <form id="event-form" novalidate>
+
+        <!-- ── §1 IDENTITÉ ──────────────────────────────────────────── -->
+        <fieldset class="efs">
+          <legend class="efs-title">Identité</legend>
+          <div class="efs-grid">
+            <div class="efld efs-grid-full">
+              <label class="efld-label req" for="f-name">Nom de l'événement</label>
+              <input type="text" id="f-name" name="name" required maxlength="200" autocomplete="off">
+              <p class="efld-err" data-err-for="name" hidden></p>
+            </div>
+
+            <!-- Sandbox toggle = boolean flag per SCHEMA #2 resolution.
+                 When ON, all validation requirements drop except `name`. -->
+            <div class="efld efld-sandbox efs-grid-full" id="f-sandbox-wrap">
+              <label class="efld-check">
+                <input type="checkbox" id="f-sandbox" name="is_sandbox">
+                <span>Sandbox — événement-test, échappe à la validation et n'est pas compté dans les KPIs.</span>
+              </label>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- ── §2 LIEU ──────────────────────────────────────────────── -->
+        <fieldset class="efs">
+          <legend class="efs-title">Lieu</legend>
+          <div class="efs-grid">
+            <div class="efld">
+              <label class="efld-label req" for="f-country">Pays</label>
+              <input type="text" id="f-country" name="country" maxlength="60" placeholder="France">
+              <p class="efld-err" data-err-for="country" hidden></p>
+            </div>
+            <div class="efld">
+              <label class="efld-label req" for="f-city">Ville</label>
+              <input type="text" id="f-city" name="city" maxlength="100" placeholder="Paris">
+              <p class="efld-err" data-err-for="city" hidden></p>
+            </div>
+            <div class="efld">
+              <label class="efld-label" for="f-venue">Lieu (salle / parc)</label>
+              <input type="text" id="f-venue" name="venue" maxlength="200">
+              <p class="efld-hint">Optionnel.</p>
+            </div>
+            <div class="efld">
+              <label class="efld-label" for="f-address">Adresse</label>
+              <input type="text" id="f-address" name="address" maxlength="300">
+              <p class="efld-hint">Optionnel.</p>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- ── §3 DATES ─────────────────────────────────────────────── -->
+        <fieldset class="efs">
+          <legend class="efs-title">Dates</legend>
+          <div class="efs-grid">
+            <div class="efld">
+              <label class="efld-label req" for="f-start-date">Date de début</label>
+              <input type="date" id="f-start-date" name="start_date">
+              <p class="efld-err" data-err-for="start_date" hidden></p>
+            </div>
+            <div class="efld">
+              <label class="efld-label req" for="f-number-of-days">Nombre de jours</label>
+              <input type="number" id="f-number-of-days" name="number_of_days" min="1" max="365" value="1">
+              <p class="efld-hint">L'année fiscale et les jours individuels sont dérivés automatiquement.</p>
+              <p class="efld-err" data-err-for="number_of_days" hidden></p>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- ── §4 JAUGE PAR JOUR ─────────────────────────────────────── -->
+        <fieldset class="efs">
+          <legend class="efs-title">Jauge par jour</legend>
+          <p class="efs-hint">Une ligne par jour, générée automatiquement à partir de la date de début et du nombre de jours.</p>
+          <div class="cap-rows" id="cap-rows">
+            <!-- Capacity rows injected by app.js when start_date + number_of_days change -->
+          </div>
+          <p class="efld-err" data-err-for="capacity" hidden></p>
+        </fieldset>
+
+        <!-- ── §5 CONTEXTE PRODUCTEUR ────────────────────────────────── -->
+        <fieldset class="efs">
+          <legend class="efs-title">Producteur &amp; coproduction</legend>
+          <div class="efs-grid">
+            <div class="efld">
+              <label class="efld-label req" for="f-producteur">Producteur principal</label>
+              <select id="f-producteur" name="producteur">
+                <option value="">— Sélectionner —</option>
+                <option value="EPISODE">EPISODE</option>
+                <option value="EXTERNE">Externe</option>
+              </select>
+              <p class="efld-err" data-err-for="producteur" hidden></p>
+            </div>
+            <div class="efld">
+              <label class="efld-label" for="f-series">Série événementielle</label>
+              <select id="f-series" name="series_id">
+                <option value="">— Aucune (one-shot) —</option>
+                <!-- Options injected by app.js -->
+              </select>
+              <p class="efld-hint">Rattache cet événement à une édition récurrente.</p>
+            </div>
+            <div class="efld">
+              <label class="efld-label" for="f-edition">Numéro d'édition</label>
+              <input type="number" id="f-edition" name="edition_number" min="1">
+              <p class="efld-hint">Optionnel — uniquement si rattaché à une série.</p>
+            </div>
+            <div class="efld">
+              <label class="efld-label" for="f-coproducer">Coproducteur (V1 : un seul)</label>
+              <select id="f-coproducer" name="coproducer_id">
+                <option value="">— Aucun —</option>
+                <!-- Options injected by app.js -->
+              </select>
+              <p class="efld-hint">V2 prévoit un modèle plusieurs-à-plusieurs.</p>
+            </div>
+            <div class="efld efs-grid-full">
+              <label class="efld-check">
+                <input type="checkbox" id="f-external-coproduction" name="external_coproduction">
+                <span>Coproduction externe — événement coproduit avec une structure tierce.</span>
+              </label>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- ── §6 BILLETTERIE (URLs) ─────────────────────────────────── -->
+        <fieldset class="efs">
+          <legend class="efs-title">Billetterie</legend>
+          <p class="efs-hint">URLs des backends de billetterie. Optionnelles — peuvent être renseignées plus tard.</p>
+          <div class="efs-grid">
+            <div class="efld">
+              <label class="efld-label" for="f-dice-backend">DICE — backend</label>
+              <input type="url" id="f-dice-backend" name="dice_backend_url" placeholder="https://...">
+            </div>
+            <div class="efld">
+              <label class="efld-label" for="f-dice-public">DICE — page publique</label>
+              <input type="url" id="f-dice-public" name="dice_public_url" placeholder="https://...">
+            </div>
+            <div class="efld">
+              <label class="efld-label" for="f-shotgun-backend">Shotgun — backend</label>
+              <input type="url" id="f-shotgun-backend" name="shotgun_backend_url" placeholder="https://...">
+            </div>
+            <div class="efld">
+              <label class="efld-label" for="f-shotgun-public">Shotgun — page publique</label>
+              <input type="url" id="f-shotgun-public" name="shotgun_public_url" placeholder="https://...">
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- ── §7 STATUT ─────────────────────────────────────────────── -->
+        <fieldset class="efs">
+          <legend class="efs-title">Statut</legend>
+          <div class="efs-grid">
+            <div class="efld efs-grid-full">
+              <label class="efld-label" for="f-status">Statut de l'événement</label>
+              <select id="f-status" name="status">
+                <option value="PREP">PREP — préparation</option>
+                <option value="VALIDÉ">VALIDÉ — budget validé</option>
+                <option value="LAUNCHED">LAUNCHED — billetterie ouverte</option>
+                <option value="LIVE">LIVE — en cours</option>
+                <option value="CLOSED">CLOSED — clos</option>
+              </select>
+              <p class="efld-hint">Cycle de vie : PREP → VALIDÉ → LAUNCHED → LIVE → CLOSED.</p>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- ── §8 ANCRAGE BUDGET ─────────────────────────────────────── -->
+        <fieldset class="efs">
+          <legend class="efs-title">Budget</legend>
+          <div class="efs-grid">
+            <div class="efld">
+              <label class="efld-label" for="f-budget-target">Budget cible (€)</label>
+              <input type="number" id="f-budget-target" name="budget_target" min="0" step="100">
+              <p class="efld-hint">Optionnel — utilisé comme ancre dans BudgetFlow.</p>
+            </div>
+          </div>
+          <!-- Placeholder for the future BudgetFlow link / chip — V1 mockup only -->
+          <p class="efld-placeholder-bf">
+            <span>BudgetFlow</span> — lien vers la fiche budget créé automatiquement à la validation. <em>(V1 placeholder)</em>
+          </p>
+        </fieldset>
+
+        <!-- ── §9 COMPTE QONTO ───────────────────────────────────────── -->
+        <fieldset class="efs">
+          <legend class="efs-title">Compte bancaire (Qonto)</legend>
+          <div class="efs-grid">
+            <div class="efld efs-grid-full">
+              <label class="efld-label req" for="f-qonto-account">Compte rattaché</label>
+              <select id="f-qonto-account" name="qonto_account_id">
+                <option value="">— Sélectionner —</option>
+                <!-- Options injected by app.js -->
+              </select>
+              <p class="efld-hint">Compte sur lequel transitent les flux billetterie / production.</p>
+              <p class="efld-err" data-err-for="qonto_account_id" hidden></p>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- ── §10 CRÉATIONS AVAL ────────────────────────────────────── -->
+        <fieldset class="efs">
+          <legend class="efs-title">Créations associées</legend>
+          <p class="efs-hint">Cases déclenchées à la création — les fiches correspondantes sont générées dans les autres modules.</p>
+          <div class="efs-grid efs-grid-full">
+            <div class="efld">
+              <label class="efld-check">
+                <input type="checkbox" id="f-create-budget" name="create_budget_sheet" checked>
+                <span>Créer une fiche budget BudgetFlow</span>
+              </label>
+            </div>
+            <div class="efld">
+              <label class="efld-check">
+                <input type="checkbox" id="f-create-billetterie" name="create_billetterie_sheet">
+                <span>Créer une fiche billetterie</span>
+              </label>
+            </div>
+            <div class="efld">
+              <label class="efld-check">
+                <input type="checkbox" id="f-create-medias" name="create_medias_brief">
+                <span>Créer un brief médias</span>
+              </label>
+            </div>
+          </div>
+          <p class="efld-placeholder-bf">
+            <em>(V1 placeholder — les fiches avales sont mockées, la création réelle arrive en V1 opérationnel.)</em>
+          </p>
+        </fieldset>
+
+      </form>
+    </div>
+
+    <footer class="emodal-foot">
+      <button class="btn" id="btn-save-as-template" type="button" hidden>Sauvegarder comme template</button>
+      <div class="emodal-foot-actions">
+        <button class="btn" id="btn-cancel" type="button">Annuler</button>
+        <button class="btn primary" id="btn-save" type="button">Enregistrer</button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     Scripts — vanilla, no module loader V1 (per ADR-0007 §5 GitHub Pages V1).
+     Order matters: mock-data.js exposes window.MD before app.js consumes it.
+     ════════════════════════════════════════════════════════════════════ -->
+<script src="mock-data.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1151 @@
+/* ============================================================================
+ * Module Dates — styles.css
+ * ----------------------------------------------------------------------------
+ * Token-only CSS. All colors use the 13 CSS vars from
+ * `standalones/design/tokens.md`. NO invented tokens.
+ *
+ * Typography, spacing, radius, motion, z-index, shadow follow tokens.md
+ * conventions inline (not declared as vars in BudgetFlow's source).
+ *
+ * New components introduced this ship (logged in DESIGN_LOG.md):
+ * - .pnav      — top-level cross-module program nav
+ * - .mnav      — lower module-sub-surfaces nav
+ * - .sw        — session switcher (persistent dropdown)
+ * - .egrid     — event card grid
+ * - .ecard     — event card (extends .card with event-specific slots)
+ * - .ecal      — calendar/timeline view
+ * - .echip-row — filter chip row above card grid
+ * - .echip     — filter chip (active/inactive states)
+ * - .stog      — sandbox toggle pill
+ * - .emodal    — event create/edit modal
+ * - .chip-prep / chip-validé / chip-launched / chip-live / chip-closed
+ *                — event-status chip variants (visually parallel to existing
+ *                  BudgetFlow .chip-est/ec/ds/val/pay but semantically scoped
+ *                  to event lifecycle)
+ * ========================================================================= */
+
+/* ----------------------------------------------------------------------------
+ * Token references (defined in standalones/design/tokens.md):
+ *   --bg --surface --surface-2 --border --border-h
+ *   --text --text-muted --text-dim
+ *   --green --red --amber --purple --indigo
+ * ------------------------------------------------------------------------- */
+
+:root {
+  --bg: #08080d;
+  --surface: #101017;
+  --surface-2: #16161f;
+  --border: rgba(255, 255, 255, 0.05);
+  --border-h: rgba(255, 255, 255, 0.08);
+  --text: #f0f0f5;
+  --text-muted: #a0a0b0;
+  --text-dim: #5a5a6a;
+  --green: #34d399;
+  --red: #f87171;
+  --amber: #fbbf24;
+  --purple: #a855f7;
+  --indigo: #6366f1;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', -apple-system, sans-serif;
+  font-size: 19px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (max-width: 720px) {
+  body {
+    font-size: 15px;
+  }
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* ----------------------------------------------------------------------------
+ * Layout container — matches tokens.md .wrap convention
+ * ------------------------------------------------------------------------- */
+
+.wrap {
+  max-width: 1020px;
+  margin: 0 auto;
+  padding: 12px 20px 80px;
+}
+
+@media (max-width: 720px) {
+  .wrap {
+    padding: 0 12px 60px;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+ * Top-level cross-module program nav (.pnav) — NEW COMPONENT
+ * Persistent across all module surfaces; sticky at top.
+ * ------------------------------------------------------------------------- */
+
+.pnav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.pnav-inner {
+  max-width: 1020px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 20px;
+}
+
+@media (max-width: 720px) {
+  .pnav-inner {
+    padding: 8px 12px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .pnav-inner::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.pnav-brand {
+  font-family: 'Space Grotesk', 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.85em;
+  color: #fff;
+  letter-spacing: 0.02em;
+  padding: 8px 14px 8px 0;
+  margin-right: 8px;
+  border-right: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.pnav-item {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.72em;
+  font-weight: 500;
+  color: var(--text-dim);
+  white-space: nowrap;
+  transition: color 0.18s, background 0.18s;
+}
+
+.pnav-item:hover {
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.pnav-item.on {
+  color: #fff;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.pnav-item.pl {
+  color: var(--text-dim);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.pnav-item.pl:hover {
+  background: transparent;
+  color: var(--text-dim);
+}
+
+.pnav-item.pl::after {
+  content: ' · Bientôt';
+  font-size: 0.85em;
+  color: var(--text-dim);
+}
+
+.pnav-spacer {
+  flex: 1;
+}
+
+/* Session switcher in pnav right-side */
+
+.sw {
+  position: relative;
+}
+
+.sw-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 0.72em;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: border-color 0.18s, background 0.18s;
+}
+
+.sw-btn:hover {
+  border-color: var(--border-h);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.sw-btn-label {
+  color: var(--text-dim);
+  font-size: 0.88em;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sw-btn-name {
+  color: #fff;
+  font-weight: 600;
+}
+
+.sw-btn-chev {
+  color: var(--text-dim);
+  font-size: 0.8em;
+  margin-left: 2px;
+}
+
+.sw-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 6px;
+  min-width: 280px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  padding: 6px;
+  z-index: 200;
+  display: none;
+}
+
+.sw-menu.open {
+  display: block;
+}
+
+.sw-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 6px;
+  font-size: 0.74em;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.sw-opt:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sw-opt-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.sw-opt-meta {
+  font-size: 0.85em;
+  color: var(--text-dim);
+}
+
+.sw-opt.is-general {
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+  padding-top: 11px;
+}
+
+.sw-opt.is-general .sw-opt-name {
+  color: #c4b5fd; /* lighter-purple inline text variant (not a token) */
+  font-weight: 600;
+}
+
+.sw-opt.is-general::before {
+  content: '★';
+  color: var(--purple);
+  font-size: 0.9em;
+}
+
+.sw-opt.active {
+  background: rgba(168, 85, 247, 0.08);
+}
+
+/* ----------------------------------------------------------------------------
+ * Lower module-sub-surfaces nav (.mnav) — NEW COMPONENT
+ * Sits below .pnav; horizontally scrollable on mobile.
+ * ------------------------------------------------------------------------- */
+
+.mnav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.mnav-inner {
+  max-width: 1020px;
+  margin: 0 auto;
+  display: flex;
+  gap: 2px;
+  padding: 0 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.mnav-inner::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .mnav-inner {
+    padding: 0 12px;
+  }
+}
+
+.mnav-item {
+  position: relative;
+  padding: 12px 14px;
+  font-size: 0.72em;
+  font-weight: 500;
+  color: var(--text-dim);
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+.mnav-item:hover {
+  color: var(--text-muted);
+}
+
+.mnav-item.on {
+  color: #fff;
+  font-weight: 600;
+}
+
+.mnav-item.on::after {
+  content: '';
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 0;
+  height: 2px;
+  background: var(--purple);
+  border-radius: 2px 2px 0 0;
+}
+
+/* ----------------------------------------------------------------------------
+ * Page containers — fade-in animation matches BudgetFlow .page convention
+ * ------------------------------------------------------------------------- */
+
+.page {
+  display: none;
+  animation: fu 0.18s ease;
+}
+
+.page.on {
+  display: block;
+}
+
+@keyframes fu {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-hdr {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 24px 0 16px;
+}
+
+.page-title {
+  font-family: 'Space Grotesk', 'DM Sans', sans-serif;
+  font-size: 1.6em;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.page-sub {
+  color: var(--text-dim);
+  font-size: 0.78em;
+}
+
+/* ----------------------------------------------------------------------------
+ * Buttons — primary + secondary actions
+ * ------------------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 0.74em;
+  font-weight: 500;
+  transition: border-color 0.18s, background 0.18s;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  border-color: var(--border-h);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.btn.primary {
+  background: linear-gradient(135deg, var(--purple), var(--indigo));
+  border-color: transparent;
+  color: #fff;
+  font-weight: 600;
+}
+
+.btn.primary:hover {
+  background: linear-gradient(135deg, #b573f8, #818cf8);
+}
+
+.btn.danger:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+/* ----------------------------------------------------------------------------
+ * Filter chip row (.echip-row) — NEW COMPONENT
+ * Sits above the .egrid card grid on Liste view.
+ * ------------------------------------------------------------------------- */
+
+.echip-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 20px;
+}
+
+.echip {
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.7em;
+  font-weight: 500;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+
+.echip:hover {
+  border-color: var(--border-h);
+  color: var(--text);
+}
+
+.echip.on {
+  background: rgba(168, 85, 247, 0.12);
+  border-color: rgba(168, 85, 247, 0.4);
+  color: #c4b5fd;
+}
+
+.echip-sep {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+.stog {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.7em;
+  font-weight: 500;
+  transition: all 0.18s;
+}
+
+.stog:hover {
+  border-color: var(--border-h);
+  color: var(--text);
+}
+
+.stog.on {
+  background: rgba(251, 191, 36, 0.12);
+  border-color: rgba(251, 191, 36, 0.4);
+  color: var(--amber);
+}
+
+.stog-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.4;
+  transition: opacity 0.18s;
+}
+
+.stog.on .stog-dot {
+  opacity: 1;
+}
+
+/* ----------------------------------------------------------------------------
+ * Event card grid (.egrid + .ecard) — NEW COMPONENT
+ * Card-per-event display for Liste + Anciens views.
+ * ------------------------------------------------------------------------- */
+
+.egrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.ecard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.ecard:hover {
+  border-color: var(--border-h);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.ecard.sandbox {
+  border-color: rgba(251, 191, 36, 0.25);
+  background: linear-gradient(180deg, var(--surface), rgba(251, 191, 36, 0.025));
+}
+
+.ecard.general {
+  border-color: rgba(168, 85, 247, 0.35);
+  background: linear-gradient(180deg, var(--surface), rgba(168, 85, 247, 0.04));
+}
+
+.ecard-hdr {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ecard-name {
+  font-family: 'Space Grotesk', 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1em;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.ecard-series {
+  color: var(--text-dim);
+  font-size: 0.72em;
+  margin-top: 4px;
+}
+
+.ecard-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.72em;
+  color: var(--text-muted);
+}
+
+.ecard-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ecard-row-key {
+  color: var(--text-dim);
+  text-transform: uppercase;
+  font-size: 0.85em;
+  letter-spacing: 0.04em;
+  min-width: 64px;
+}
+
+.ecard-row-val {
+  color: var(--text);
+}
+
+.ecard-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.ecard-budget {
+  color: var(--text-muted);
+  font-size: 0.72em;
+}
+
+.ecard-budget-val {
+  color: #fff;
+  font-weight: 600;
+}
+
+.ecard-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ----------------------------------------------------------------------------
+ * Event-status chips (.chip-prep / validé / launched / live / closed)
+ * NEW COMPONENT — semantically scoped to event lifecycle.
+ * Visually parallels existing BudgetFlow .chip-est/ec/ds/val/pay variants
+ * but with class names matching the event status vocabulary.
+ * ------------------------------------------------------------------------- */
+
+.chip {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 4px;
+  font-size: 0.59em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.chip-prep {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-dim);
+}
+
+.chip-validé {
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8; /* indigo-300 inline text variant (not a token) */
+}
+
+.chip-launched {
+  background: rgba(251, 191, 36, 0.15);
+  color: var(--amber);
+}
+
+.chip-live {
+  background: rgba(52, 211, 153, 0.18);
+  color: var(--green);
+}
+
+.chip-closed {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-dim);
+}
+
+.chip-sandbox {
+  background: rgba(251, 191, 36, 0.12);
+  color: var(--amber);
+  border: 1px dashed rgba(251, 191, 36, 0.35);
+  padding: 2px 8px;
+}
+
+.chip-general {
+  background: rgba(168, 85, 247, 0.15);
+  color: #c4b5fd; /* purple-300 inline variant */
+}
+
+.chip-extcoprod {
+  background: rgba(99, 102, 241, 0.10);
+  color: var(--indigo);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  padding: 2px 8px;
+}
+
+/* ----------------------------------------------------------------------------
+ * Calendar / timeline view (.ecal) — NEW COMPONENT
+ * Vertical timeline grouped by month; lightweight V1 implementation.
+ * ------------------------------------------------------------------------- */
+
+.ecal {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ecal-month {
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.ecal-month-hdr {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ecal-month-name {
+  font-family: 'Space Grotesk', 'DM Sans', sans-serif;
+  font-size: 0.95em;
+  font-weight: 700;
+  color: #fff;
+}
+
+.ecal-month-count {
+  color: var(--text-dim);
+  font-size: 0.72em;
+}
+
+.ecal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ecal-item {
+  display: grid;
+  grid-template-columns: 70px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ecal-item:last-child {
+  border-bottom: 0;
+}
+
+.ecal-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.ecal-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 8px;
+  background: var(--surface-2);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.ecal-date-day {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1em;
+  line-height: 1;
+}
+
+.ecal-date-mon {
+  color: var(--text-dim);
+  font-size: 0.65em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 3px;
+}
+
+.ecal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ecal-name {
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.78em;
+}
+
+.ecal-loc {
+  color: var(--text-dim);
+  font-size: 0.7em;
+}
+
+.ecal-empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.78em;
+}
+
+/* ----------------------------------------------------------------------------
+ * Modal (.emodal) — NEW COMPONENT — event create/edit
+ * Hash route /#/event/:id/edit or /#/event/new opens this.
+ * ------------------------------------------------------------------------- */
+
+.emodal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 8, 13, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 400;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.emodal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.emodal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.96);
+  width: min(720px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  z-index: 401;
+  opacity: 0;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.2s, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.emodal.open {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: auto;
+}
+
+.emodal-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.emodal-title {
+  font-family: 'Space Grotesk', 'DM Sans', sans-serif;
+  font-size: 0.95em;
+  font-weight: 700;
+  color: #fff;
+}
+
+.emodal-close {
+  color: var(--text-dim);
+  font-size: 0.78em;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.emodal-close:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.emodal-body {
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.emodal-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.emodal-foot-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Form section inside modal */
+
+.efs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.efs-title {
+  font-size: 0.65em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+.efs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.efs-grid-full {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 480px) {
+  .efs-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.efld {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.efld-label {
+  font-size: 0.6em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+
+.efld-label.req::after {
+  content: ' *';
+  color: var(--purple);
+}
+
+.efld input,
+.efld select,
+.efld textarea {
+  padding: 9px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text);
+  font-size: 0.78em;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  font-family: inherit;
+}
+
+.efld input:focus,
+.efld select:focus,
+.efld textarea:focus {
+  outline: 0;
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+}
+
+.efld input:disabled,
+.efld select:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.efld-hint {
+  font-size: 0.7em;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.efld-placeholder-bf {
+  color: var(--text-dim);
+  font-size: 0.74em;
+  padding: 9px 12px;
+  border: 1px dashed var(--border);
+  border-radius: 7px;
+  background: rgba(168, 85, 247, 0.03);
+  font-style: italic;
+}
+
+.efld-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 0.76em;
+}
+
+.efld-check input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--purple);
+}
+
+/* Sandbox toggle inside form — visually distinct */
+
+.efld-sandbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(251, 191, 36, 0.05);
+  border: 1px dashed rgba(251, 191, 36, 0.3);
+  border-radius: 8px;
+  font-size: 0.76em;
+  cursor: pointer;
+}
+
+.efld-sandbox input[type='checkbox'] {
+  accent-color: var(--amber);
+}
+
+.efld-sandbox.on {
+  background: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.5);
+  color: var(--amber);
+}
+
+/* Capacity per-day repeating rows */
+
+.cap-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cap-row {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.cap-row-lbl {
+  color: var(--text-dim);
+  font-size: 0.7em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cap-row input {
+  padding: 6px 9px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text);
+  font-size: 0.78em;
+  width: 100%;
+}
+
+/* Validation error */
+
+.efld-err {
+  color: var(--red);
+  font-size: 0.72em;
+  margin-top: 3px;
+}
+
+.efld input.err,
+.efld select.err {
+  border-color: var(--red);
+}
+
+/* ----------------------------------------------------------------------------
+ * Empty states + utility
+ * ------------------------------------------------------------------------- */
+
+.empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.78em;
+}
+
+.empty-title {
+  color: var(--text-muted);
+  font-size: 1em;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.tpl-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.tpl-card {
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.tpl-card-name {
+  font-weight: 600;
+  color: #fff;
+  font-size: 0.85em;
+  margin-bottom: 4px;
+}
+
+.tpl-card-source {
+  color: var(--text-dim);
+  font-size: 0.72em;
+}
+
+.tpl-card-meta {
+  color: var(--text-muted);
+  font-size: 0.7em;
+  margin-top: 8px;
+}

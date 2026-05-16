@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Festiflow — Événements</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══ FESTIFLOW DESIGN SYSTEM — exact token parity ═══
+   Accent palette (3 semantic + 2 brand = 5 total):
+   green #34d399 · red #f87171 · amber #fbbf24
+   purple #a855f7 (day-0) · indigo #6366f1 (day-1)
+   NO other hue is introduced anywhere.
+   ══════════════════════════════════════════════════ */
+:root {
+  --bg:#08080d; --surface:#101017; --surface-2:#16161f;
+  --border:rgba(255,255,255,0.05); --border-h:rgba(255,255,255,0.08);
+  --text:#f0f0f5; --text-muted:#a0a0b0; --text-dim:#5a5a6a;
+  --green:#34d399; --red:#f87171; --amber:#fbbf24;
+  --purple:#a855f7; --indigo:#6366f1;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-padding-top:56px}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;font-size:19px;line-height:1.55;overflow-x:hidden}
+.wrap{max-width:1020px;margin:0 auto;padding:12px 20px 80px;overflow-x:hidden}
+
+/* ── NAV ─────────────────────────────── */
+.nav{position:-webkit-sticky;position:sticky;top:0;z-index:100;background:var(--surface);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);padding:0;margin-bottom:0}
+.nav-top{max-width:1020px;margin:0 auto;display:flex;align-items:center;padding:0 20px}
+.nav-sw{display:flex;align-items:center;gap:8px;padding:8px 14px 8px 0;margin-right:8px;border-right:1px solid rgba(255,255,255,.05);flex-shrink:0;cursor:pointer;transition:opacity .15s}
+.nav-sw:hover{opacity:.8}
+.nav-sw-av{width:36px;height:36px;border-radius:50%;background:var(--surface-2);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;overflow:hidden}
+.nm{font-size:12px;font-weight:500;padding:8px 12px;color:var(--text-dim);cursor:pointer;white-space:nowrap;transition:color .15s;border:none;background:none;font-family:inherit}
+.nm:hover{color:var(--text-muted)}
+.nm.on{color:#fff;font-weight:600}
+.nm.on svg{opacity:1}
+.nm.pl{color:#333;cursor:default;font-style:normal}
+.nm.pl:hover{color:#333}
+.dt.on{background:rgba(255,255,255,.06);color:#fff;font-weight:600}
+.dept-tabs-bg{background:rgba(0,0,0,.15);border-top:1px solid rgba(255,255,255,.03)}
+.dept-tabs{max-width:1020px;margin:0 auto;padding:2px 20px;display:flex;overflow-x:auto;scrollbar-width:none}
+.dept-tabs::-webkit-scrollbar{display:none}
+.dt{padding:8px 12px;font-size:12px;font-weight:500;color:var(--text-dim);white-space:nowrap;border:none;border-bottom:2px solid transparent;background:none;font-family:inherit;cursor:pointer;transition:color .15s}
+.dt:hover{color:var(--text-muted)}
+.dt.on{color:#fff;font-weight:600}
+
+/* ── DASHBOARD SURFACE ─────────────────── */
+.bilan-toggle-btn.active{background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.4);color:#818cf8}
+.bilan-toggle-btn:hover:not(.active){background:rgba(255,255,255,.04)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;transition:border-color .3s,box-shadow .3s}
+.card:hover{border-color:rgba(255,255,255,.08)}
+#dash-grid{display:flex;flex-direction:column;gap:20px}
+#nouvelle-date-btn:hover{background:rgba(255,255,255,.04);color:var(--text)}
+
+@media(max-width:720px){
+  html,body{overflow-x:hidden}
+  body{font-size:15px}
+  .wrap{padding:0 12px 60px}
+}
+
+@media(max-width:480px){
+  body{font-size:15px}
+  .nav{position:-webkit-sticky;position:sticky;top:0;z-index:100;background:var(--surface)}
+  .nav-sw{padding:6px 10px 6px 0;margin-right:4px}
+  .nav-sw-av{width:30px;height:30px}
+  .nm{font-size:12px;padding:8px 10px}
+  .nav-top{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;mask-image:linear-gradient(to right,#000 85%,transparent);-webkit-mask-image:linear-gradient(to right,#000 85%,transparent)}
+  .nav-top::-webkit-scrollbar{display:none}
+  .dt{font-size:13px;padding:10px 14px}
+  .dept-tabs{mask-image:linear-gradient(to right,#000 85%,transparent);-webkit-mask-image:linear-gradient(to right,#000 85%,transparent)}
+}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-top">
+    <div class="nav-sw" style="position:relative">
+      <div class="nav-sw-av"><img src="LOGO_ROND_JAUNE.png" alt="GEN" style="width:100%;height:100%;object-fit:cover"></div>
+      <div>
+        <div style="display:flex;align-items:center;gap:5px">
+          <span style="font-size:13px;font-weight:600;color:#fff">Générale</span>
+          <div style="width:5px;height:5px;border-radius:50%;background:var(--green)"></div>
+        </div>
+        <div style="font-size:10px;color:var(--text-dim);margin-top:3px">Générale 2026 · Madame Loyal</div>
+      </div>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2.5" style="margin-left:2px"><path d="M6 9l6 6 6-6"/></svg>
+      <select class="session-sw" style="position:absolute;inset:0;width:100%;height:100%;opacity:0.01;cursor:pointer;z-index:2;font-size:16px" onchange="if(this.value && !this.options[this.selectedIndex].dataset.soon){window.location.href=this.value}">
+        <option value="" disabled>Changer session</option>
+        <option value="budget_general.html" selected>Générale 2026</option>
+        <option value="budget_pa.html">ML 130326 — Paris XXL</option>
+        <option value="budget_bdx.html">ML 120626 — Bordeaux</option>
+        <option value="budget_epk.html">EPK 050926 — Paris</option>
+      </select>
+    </div>
+    <button class="nm on" onclick="go('bilan',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Événements</button>
+    <button class="nm" onclick="go('budgetflow',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>Budgetflow</button>
+    <button class="nm" onclick="go('billetterie',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>Billetterie</button>
+    <button class="nm" onclick="go('fiche',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>Demande D'Achat</button>
+    <button class="nm" onclick="go('factures',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Partenaires</button>
+    <div class="nav-user" style="margin-left:auto;width:36px;height:36px;border-radius:50%;background:var(--surface-2);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);transition:opacity .15s;flex-shrink:0">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.85"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+  </div>
+  <div class="dept-tabs-bg">
+  <div id="dept-tabs" class="dept-tabs">
+    <button class="dt on" data-idx="0" style="border-bottom-color:#fff;color:#fff" onclick="goDeptTab('dashboard',this)">Dashboard</button>
+    <button class="dt" data-idx="1" onclick="goDeptTab('calendrier',this)">Calendrier</button>
+    <button class="dt" data-idx="2" onclick="goDeptTab('templates',this)">Templates</button>
+    <button class="dt" data-idx="3" onclick="goDeptTab('anciens',this)">Anciens</button>
+    <button class="dt" data-idx="4" onclick="goDeptTab('admin',this)">Admin</button>
+  </div>
+  </div>
+</nav>
+
+<main class="wrap">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:24px;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+    <div>
+      <h2 style="font-size:1.1em;font-weight:700;color:#fff;margin-bottom:4px">Dashboard</h2>
+      <div style="font-size:.75em;color:var(--text-dim)">Aperçu de tous vos événements en préparation, en vente et sandbox</div>
+    </div>
+    <button id="nouvelle-date-btn" style="padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">+ Nouvelle date</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="bilan-toggle-btn" data-filter="planned" style="padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">En préparation</button>
+    <button class="bilan-toggle-btn active" data-filter="selling" style="padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">En vente</button>
+    <button class="bilan-toggle-btn" data-filter="sandbox" style="padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Sandbox</button>
+  </div>
+  <div id="dash-grid"></div>
+</main>
+
+<!-- Phase 2+: re-enable when content surfaces (liste/calendrier/templates/anciens) come back online -->
+<!-- <script src="mock-data.js"></script> -->
+<!-- <script src="app.js"></script> -->
+
+<script>
+/* ─────────────────────────────────────────────────────────────────────────
+ * Stage 2 inline data + render.
+ * Card data mirrors SCHEMA §4.4 events row shape so Stage 5 swap to
+ * window.MD.getEvents() is field-rename-free. Pill is a derived field for
+ * the user-facing collapse layer (En vente / En préparation / Sandbox),
+ * not in SCHEMA — see Class 1 note in DESIGN_LOG at Stage 6.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+const STAGE2_EVENTS = [
+  { name:'Madame Loyal x Sonora Bordeaux',  status:'LAUNCHED', is_sandbox:false, is_general:false,
+    city:'Bordeaux', venue:'Parc des Expositions',     start_date:'2026-06-11', number_of_days:3, poster_url:null },
+  { name:'Madame Loyal x Crazy Carnaval',   status:'LAUNCHED', is_sandbox:false, is_general:false,
+    city:'Paris',    venue:'Cirque Micheletty',        start_date:'2026-07-04', number_of_days:1, poster_url:null },
+  { name:'Madame Loyal x Elektric Park',    status:'LAUNCHED', is_sandbox:false, is_general:false,
+    city:'Chatou',   venue:'Ile des Impressionnistes', start_date:'2026-09-05', number_of_days:1, poster_url:null },
+  { name:'SONORA x IMPACT',                 status:'LAUNCHED', is_sandbox:false, is_general:false,
+    city:'Paris',    venue:'Parc des Expositions de Villepinte', start_date:'2026-09-25', number_of_days:1, poster_url:null },
+  { name:'Sonora Halloween XXL 2026',       status:'VALIDÉ',   is_sandbox:false, is_general:false,
+    city:'Bordeaux', venue:'Parc des Expositions',     start_date:'2026-10-31', number_of_days:1, poster_url:null },
+];
+
+/* Status indicator = dot + label (chip-family retires from event-status indication;
+ * stays in design system for other uses).
+ * Precedent: session switcher dot+label at top-left of nav (small green dot + text).
+ * Same grammar applied to event cards. Cross-surface coherence by construction.
+ *   LAUNCHED + LIVE         → "En vente"        green dot
+ *   PREP + VALIDÉ           → "En préparation"  indigo dot
+ *   is_sandbox=true (any)   → "Sandbox"         dim dot
+ *   CLOSED                  → never on Dashboard (Phase 5 Anciens)
+ */
+function statusFor(evt) {
+  if (evt.is_sandbox)                                       return { label:'Sandbox',        color:'var(--text-dim)' };
+  if (evt.status === 'LAUNCHED' || evt.status === 'LIVE')   return { label:'En vente',       color:'var(--green)' };
+  if (evt.status === 'PREP'     || evt.status === 'VALIDÉ') return { label:'En préparation', color:'#818cf8' };
+  return null;
+}
+
+/* Date format — full version pulled forward from Stage 5.
+ * Single-day:        "31 octobre 2026"
+ * Same-month:        "11-13 juin 2026"
+ * Cross-month/year:  "30 juin - 2 juillet 2026" / "28 déc 2026 - 3 jan 2027"
+ * Null start_date:   "" (caller decides what to render in its place)
+ */
+const MOIS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+
+function formatEventDate(startDate, numberOfDays) {
+  if (!startDate) return '';
+  const [y, m, d] = startDate.split('-').map(Number);
+  const days = numberOfDays || 1;
+  if (days === 1) return `${d} ${MOIS[m-1]} ${y}`;
+  const end = new Date(Date.UTC(y, m-1, d + days - 1));
+  const eY = end.getUTCFullYear(), eM = end.getUTCMonth()+1, eD = end.getUTCDate();
+  if (y === eY && m === eM) return `${d}-${eD} ${MOIS[m-1]} ${y}`;
+  if (y === eY)             return `${d} ${MOIS[m-1]} - ${eD} ${MOIS[eM-1]} ${y}`;
+  return `${d} ${MOIS[m-1]} ${y} - ${eD} ${MOIS[eM-1]} ${eY}`;
+}
+
+/* City · venue join. Null venue → city alone (clean truncation per Stage 2 Q1). */
+function formatLocation(city, venue) {
+  if (!city && !venue) return '';
+  if (!venue) return city;
+  if (!city)  return venue;
+  return `${city} · ${venue}`;
+}
+
+/* Poster placeholder palette — index-cycled per event for variety. */
+const POSTER_PALETTE = [
+  'rgba(99,102,241,.85)',    // indigo
+  'rgba(168,85,247,.85)',    // purple
+  'rgba(52,211,153,.85)',    // green
+];
+
+function getPosterBg(idx) {
+  return POSTER_PALETTE[idx % POSTER_PALETTE.length];
+}
+
+/* 2-letter initials extraction.
+ * Drops "Madame Loyal x" prefix when present (common mock-data pattern); falls back
+ * to first letter of first two significant words (single-char tokens filtered).
+ */
+function getInitials(name) {
+  const core = name.replace(/^Madame Loyal\s+x\s+/i, '');
+  const words = core.split(/\s+/).filter(w => w.length > 1);
+  if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
+  if (words.length === 1) return words[0].substring(0, 2).toUpperCase();
+  return '??';
+}
+
+function posterZoneHTML(evt, idx) {
+  if (evt.poster_url) {
+    return `<div style="flex:0 0 110px;overflow:hidden;background:var(--surface-2)">
+        <img src="${evt.poster_url}" alt="${evt.name}" style="width:100%;height:100%;object-fit:cover;display:block">
+      </div>`;
+  }
+  return `<div style="flex:0 0 110px;background:${getPosterBg(idx)};display:flex;align-items:center;justify-content:center;color:#fff;font-size:2.4em;font-weight:800;letter-spacing:-1px">${getInitials(evt.name)}</div>`;
+}
+
+/* KPI tile chrome — ported from budget_general.html lines 272-275 (.bchip family) with
+ * two Class 1 contextual deviations for in-card composition:
+ *   1. background:var(--surface) → var(--surface-2). Source bchips sit on body bg
+ *      (var(--bg)); in-card bchips sit on card bg (var(--surface)) and need surface-2
+ *      lift to read as distinct tiles.
+ *   2. bchip-val font-size:1.35em → .95em. Source bchips are page-level chips meant to
+ *      dominate; in-card bchips must subordinate to event name (1.05em) to preserve
+ *      hierarchy. Stage 3 KPI fill applies the smaller tier without re-balancing.
+ * Inline-styled per established convention (no class invented mid-iteration).
+ * `flex:1 1 200px;min-width:0` added inline for arrangement only.
+ * Stage 2: 3 bare-chrome placeholder tiles per card. Envelope alone communicates
+ * "Stage 3 fills this" — no "—" filler to reverse the noise-vs-signal balance.
+ */
+const BCHIP_STYLE       = 'background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;transition:border-color .2s;flex:1 1 200px;min-width:0';
+const BCHIP_LABEL_STYLE = 'font-size:.6em;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-dim);font-weight:600;margin-bottom:6px';
+const BCHIP_VAL_STYLE   = 'font-size:.95em;font-weight:700;color:#fff;letter-spacing:-.3px;line-height:1.1';
+const BCHIP_SUB_STYLE   = 'font-size:.65em;color:var(--text-muted);margin-top:4px';
+
+function placeholderTileHTML() {
+  return `<div style="${BCHIP_STYLE}"></div>`;
+}
+
+function tilesEnvelopeHTML() {
+  return `<div style="display:flex;flex-wrap:wrap;gap:10px">
+          ${placeholderTileHTML()}
+          ${placeholderTileHTML()}
+          ${placeholderTileHTML()}
+        </div>`;
+}
+
+function cardHTML(evt, idx) {
+  const s = statusFor(evt);
+  const statusHTML = s ? `<div style="display:inline-flex;align-items:center;gap:8px;flex-shrink:0">
+            <div style="width:7px;height:7px;border-radius:50%;background:${s.color}"></div>
+            <span style="font-size:.78em;font-weight:500;color:var(--text)">${s.label}</span>
+          </div>` : '';
+  const lieu = evt.venue || 'À confirmer';
+  return `
+    <div class="card" style="padding:0;overflow:hidden">
+      <div style="display:flex;flex-direction:row">
+        ${posterZoneHTML(evt, idx)}
+        <div style="flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:14px;min-width:0">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+              <div style="font-size:1.05em;font-weight:700;color:#fff;letter-spacing:-.2px;min-width:0;word-break:break-word">${evt.name}</div>
+              ${statusHTML}
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:baseline;gap:16px">
+                <span style="font-size:.6em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600">Date</span>
+                <span style="font-size:.82em;color:#fff;font-weight:500">${formatEventDate(evt.start_date, evt.number_of_days)}</span>
+              </div>
+              <div style="display:flex;align-items:baseline;gap:16px">
+                <span style="font-size:.6em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600">Ville</span>
+                <span style="font-size:.82em;color:#fff;font-weight:500">${evt.city || '—'}</span>
+              </div>
+              <div style="display:flex;align-items:baseline;gap:16px">
+                <span style="font-size:.6em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600">Lieu</span>
+                <span style="font-size:.82em;color:#fff;font-weight:500">${lieu}</span>
+              </div>
+            </div>
+          </div>
+          ${tilesEnvelopeHTML()}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* Stage 2 render: all rendered events visible regardless of filter button state.
+ * Filter wiring (selecting which events show per active filter) lands at Stage 5.
+ * Sort closest-first ascending start_date. Null start_date sinks to end.
+ */
+function renderDashboard() {
+  const grid = document.getElementById('dash-grid');
+  if (!grid) return;
+  const sorted = STAGE2_EVENTS
+    .filter(e => !e.is_general)
+    .slice()
+    .sort((a, b) => {
+      if (!a.start_date && !b.start_date) return 0;
+      if (!a.start_date) return 1;
+      if (!b.start_date) return -1;
+      return a.start_date.localeCompare(b.start_date);
+    });
+  grid.innerHTML = sorted.map((evt, idx) => cardHTML(evt, idx)).join('');
+}
+
+document.addEventListener('DOMContentLoaded', renderDashboard);
+</script>
+</body>
+</html>

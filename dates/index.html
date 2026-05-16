@@ -5,121 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Festiflow — Événements</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-<style>
-/* ═══ FESTIFLOW DESIGN SYSTEM — exact token parity ═══
-   Accent palette (3 semantic + 2 brand = 5 total):
-   green #34d399 · red #f87171 · amber #fbbf24
-   purple #a855f7 (day-0) · indigo #6366f1 (day-1)
-   NO other hue is introduced anywhere.
-   ══════════════════════════════════════════════════ */
-:root {
-  --bg:#08080d; --surface:#101017; --surface-2:#16161f;
-  --border:rgba(255,255,255,0.05); --border-h:rgba(255,255,255,0.08);
-  --text:#f0f0f5; --text-muted:#a0a0b0; --text-dim:#5a5a6a;
-  --green:#34d399; --red:#f87171; --amber:#fbbf24;
-  --purple:#a855f7; --indigo:#6366f1;
-}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html{scroll-padding-top:56px}
-body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;font-size:19px;line-height:1.55;overflow-x:hidden}
-.wrap{max-width:1020px;margin:0 auto;padding:12px 20px 80px;overflow-x:hidden}
-
-/* ── NAV ─────────────────────────────── */
-.nav{position:-webkit-sticky;position:sticky;top:0;z-index:100;background:var(--surface);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);padding:0;margin-bottom:0}
-.nav-top{max-width:1020px;margin:0 auto;display:flex;align-items:center;padding:0 20px}
-.nav-sw{display:flex;align-items:center;gap:8px;padding:8px 14px 8px 0;margin-right:8px;border-right:1px solid rgba(255,255,255,.05);flex-shrink:0;cursor:pointer;transition:opacity .15s}
-.nav-sw:hover{opacity:.8}
-.nav-sw-av{width:36px;height:36px;border-radius:50%;background:var(--surface-2);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;overflow:hidden}
-.nm{font-size:12px;font-weight:500;padding:8px 12px;color:var(--text-dim);cursor:pointer;white-space:nowrap;transition:color .15s;border:none;background:none;font-family:inherit}
-.nm:hover{color:var(--text-muted)}
-.nm.on{color:#fff;font-weight:600}
-.nm.on svg{opacity:1}
-.nm.pl{color:#333;cursor:default;font-style:normal}
-.nm.pl:hover{color:#333}
-.dt.on{background:rgba(255,255,255,.06);color:#fff;font-weight:600}
-.dept-tabs-bg{background:rgba(0,0,0,.15);border-top:1px solid rgba(255,255,255,.03)}
-.dept-tabs{max-width:1020px;margin:0 auto;padding:2px 20px;display:flex;overflow-x:auto;scrollbar-width:none}
-.dept-tabs::-webkit-scrollbar{display:none}
-.dt{padding:8px 12px;font-size:12px;font-weight:500;color:var(--text-dim);white-space:nowrap;border:none;border-bottom:2px solid transparent;background:none;font-family:inherit;cursor:pointer;transition:color .15s}
-.dt:hover{color:var(--text-muted)}
-.dt.on{color:#fff;font-weight:600}
-
-/* ── DASHBOARD SURFACE ─────────────────── */
-/* Filter toggle chrome uses chip-ds palette (indigo .15/.4 + #818cf8) for active state.
- * chip-family CSS retained from BudgetFlow port for filter chrome only — event-status
- * indication retired chip-family in favor of dot+label pattern (precedent: session
- * switcher .nav-sw lines 86-89). Same chrome vocabulary, different surface job. */
-.bilan-toggle-btn.active{background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.4);color:#818cf8}
-.bilan-toggle-btn:hover:not(.active){background:rgba(255,255,255,.04)}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;cursor:pointer;transition:border-color .3s,box-shadow .3s}
-.card:hover{border-color:rgba(255,255,255,.12)}
-#dash-grid{display:flex;flex-direction:column;gap:20px}
-#nouvelle-date-btn:hover{background:rgba(255,255,255,.04);color:var(--text)}
-
-/* ── DRAWER ──────────────────────────────────────────
- * Ported verbatim from standalones/budget/budget_pa.html L298-330.
- * Chrome stays canonical; only content-context (event-detail) differs.
- * ───────────────────────────────────────────────────── */
-#drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.15);z-index:400;opacity:0;pointer-events:none;transition:opacity .25s}
-#drawer-overlay.open{opacity:1;pointer-events:auto}
-
-#drawer{position:fixed;top:0;right:0;bottom:0;width:min(420px,100vw);background:var(--surface);border-left:1px solid var(--border);z-index:401;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden}
-#drawer.open{transform:translateX(0)}
-
-.drawer-hdr{padding:20px 20px 14px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.drawer-title{font-family:'Space Grotesk',sans-serif;font-size:.95em;font-weight:700;color:#fff;line-height:1.3}
-.drawer-sub{font-size:.7em;color:var(--text-muted);margin-top:3px}
-.drawer-close{background:none;border:1px solid var(--border);border-radius:6px;color:var(--text-dim);cursor:pointer;padding:4px 10px;font-size:.75em;flex-shrink:0;transition:all .2s}
-.drawer-close:hover{border-color:var(--text-muted);color:#fff}
-
-.drawer-body{flex:1;overflow-y:auto;padding:20px}
-.drawer-body::-webkit-scrollbar{width:4px}
-.drawer-body::-webkit-scrollbar-track{background:transparent}
-.drawer-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-
-.drawer-section{margin-bottom:20px}
-.drawer-section-title{font-size:.6em;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim);font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
-.drawer-kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.drawer-kpi{background:var(--surface-2);border-radius:8px;padding:12px 14px}
-.drawer-kpi-label{font-size:.6em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600;margin-bottom:4px}
-.drawer-kpi-val{font-size:.92em;font-weight:700;color:#fff}
-
-.drawer-empty{text-align:center;padding:32px 16px;color:var(--text-dim);font-size:.8em}
-.drawer-empty-icon{font-size:2em;margin-bottom:10px}
-
-.drawer-footer{padding:16px 20px;border-top:1px solid var(--border);flex-shrink:0;display:flex;gap:8px}
-.drawer-btn{flex:1;padding:9px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .2s;text-align:center;border:1px solid var(--border);background:var(--surface-2);color:var(--text-muted)}
-.drawer-btn:hover{border-color:var(--text-muted);color:#fff}
-.drawer-btn.primary{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);color:#fff;font-weight:600}
-.drawer-btn.primary:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:#fff}
-
-@media(max-width:720px){
-  html,body{overflow-x:hidden}
-  body{font-size:15px}
-  .wrap{padding:0 12px 60px}
-  /* drawer becomes bottom sheet — ported from budget_pa.html L243-244 + L417-422.
-   * L243 #drawer:90vh is redundant with L417 height:82vh override — port as parity
-   * deviation per port-time discipline (no unilateral prune). Class 1 observation. */
-  #drawer{height:90vh}
-  #drawer{top:auto;left:0;right:0;bottom:0;width:100%;height:82vh;border-left:none;border-top:1px solid var(--border);border-radius:18px 18px 0 0;transform:translateY(100%)}
-  #drawer.open{transform:translateY(0)}
-  .drawer-hdr{padding-top:24px}
-  .drawer-hdr::before{content:'';display:block;width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 12px;position:absolute;top:10px;left:50%;transform:translateX(-50%)}
-  .drawer-kpi-row{grid-template-columns:1fr!important;gap:8px}
-}
-
-@media(max-width:480px){
-  body{font-size:15px}
-  .nav{position:-webkit-sticky;position:sticky;top:0;z-index:100;background:var(--surface)}
-  .nav-sw{padding:6px 10px 6px 0;margin-right:4px}
-  .nav-sw-av{width:30px;height:30px}
-  .nm{font-size:12px;padding:8px 10px}
-  .nav-top{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;mask-image:linear-gradient(to right,#000 85%,transparent);-webkit-mask-image:linear-gradient(to right,#000 85%,transparent)}
-  .nav-top::-webkit-scrollbar{display:none}
-  .dt{font-size:13px;padding:10px 14px}
-  .dept-tabs{mask-image:linear-gradient(to right,#000 85%,transparent);-webkit-mask-image:linear-gradient(to right,#000 85%,transparent)}
-}
-</style>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <nav class="nav">
@@ -349,7 +235,8 @@ function formatEuro(amount) {
  *                   computes SUM across event_days. See STAGE2_EVENTS comment.
  */
 function formatEdition(n) {
-  if (n == null || n <= 1) return '1ère édition';
+  if (n == null) return '—';
+  if (n <= 1)   return '1ère édition';
   return `Édition ${n}`;
 }
 

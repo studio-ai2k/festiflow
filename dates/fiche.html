@@ -118,8 +118,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .fiche-row{display:grid;gap:14px}
 .fiche-row.c2{grid-template-columns:1fr 1fr}
 .fiche-row.c3{grid-template-columns:1fr 1fr 1fr}
-.fiche-row.dates-row{grid-template-columns:1.4fr 1fr}
-@media(max-width:560px){.fiche-row.c2,.fiche-row.c3,.fiche-row.dates-row{grid-template-columns:1fr}}
+@media(max-width:560px){.fiche-row.c2,.fiche-row.c3{grid-template-columns:1fr}}
 
 /* ── GENRE CHIPS (multi-select pattern) ─── */
 .genre-chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -350,7 +349,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       <div class="fiche-section-title">4 · Dates & Jauge</div>
       <div class="fiche-section-hint">capacité par jour · SCHEMA §4.5</div>
     </div>
-    <div class="fiche-row dates-row">
+    <div class="fiche-row c2">
       <div class="fiche-field">
         <label class="fiche-field-label">Date de début <span class="req">*</span> <span class="opt">— sauf Sandbox</span></label>
         <input id="start-date-input" class="fiche-input" type="date" value="2026-06-11">
@@ -382,7 +381,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       <select id="producteur-select" class="fiche-select">
         <option selected>EPISODE</option>
         <option>SAGREGA</option>
-        <option>SGS</option>
+        <option>GGS</option>
         <option disabled>— consultez la page admin pour éditer —</option>
       </select>
     </div>

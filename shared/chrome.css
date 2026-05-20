@@ -1,0 +1,55 @@
+/* ═══════════════════════════════════════════════════════════════════
+ * STANDALONE CHROME — canonical nav for Festiflow standalone modules
+ * ═══════════════════════════════════════════════════════════════════
+ *
+ * Consumed by all standalone HTML pages under standalones/{module}/*.html.
+ * Single source of truth for the cross-module nav shell — session switcher,
+ * cross-module top-nav buttons, in-module dept-tabs, user avatar.
+ *
+ * See docs/decisions/0011-standalone-chrome-canonical.md for the rationale.
+ * Edit THIS file (not consumer-page inline) to update standalone chrome.
+ *
+ * Tokens consumed: --surface, --surface-2, --text-dim, --text-muted, --green
+ * (defined in consumer-page tokens block per standalones/design/tokens.md)
+ */
+
+/* ── Nav frame ─────────────────────────────────────────────────────── */
+.nav{position:-webkit-sticky;position:sticky;top:0;z-index:100;background:var(--surface);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);padding:0;margin-bottom:0}
+.nav-top{max-width:1020px;margin:0 auto;display:flex;align-items:center;padding:0 20px}
+
+/* ── Session switcher (left) ───────────────────────────────────────── */
+.nav-sw{display:flex;align-items:center;gap:8px;padding:8px 14px 8px 0;margin-right:8px;border-right:1px solid rgba(255,255,255,.05);flex-shrink:0;cursor:pointer;transition:opacity .15s}
+.nav-sw:hover{opacity:.8}
+.nav-sw-av{width:36px;height:36px;border-radius:50%;background:var(--surface-2);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;overflow:hidden}
+
+/* ── Module-link buttons (top-nav cross-tool destinations) ─────────── */
+.nm{font-size:12px;font-weight:500;padding:8px 12px;color:var(--text-dim);cursor:pointer;white-space:nowrap;transition:color .15s;border:none;background:none;font-family:inherit}
+.nm:hover{color:var(--text-muted)}
+.nm.on{color:#fff;font-weight:600}
+.nm.on svg{opacity:1}
+.nm.pl{color:#333;cursor:default;font-style:normal}
+.nm.pl:hover{color:#333}
+
+/* ── User avatar (top-nav far right) ───────────────────────────────── */
+.nav-user{margin-left:auto;width:36px;height:36px;border-radius:50%;background:var(--surface-2);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);transition:opacity .15s;flex-shrink:0}
+.nav-user:hover{opacity:.8}
+
+/* ── Dept-tabs (in-module surface switcher) ────────────────────────── */
+.dept-tabs-bg{background:rgba(0,0,0,.15);border-top:1px solid rgba(255,255,255,.03)}
+.dept-tabs{max-width:1020px;margin:0 auto;padding:2px 20px;display:flex;overflow-x:auto;scrollbar-width:none}
+.dept-tabs::-webkit-scrollbar{display:none}
+.dt{padding:8px 12px;font-size:12px;font-weight:500;color:var(--text-dim);white-space:nowrap;border:none;border-bottom:2px solid transparent;background:none;font-family:inherit;cursor:pointer;transition:color .15s}
+.dt:hover{color:var(--text-muted)}
+.dt.on{color:#fff;font-weight:600}
+
+/* ── Responsive overrides ──────────────────────────────────────────── */
+@media(max-width:480px){
+  .nav-sw{padding:6px 10px 6px 0;margin-right:4px}
+  .nav-sw-av{width:30px;height:30px}
+  .nav-user{width:30px;height:30px}
+  .nm{font-size:12px;padding:8px 10px}
+  .nav-top{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;mask-image:linear-gradient(to right,#000 85%,transparent);-webkit-mask-image:linear-gradient(to right,#000 85%,transparent)}
+  .nav-top::-webkit-scrollbar{display:none}
+  .dt{font-size:13px;padding:10px 14px}
+  .dept-tabs{mask-image:linear-gradient(to right,#000 85%,transparent);-webkit-mask-image:linear-gradient(to right,#000 85%,transparent)}
+}

@@ -103,7 +103,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .fiche-field-label .req{color:var(--amber);font-size:1em;font-weight:700}
 .fiche-field-label .opt{color:var(--text-dim);font-weight:400;letter-spacing:.5px;text-transform:none;font-size:.92em;font-style:italic}
 .fiche-field-label .pending{color:#c4b5fd;font-weight:500;letter-spacing:.3px;text-transform:none;font-size:.88em;font-style:italic;opacity:.85}
-.fiche-input,.fiche-select,.fiche-textarea{width:100%;background:var(--surface-2);border:1px solid var(--border);color:var(--text);font-family:inherit;font-size:.8em;padding:10px 12px;border-radius:7px;transition:border-color .15s}
+.fiche-input,.fiche-select,.fiche-textarea{width:100%;min-width:0;background:var(--surface-2);border:1px solid var(--border);color:var(--text);font-family:inherit;font-size:.8em;padding:10px 12px;border-radius:7px;transition:border-color .15s}
 .fiche-input:hover,.fiche-select:hover,.fiche-textarea:hover{border-color:var(--border-h)}
 .fiche-input:focus,.fiche-select:focus,.fiche-textarea:focus{outline:none;border-color:rgba(168,85,247,.4)}
 .fiche-textarea{min-height:82px;resize:vertical;line-height:1.5}
@@ -116,7 +116,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 
 /* ── FICHE ROW ─────────────── */
 .fiche-row{display:grid;gap:14px}
-.fiche-row.c2{grid-template-columns:1fr 1fr}
+.fiche-row.c2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 .fiche-row.c3{grid-template-columns:1fr 1fr 1fr}
 @media(max-width:560px){.fiche-row.c2,.fiche-row.c3{grid-template-columns:1fr}}
 

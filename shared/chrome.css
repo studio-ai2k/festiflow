@@ -22,6 +22,11 @@
 .nav-sw:hover{opacity:.8}
 .nav-sw-av{width:36px;height:36px;border-radius:50%;background:var(--surface-2);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;overflow:hidden}
 
+/* ── Session switcher text block (canonical at v5.4.2, extends v5.4.0 scope) ── */
+.nav-sw-name{font-size:13px;font-weight:600;color:#fff;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.nav-sw-name .dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0}
+.nav-sw-sub{font-size:10px;color:var(--text-dim);margin-top:3px;white-space:nowrap}
+
 /* ── Module-link buttons (top-nav cross-tool destinations) ─────────── */
 .nm{font-size:12px;font-weight:500;padding:8px 12px;color:var(--text-dim);cursor:pointer;white-space:nowrap;transition:color .15s;border:none;background:none;font-family:inherit}
 .nm:hover{color:var(--text-muted)}

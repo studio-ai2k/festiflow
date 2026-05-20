@@ -17,24 +17,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .wrap{max-width:1020px;margin:0 auto;padding:12px 20px 80px;overflow-x:hidden}
 
 /* ── NAV ─────────────────────────────── */
-.nav{position:-webkit-sticky;position:sticky;top:0;z-index:100;background:var(--surface);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);padding:0;margin-bottom:0}
-.nav-top{max-width:1020px;margin:0 auto;display:flex;align-items:center;padding:0 20px}
-.nav-sw{display:flex;align-items:center;gap:8px;padding:8px 14px 8px 0;margin-right:8px;border-right:1px solid rgba(255,255,255,.05);flex-shrink:0;cursor:pointer;transition:opacity .15s}
-.nav-sw:hover{opacity:.8}
-.nav-sw-av{width:36px;height:36px;border-radius:50%;background:var(--surface-2);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;overflow:hidden}
-.nm{font-size:12px;font-weight:500;padding:8px 12px;color:var(--text-dim);cursor:pointer;white-space:nowrap;transition:color .15s;border:none;background:none;font-family:inherit}
-.nm:hover{color:var(--text-muted)}
-.nm.on{color:#fff;font-weight:600}
-.nm.on svg{opacity:1}
-.nm.pl{color:#333;cursor:default;font-style:normal}
-.nm.pl:hover{color:#333}
-.dt.on{background:rgba(255,255,255,.06);color:#fff;font-weight:600}
-.dept-tabs-bg{background:rgba(0,0,0,.15);border-top:1px solid rgba(255,255,255,.03)}
-.dept-tabs{max-width:1020px;margin:0 auto;padding:2px 20px;display:flex;overflow-x:auto;scrollbar-width:none}
-.dept-tabs::-webkit-scrollbar{display:none}
-.dt{padding:8px 12px;font-size:12px;font-weight:500;color:var(--text-dim);white-space:nowrap;border:none;border-bottom:2px solid transparent;background:none;font-family:inherit;cursor:pointer;transition:color .15s}
-.dt:hover{color:var(--text-muted)}
-.dt.on{color:#fff;font-weight:600}
+/* Standalone chrome CSS (nav frame, session switcher, .nm, .nav-user, dept-tabs, .dt) consumed from standalones/shared/chrome.css per ADR-0011. Do NOT re-inline here. */
 
 /* ── DASHBOARD SURFACE ─────────────────── */
 /* Filter toggle chrome uses chip-ds palette (indigo .15/.4 + #818cf8) for active state.
@@ -109,12 +92,4 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 
 @media(max-width:480px){
   body{font-size:15px}
-  .nav{position:-webkit-sticky;position:sticky;top:0;z-index:100;background:var(--surface)}
-  .nav-sw{padding:6px 10px 6px 0;margin-right:4px}
-  .nav-sw-av{width:30px;height:30px}
-  .nm{font-size:12px;padding:8px 10px}
-  .nav-top{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;mask-image:linear-gradient(to right,#000 85%,transparent);-webkit-mask-image:linear-gradient(to right,#000 85%,transparent)}
-  .nav-top::-webkit-scrollbar{display:none}
-  .dt{font-size:13px;padding:10px 14px}
-  .dept-tabs{mask-image:linear-gradient(to right,#000 85%,transparent);-webkit-mask-image:linear-gradient(to right,#000 85%,transparent)}
 }

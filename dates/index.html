@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Festiflow — Événements</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-top">
+    <div class="nav-sw" style="position:relative">
+      <div class="nav-sw-av"><img src="LOGO_ROND_JAUNE.png" alt="GEN" style="width:100%;height:100%;object-fit:cover"></div>
+      <div>
+        <div style="display:flex;align-items:center;gap:5px">
+          <span style="font-size:13px;font-weight:600;color:#fff">Générale</span>
+          <div style="width:5px;height:5px;border-radius:50%;background:var(--green)"></div>
+        </div>
+        <div style="font-size:10px;color:var(--text-dim);margin-top:3px">Générale 2026 · Madame Loyal</div>
+      </div>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2.5" style="margin-left:2px"><path d="M6 9l6 6 6-6"/></svg>
+      <select class="session-sw" style="position:absolute;inset:0;width:100%;height:100%;opacity:0.01;cursor:pointer;z-index:2;font-size:16px" onchange="if(this.value && !this.options[this.selectedIndex].dataset.soon){window.location.href=this.value}">
+        <option value="" disabled>Changer session</option>
+        <option value="budget_general.html" selected>Générale 2026</option>
+        <option value="budget_pa.html">ML 130326 — Paris XXL</option>
+        <option value="budget_bdx.html">ML 120626 — Bordeaux</option>
+        <option value="budget_epk.html">EPK 050926 — Paris</option>
+      </select>
+    </div>
+    <button class="nm on" onclick="go('bilan',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Événements</button>
+    <button class="nm" onclick="go('budgetflow',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>Budgetflow</button>
+    <button class="nm" onclick="go('billetterie',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>Billetterie</button>
+    <button class="nm" onclick="go('fiche',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>Demande D'Achat</button>
+    <button class="nm" onclick="go('factures',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Partenaires</button>
+    <div class="nav-user" style="margin-left:auto;width:36px;height:36px;border-radius:50%;background:var(--surface-2);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);transition:opacity .15s;flex-shrink:0">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.85"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+  </div>
+  <div class="dept-tabs-bg">
+  <div id="dept-tabs" class="dept-tabs">
+    <button class="dt on" data-idx="0" style="border-bottom-color:#fff;color:#fff" onclick="goDeptTab('dashboard',this)">Dashboard</button>
+    <button class="dt" data-idx="1" onclick="goDeptTab('liste',this)">Liste</button>
+    <button class="dt" data-idx="2" onclick="goDeptTab('admin',this)">Admin</button>
+  </div>
+  </div>
+</nav>
+
+<main class="wrap">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:24px;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+    <div>
+      <h2 style="font-size:1.1em;font-weight:700;color:#fff;margin-bottom:4px">Dashboard</h2>
+      <div style="font-size:.75em;color:var(--text-dim)">Aperçu de tous vos événements en préparation, en vente et sandbox</div>
+    </div>
+    <button id="nouvelle-date-btn" style="padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">+ Nouvelle date</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="bilan-toggle-btn" data-filter="planned" style="padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">En préparation</button>
+    <button class="bilan-toggle-btn active" data-filter="selling" style="padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">En vente</button>
+    <button class="bilan-toggle-btn" data-filter="sandbox" style="padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Sandbox</button>
+  </div>
+  <div id="sort-caption" style="font-size:.72em;color:var(--text-dim);margin-bottom:10px">Trié par date · plus proche d'abord</div>
+  <div id="dash-grid"></div>
+</main>
+
+<!-- ── DRAWER ──────────────────────────────────────────
+     DOM container ported from budget_pa.html L940-961.
+     Empty-state copy + drawer-title fallback replaced for event context.
+     Footer "Voir la fiche complète" stub primary only — Fermer secondary
+     dropped per Stage 4 Q4 (header close-X + overlay-click already cover
+     close action; PA's footer Fermer was redundant-by-default).
+     ────────────────────────────────────────────────── -->
+<div id="drawer-overlay" onclick="closeDrawer()"></div>
+<div id="drawer">
+  <div class="drawer-hdr">
+    <div style="min-width:0;flex:1">
+      <div class="drawer-title" id="drawer-title">Événement</div>
+      <div class="drawer-sub" id="drawer-sub"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0">
+      <button class="drawer-close" onclick="closeDrawer()">Fermer ✕</button>
+      <div id="drawer-status-indicator" style="display:inline-flex;align-items:center;gap:8px"></div>
+    </div>
+  </div>
+  <div class="drawer-body" id="drawer-body">
+    <div class="drawer-empty">
+      <div class="drawer-empty-icon">🎫</div>
+      Sélectionne un événement pour voir le détail
+    </div>
+  </div>
+  <div class="drawer-footer" id="drawer-footer" style="display:none">
+    <button class="drawer-btn primary" id="drawer-fiche-btn">Voir la fiche complète</button>
+  </div>
+</div>
+
+<!-- Phase 2+: re-enable when content surfaces (liste/calendrier/templates/anciens) come back online -->
+<!-- <script src="mock-data.js"></script> -->
+<!-- <script src="app.js"></script> -->
+
+<script>
+/* ─────────────────────────────────────────────────────────────────────────
+ * Stage 2 inline data + render.
+ * Card data mirrors SCHEMA §4.4 events row shape so Stage 5 swap to
+ * window.MD.getEvents() is field-rename-free. Pill is a derived field for
+ * the user-facing collapse layer (En vente / En préparation / Sandbox),
+ * not in SCHEMA — see Class 1 note in DESIGN_LOG at Stage 6.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+/* is_general:true events filtered from Dashboard grid — Générale rollup lives in
+ * session switcher (carry-pending #3 first-touched v5.2.1), not as a date entry.
+ *
+ * capacity field: V1 mock placeholder — Postgres SCHEMA stores per-day capacity in
+ * event_days table, Dashboard tile renders SUM across days. SCHEMA absorption ship
+ * locks the per-day shape; Stage 6 ADR pre-flight flags this for proper altitude.
+ */
+const STAGE2_EVENTS = [
+  { id:'evt-sb', name:'Madame Loyal x Sonora Bordeaux',  status:'En vente', is_general:false,
+    city:'Bordeaux', venue:'Parc des Expositions',     start_date:'2026-06-11', number_of_days:3, poster_url:null, display_initials:'SB',
+    budget_target:950000, budget_consumed:385000, edition_number:4, capacity:44500,
+    description:'4e édition du festival Sonora à Bordeaux — programmation électro 3 jours.',
+    genre:['Électro','Techno','House'],
+    previous_edition_event_id:null,
+    template_id:null,
+    dice_backend_url:'https://dice.fm/event/sonora-bordeaux-2026', shotgun_backend_url:'https://shotgun.live/event/sonora-bordeaux-2026',
+    dice_public_buy_url:'https://dice.fm/partner/tickets/event/av3vr2-madame-loyal-x-sonora-bordeaux-12-13-juin-2026-11th-jun-parc-des-expositions-de-bordeaux-bordeaux-tickets',
+    shotgun_public_buy_url:'https://shotgun.live/en/festivals/madame-loyal-x-sonora',
+    budgetflow_url:'https://festiflow.studioai2k.com/budget/bdx',
+    billetterie_url:'https://festiflow.studioai2k.com/billetterie/bordeaux' },
+  { id:'evt-cc', name:'Madame Loyal x Crazy Carnaval',   status:'En vente', is_general:false,
+    city:'Paris',    venue:'Cirque Micheletty',        start_date:'2026-07-04', number_of_days:1, poster_url:null, display_initials:'CC',
+    budget_target:380000, budget_consumed:115000, edition_number:1, capacity:3800,
+    description:null, genre:[], previous_edition_event_id:null, template_id:null,
+    dice_backend_url:'https://dice.fm/event/crazy-carnaval-2026', shotgun_backend_url:null,
+    dice_public_buy_url:null, shotgun_public_buy_url:null,
+    budgetflow_url:null, billetterie_url:null },
+  { id:'evt-ep', name:'Madame Loyal x Elektric Park',    status:'En vente', is_general:false,
+    city:'Chatou',   venue:'Ile des Impressionnistes', start_date:'2026-09-05', number_of_days:1, poster_url:null, display_initials:'EP',
+    budget_target:720000, budget_consumed:145000, edition_number:1, capacity:12000,
+    description:null, genre:['Électro'], previous_edition_event_id:null, template_id:null,
+    dice_backend_url:'https://dice.fm/event/elektric-park-2026', shotgun_backend_url:null,
+    dice_public_buy_url:'https://dice.fm/partner/tickets/event/oepro5-madame-loyal-x-elektric-park-xxl-edition-5th-sep-ile-des-impressionnistes-paris-tickets',
+    shotgun_public_buy_url:null,
+    budgetflow_url:'https://festiflow.studioai2k.com/budget/epk',
+    billetterie_url:'https://festiflow.studioai2k.com/billetterie/epk' },
+  { id:'evt-si', name:'SONORA x IMPACT',                 status:'En vente', is_general:false,
+    city:'Paris',    venue:'Parc des Expositions de Villepinte', start_date:'2026-09-25', number_of_days:1, poster_url:null, display_initials:'SI',
+    budget_target:850000, budget_consumed:155000, edition_number:1, capacity:25000,
+    description:null, genre:[], previous_edition_event_id:null, template_id:null,
+    dice_backend_url:null, shotgun_backend_url:'https://shotgun.live/event/sonora-impact-2026',
+    dice_public_buy_url:null, shotgun_public_buy_url:null,
+    budgetflow_url:null, billetterie_url:null },
+  { id:'evt-sh', name:'Sonora Halloween XXL 2026',       status:'En préparation', is_general:false,
+    city:'Bordeaux', venue:'Parc des Expositions',     start_date:'2026-10-31', number_of_days:1, poster_url:null, display_initials:'SH',
+    budget_target:420000, budget_consumed:30000, edition_number:2, capacity:9500,
+    description:null, genre:[], previous_edition_event_id:null, template_id:null,
+    dice_backend_url:null, shotgun_backend_url:null,
+    dice_public_buy_url:null, shotgun_public_buy_url:null,
+    budgetflow_url:null, billetterie_url:null },
+  /* Sandbox event — Geo's playground calculation. All required-when-not-sandbox
+   * fields released per brief evenements.md §47 sandbox isolation rules. Null-safe
+   * rendering tests: city/venue/start_date null → identity rows fall back to "—"
+   * / "À confirmer" / "—" via existing handlers. KPI tiles render "—" via
+   * field-level fallback. Sandbox is the 5th status value per v5.3.1 reversal of
+   * v5.2.0 carry-pending #2; was orthogonal is_sandbox BOOLEAN pre-v5.3.1. */
+  { id:'evt-tc', name:'Test calcul tournée hiver',       status:'Sandbox',  is_general:false,
+    city:null, venue:null, start_date:null, number_of_days:null, poster_url:null, display_initials:'TC',
+    budget_target:null, budget_consumed:null, edition_number:null, capacity:null,
+    description:null, genre:[], previous_edition_event_id:null, template_id:null,
+    dice_backend_url:null, shotgun_backend_url:null,
+    dice_public_buy_url:null, shotgun_public_buy_url:null,
+    budgetflow_url:null, billetterie_url:null },
+];
+
+/* window.MD consumer wrapper — thin async indirection over STAGE2_EVENTS.
+ * Exercises the architectural shape Stage 3 handoff L387 spec'd for V2 backend
+ * wire-in (Postgres-backed events table read via Node API). V1 stays sync-array
+ * underneath; the async signature matters for the contract, not the timing.
+ * Stage 6 absorption replaces inline STAGE2_EVENTS with import from mock-data.js
+ * keeping window.MD.getEvents shape unchanged. */
+window.MD = window.MD || {};
+window.MD.getEvents = async function() {
+  return STAGE2_EVENTS;
+};
+
+/* Status indicator = dot + label (chip-family retires from event-status indication;
+ * stays in design system for other uses).
+ * Precedent: session switcher dot+label at top-left of nav (small green dot + text).
+ * Same grammar applied to event cards. Cross-surface coherence by construction.
+ * v5.3.2 SCHEMA absorption: status enum locked at 5-value French per
+ * briefs/evenements.md §6 (was English 5-value pre-v5.3.1; is_sandbox BOOLEAN
+ * dropped, Sandbox is the 5th status value).
+ *   En vente         → green dot
+ *   En préparation   → indigo dot
+ *   Sandbox          → dim dot
+ *   Annulé           → red dot
+ *   Terminé          → muted dot (rarely on Dashboard — Anciens surface)
+ */
+function statusFor(evt) {
+  if (evt.status === 'Sandbox')        return { label:'Sandbox',        color:'var(--text-dim)' };
+  if (evt.status === 'En vente')       return { label:'En vente',       color:'var(--green)' };
+  if (evt.status === 'En préparation') return { label:'En préparation', color:'#818cf8' };
+  if (evt.status === 'Annulé')         return { label:'Annulé',         color:'var(--red)' };
+  if (evt.status === 'Terminé')        return { label:'Terminé',        color:'var(--text-muted)' };
+  return null;
+}
+
+/* Today anchor for J-N computation. V1: hard-coded for deterministic preview rendering
+ * (matches Leo's Stage 3 framing — today = 16 mai 2026). V2: replace with
+ * `new Date().toISOString().slice(0,10)` when production-deployed.
+ */
+const TODAY = '2026-05-16';
+
+/* Time indicator — second row of status zone (below dot+label, right-aligned).
+ *   start_date set + future                 → "J-N" / "J-0"
+ *   start_date set + past                   → "J+N" (Terminé renders Anciens-side post-V1)
+ *   any status + start_date null            → "—" (field-level fallback)
+ * v5.3.2: status enum is now 5-value French (En préparation / En vente / Annulé /
+ * Sandbox / Terminé) per SCHEMA §4.4. No live "EN COURS" sentinel V1 — collapses
+ * into "En vente" for the runtime window (was LIVE pre-v5.3.1, dormant since).
+ * Sandbox events with null start_date render "—" per field-level rule.
+ */
+function timeIndicatorFor(evt) {
+  if (!evt.start_date)       return '—';
+  const today = new Date(TODAY + 'T00:00:00Z');
+  const start = new Date(evt.start_date + 'T00:00:00Z');
+  const days = Math.round((start - today) / 86400000);
+  if (days > 0)  return `J-${days}`;
+  if (days === 0) return 'J-0';
+  return `J+${Math.abs(days)}`;
+}
+
+/* Euro formatter — fr-FR locale produces non-breaking-space thousands separator
+ * and trailing " €" symbol (e.g., 950000 → "950 000 €"). Zero decimal places at
+ * Dashboard glance scale; full precision lives in fiche later.
+ * Field-level "—" fallback when amount is null/undefined (applies to any pill).
+ */
+function formatEuro(amount) {
+  if (amount == null) return '—';
+  return new Intl.NumberFormat('fr-FR', { style:'currency', currency:'EUR', maximumFractionDigits:0 }).format(amount);
+}
+
+/* Identity row 2 formatters — Édition / Plateforme / Capacité.
+ *   formatEdition: "1ère édition" for null/1, "Édition N" for N≥2.
+ *   platformFor:   derived from dice_backend_url + shotgun_backend_url presence.
+ *                  Neither populated → "—" (defining trait of En préparation pill).
+ *   formatCapacity: fr-FR thousands-sep, no suffix. Field-level "—" fallback.
+ *                   V1 reads event.capacity (event-level total); V2 Postgres SCHEMA
+ *                   computes SUM across event_days. See STAGE2_EVENTS comment.
+ */
+function formatEdition(n) {
+  if (n == null) return '—';
+  if (n <= 1)   return '1ère édition';
+  return `Édition ${n}`;
+}
+
+function platformFor(evt) {
+  const d = !!evt.dice_backend_url;
+  const s = !!evt.shotgun_backend_url;
+  if (d && s) return 'Dice + Shotgun';
+  if (d)      return 'Dice';
+  if (s)      return 'Shotgun';
+  return '—';
+}
+
+function formatCapacity(n) {
+  if (n == null) return '—';
+  return new Intl.NumberFormat('fr-FR').format(n);
+}
+
+/* Date format — full version pulled forward from Stage 5.
+ * Single-day:        "31 octobre 2026"
+ * Same-month:        "11-13 juin 2026"
+ * Cross-month/year:  "30 juin - 2 juillet 2026" / "28 déc 2026 - 3 jan 2027"
+ * Null start_date:   "" (caller decides what to render in its place)
+ */
+const MOIS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+
+function formatEventDate(startDate, numberOfDays) {
+  if (!startDate) return '';
+  const [y, m, d] = startDate.split('-').map(Number);
+  const days = numberOfDays || 1;
+  if (days === 1) return `${d} ${MOIS[m-1]} ${y}`;
+  const end = new Date(Date.UTC(y, m-1, d + days - 1));
+  const eY = end.getUTCFullYear(), eM = end.getUTCMonth()+1, eD = end.getUTCDate();
+  if (y === eY && m === eM) return `${d}-${eD} ${MOIS[m-1]} ${y}`;
+  if (y === eY)             return `${d} ${MOIS[m-1]} - ${eD} ${MOIS[eM-1]} ${y}`;
+  return `${d} ${MOIS[m-1]} ${y} - ${eD} ${MOIS[eM-1]} ${eY}`;
+}
+
+/* City · venue single-line join. Null-safe (city alone when venue null).
+ * Reserved for Stage 4 drawer header city·venue single-line treatment.
+ * Unused at Stage 2 — cards use separate Ville/Lieu rows. */
+function formatLocation(city, venue) {
+  if (!city && !venue) return '';
+  if (!venue) return city;
+  if (!city)  return venue;
+  return `${city} · ${venue}`;
+}
+
+/* Poster placeholder palette — index-cycled per event for variety. */
+const POSTER_PALETTE = [
+  'rgba(99,102,241,.85)',    // indigo
+  'rgba(168,85,247,.85)',    // purple
+  'rgba(52,211,153,.85)',    // green
+];
+
+function getPosterBg(idx) {
+  return POSTER_PALETTE[idx % POSTER_PALETTE.length];
+}
+
+/* Initials read from `display_initials` data field on each event (added at Stage 2 close).
+ * Heuristic-based extraction (former getInitials) retired — explicit field is more
+ * robust, removes Stage 6 cleanup debt, forward-keeps when mock-data.js absorbs the field.
+ */
+
+function posterZoneHTML(evt, idx) {
+  if (evt.poster_url) {
+    return `<div style="flex:0 0 110px;overflow:hidden;background:var(--surface-2)">
+        <img src="${evt.poster_url}" alt="${evt.name}" style="width:100%;height:100%;object-fit:cover;display:block">
+      </div>`;
+  }
+  return `<div style="flex:0 0 110px;background:${getPosterBg(idx)};display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2em;font-weight:800;letter-spacing:-1px">${evt.display_initials}</div>`;
+}
+
+/* KPI tile chrome — ported from budget_general.html lines 272-275 (.bchip family) with
+ * two Class 1 contextual deviations for in-card composition:
+ *   1. background:var(--surface) → var(--surface-2). Source bchips sit on body bg
+ *      (var(--bg)); in-card bchips sit on card bg (var(--surface)) and need surface-2
+ *      lift to read as distinct tiles.
+ *   2. bchip-val font-size:1.35em → .95em. Source bchips are page-level chips meant to
+ *      dominate; in-card bchips must subordinate to event name (1.05em) to preserve
+ *      hierarchy. Stage 3 KPI fill applies the smaller tier without re-balancing.
+ * Inline-styled per established convention (no class invented mid-iteration).
+ * `flex:1 1 200px;min-width:0` added inline for arrangement only.
+ * Stage 3 fill: tiles populated with Budget / Consommé / Restant — uniform across
+ * all pills per Leo Stage 3 sign-off. Field-level "—" fallback applies tile-by-tile
+ * when budget_target or budget_consumed is null/0, independent of event pill row.
+ */
+const BCHIP_STYLE       = 'background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;transition:border-color .2s;flex:1 1 0;min-width:0';
+const BCHIP_LABEL_STYLE = 'font-size:.6em;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-dim);font-weight:600;margin-bottom:6px';
+const BCHIP_VAL_STYLE   = 'font-size:.95em;font-weight:700;color:#fff;letter-spacing:-.3px;line-height:1.1';
+const BCHIP_SUB_STYLE   = 'font-size:.65em;color:var(--text-muted);margin-top:4px';
+
+/* Identity row helper — single label/value pair, used by identityRow1HTML +
+ * identityRow2HTML to keep typography parallel by construction across rows.
+ * Inline-styled per established convention; class promotion deferred to Stage 6.
+ */
+function identityRowHTML(label, value) {
+  return `<div style="display:flex;align-items:baseline;gap:16px">
+            <span style="font-size:.55em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600">${label}</span>
+            <span style="font-size:.78em;color:#fff;font-weight:500">${value}</span>
+          </div>`;
+}
+
+function identityRow1HTML(evt) {
+  const lieu = evt.venue || 'À confirmer';
+  return `<div style="display:flex;flex-direction:column;gap:6px">
+          ${identityRowHTML('Date',  formatEventDate(evt.start_date, evt.number_of_days))}
+          ${identityRowHTML('Ville', evt.city || '—')}
+          ${identityRowHTML('Lieu',  lieu)}
+        </div>`;
+}
+
+function identityRow2HTML(evt) {
+  return `<div style="display:flex;flex-direction:column;gap:6px">
+          ${identityRowHTML('Édition',    formatEdition(evt.edition_number))}
+          ${identityRowHTML('Plateforme', platformFor(evt))}
+          ${identityRowHTML('Capacité',   formatCapacity(evt.capacity))}
+        </div>`;
+}
+
+function kpiTileHTML(label, value) {
+  return `<div style="${BCHIP_STYLE}">
+            <div style="${BCHIP_LABEL_STYLE}">${label}</div>
+            <div style="${BCHIP_VAL_STYLE}">${value}</div>
+          </div>`;
+}
+
+function tilesEnvelopeHTML(evt) {
+  const total     = evt.budget_target;
+  const consumed  = evt.budget_consumed;
+  const remaining = (total != null && consumed != null) ? total - consumed : null;
+  return `<div style="display:flex;gap:10px">
+          ${kpiTileHTML('Budget',    formatEuro(total))}
+          ${kpiTileHTML('Consommé',  formatEuro(consumed))}
+          ${kpiTileHTML('Restant',   formatEuro(remaining))}
+        </div>`;
+}
+
+/* KPI row 2 — V2 Billetterie scaffolding. Sits in the right column of the
+ * content-zone two-column split, anchored under identity column 2. Empty
+ * bare-chrome tiles with &nbsp; placeholders on label + value lines to
+ * preserve filled-tile dimensions (envelope reads as "reserved for V2", not
+ * "stage-incomplete"). Extends Stage 2's reserve-envelope-for-next-stage
+ * precedent from Stage 3 to V2.
+ * Stage 6 retrospective: keep scaffolding at V1 ship, or strip at ship time?
+ */
+function emptyTileHTML() {
+  return `<div style="${BCHIP_STYLE}">
+            <div style="${BCHIP_LABEL_STYLE}">&nbsp;</div>
+            <div style="${BCHIP_VAL_STYLE}">&nbsp;</div>
+          </div>`;
+}
+
+function emptyTilesEnvelopeHTML() {
+  return `<div style="display:flex;gap:10px">
+          ${emptyTileHTML()}
+          ${emptyTileHTML()}
+          ${emptyTileHTML()}
+        </div>`;
+}
+
+/* Header separator chrome — diverges from var(--border) (actual token value
+ * rgba(255,255,255,0.05) — below visibility threshold at production scale on
+ * iPad-class displays). Inline rgba(255,255,255,0.15) reads as visible-but-
+ * subtle 1px line per Leo Stage 3 close pass. Token system stays hard-locked;
+ * no new --border-strong token invented. PARKED for Stage 6:
+ * design-token review — does --border at 0.05 want a sibling token at 0.12-
+ * 0.15 alpha for visible-but-subtle dividers across the umbrella program?
+ */
+const HEADER_SEPARATOR_HTML = '<div style="height:1px;background:rgba(255,255,255,0.15)"></div>';
+
+function cardHTML(evt, idx) {
+  const s = statusFor(evt);
+  const timeStr = timeIndicatorFor(evt);
+  const statusHTML = s ? `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+            <div style="display:inline-flex;align-items:center;gap:8px">
+              <div style="width:7px;height:7px;border-radius:50%;background:${s.color}"></div>
+              <span style="font-size:.75em;font-weight:500;color:var(--text)">${s.label}</span>
+            </div>
+            <div style="font-size:.65em;color:var(--text-dim)">${timeStr}</div>
+          </div>` : '';
+  return `
+    <div class="card" style="padding:0;overflow:hidden">
+      <div style="display:flex;flex-direction:row">
+        ${posterZoneHTML(evt, idx)}
+        <div style="flex:1;padding:16px 24px;display:flex;flex-direction:column;gap:14px;min-width:0">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+            <div style="font-size:.85em;font-weight:700;color:#fff;letter-spacing:-.2px;min-width:0;word-break:break-word">${evt.name}</div>
+            ${statusHTML}
+          </div>
+          ${HEADER_SEPARATOR_HTML}
+          <div style="display:flex;flex-direction:row;gap:20px;min-width:0">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px">
+              ${identityRow1HTML(evt)}
+              ${tilesEnvelopeHTML(evt)}
+            </div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px">
+              ${identityRow2HTML(evt)}
+              ${emptyTilesEnvelopeHTML()}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Stage 4 drawer wire.
+ *
+ * drawerRowHTML — label-value row using budget_pa.html L749-752 space-between
+ *   pattern. Distinct from identityRowHTML (card's clustered-left helper at
+ *   L408): drawer is single-column wide where the card's clustered-left was
+ *   tuned for half-column-with-separator. Stage 4 Q1 picks space-between to
+ *   mirror fiche page convention (which the drawer is a stub-precursor of).
+ *   Class 1 deviation logged for Stage 6 DESIGN_LOG.
+ *
+ * STATUS_OPTIONS — 5 user-facing French values per v5.3.2 SCHEMA absorption
+ *   (was English 5-value with pill-collapse parenthetical pre-v5.3.1 per Stage 4
+ *   Q2). v5.3.1 brief lock + v5.3.2 SCHEMA: storage form = display form = 5-value
+ *   French direct (`En préparation / En vente / Annulé / Sandbox / Terminé`), no
+ *   pill-collapse layer needed. `Terminé` selectable per ADR-0008 read-write
+ *   scope; post-change the event simply won't appear on Dashboard.
+ *
+ * openEventDrawer / closeDrawer — closeDrawer ported from budget_pa.html
+ *   L3432-3436 with the PA-specific _drawerCurrentLine = null line stripped
+ *   (Module Dates has no equivalent state). Open mechanism mirrors the
+ *   universal pattern from PA (last 2 lines of every openX function): set
+ *   .open class on both #drawer-overlay and #drawer after innerHTML populated.
+ *
+ * handleStatusChange — V1 mock-data update only per spec. Updates in-memory
+ *   STAGE2_EVENTS entry, re-renders Dashboard so the card pill reflects the
+ *   new status, re-opens the drawer for the same event so context survives
+ *   the re-render. Sort order is start_date-based, not status-based, so card
+ *   doesn't move position.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+function drawerRowHTML(label, value) {
+  return `<div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:6px 0">
+    <span style="font-size:.72em;color:var(--text-muted)">${label}</span>
+    <span style="font-size:.78em;font-weight:600;color:#fff;text-align:right">${value}</span>
+  </div>`;
+}
+
+const STATUS_OPTIONS = [
+  { schema: 'En préparation', label: 'En préparation' },
+  { schema: 'En vente',       label: 'En vente' },
+  { schema: 'Annulé',         label: 'Annulé' },
+  { schema: 'Sandbox',        label: 'Sandbox' },
+  { schema: 'Terminé',        label: 'Terminé' }
+];
+
+function statusOptionsHTML(currentStatus) {
+  return STATUS_OPTIONS
+    .map(o => `<option value="${o.schema}"${o.schema === currentStatus ? ' selected' : ''}>${o.label}</option>`)
+    .join('');
+}
+
+function openEventDrawer(evt) {
+  // Header
+  document.getElementById('drawer-title').textContent = evt.name;
+  const locStr = formatLocation(evt.city, evt.venue);
+  const dateStr = formatEventDate(evt.start_date, evt.number_of_days);
+  const subParts = [locStr, dateStr].filter(s => s && s !== '—');
+  document.getElementById('drawer-sub').textContent = subParts.length ? subParts.join(' · ') : '—';
+
+  // Right-aligned status indicator above Fermer button (Stage 4 preview-2 fix —
+  // dot+label was merging with sub-line text at .drawer-sub flow; right-edge
+  // placement separates status visually from event metadata).
+  const s = statusFor(evt);
+  document.getElementById('drawer-status-indicator').innerHTML = s
+    ? `<div style="width:7px;height:7px;border-radius:50%;background:${s.color}"></div>
+       <span style="font-size:.7em;font-weight:500;color:var(--text);white-space:nowrap">${s.label}</span>`
+    : '';
+
+  // Body — 2 sections (Détails / Statut). V1 stub shape per brief §3 V1 surface
+  // set (Drawer-lite) + DESIGN_LOG L292-296 v5.3.4 lock. Raccourcis cross-tool
+  // nav hub (v5.3.0 Stage 4 reframe) retired at v5.3.7 step 4 — broader
+  // cross-tool framing migrates to Fiche page where it has full-page real
+  // estate; drawer's nav-out role served by "Voir la fiche complète" footer
+  // button routing to fiche.html?id=<evt.id>.
+  document.getElementById('drawer-body').innerHTML = `
+    <div class="drawer-section">
+      <div class="drawer-section-title">Détails</div>
+      ${drawerRowHTML('Date',       dateStr || '—')}
+      ${drawerRowHTML('Ville',      evt.city || '—')}
+      ${drawerRowHTML('Lieu',       evt.venue || 'À confirmer')}
+      ${drawerRowHTML('Édition',    formatEdition(evt.edition_number))}
+      ${drawerRowHTML('Plateforme', platformFor(evt))}
+      ${drawerRowHTML('Capacité',   formatCapacity(evt.capacity))}
+    </div>
+
+    <div class="drawer-section">
+      <div class="drawer-section-title">Statut</div>
+      <select id="drawer-status-select" onchange="handleStatusChange('${evt.name.replace(/'/g, "\\'")}', this.value)"
+        style="width:100%;padding:10px 12px;border-radius:7px;border:1px solid var(--border);background:var(--surface-2);color:#fff;font-family:'DM Sans',sans-serif;font-size:.78em;font-weight:500;cursor:pointer">
+        ${statusOptionsHTML(evt.status)}
+      </select>
+    </div>
+  `;
+
+  // Footer visible only when an event is selected; Voir-la-fiche button wires
+  // to fiche.html?id=<evt.id> per brief §3 v5.3.1 routing contract. id-parsing
+  // on the Fiche side lands at Fiche Stage 4 (currently edit-mode hardcoded to
+  // Sonora Bordeaux per fiche.html top comment); the URL contract holds either
+  // way — drawer constructs the right link, Fiche Stage 4 parses it.
+  document.getElementById('drawer-footer').style.display = 'flex';
+  document.getElementById('drawer-fiche-btn').onclick = function() {
+    window.location.href = 'fiche.html?id=' + encodeURIComponent(evt.id);
+  };
+
+  // Open
+  document.getElementById('drawer-overlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('drawer-overlay').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+}
+
+function handleStatusChange(evtName, newStatus) {
+  const evt = STAGE2_EVENTS.find(e => e.name === evtName);
+  if (!evt) return;
+  evt.status = newStatus;
+  renderDashboard();
+  openEventDrawer(evt);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Stage 5 — filter logic + sort wire against mock-data.
+ *
+ * FILTERS — v5.3.2 SCHEMA absorption locks status enum at 5-value French per
+ * briefs/evenements.md §6 (was English 5-value pre-v5.3.1; is_sandbox BOOLEAN
+ * dropped, Sandbox is the 5th status value). Filter taxonomy now reads status
+ * directly without orthogonal flag:
+ *   - planned  : status === 'En préparation' AND !is_general
+ *   - selling  : status === 'En vente'       AND !is_general
+ *   - sandbox  : status === 'Sandbox'        AND !is_general
+ *   - past     : status === 'Terminé'        AND !is_general (Anciens surface, Phase 5)
+ *   - Annulé events surface in a dedicated filter post-V1 (not in Dashboard V1).
+ *
+ * Sort within filter: closest start_date ascending. Null start_date sinks to
+ * end (carries from Stage 2/3 sort behavior). Sandbox event with null start_date
+ * sorts to end of its filter — only sandbox event V1 mock, so trivially last.
+ *
+ * Empty-state copy locked per exec prompt L74-77; Leo can override at preview.
+ *
+ * Filter button click handlers attach in DOMContentLoaded; default state
+ * "selling" carries from Stage 2 close (active class on the En vente button).
+ * Status changes via drawer re-render Dashboard, which re-filters — event may
+ * disappear from view if status change moves it out of current filter (e.g.,
+ * En vente → Terminé with filter=selling). Drawer stays open in that case (Geo's
+ * context survives the filter shift; close manually). V1 behavior, not a bug.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+const FILTERS = {
+  planned: e => !e.is_general && e.status === 'En préparation',
+  selling: e => !e.is_general && e.status === 'En vente',
+  sandbox: e => !e.is_general && e.status === 'Sandbox',
+  past:    e => !e.is_general && e.status === 'Terminé'
+};
+
+const EMPTY_COPY = {
+  planned: 'Aucun événement en préparation.',
+  selling: 'Aucun événement en vente.',
+  sandbox: 'Aucun événement sandbox.'
+};
+
+let _currentFilter = 'selling';
+
+function emptyStateHTML(filterName) {
+  return `<div style="text-align:center;padding:60px 24px;color:var(--text-dim);font-size:.85em">${EMPTY_COPY[filterName] || ''}</div>`;
+}
+
+function setFilter(filterName, btnEl) {
+  if (!FILTERS[filterName]) return;
+  _currentFilter = filterName;
+  document.querySelectorAll('.bilan-toggle-btn').forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+  renderDashboard();
+}
+
+async function renderDashboard() {
+  const grid = document.getElementById('dash-grid');
+  if (!grid) return;
+  const all = await window.MD.getEvents();
+  const filterFn = FILTERS[_currentFilter] || (e => !e.is_general);
+  const sorted = all
+    .filter(filterFn)
+    .slice()
+    .sort((a, b) => {
+      if (!a.start_date && !b.start_date) return 0;
+      if (!a.start_date) return 1;
+      if (!b.start_date) return -1;
+      return a.start_date.localeCompare(b.start_date);
+    });
+
+  const caption = document.getElementById('sort-caption');
+  if (sorted.length === 0) {
+    if (caption) caption.style.display = 'none';
+    grid.innerHTML = emptyStateHTML(_currentFilter);
+    return;
+  }
+  if (caption) caption.style.display = '';
+  grid.innerHTML = sorted.map((evt, idx) => cardHTML(evt, idx)).join('');
+  Array.from(grid.children).forEach((cardEl, idx) => {
+    cardEl.addEventListener('click', () => openEventDrawer(sorted[idx]));
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.bilan-toggle-btn').forEach(b => {
+    b.addEventListener('click', () => setFilter(b.dataset.filter, b));
+  });
+  renderDashboard();
+});
+</script>
+</body>
+</html>

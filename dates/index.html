@@ -14,13 +14,10 @@
     <div class="nav-sw" style="position:relative">
       <div class="nav-sw-av"><img src="LOGO_ROND_JAUNE.png" alt="GEN" style="width:100%;height:100%;object-fit:cover"></div>
       <div>
-        <div style="display:flex;align-items:center;gap:5px">
-          <span style="font-size:13px;font-weight:600;color:#fff">Générale</span>
-          <div style="width:5px;height:5px;border-radius:50%;background:var(--green)"></div>
-        </div>
-        <div style="font-size:10px;color:var(--text-dim);margin-top:3px">Générale 2026 · Madame Loyal</div>
+        <div class="nav-sw-name">Générale<span class="dot"></span></div>
+        <div class="nav-sw-sub">Générale 2026 · Madame Loyal</div>
       </div>
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2.5" style="margin-left:2px"><path d="M6 9l6 6 6-6"/></svg>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2.5" style="margin-left:2px;flex-shrink:0"><path d="M6 9l6 6 6-6"/></svg>
       <select class="session-sw" style="position:absolute;inset:0;width:100%;height:100%;opacity:0.01;cursor:pointer;z-index:2;font-size:16px" onchange="if(this.value && !this.options[this.selectedIndex].dataset.soon){window.location.href=this.value}">
         <option value="" disabled>Changer session</option>
         <option value="budget_general.html" selected>Générale 2026</option>

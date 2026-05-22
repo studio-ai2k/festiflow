@@ -503,10 +503,9 @@ function drawerRowHTML(label, value) {
   </div>`;
 }
 
-/* Drawer URL section — Q17 OPEN: both variants built side-by-side for Leo's
- * pick (Stage-1 visual). Internal pair (BudgetFlow/Billetterie) = same-tab
- * deep-links; external four (Dice/Shotgun) = new-tab. Per ADR-0013 + brief §14
- * Q17. Remove the unchosen variant after Leo picks (he leans sub-grouped). */
+/* Drawer URL section (v5.6.0 / ADR-0013, Q17 resolved → sub-grouped). Internal
+ * pair (BudgetFlow/Billetterie) = same-tab deep-links; external four
+ * (Dice/Shotgun) = new-tab. Internal/external asymmetry preserved via sub-groups. */
 function drawerURLCell(url, external) {
   if (!url) return '<span style="color:var(--text-dim);font-weight:500">—</span>';
   const t = external ? ' target="_blank" rel="noopener"' : '';   // external new-tab; internal same-tab
@@ -514,23 +513,11 @@ function drawerURLCell(url, external) {
   const color = external ? 'var(--text-muted)' : 'var(--green)';
   return `<a href="${url}"${t} style="color:${color};text-decoration:none;font-weight:600">Ouvrir ${arrow}</a>`;
 }
-function drawerLinksVariantsHTML(evt) {
+function drawerLinksHTML(evt) {
   const subLabel = (txt) => `<div style="font-size:.62em;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-dim);margin:10px 0 4px">${txt}</div>`;
-  // Variant A — flat: all 6 links in a single list.
-  const flat = `
+  return `
     <div class="drawer-section">
-      <div class="drawer-section-title">Liens &amp; intégrations — Variante A (plat)</div>
-      ${drawerRowHTML('BudgetFlow',          drawerURLCell(evt.budgetflow_url, false))}
-      ${drawerRowHTML('Billetterie',         drawerURLCell(evt.billetterie_url, false))}
-      ${drawerRowHTML('Dice — backend',      drawerURLCell(evt.dice_backend_url, true))}
-      ${drawerRowHTML('Dice — achat public', drawerURLCell(evt.dice_public_buy_url, true))}
-      ${drawerRowHTML('Shotgun — backend',   drawerURLCell(evt.shotgun_backend_url, true))}
-      ${drawerRowHTML('Shotgun — achat',     drawerURLCell(evt.shotgun_public_buy_url, true))}
-    </div>`;
-  // Variant B — sub-grouped: internal modules vs external platforms (asymmetry preserved).
-  const grouped = `
-    <div class="drawer-section">
-      <div class="drawer-section-title">Liens &amp; intégrations — Variante B (sous-groupé)</div>
+      <div class="drawer-section-title">Liens &amp; intégrations</div>
       ${subLabel('Modules internes — nav live, même onglet')}
       ${drawerRowHTML('BudgetFlow',  drawerURLCell(evt.budgetflow_url, false))}
       ${drawerRowHTML('Billetterie', drawerURLCell(evt.billetterie_url, false))}
@@ -540,7 +527,6 @@ function drawerLinksVariantsHTML(evt) {
       ${drawerRowHTML('Shotgun — backend',   drawerURLCell(evt.shotgun_backend_url, true))}
       ${drawerRowHTML('Shotgun — achat',     drawerURLCell(evt.shotgun_public_buy_url, true))}
     </div>`;
-  return flat + grouped;
 }
 
 const STATUS_OPTIONS = [
@@ -591,7 +577,7 @@ function openEventDrawer(evt) {
       ${drawerRowHTML('Capacité',   formatCapacity(evt.capacity))}
     </div>
 
-    ${drawerLinksVariantsHTML(evt)}
+    ${drawerLinksHTML(evt)}
 
     <div class="drawer-section">
       <div class="drawer-section-title">Statut</div>

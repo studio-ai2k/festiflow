@@ -307,6 +307,14 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       <button id="sandbox-confirm-btn" class="fiche-btn sandbox-confirm">✓ Confirmer la sandbox · passe à En préparation</button>
       <div class="cond-note">[s'affiche uniquement quand statut actuel = Sandbox · raccourci UX one-way]</div>
     </div>
+    <div class="fiche-field" style="margin-top:12px">
+      <label class="fiche-field-label">Sélecteur de session</label>
+      <label style="display:inline-flex;align-items:center;gap:9px;cursor:pointer">
+        <input type="checkbox" id="in-switcher-toggle" checked style="width:15px;height:15px;accent-color:var(--green);cursor:pointer">
+        <span id="in-switcher-hint" style="font-size:.72em;color:var(--text-muted)">Afficher cet événement dans le sélecteur de session</span>
+      </label>
+      <div class="cond-note">in_switcher · désactivé sans compte Qonto (filtre structurel) · forcé à off si Annulé (auto-flip) · brief §6 + ADR-0013</div>
+    </div>
     <div class="fiche-field" style="margin-top:12px;margin-bottom:0">
       <label class="fiche-field-label">Drapeau Générale</label>
       <span class="ro-badge"><span class="lock">🔒</span> is_general = false · read-only V1</span>
@@ -537,6 +545,8 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   var capRows = document.getElementById('cap-rows');
   var capTotalB = document.querySelector('.cap-total b');
   var qontoSelect = document.getElementById('qonto-select');
+  var inSwitcherToggle = document.getElementById('in-switcher-toggle');
+  var inSwitcherHint = document.getElementById('in-switcher-hint');
 
   // Stage 3 refs (validation cascade)
   var nameInput = document.getElementById('name-input');
@@ -682,6 +692,39 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     //    fields count as required + therefore which earn `.invalid` +
     //    therefore Save enable/disable state).
     revalidate();
+
+    // 8. (v5.6.0) Session-switcher toggle state tracks status + qonto.
+    updateSwitcherToggle();
+  }
+
+  // ── Session-switcher toggle (v5.6.0 / ADR-0013) ──────────────────────
+  // in_switcher manual control. Disabled + forced-off when no usable Qonto
+  // account (Sandbox-disabled or empty/"+ Créer") — mirrors the structural
+  // "no Qonto = can't be in switcher" filter the switcher predicate enforces.
+  // Forced-off on Annulé (the auto-flip-to-false rule). Stage-1: local state
+  // only, surfaced in the save payload; real persistence at the persistence Stage.
+  function qontoAbsent() {
+    if (qontoSelect.disabled) return true;                       // Sandbox isolation
+    var txt = (qontoSelect.options[qontoSelect.selectedIndex] || {}).textContent || '';
+    return !qontoSelect.value || /^\s*\+/.test(txt);             // empty or "+ Créer …" (no real account)
+  }
+  function updateSwitcherToggle() {
+    if (!inSwitcherToggle) return;
+    var noQonto = qontoAbsent();
+    var isAnnule = statusSelect.value === 'Annulé';
+    if (noQonto || isAnnule) {
+      inSwitcherToggle.checked = false;                          // structural (no Qonto) or auto-flip (Annulé)
+      inSwitcherToggle.disabled = true;
+    } else {
+      inSwitcherToggle.disabled = false;
+    }
+    if (inSwitcherHint) {
+      inSwitcherHint.textContent = noQonto
+        ? 'Indisponible — un compte Qonto est requis pour le sélecteur'
+        : isAnnule
+          ? 'Forcé à off — événement annulé (auto-flip)'
+          : 'Afficher cet événement dans le sélecteur de session';
+    }
   }
 
   // ── Validation helpers (Stage 3) ─────────────────────────────────────
@@ -778,6 +821,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   cityInput.addEventListener('input', revalidate);
   producteurSelect.addEventListener('change', revalidate);
   qontoSelect.addEventListener('change', revalidate);
+  qontoSelect.addEventListener('change', updateSwitcherToggle);
 
   // Confirmer-la-sandbox shortcut: one-way Sandbox → En préparation per
   // brief §4 v5.3.1 (bidirectional regression open per §14 — no V1 UI)
@@ -805,7 +849,8 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
         function(i){ return parseInt(i.value, 10) || 0; }
       ),
       producteur: producteurSelect.value,
-      qonto_account: qontoSelect.disabled ? null : qontoSelect.value
+      qonto_account: qontoSelect.disabled ? null : qontoSelect.value,
+      in_switcher: inSwitcherToggle.checked
     };
     console.log('[Fiche save]', payload);
     var original = saveBtn.textContent;

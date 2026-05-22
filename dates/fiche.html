@@ -13,8 +13,8 @@
        poster slot, Confirmer-la-sandbox shortcut)
      - Sonora Bordeaux row still hardcoded as placeholder data
      - Full validation cascade wired this ship per brief §11 contract:
-         · Required-asterisk dynamism — `.req` spans on the 7 Sandbox-released
-           fields (country, city, start_date, days, jauge, producteur, qonto)
+         · Required-asterisk dynamism — `.req` spans on the 6 Sandbox-released
+           fields (country, city, start_date, days, jauge, producteur)
            hide entirely on Sandbox status, show on non-Sandbox; name's `.req`
            stays always visible (required-always per §11)
          · Red-border styling — `.invalid` class toggles on empty required
@@ -195,8 +195,8 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2.5" style="margin-left:2px;flex-shrink:0"><path d="M6 9l6 6 6-6"/></svg>
     </div>
     <button class="nm on" onclick="go('bilan',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Événements</button>
-    <button class="nm" onclick="go('budgetflow',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>Budgetflow</button>
-    <button class="nm" onclick="go('billetterie',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>Billetterie</button>
+    <button id="nav-budgetflow" class="nm"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>Budgetflow</button>
+    <button id="nav-billetterie" class="nm"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>Billetterie</button>
     <button class="nm" onclick="go('fiche',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>Demande D'Achat</button>
     <button class="nm" onclick="go('factures',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Partenaires</button>
     <div class="nav-user">
@@ -224,11 +224,11 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       </div>
       <!-- linked-surface badges (per brief §7 v5.3.1) — conditional on linkage existing -->
       <div class="linked-badges">
-        <a class="linked-badge budget">
+        <a id="badge-budget" class="linked-badge budget">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="9"/></svg>
           Voir budget
         </a>
-        <a class="linked-badge billet">
+        <a id="badge-billet" class="linked-badge billet">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/></svg>
           Voir billetterie
         </a>
@@ -406,7 +406,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   <section class="fiche-section">
     <div class="fiche-section-hdr"><div class="fiche-section-title">6 · Compte Qonto</div></div>
     <div class="fiche-field" style="margin-bottom:0">
-      <label class="fiche-field-label">Compte bancaire <span class="req">*</span> <span class="opt">— sauf Sandbox</span></label>
+      <label class="fiche-field-label">Compte bancaire <span class="opt">— optionnel V1 · désactivé en Sandbox</span></label>
       <select id="qonto-select" class="fiche-select">
         <option selected>ML Bordeaux 2026 · FR76 ••2847</option>
         <option>ML Paris XXL 2026 · FR76 ••5512</option>
@@ -420,7 +420,23 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   <section class="fiche-section">
     <div class="fiche-section-hdr">
       <div class="fiche-section-title">7 · Billetterie & intégrations</div>
-      <div class="fiche-section-hint">V1 stocke seulement · API hooks V2 par §8</div>
+      <div class="fiche-section-hint">modules internes : nav live · plateformes externes : stockage V1 · API hooks V2 par §8</div>
+    </div>
+
+    <!-- Internal-modules sub-group (deep-links within program — drive live nav, same-tab) — brief §6 + ADR-0013 -->
+    <div class="url-pair">
+      <div class="url-pair-hdr">
+        <span class="url-pair-platform" style="color:var(--green)">●</span>
+        <span class="url-pair-platform">Modules internes</span>
+      </div>
+      <div class="fiche-field">
+        <label class="fiche-field-label">URL BudgetFlow <span class="opt">— optionnel · active le bouton nav + badge</span></label>
+        <input id="f-budgetflow-url" class="fiche-input" type="url" value="https://festiflow.studioai2k.com/budget/bdx" placeholder="https://festiflow.studioai2k.com/budget/…">
+      </div>
+      <div class="fiche-field">
+        <label class="fiche-field-label">URL Billetterie <span class="opt">— optionnel · active le bouton nav + badge</span></label>
+        <input id="f-billetterie-url" class="fiche-input" type="url" value="https://festiflow.studioai2k.com/billetterie/bordeaux" placeholder="https://festiflow.studioai2k.com/billetterie/…">
+      </div>
     </div>
 
     <!-- Dice URL pair -->
@@ -492,7 +508,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
    Fiche page Stage 3 — full validation cascade (v5.3.6 / module v0.3.4)
 
    Extends Stages 1-2. New this ship:
-     1. Required-asterisk dynamism — `.req` spans on the 7 Sandbox-released
+     1. Required-asterisk dynamism — `.req` spans on the 6 Sandbox-released
         fields toggle visibility per status; name's `.req` always visible
      2. Red-border invalid styling — `.invalid` class toggles on empty
         required fields (per current status); non-required fields never
@@ -530,8 +546,9 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   var saveBtn = document.getElementById('save-btn');
   var capLabelReq = document.getElementById('cap-label-req');
 
-  // `.req` spans on the 7 Sandbox-released field labels (name's `.req` is
-  // always-visible per brief §11 required-always — not in this list).
+  // `.req` spans on the 6 Sandbox-released field labels (name's `.req` is
+  // always-visible per brief §11 required-always — not in this list; qonto
+  // dropped from the required set v5.6.0 per ADR-0013 — optional V1).
   // Looked up via querySelector on the field labels so we don't have to
   // add IDs to every span.
   var reqSpans = {
@@ -540,8 +557,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     start: startInput.parentElement.querySelector('.fiche-field-label .req'),
     days: daysInput.parentElement.querySelector('.fiche-field-label .req'),
     cap: capLabelReq,
-    producteur: producteurSelect.parentElement.querySelector('.fiche-field-label .req'),
-    qonto: qontoSelect.parentElement.querySelector('.fiche-field-label .req')
+    producteur: producteurSelect.parentElement.querySelector('.fiche-field-label .req')
   };
 
   // ── Status enum map (display label === storage form per brief §6) ────
@@ -650,7 +666,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       qontoSelect.removeAttribute('disabled');
     }
 
-    // 6. (Stage 3) Required-asterisk dynamism — the 7 Sandbox-released
+    // 6. (Stage 3) Required-asterisk dynamism — the 6 Sandbox-released
     //    fields' `.req` spans hide on Sandbox, show on non-Sandbox. Name's
     //    `.req` stays always visible (required-always per brief §11).
     //    Sandbox status itself signals validation released — no grey-out
@@ -661,7 +677,6 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     toggleReq(reqSpans.days, !isSandbox);
     toggleReq(reqSpans.cap, !isSandbox);
     toggleReq(reqSpans.producteur, !isSandbox);
-    toggleReq(reqSpans.qonto, !isSandbox);
 
     // 7. (Stage 3) Re-run validation against new status (changes which
     //    fields count as required + therefore which earn `.invalid` +
@@ -697,7 +712,6 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     var days = parseInt(daysInput.value, 10);
     if (!days || days < 1) return false;
     if (isEmpty(producteurSelect)) return false;
-    if (isEmpty(qontoSelect)) return false;
     // Each cap-row capacity input required-when-not-Sandbox per §11
     var capInputs = capRows.querySelectorAll('input');
     if (capInputs.length === 0) return false; // days≥1 but no rows = invalid state
@@ -714,7 +728,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     // Name: always required → red-border when empty regardless of status
     setInvalid(nameInput, isEmpty(nameInput));
 
-    // The 7 Sandbox-released fields: required only when NOT Sandbox.
+    // The 6 Sandbox-released fields: required only when NOT Sandbox.
     // On Sandbox status: clear `.invalid` from all (release rule).
     setInvalid(countrySelect, !isSandbox && isEmpty(countrySelect));
     setInvalid(cityInput, !isSandbox && isEmpty(cityInput));
@@ -722,7 +736,6 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     var daysVal = parseInt(daysInput.value, 10);
     setInvalid(daysInput, !isSandbox && (!daysVal || daysVal < 1));
     setInvalid(producteurSelect, !isSandbox && isEmpty(producteurSelect));
-    setInvalid(qontoSelect, !isSandbox && isEmpty(qontoSelect));
 
     // Cap-row capacity inputs: required-when-not-Sandbox per §11
     var capInputs = capRows.querySelectorAll('input');
@@ -808,6 +821,48 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   // Sonora Bordeaux row has all required fields populated, so initial
   // Save button renders enabled with no `.invalid` classes anywhere.
   applyStatusCascade(statusSelect.value);
+
+  // ── Linked-surface wiring (v5.6.0 / ADR-0013) — internal-module deep-links ──
+  // Internal pair (BudgetFlow / Billetterie) drives the chrome top-nav button +
+  // the Fiche-top badge (the drawer surface lives in index.html). Source is the
+  // §7 internal-module inputs (Stage-1: seeded from the hardcoded Sonora
+  // Bordeaux event). Empty URL → chrome button disabled/grayed (force-the-
+  // discipline) + badge hidden. Internal links open same-tab (deep-link within
+  // program). External four (Dice/Shotgun) are drawer-only/new-tab — no chrome,
+  // no badge — so they are intentionally absent here.
+  function wireLinkedSurfaces() {
+    var pairs = [
+      { input: 'f-budgetflow-url',  badge: 'badge-budget', nav: 'nav-budgetflow' },
+      { input: 'f-billetterie-url', badge: 'badge-billet',  nav: 'nav-billetterie' }
+    ];
+    pairs.forEach(function(p) {
+      var src = document.getElementById(p.input);
+      var url = src ? (src.value || '').trim() : '';
+      var badge = document.getElementById(p.badge);
+      var nav = document.getElementById(p.nav);
+      if (badge) {
+        if (url) { badge.href = url; badge.style.display = ''; }       // same-tab, no target
+        else { badge.removeAttribute('href'); badge.style.display = 'none'; }
+      }
+      if (nav) {
+        if (url) {
+          nav.style.opacity = ''; nav.style.cursor = ''; nav.style.pointerEvents = '';
+          nav.removeAttribute('aria-disabled');
+          nav.onclick = function() { window.location.href = url; };    // same-tab deep-link
+        } else {
+          nav.style.opacity = '.35'; nav.style.cursor = 'not-allowed'; nav.style.pointerEvents = 'none';
+          nav.setAttribute('aria-disabled', 'true');
+          nav.onclick = null;
+        }
+      }
+    });
+  }
+  // Re-wire live as the §7 inputs change, so empty → hidden/disabled is visible.
+  ['f-budgetflow-url', 'f-billetterie-url'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('input', wireLinkedSurfaces);
+  });
+  wireLinkedSurfaces();
 })();
 </script>
 

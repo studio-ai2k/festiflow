@@ -18,12 +18,9 @@
         <div class="nav-sw-sub">Générale 2026 · Madame Loyal</div>
       </div>
       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2.5" style="margin-left:2px;flex-shrink:0"><path d="M6 9l6 6 6-6"/></svg>
-      <select class="session-sw" style="position:absolute;inset:0;width:100%;height:100%;opacity:0.01;cursor:pointer;z-index:2;font-size:16px" onchange="if(this.value && !this.options[this.selectedIndex].dataset.soon){window.location.href=this.value}">
+      <!-- Options populated by renderSwitcher() — predicate-filtered off STAGE2_EVENTS (v5.6.0 / ADR-0013) -->
+      <select id="session-sw" class="session-sw" style="position:absolute;inset:0;width:100%;height:100%;opacity:0.01;cursor:pointer;z-index:2;font-size:16px" onchange="if(this.value && !this.options[this.selectedIndex].dataset.soon){window.location.href=this.value}">
         <option value="" disabled>Changer session</option>
-        <option value="budget_general.html" selected>Générale 2026</option>
-        <option value="budget_pa.html">ML 130326 — Paris XXL</option>
-        <option value="budget_bdx.html">ML 120626 — Bordeaux</option>
-        <option value="budget_epk.html">EPK 050926 — Paris</option>
       </select>
     </div>
     <button class="nm on" onclick="go('bilan',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Événements</button>
@@ -112,7 +109,7 @@
  * locks the per-day shape; Stage 6 ADR pre-flight flags this for proper altitude.
  */
 const STAGE2_EVENTS = [
-  { id:'evt-sb', name:'Madame Loyal x Sonora Bordeaux',  status:'En vente', is_general:false,
+  { id:'evt-sb', qonto_account_id:'qa-bdx', in_switcher:true, name:'Madame Loyal x Sonora Bordeaux',  status:'En vente', is_general:false,
     city:'Bordeaux', venue:'Parc des Expositions',     start_date:'2026-06-11', number_of_days:3, poster_url:null, display_initials:'SB',
     budget_target:950000, budget_consumed:385000, edition_number:4, capacity:44500,
     description:'4e édition du festival Sonora à Bordeaux — programmation électro 3 jours.',
@@ -124,14 +121,14 @@ const STAGE2_EVENTS = [
     shotgun_public_buy_url:'https://shotgun.live/en/festivals/madame-loyal-x-sonora',
     budgetflow_url:'https://festiflow.studioai2k.com/budget/bdx',
     billetterie_url:'https://festiflow.studioai2k.com/billetterie/bordeaux' },
-  { id:'evt-cc', name:'Madame Loyal x Crazy Carnaval',   status:'En vente', is_general:false,
+  { id:'evt-cc', qonto_account_id:'qa-cc', in_switcher:false, name:'Madame Loyal x Crazy Carnaval',   status:'En vente', is_general:false,
     city:'Paris',    venue:'Cirque Micheletty',        start_date:'2026-07-04', number_of_days:1, poster_url:null, display_initials:'CC',
     budget_target:380000, budget_consumed:115000, edition_number:1, capacity:3800,
     description:null, genre:[], previous_edition_event_id:null, template_id:null,
     dice_backend_url:'https://dice.fm/event/crazy-carnaval-2026', shotgun_backend_url:null,
     dice_public_buy_url:null, shotgun_public_buy_url:null,
     budgetflow_url:null, billetterie_url:null },
-  { id:'evt-ep', name:'Madame Loyal x Elektric Park',    status:'En vente', is_general:false,
+  { id:'evt-ep', qonto_account_id:'qa-epk', in_switcher:true, name:'Madame Loyal x Elektric Park',    status:'En vente', is_general:false,
     city:'Chatou',   venue:'Ile des Impressionnistes', start_date:'2026-09-05', number_of_days:1, poster_url:null, display_initials:'EP',
     budget_target:720000, budget_consumed:145000, edition_number:1, capacity:12000,
     description:null, genre:['Électro'], previous_edition_event_id:null, template_id:null,
@@ -140,14 +137,14 @@ const STAGE2_EVENTS = [
     shotgun_public_buy_url:null,
     budgetflow_url:'https://festiflow.studioai2k.com/budget/epk',
     billetterie_url:'https://festiflow.studioai2k.com/billetterie/epk' },
-  { id:'evt-si', name:'SONORA x IMPACT',                 status:'En vente', is_general:false,
+  { id:'evt-si', qonto_account_id:null, in_switcher:false, name:'SONORA x IMPACT',                 status:'En vente', is_general:false,
     city:'Paris',    venue:'Parc des Expositions de Villepinte', start_date:'2026-09-25', number_of_days:1, poster_url:null, display_initials:'SI',
     budget_target:850000, budget_consumed:155000, edition_number:1, capacity:25000,
     description:null, genre:[], previous_edition_event_id:null, template_id:null,
     dice_backend_url:null, shotgun_backend_url:'https://shotgun.live/event/sonora-impact-2026',
     dice_public_buy_url:null, shotgun_public_buy_url:null,
     budgetflow_url:null, billetterie_url:null },
-  { id:'evt-sh', name:'Sonora Halloween XXL 2026',       status:'En préparation', is_general:false,
+  { id:'evt-sh', qonto_account_id:null, in_switcher:false, name:'Sonora Halloween XXL 2026',       status:'En préparation', is_general:false,
     city:'Bordeaux', venue:'Parc des Expositions',     start_date:'2026-10-31', number_of_days:1, poster_url:null, display_initials:'SH',
     budget_target:420000, budget_consumed:30000, edition_number:2, capacity:9500,
     description:null, genre:[], previous_edition_event_id:null, template_id:null,
@@ -160,7 +157,7 @@ const STAGE2_EVENTS = [
    * / "À confirmer" / "—" via existing handlers. KPI tiles render "—" via
    * field-level fallback. Sandbox is the 5th status value per v5.3.1 reversal of
    * v5.2.0 carry-pending #2; was orthogonal is_sandbox BOOLEAN pre-v5.3.1. */
-  { id:'evt-tc', name:'Test calcul tournée hiver',       status:'Sandbox',  is_general:false,
+  { id:'evt-tc', qonto_account_id:null, in_switcher:false, name:'Test calcul tournée hiver',       status:'Sandbox',  is_general:false,
     city:null, venue:null, start_date:null, number_of_days:null, poster_url:null, display_initials:'TC',
     budget_target:null, budget_consumed:null, edition_number:null, capacity:null,
     description:null, genre:[], previous_edition_event_id:null, template_id:null,
@@ -174,7 +171,22 @@ const STAGE2_EVENTS = [
  * wire-in (Postgres-backed events table read via Node API). V1 stays sync-array
  * underneath; the async signature matters for the contract, not the timing.
  * Stage 6 absorption replaces inline STAGE2_EVENTS with import from mock-data.js
- * keeping window.MD.getEvents shape unchanged. */
+ * keeping window.MD.getEvents shape unchanged.
+ *
+ * STAGE-6 RESHAPE REQUIRED (flagged v5.6.0, ADR-0013): app.js + mock-data.js are
+ * currently commented out below (not loaded; live data is inline STAGE2_EVENTS,
+ * French enum). Both carry a PRE-REVERSAL shape that must be FULLY RESHAPED before
+ * wire-in, not token-swapped:
+ *   - drop the is_sandbox BOOLEAN column (retired per briefs/evenements.md §6;
+ *     Sandbox is now the 5th status value, not a separate flag);
+ *   - adopt the canonical 5-value FRENCH status enum
+ *     ('En préparation' / 'En vente' / 'Annulé' / 'Sandbox' / 'Terminé'),
+ *     replacing the stale uppercase English set (PREP/VALIDÉ/LAUNCHED/LIVE/CLOSED)
+ *     used in STATUS_VALUES + status-keyed filter logic (e.status === 'LIVE', etc.);
+ *   - add the 6 URL fields + in_switcher BOOLEAN (already present in inline
+ *     STAGE2_EVENTS; mock-data.js rows predate them).
+ * This is a reshape, not a find-replace — the filter predicates in app.js key on
+ * the English values and must be rewritten against the French enum. */
 window.MD = window.MD || {};
 window.MD.getEvents = async function() {
   return STAGE2_EVENTS;
@@ -491,6 +503,46 @@ function drawerRowHTML(label, value) {
   </div>`;
 }
 
+/* Drawer URL section — Q17 OPEN: both variants built side-by-side for Leo's
+ * pick (Stage-1 visual). Internal pair (BudgetFlow/Billetterie) = same-tab
+ * deep-links; external four (Dice/Shotgun) = new-tab. Per ADR-0013 + brief §14
+ * Q17. Remove the unchosen variant after Leo picks (he leans sub-grouped). */
+function drawerURLCell(url, external) {
+  if (!url) return '<span style="color:var(--text-dim);font-weight:500">—</span>';
+  const t = external ? ' target="_blank" rel="noopener"' : '';   // external new-tab; internal same-tab
+  const arrow = external ? '↗' : '→';
+  const color = external ? 'var(--text-muted)' : 'var(--green)';
+  return `<a href="${url}"${t} style="color:${color};text-decoration:none;font-weight:600">Ouvrir ${arrow}</a>`;
+}
+function drawerLinksVariantsHTML(evt) {
+  const subLabel = (txt) => `<div style="font-size:.62em;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-dim);margin:10px 0 4px">${txt}</div>`;
+  // Variant A — flat: all 6 links in a single list.
+  const flat = `
+    <div class="drawer-section">
+      <div class="drawer-section-title">Liens &amp; intégrations — Variante A (plat)</div>
+      ${drawerRowHTML('BudgetFlow',          drawerURLCell(evt.budgetflow_url, false))}
+      ${drawerRowHTML('Billetterie',         drawerURLCell(evt.billetterie_url, false))}
+      ${drawerRowHTML('Dice — backend',      drawerURLCell(evt.dice_backend_url, true))}
+      ${drawerRowHTML('Dice — achat public', drawerURLCell(evt.dice_public_buy_url, true))}
+      ${drawerRowHTML('Shotgun — backend',   drawerURLCell(evt.shotgun_backend_url, true))}
+      ${drawerRowHTML('Shotgun — achat',     drawerURLCell(evt.shotgun_public_buy_url, true))}
+    </div>`;
+  // Variant B — sub-grouped: internal modules vs external platforms (asymmetry preserved).
+  const grouped = `
+    <div class="drawer-section">
+      <div class="drawer-section-title">Liens &amp; intégrations — Variante B (sous-groupé)</div>
+      ${subLabel('Modules internes — nav live, même onglet')}
+      ${drawerRowHTML('BudgetFlow',  drawerURLCell(evt.budgetflow_url, false))}
+      ${drawerRowHTML('Billetterie', drawerURLCell(evt.billetterie_url, false))}
+      ${subLabel('Plateformes externes — nouvel onglet')}
+      ${drawerRowHTML('Dice — backend',      drawerURLCell(evt.dice_backend_url, true))}
+      ${drawerRowHTML('Dice — achat public', drawerURLCell(evt.dice_public_buy_url, true))}
+      ${drawerRowHTML('Shotgun — backend',   drawerURLCell(evt.shotgun_backend_url, true))}
+      ${drawerRowHTML('Shotgun — achat',     drawerURLCell(evt.shotgun_public_buy_url, true))}
+    </div>`;
+  return flat + grouped;
+}
+
 const STATUS_OPTIONS = [
   { schema: 'En préparation', label: 'En préparation' },
   { schema: 'En vente',       label: 'En vente' },
@@ -539,6 +591,8 @@ function openEventDrawer(evt) {
       ${drawerRowHTML('Capacité',   formatCapacity(evt.capacity))}
     </div>
 
+    ${drawerLinksVariantsHTML(evt)}
+
     <div class="drawer-section">
       <div class="drawer-section-title">Statut</div>
       <select id="drawer-status-select" onchange="handleStatusChange('${evt.name.replace(/'/g, "\\'")}', this.value)"
@@ -572,7 +626,10 @@ function handleStatusChange(evtName, newStatus) {
   const evt = STAGE2_EVENTS.find(e => e.name === evtName);
   if (!evt) return;
   evt.status = newStatus;
+  // in_switcher auto-flips FALSE on transition to Annulé (brief §6 + ADR-0013).
+  if (newStatus === 'Annulé') evt.in_switcher = false;
   renderDashboard();
+  renderSwitcher();
   openEventDrawer(evt);
 }
 
@@ -658,11 +715,39 @@ async function renderDashboard() {
   });
 }
 
+/* Session-switcher render — predicate-filtered off STAGE2_EVENTS (v5.6.0 / ADR-0013).
+ * Predicate: in_switcher === true AND qonto_account_id != null
+ *            AND status IN ('En préparation','En vente','Terminé').
+ * Build-not-wire conversion: the switcher chrome existed but was statically
+ * hardcoded; it is now data-driven. Générale stays pinned first (program-level
+ * general account, always available). Option value = the event's budgetflow_url
+ * (same-tab deep-link to its BudgetFlow session). Mock-data note: in_switcher
+ * default (TRUE at create when Qonto present) + manual Fiche toggle are the
+ * source of truth; here they are seeded per-row in STAGE2_EVENTS. */
+function renderSwitcher() {
+  const sw = document.getElementById('session-sw');
+  if (!sw) return;
+  const SWITCHER_STATUSES = ['En préparation', 'En vente', 'Terminé'];
+  const eligible = STAGE2_EVENTS.filter(e =>
+    e.in_switcher === true &&
+    e.qonto_account_id != null &&
+    SWITCHER_STATUSES.indexOf(e.status) !== -1
+  );
+  const opts = ['<option value="" disabled>Changer session</option>'];
+  opts.push('<option value="budget_general.html" selected>Générale 2026</option>');
+  eligible.forEach(e => {
+    const target = e.budgetflow_url || '#';
+    opts.push(`<option value="${target}">${e.name}</option>`);
+  });
+  sw.innerHTML = opts.join('');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.bilan-toggle-btn').forEach(b => {
     b.addEventListener('click', () => setFilter(b.dataset.filter, b));
   });
   renderDashboard();
+  renderSwitcher();
 });
 </script>
 </body>

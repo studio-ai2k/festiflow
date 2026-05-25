@@ -732,6 +732,12 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.bilan-toggle-btn').forEach(b => {
     b.addEventListener('click', () => setFilter(b.dataset.filter, b));
   });
+  var nouvelleDateBtn = document.getElementById('nouvelle-date-btn');
+  if (nouvelleDateBtn) {
+    nouvelleDateBtn.addEventListener('click', function() {
+      window.location.href = 'fiche.html?id=new';   // Fiche create-mode (brief §3)
+    });
+  }
   renderDashboard();
   renderSwitcher();
 });

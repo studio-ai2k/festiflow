@@ -5,46 +5,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Festiflow — Fiche événement</title>
 <!-- ══════════════════════════════════════════════════════════════════════
-     Festiflow Module Dates · Fiche événement (Stage 3 — validation cascade)
+     Festiflow Module Dates · Fiche événement (create-mode + de-hardcode)
 
-     STAGE 3 STATE (this ship, v5.3.6 / module-internal v0.3.4):
-     - Stages 1-2 surfaces intact (8 sections, 13 write-fields, edit-mode,
-       cap-rows regenerate, Sandbox visual cascade, status display sync,
-       poster slot, Confirmer-la-sandbox shortcut)
-     - Sonora Bordeaux row still hardcoded as placeholder data
-     - Full validation cascade wired this ship per brief §11 contract:
-         · Required-asterisk dynamism — `.req` spans on the 6 Sandbox-released
-           fields (country, city, start_date, days, jauge, producteur)
-           hide entirely on Sandbox status, show on non-Sandbox; name's `.req`
-           stays always visible (required-always per §11)
-         · Red-border styling — `.invalid` class toggles on empty required
-           fields; non-required fields never red-border
-         · Save button enable/disable — `saveBtn.disabled` tracks `isFormValid()`;
-           Sandbox state validates against name-only, non-Sandbox against full
-           required set; Stage 1 hardcoded Sonora row renders valid on init
-     - Save click handler: on-submit semantics = console.log + brief visual
-       confirm (button text "Enregistré ✓" for 1.2s then reverts). No backend
-       persistence — real wire lands at V1-sequence step 8 (Postgres + Node API
-       on Railway per ADR-0007 §3 + ADR-0009)
-     - Three label `.req` spans added this ship (country, city, "Jauge par
-       jour" wrapper) — caught at Stage 3 pre-flight as Stage 1 coverage gap
-       against brief §11 required-when-not-Sandbox set; absorbed in-line with
-       the cascade wiring rather than warranting a separate reconcile ship
-     - JS wiring IDs added as scaffolding: #name-input, #country-select,
-       #city-input, #producteur-select, #save-btn, #cap-label-req. Combined
-       with Stage 2's IDs the validation cascade has complete query targets.
+     STATE (this ship, v5.7.2 / module-internal v0.4.8):
+     - Fiche fully de-hardcoded: no field carries a hardcoded value, option
+       choice, or checkbox state in markup — all JS-driven via populateForm.
+       SAMPLE_EVENT (n=1 mock, built from the v5.7.1 Sonora values) + the
+       new populateForm(event | null) are the single fill path for the whole
+       surface — create and edit are the SAME page, no second file to sync.
+     - populateForm covers the header strip (h1 + 4 .fkpi tiles) AND the form
+       (8 sections, 11 new field ids added → all fields now JS-driven). The
+       header reflects LOAD-TIME state only; live-update-as-you-type is
+       deferred (no input listeners drive the header strip this slice).
+     - `?id` routing live: `?id=new` → populateForm(null) create-mode blank,
+       heading "Nouvel événement", status En préparation, days 1 + one empty
+       cap-row, Save disabled (empty name). Absent / any non-`new` →
+       populateForm(SAMPLE_EVENT), which reproduces the v5.7.1 Sonora view
+       exactly and exercises the populate path (so it isn't dead code). This
+       replaces the old hardcoded-validity init (L866-868 assumption removed).
+     - Placeholder options added to country/producteur/qonto (disabled blank
+       first option) so create-mode renders them blank and validation flags
+       them; coproducteur/prev-edition reuse their existing value="" blank.
+     - Stale STAGE-state refresh-marker closed here (was "Stage 3 / v5.3.6 /
+       v0.3.4"): this comment now tracks create-mode at v5.7.2 / v0.4.8.
 
-     STAGE 4+ ADDS (separate sessions, not this ship):
-     - Status transitions BudgetFlow side-effects (Save-as-template on En
-       vente per brief §7; post-clôture editable flip on Terminé)
+     DEFERRED (later slices, not this ship):
+     - Real uuid-lookup against STAGE2_EVENTS (needs the mock-shape extension)
+     - Live-update-as-you-type for the header strip
      - Inline-create flows (coproducer "+", qonto "+")
-     - Create-mode ?id=new query-param parsing (markup ready since Stage 1)
-     - Permissions gating visual (admin/manager/chef_pole/viewer affordance
-       gating — blocked on briefs/admin.md Q1 role vocabulary)
+     - Status-transition BudgetFlow side-effects (brief §7)
+     - Permissions gating (blocked on briefs/admin.md Q1 role vocabulary)
      - Real Save persistence (V1-sequence step 8: wire to API)
 
-     REACHABILITY THIS SHIP: direct URL only (fiche.html?id=<uuid> or ?id=new
-     routing contract per brief §3 v5.3.1 — not parsed yet, edit-mode hardcoded).
+     Zero ADRs this ship — create-mode is authorized by briefs/evenements.md
+     §3 routing contract + this STAGE-4 plan; SAMPLE_EVENT is a mock-data
+     constant following existing patterns (§10 §3 architectural-significance
+     test: no future session needs to know WHY it was chosen → CHANGELOG-only).
      ══════════════════════════════════════════════════════════════════════ -->
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared/chrome.css">
@@ -234,7 +230,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
         </a>
       </div>
     </div>
-    <h1 class="fiche-page-title">Madame Loyal x Sonora Bordeaux</h1>
+    <h1 id="fiche-heading" class="fiche-page-title">Madame Loyal x Sonora Bordeaux</h1>
     <div class="fkpi-row">
       <div class="fkpi"><div class="fkpi-label">Édition</div><div class="fkpi-val">N° 4</div><div class="fkpi-sub">série Sonora</div></div>
       <div class="fkpi"><div class="fkpi-label">Dates</div><div class="fkpi-val">11–13 juin 2026</div><div class="fkpi-sub">3 jours</div></div>
@@ -255,11 +251,11 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       <div style="flex:1;min-width:0">
         <div class="fiche-field">
           <label class="fiche-field-label">Nom de l'événement <span class="req">*</span></label>
-          <input id="name-input" class="fiche-input" type="text" value="Madame Loyal x Sonora Bordeaux">
+          <input id="name-input" class="fiche-input" type="text">
         </div>
         <div class="fiche-field">
           <label class="fiche-field-label">Description <span class="opt">— optionnel</span></label>
-          <textarea class="fiche-textarea">4e édition du festival Sonora à Bordeaux — programmation électro 3 jours.</textarea>
+          <textarea id="description-input" class="fiche-textarea"></textarea>
         </div>
         <div class="fiche-field" style="margin-bottom:0">
           <label class="fiche-field-label">Genre <span class="pending">— multi-sélection · vocabulaire Geo-pending Q7</span></label>
@@ -296,7 +292,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
         <label class="fiche-field-label">Changer le statut</label>
         <select id="status-select" class="fiche-select">
           <option>En préparation</option>
-          <option selected>En vente</option>
+          <option>En vente</option>
           <option>Annulé</option>
           <option>Sandbox</option>
           <option>Terminé</option>
@@ -310,7 +306,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="fiche-field" style="margin-top:12px">
       <label class="fiche-field-label">Sélecteur de session</label>
       <label style="display:inline-flex;align-items:center;gap:9px;cursor:pointer">
-        <input type="checkbox" id="in-switcher-toggle" checked style="width:15px;height:15px;accent-color:var(--green);cursor:pointer">
+        <input type="checkbox" id="in-switcher-toggle" style="width:15px;height:15px;accent-color:var(--green);cursor:pointer">
         <span id="in-switcher-hint" style="font-size:.72em;color:var(--text-muted)">Afficher cet événement dans le sélecteur de session</span>
       </label>
       <div class="cond-note">in_switcher · désactivé sans compte Qonto (filtre structurel) · forcé à off si Annulé (auto-flip) · brief §6 + ADR-0013</div>
@@ -328,7 +324,8 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       <div class="fiche-field">
         <label class="fiche-field-label">Pays <span class="req">*</span> <span class="opt">— sauf Sandbox</span></label>
         <select id="country-select" class="fiche-select">
-          <option selected>France</option>
+          <option value="" disabled>— Pays —</option>
+          <option>France</option>
           <option>Belgique</option>
           <option>Suisse</option>
           <option>Allemagne</option>
@@ -336,17 +333,17 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       </div>
       <div class="fiche-field">
         <label class="fiche-field-label">Ville <span class="req">*</span> <span class="opt">— sauf Sandbox</span></label>
-        <input id="city-input" class="fiche-input" type="text" value="Bordeaux">
+        <input id="city-input" class="fiche-input" type="text">
       </div>
     </div>
     <div class="fiche-row c2">
       <div class="fiche-field">
         <label class="fiche-field-label">Salle / Lieu</label>
-        <input class="fiche-input" type="text" value="Parc des Expositions">
+        <input id="venue-input" class="fiche-input" type="text">
       </div>
       <div class="fiche-field">
         <label class="fiche-field-label">Adresse <span class="opt">— optionnel</span></label>
-        <input class="fiche-input" type="text" placeholder="Adresse complète">
+        <input id="address-input" class="fiche-input" type="text" placeholder="Adresse complète">
       </div>
     </div>
   </section>
@@ -359,19 +356,15 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     </div>
     <div class="fiche-field">
       <label class="fiche-field-label">Date de début <span class="req">*</span> <span class="opt">— sauf Sandbox</span></label>
-      <input id="start-date-input" class="fiche-input" type="date" value="2026-06-11">
+      <input id="start-date-input" class="fiche-input" type="date">
     </div>
     <div class="fiche-field">
       <label class="fiche-field-label">Nombre de jours <span class="req">*</span></label>
-      <input id="days-input" class="fiche-input" type="number" value="3" min="1">
+      <input id="days-input" class="fiche-input" type="number" min="1">
     </div>
     <div id="cap-field" class="fiche-field">
       <label class="fiche-field-label">Jauge par jour <span id="cap-label-req" class="req">*</span> <span class="opt">— total dérivé SUM(capacity)</span></label>
-      <div id="cap-rows" class="cap-rows">
-        <div class="cap-row"><span class="cap-row-day">Jour 1</span><span class="cap-row-date">jeu. 11 juin 2026</span><input type="number" value="14000"></div>
-        <div class="cap-row"><span class="cap-row-day">Jour 2</span><span class="cap-row-date">ven. 12 juin 2026</span><input type="number" value="15500"></div>
-        <div class="cap-row"><span class="cap-row-day">Jour 3</span><span class="cap-row-date">sam. 13 juin 2026</span><input type="number" value="15000"></div>
-      </div>
+      <div id="cap-rows" class="cap-rows"></div>
       <div class="cap-total"><span>Total dérivé (SUM)</span><b>44 500</b></div>
     </div>
   </section>
@@ -385,7 +378,8 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="fiche-field">
       <label class="fiche-field-label">Producteur <span class="req">*</span></label>
       <select id="producteur-select" class="fiche-select">
-        <option selected>EPISODE</option>
+        <option value="" disabled>— Sélectionner le producteur —</option>
+        <option>EPISODE</option>
         <option>SAGREGA</option>
         <option>GGS</option>
         <option>CARTEL</option>
@@ -395,15 +389,15 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     </div>
     <div class="fiche-field">
       <label class="fiche-field-label">Coproducteur <span class="opt">— externe uniquement · "+ Créer" inline</span></label>
-      <select class="fiche-select">
-        <option selected value="">— Aucun coproducteur —</option>
+      <select id="coproducteur-select" class="fiche-select">
+        <option value="">— Aucun coproducteur —</option>
         <option>EPK</option>
         <option>+ Créer un coproducteur</option>
       </select>
     </div>
     <div class="fiche-field" style="margin-bottom:0">
       <label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-size:.78em;color:var(--text)">
-        <input type="checkbox" style="width:16px;height:16px;accent-color:#a855f7">
+        <input type="checkbox" id="external-coprod-toggle" style="width:16px;height:16px;accent-color:#a855f7">
         Coproduction externe non spécifiée
       </label>
       <div class="cond-note">[case "external mais coproducteur inconnu" — orthogonal au champ ci-dessus]</div>
@@ -416,7 +410,8 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="fiche-field" style="margin-bottom:0">
       <label class="fiche-field-label">Compte bancaire <span class="opt">— optionnel V1 · désactivé en Sandbox</span></label>
       <select id="qonto-select" class="fiche-select">
-        <option selected>ML Bordeaux 2026 · FR76 ••2847</option>
+        <option value="" disabled>— Aucun compte —</option>
+        <option>ML Bordeaux 2026 · FR76 ••2847</option>
         <option>ML Paris XXL 2026 · FR76 ••5512</option>
         <option>Générale 2026 · FR76 ••9933</option>
         <option>+ Créer un compte Qonto</option>
@@ -439,11 +434,11 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       </div>
       <div class="fiche-field">
         <label class="fiche-field-label">URL BudgetFlow <span class="opt">— optionnel · active le bouton nav + badge</span></label>
-        <input id="f-budgetflow-url" class="fiche-input" type="url" value="https://festiflow.studioai2k.com/budget/bdx" placeholder="https://festiflow.studioai2k.com/budget/…">
+        <input id="f-budgetflow-url" class="fiche-input" type="url" placeholder="https://festiflow.studioai2k.com/budget/…">
       </div>
       <div class="fiche-field">
         <label class="fiche-field-label">URL Billetterie <span class="opt">— optionnel · active le bouton nav + badge</span></label>
-        <input id="f-billetterie-url" class="fiche-input" type="url" value="https://festiflow.studioai2k.com/billetterie/bordeaux" placeholder="https://festiflow.studioai2k.com/billetterie/…">
+        <input id="f-billetterie-url" class="fiche-input" type="url" placeholder="https://festiflow.studioai2k.com/billetterie/…">
       </div>
     </div>
 
@@ -455,11 +450,11 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       </div>
       <div class="fiche-field">
         <label class="fiche-field-label">URL backend <span class="opt">— optionnel</span></label>
-        <input class="fiche-input" type="url" value="https://dice.fm/event/sonora-bordeaux-2026" placeholder="https://dice.fm/event/…">
+        <input id="dice-backend-url" class="fiche-input" type="url" placeholder="https://dice.fm/event/…">
       </div>
       <div class="fiche-field">
         <label class="fiche-field-label">URL d'achat public <span class="opt">— optionnel</span></label>
-        <input class="fiche-input" type="url" value="https://dice.fm/partner/tickets/event/av3vr2-madame-loyal-x-sonora-bordeaux-12-13-juin-2026-11th-jun-parc-des-expositions-de-bordeaux-bordeaux-tickets" placeholder="https://dice.fm/partner/tickets/…">
+        <input id="dice-public-url" class="fiche-input" type="url" placeholder="https://dice.fm/partner/tickets/…">
       </div>
     </div>
 
@@ -471,11 +466,11 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       </div>
       <div class="fiche-field">
         <label class="fiche-field-label">URL backend <span class="opt">— optionnel</span></label>
-        <input class="fiche-input" type="url" value="https://shotgun.live/event/sonora-bordeaux-2026" placeholder="https://shotgun.live/event/…">
+        <input id="shotgun-backend-url" class="fiche-input" type="url" placeholder="https://shotgun.live/event/…">
       </div>
       <div class="fiche-field">
         <label class="fiche-field-label">URL d'achat public <span class="opt">— optionnel</span></label>
-        <input class="fiche-input" type="url" value="https://shotgun.live/en/festivals/madame-loyal-x-sonora" placeholder="https://shotgun.live/en/festivals/…">
+        <input id="shotgun-public-url" class="fiche-input" type="url" placeholder="https://shotgun.live/en/festivals/…">
       </div>
     </div>
   </section>
@@ -489,12 +484,12 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="fiche-row c2">
       <div class="fiche-field">
         <label class="fiche-field-label">N° d'édition</label>
-        <input class="fiche-input" type="number" value="4" min="1">
+        <input id="edition-input" class="fiche-input" type="number" min="1">
       </div>
       <div class="fiche-field" style="margin-bottom:0">
         <label class="fiche-field-label">Édition précédente <span class="opt">— filtré Terminé</span></label>
-        <select class="fiche-select">
-          <option selected value="">— Aucune édition liée —</option>
+        <select id="prev-edition-select" class="fiche-select">
+          <option value="">— Aucune édition liée —</option>
           <option>Sonora Bordeaux 2025 · n°3</option>
           <option>Sonora Bordeaux 2024 · n°2</option>
         </select>
@@ -532,6 +527,38 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
    ═══════════════════════════════════════════════════════════════════════ */
 (function(){
   'use strict';
+
+  // ── SAMPLE_EVENT (edit-preview fixture) ──────────────────────────────
+  // Built from the v5.7.1 hardcoded Sonora Bordeaux markup values (each
+  // field verified against the file at de-hardcode time). Single n=1 mock
+  // for edit-preview; real uuid-lookup against STAGE2_EVENTS is deferred to
+  // a later slice (needs the mock-shape extension). populateForm(SAMPLE_EVENT)
+  // reproduces today's Sonora view exactly.
+  var SAMPLE_EVENT = {
+    name: 'Madame Loyal x Sonora Bordeaux',
+    description: '4e édition du festival Sonora à Bordeaux — programmation électro 3 jours.',
+    status: 'En vente',
+    in_switcher: true,
+    country: 'France',
+    city: 'Bordeaux',
+    venue: 'Parc des Expositions',
+    address: '',
+    start_date: '2026-06-11',
+    number_of_days: 3,
+    capacity_per_day: [14000, 15500, 15000],
+    producteur: 'EPISODE',
+    coproducteur: '',                 // "— Aucun coproducteur —"
+    external_coproduction: false,
+    qonto_account: 'ML Bordeaux 2026 · FR76 ••2847',
+    budgetflow_url: 'https://festiflow.studioai2k.com/budget/bdx',
+    billetterie_url: 'https://festiflow.studioai2k.com/billetterie/bordeaux',
+    dice_backend_url: 'https://dice.fm/event/sonora-bordeaux-2026',
+    dice_public_url: 'https://dice.fm/partner/tickets/event/av3vr2-madame-loyal-x-sonora-bordeaux-12-13-juin-2026-11th-jun-parc-des-expositions-de-bordeaux-bordeaux-tickets',
+    shotgun_backend_url: 'https://shotgun.live/event/sonora-bordeaux-2026',
+    shotgun_public_url: 'https://shotgun.live/en/festivals/madame-loyal-x-sonora',
+    edition_number: 4,
+    previous_edition: ''              // "— Aucune édition liée —"
+  };
 
   // ── Refs ─────────────────────────────────────────────────────────────
   var statusSelect = document.getElementById('status-select');
@@ -790,6 +817,103 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     saveBtn.disabled = !isFormValid();
   }
 
+  // ── Header strip date-range formatter (load-time only) ───────────────
+  function fkpiDateRange(startStr, nDays) {
+    if (!startStr) return '—';
+    var d1 = new Date(startStr + 'T00:00:00');
+    if (isNaN(d1.getTime())) return '—';
+    var n = parseInt(nDays, 10); if (!n || n < 1) n = 1;
+    var d2 = new Date(d1.getTime());
+    d2.setDate(d2.getDate() + (n - 1));
+    var month = function(d){ return d.toLocaleDateString('fr-FR', { month: 'long' }); };
+    if (d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear()) {
+      return d1.getDate() + '–' + d2.getDate() + ' ' + month(d2) + ' ' + d2.getFullYear();
+    }
+    return d1.getDate() + ' ' + month(d1) + ' – ' + d2.getDate() + ' ' + month(d2) + ' ' + d2.getFullYear();
+  }
+
+  // ── populateForm: the single fill path (create + edit share this) ────
+  // event = SAMPLE_EVENT shape → edit-preview; null → create-mode blank.
+  // Covers the header strip (h1 + 4 .fkpi tiles) AND the form per v5.7.2
+  // scope. Header reflects LOAD-TIME state only — live-update-as-you-type
+  // is deferred (no input listeners drive the header strip this slice).
+  function populateForm(event) {
+    var byId = function(id){ return document.getElementById(id); };
+    function setVal(id, v){ var el = byId(id); if (el) el.value = (v == null ? '' : v); }
+
+    // Header strip — h1 + 4 .fkpi tiles (load-time only)
+    var heading = byId('fiche-heading');
+    if (heading) heading.textContent = event ? event.name : 'Nouvel événement';
+    var fv = document.querySelectorAll('.fkpi-val');
+    var fs = document.querySelectorAll('.fkpi-sub');
+    if (event) {
+      var capSum = (event.capacity_per_day || []).reduce(function(a, b){ return a + (parseInt(b, 10) || 0); }, 0);
+      if (fv[0]) fv[0].textContent = 'N° ' + event.edition_number;                 // Édition
+      if (fv[1]) fv[1].textContent = fkpiDateRange(event.start_date, event.number_of_days); // Dates
+      if (fs[1]) fs[1].textContent = event.number_of_days + ' jour' + (event.number_of_days > 1 ? 's' : '');
+      if (fv[2]) fv[2].textContent = event.city;                                   // Lieu
+      if (fs[2]) fs[2].textContent = event.venue;
+      if (fv[3]) fv[3].textContent = capSum.toLocaleString('fr-FR');               // Jauge totale
+    } else {
+      for (var k = 0; k < fv.length; k++) fv[k].textContent = '—';
+      if (fs[0]) fs[0].textContent = '—';   // série (event-specific)
+      if (fs[1]) fs[1].textContent = '—';   // N jours (derived)
+      if (fs[2]) fs[2].textContent = '—';   // venue
+      // fs[3] "somme par jour" stays — static descriptor of the Jauge value
+    }
+
+    // Text / textarea / number / url inputs
+    setVal('name-input',          event ? event.name : '');
+    setVal('description-input',   event ? event.description : '');
+    setVal('city-input',          event ? event.city : '');
+    setVal('venue-input',         event ? event.venue : '');
+    setVal('address-input',       event ? event.address : '');
+    setVal('f-budgetflow-url',    event ? event.budgetflow_url : '');
+    setVal('f-billetterie-url',   event ? event.billetterie_url : '');
+    setVal('dice-backend-url',    event ? event.dice_backend_url : '');
+    setVal('dice-public-url',     event ? event.dice_public_url : '');
+    setVal('shotgun-backend-url', event ? event.shotgun_backend_url : '');
+    setVal('shotgun-public-url',  event ? event.shotgun_public_url : '');
+    setVal('edition-input',       event ? event.edition_number : '');
+
+    // Selects — status defaults to 'En préparation' in create-mode (brief §3).
+    // Other required selects → placeholder ('') when null; coproducteur +
+    // prev-edition → their blank value="" option when null.
+    statusSelect.value     = (event && event.status) || 'En préparation';
+    countrySelect.value    = event ? event.country : '';
+    producteurSelect.value = event ? event.producteur : '';
+    qontoSelect.value      = event ? event.qonto_account : '';
+    setVal('coproducteur-select', event ? event.coproducteur : '');
+    setVal('prev-edition-select', event ? event.previous_edition : '');
+
+    // Checkboxes
+    inSwitcherToggle.checked = !!(event && event.in_switcher);
+    var extCoprod = byId('external-coprod-toggle');
+    if (extCoprod) extCoprod.checked = !!(event && event.external_coproduction);
+
+    // Dates / jauge — set inputs, regenerate rows, then seed capacities.
+    // Create (null): days = 1 → one empty cap-row.
+    startInput.value = event ? event.start_date : '';
+    daysInput.value  = event ? event.number_of_days : 1;
+    regenerateCapRows();
+    if (event && event.capacity_per_day) {
+      var rowInputs = capRows.querySelectorAll('.cap-row input');
+      for (var i = 0; i < rowInputs.length; i++) {
+        if (event.capacity_per_day[i] != null) rowInputs[i].value = event.capacity_per_day[i];
+      }
+      recomputeTotal();
+    }
+
+    // Refresh internal-module deep-link badges/nav off the (now-filled) URLs.
+    wireLinkedSurfaces();
+
+    // Cascade + validity reflect the populated (or blank) state. applyStatusCascade
+    // also runs updateSwitcherToggle (qonto-presence gating) + revalidate; the
+    // explicit revalidate() after is belt-and-suspenders per slice spec.
+    applyStatusCascade(statusSelect.value);
+    revalidate();
+  }
+
   // ── Event wiring ─────────────────────────────────────────────────────
   daysInput.addEventListener('input', function(){
     regenerateCapRows();
@@ -858,14 +982,17 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     setTimeout(function(){ saveBtn.textContent = original; }, 1200);
   });
 
-  // ── Initial render ───────────────────────────────────────────────────
-  // Apply cascade against current select value so Stage 1's hardcoded
-  // "En vente" row renders correctly: all sections visible, Confirmer-
-  // la-sandbox hidden, Qonto enabled, .status-dot.vente, label "En vente".
-  // applyStatusCascade calls revalidate at the end — Stage 1's hardcoded
-  // Sonora Bordeaux row has all required fields populated, so initial
-  // Save button renders enabled with no `.invalid` classes anywhere.
-  applyStatusCascade(statusSelect.value);
+  // ── Initial render — ?id routing (create vs edit-preview) ────────────
+  // `?id=new` → create-mode blank (populateForm(null), heading "Nouvel
+  // événement"); absent or any non-`new` → SAMPLE_EVENT edit-preview, which
+  // reproduces the v5.7.1 Sonora view exactly AND exercises the populate
+  // path (so the non-new branch is not dead code). Real uuid-lookup against
+  // STAGE2_EVENTS is deferred to a later slice (needs the mock-shape
+  // extension). populateForm is the single fill path for both branches and
+  // owns the header strip + the form. Replaces the v5.7.1 hardcoded-validity
+  // init: create-mode lands with Save disabled (empty name).
+  var routeId = new URLSearchParams(location.search).get('id');
+  populateForm(routeId === 'new' ? null : SAMPLE_EVENT);
 
   // ── Linked-surface wiring (v5.6.0 / ADR-0013) — internal-module deep-links ──
   // Internal pair (BudgetFlow / Billetterie) drives the chrome top-nav button +

@@ -42,6 +42,7 @@
 </nav>
 
 <main class="wrap">
+<div id="panel-dashboard" class="dept-panel">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-top:24px;margin-bottom:24px;flex-wrap:wrap;gap:12px">
     <div>
       <h2 style="font-size:1.1em;font-weight:700;color:#fff;margin-bottom:4px">Dashboard</h2>
@@ -56,6 +57,48 @@
   </div>
   <div id="sort-caption" style="font-size:.72em;color:var(--text-dim);margin-bottom:10px">Trié par date · plus proche d'abord</div>
   <div id="dash-grid"></div>
+</div><!-- /#panel-dashboard -->
+
+<div id="panel-liste" class="dept-panel" hidden>
+  <div class="dept-panel-stub">Liste — bientôt · étape 3.</div>
+</div>
+
+<div id="panel-admin" class="dept-panel" hidden>
+  <div class="admin-hdr">
+    <h2 class="admin-title">Admin</h2>
+    <button id="admin-invite-btn" class="admin-invite-btn">+ Inviter un utilisateur</button>
+  </div>
+  <div id="admin-subtabs" class="admin-subtabs">
+    <button class="admin-subtab on" onclick="goAdminSurface('annuaire',this)">Annuaire</button>
+    <button class="admin-subtab is-placeholder" onclick="goAdminSurface('assignations',this)">Assignations</button>
+    <button class="admin-subtab" onclick="goAdminSurface('marques',this)">Marques</button>
+    <button class="admin-subtab" onclick="goAdminSurface('coproducteurs',this)">Coproducteurs</button>
+    <button class="admin-subtab" onclick="goAdminSurface('qonto',this)">Comptes Qonto</button>
+  </div>
+  <div id="admin-surface-annuaire" class="admin-surface">
+    <div id="annuaire-grid"></div>
+  </div>
+  <div id="admin-surface-assignations" class="admin-surface" hidden>
+    <div class="admin-placeholder">Assignations par événement — bientôt. Cette section gérera l'attribution des chefs de pôle aux événements et catégories, avec accès aux autorisations correspondantes. Disponible à la mise en ligne du module DA.</div>
+  </div>
+  <div id="admin-surface-marques" class="admin-surface" hidden>
+    <div class="admin-placeholder">Marques — bientôt. Vocabulaire Producteur (liste fermée Geoffrey/Odile). En attente de la table SCHEMA + des valeurs confirmées par Geo.</div>
+  </div>
+  <div id="admin-surface-coproducteurs" class="admin-surface" hidden>
+    <div class="vocab-hdr">
+      <span class="vocab-title">Coproducteurs</span>
+      <button class="vocab-add-btn" onclick="openCoproducerDrawer(null)">+ Ajouter</button>
+    </div>
+    <div id="coproducteurs-grid"></div>
+  </div>
+  <div id="admin-surface-qonto" class="admin-surface" hidden>
+    <div class="vocab-hdr">
+      <span class="vocab-title">Comptes Qonto</span>
+      <button class="vocab-add-btn" onclick="openQontoDrawer(null)">+ Ajouter</button>
+    </div>
+    <div id="qonto-grid"></div>
+  </div>
+</div>
 </main>
 
 <!-- ── DRAWER ──────────────────────────────────────────
@@ -173,6 +216,10 @@ const STAGE2_EVENTS = [
  * Stage 6 absorption replaces inline STAGE2_EVENTS with import from mock-data.js
  * keeping window.MD.getEvents shape unchanged.
  *
+ * PATH-C SCOPE (Admin V1): only qonto_accounts + coproducers vocab consolidated to
+ * window.MD; this events-core reshape DEFERRED to V2 wire-in. See PARKED "window.MD
+ * vocab-layer consolidation scope (Path C)". Leo trusted guide rec — re-walk the
+ * A/B/C rationale before reshaping, do not just assert.
  * STAGE-6 RESHAPE REQUIRED (flagged v5.6.0, ADR-0013): app.js + mock-data.js are
  * currently commented out below (not loaded; live data is inline STAGE2_EVENTS,
  * French enum). Both carry a PRE-REVERSAL shape that must be FULLY RESHAPED before
@@ -191,6 +238,41 @@ window.MD = window.MD || {};
 window.MD.getEvents = async function() {
   return STAGE2_EVENTS;
 };
+
+/* Users mock — canonical SCHEMA §3.1 users-row shape. Role/status STORED form is
+ * SCHEMA §2.4 enum convention (snake_case-with-uppercase, accent-stripped); §3.1
+ * locks users.status = INVITED/ACTIVE/DISABLED. Role vocab admin/chef_pole/external
+ * locked guide-side (Admin V1 build-prep) → stored ADMIN/CHEF_POLE/EXTERNAL. UI
+ * renders accented French for display (roleLabel/statusLabel in renderAnnuaire +
+ * openUserDrawer). Only ADMIN is functionally gated V1; CHEF_POLE/EXTERNAL dormant
+ * until DA. NB: exec prompt EDIT C draft carried lowercase literals — reconciled to
+ * §2.4 per the prompt's own "verify, do not assume" casing clause (rule 39). */
+const STAGE2_USERS = [
+  { id:'usr-geo', email:'geoffrey@madameloyal.fr', role:'ADMIN',     name:'Geoffrey', status:'ACTIVE',  google_user_id:'g-001' },
+  { id:'usr-odi', email:'odile@madameloyal.fr',    role:'ADMIN',     name:'Odile',    status:'ACTIVE',  google_user_id:'g-002' },
+  { id:'usr-chl', email:'chloe@madameloyal.fr',    role:'ADMIN',     name:'Chloé',    status:'ACTIVE',  google_user_id:'g-003' },
+  { id:'usr-leo', email:'leo@studioai2k.com',      role:'ADMIN',     name:'Leo',      status:'ACTIVE',  google_user_id:'g-004' },
+  { id:'usr-pau', email:'paul@madameloyal.fr',     role:'CHEF_POLE', name:'Paul',     status:'INVITED', google_user_id:null }
+];
+window.MD.getUsers = async function() { return STAGE2_USERS; };
+
+/* Path C vocab layer (Admin V1 split b). Canonical-shape mock for the two
+ * Admin-owned vocab tables (SCHEMA §4.1 qonto_accounts / §4.2 coproducers).
+ * Getters apply the read-filter (deleted_at IS NULL) so any consumer inherits
+ * soft-delete discipline. Soft-delete sets deleted_at — never splices — so
+ * past-event references stay resolvable (referential integrity). */
+const STAGE2_QONTO = [
+  { id:'qa-gen', name:'Compte Générale', iban:'FR76 3000 4000 0100 0001', is_general:true,  deleted_at:null },
+  { id:'qa-bdx', name:'Bordeaux',        iban:'FR76 3000 4000 0100 0002', is_general:false, deleted_at:null },
+  { id:'qa-cc',  name:'Cours Carnot',    iban:'FR76 3000 4000 0100 0003', is_general:false, deleted_at:null },
+  { id:'qa-epk', name:'EPK',             iban:'FR76 3000 4000 0100 0004', is_general:false, deleted_at:null }
+];
+const STAGE2_COPRODUCERS = [
+  { id:'co-exa', name:'Coproduction exemple A', deleted_at:null },
+  { id:'co-exb', name:'Coproduction exemple B', deleted_at:null }
+];
+window.MD.getQontoAccounts = async function() { return STAGE2_QONTO.filter(function(a) { return a.deleted_at === null; }); };
+window.MD.getCoproducers   = async function() { return STAGE2_COPRODUCERS.filter(function(c) { return c.deleted_at === null; }); };
 
 /* Status indicator = dot + label (chip-family retires from event-status indication;
  * stays in design system for other uses).
@@ -594,6 +676,13 @@ function openEventDrawer(evt) {
   // Sonora Bordeaux per fiche.html top comment); the URL contract holds either
   // way — drawer constructs the right link, Fiche Stage 4 parses it.
   document.getElementById('drawer-footer').style.display = 'flex';
+  // Footer is now shared with openUserDrawer (Admin V1), which swaps it to an
+  // Enregistrer button. Restore the canonical event-footer button if it was
+  // swapped away, so the event drawer is resilient to a prior user-drawer open.
+  if (!document.getElementById('drawer-fiche-btn')) {
+    document.getElementById('drawer-footer').innerHTML =
+      '<button class="drawer-btn primary" id="drawer-fiche-btn">Voir la fiche complète</button>';
+  }
   document.getElementById('drawer-fiche-btn').onclick = function() {
     window.location.href = 'fiche.html?id=' + encodeURIComponent(evt.id);
   };
@@ -728,6 +817,256 @@ function renderSwitcher() {
   sw.innerHTML = opts.join('');
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+ * Module Admin V1 (split a) — dept-tab routing + Admin shell + Annuaire.
+ * Built fresh in this inline script (NOT via the commented pre-reversal app.js,
+ * per ADR-0013 / L176 reshape flag). Drawer-edit mirrors the live
+ * openEventDrawer family (rule 43.1 handler trace) — reuses #drawer shell.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+let _annuaireRendered = false;
+
+/* Dept-tab routing — toggles .dept-panel by id + .on on the .dt buttons.
+ * .on (color/weight) comes from shared chrome.css per ADR-0011; the active
+ * underline is the inline borderBottomColor:#fff the live Dashboard button
+ * carries (chrome.css .dt.on does NOT set border color), so set/clear it here. */
+function goDeptTab(dept, btn) {
+  ['dashboard', 'liste', 'admin'].forEach(function(d) {
+    var panel = document.getElementById('panel-' + d);
+    if (panel) panel.hidden = (d !== dept);
+  });
+  document.querySelectorAll('#dept-tabs .dt').forEach(function(b) {
+    var active = (b === btn);
+    b.classList.toggle('on', active);
+    b.style.borderBottomColor = active ? '#fff' : '';
+    b.style.color = active ? '#fff' : '';
+  });
+  if (dept === 'admin' && !_annuaireRendered) {
+    renderAnnuaire();
+    _annuaireRendered = true;
+  }
+}
+
+/* Admin sub-surface switch — toggles .admin-surface by id + .on on sub-tabs. */
+function goAdminSurface(surface, btn) {
+  ['annuaire', 'assignations', 'marques', 'coproducteurs', 'qonto'].forEach(function(s) {
+    var el = document.getElementById('admin-surface-' + s);
+    if (el) el.hidden = (s !== surface);
+  });
+  document.querySelectorAll('#admin-subtabs .admin-subtab').forEach(function(b) {
+    b.classList.toggle('on', b === btn);
+  });
+  if (surface === 'coproducteurs') renderCoproducteurs();
+  if (surface === 'qonto') renderQonto();
+}
+
+/* Display maps — SCHEMA §2.4 stores enum values uppercase/accent-stripped;
+ * UI renders accented French. Stored ↔ display kept in one place. */
+const USER_ROLE_LABELS = { ADMIN: 'Admin', CHEF_POLE: 'Chef de pôle', EXTERNAL: 'Externe' };
+const USER_STATUS_LABELS = { ACTIVE: 'Actif', INVITED: 'Invité', DISABLED: 'Désactivé' };
+
+/* Annuaire render — reads the users mock, one .annuaire-row per user. */
+async function renderAnnuaire() {
+  var grid = document.getElementById('annuaire-grid');
+  if (!grid) return;
+  var users = await window.MD.getUsers();
+  grid.innerHTML = users.map(function(u) {
+    var roleLabel = USER_ROLE_LABELS[u.role] || u.role;
+    var statusLabel = USER_STATUS_LABELS[u.status] || u.status;
+    var statusClass = 'status-' + String(u.status).toLowerCase();
+    return '<div class="annuaire-row" onclick="openUserDrawer(\'' + u.id + '\')">' +
+      '<span class="annuaire-email">' + u.email + '</span>' +
+      '<span class="annuaire-role">' + roleLabel + '</span>' +
+      '<span class="annuaire-status ' + statusClass + '">' + statusLabel + '</span>' +
+    '</div>';
+  }).join('');
+}
+
+/* User drawer — reuses the live #drawer shell + drawerRowHTML. Email read-only;
+ * role + status as <select>; status-indicator hidden; footer swapped to
+ * Enregistrer with NO handler (real Save blocked on BudgetFlow API — matches
+ * Fiche's no-backend-persistence pattern; do not wire a save). */
+function openUserDrawer(userId) {
+  var u = STAGE2_USERS.find(function(x) { return x.id === userId; });
+  if (!u) return;
+
+  document.getElementById('drawer-title').textContent = u.name || u.email;
+  document.getElementById('drawer-sub').textContent = u.email;
+  document.getElementById('drawer-status-indicator').innerHTML = '';   // hidden for user context
+
+  var selStyle = "width:100%;padding:10px 12px;border-radius:7px;border:1px solid var(--border);background:var(--surface-2);color:#fff;font-family:'DM Sans',sans-serif;font-size:.78em;font-weight:500;cursor:pointer";
+  var roleOpts = Object.keys(USER_ROLE_LABELS).map(function(r) {
+    return '<option value="' + r + '"' + (r === u.role ? ' selected' : '') + '>' + USER_ROLE_LABELS[r] + '</option>';
+  }).join('');
+  var statusOpts = Object.keys(USER_STATUS_LABELS).map(function(s) {
+    return '<option value="' + s + '"' + (s === u.status ? ' selected' : '') + '>' + USER_STATUS_LABELS[s] + '</option>';
+  }).join('');
+
+  document.getElementById('drawer-body').innerHTML =
+    '<div class="drawer-section">' +
+      '<div class="drawer-section-title">Utilisateur</div>' +
+      drawerRowHTML('Email', u.email) +
+    '</div>' +
+    '<div class="drawer-section">' +
+      '<div class="drawer-section-title">Rôle</div>' +
+      '<select id="user-role-select" style="' + selStyle + '">' + roleOpts + '</select>' +
+    '</div>' +
+    '<div class="drawer-section">' +
+      '<div class="drawer-section-title">Statut</div>' +
+      '<select id="user-status-select" style="' + selStyle + '">' + statusOpts + '</select>' +
+    '</div>';
+
+  var footer = document.getElementById('drawer-footer');
+  footer.style.display = 'flex';
+  footer.innerHTML = '<button class="drawer-btn primary" id="user-save-btn">Enregistrer</button>';   // no handler — V1 persistence blocked on BudgetFlow API
+
+  document.getElementById('drawer-overlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+ * Coproducteurs + Comptes Qonto vocab CRUD (Admin V1 split b)
+ * Live in-memory mutation over the Path C window.MD arrays + re-render.
+ * Reuses the live #drawer shell + drawerRowHTML (mirrors openUserDrawer).
+ * No cross-reload persistence (resets on reload — lands at BudgetFlow API). */
+
+function renderCoproducteurs() {
+  var grid = document.getElementById('coproducteurs-grid');
+  if (!grid) return;
+  window.MD.getCoproducers().then(function(rows) {
+    grid.innerHTML = rows.map(function(c) {
+      return '<div class="vocab-row" onclick="openCoproducerDrawer(\'' + c.id + '\')">' +
+        '<span class="vocab-name">' + c.name + '</span>' +
+      '</div>';
+    }).join('');
+  });
+}
+
+function renderQonto() {
+  var grid = document.getElementById('qonto-grid');
+  if (!grid) return;
+  window.MD.getQontoAccounts().then(function(rows) {
+    grid.innerHTML = rows.map(function(a) {
+      var sub = a.is_general ? 'Générale' : a.iban;
+      return '<div class="vocab-row" onclick="openQontoDrawer(\'' + a.id + '\')">' +
+        '<span class="vocab-name">' + a.name + '</span>' +
+        '<span class="vocab-sub">' + sub + '</span>' +
+      '</div>';
+    }).join('');
+  });
+}
+
+var _vocabInputStyle = "width:100%;padding:10px 12px;border-radius:7px;border:1px solid var(--border);background:var(--surface-2);color:#fff;font-family:'DM Sans',sans-serif;font-size:.78em;font-weight:500";
+
+/* Coproducer drawer — name-only (SCHEMA §4.2). null id = create. Sets its OWN
+ * footer (shared #drawer footer contract — openEventDrawer restores its own). */
+function openCoproducerDrawer(id) {
+  var c = id ? STAGE2_COPRODUCERS.find(function(x) { return x.id === id; }) : null;
+  document.getElementById('drawer-title').textContent = c ? c.name : 'Nouveau coproducteur';
+  document.getElementById('drawer-sub').textContent = 'Coproducteur';
+  document.getElementById('drawer-status-indicator').innerHTML = '';
+  document.getElementById('drawer-body').innerHTML =
+    '<div class="drawer-section">' +
+      '<div class="drawer-section-title">Nom</div>' +
+      '<input id="copro-name-input" type="text" style="' + _vocabInputStyle + '" value="' + (c ? c.name : '') + '">' +
+    '</div>';
+  var footer = document.getElementById('drawer-footer');
+  footer.style.display = 'flex';
+  footer.innerHTML =
+    '<button class="drawer-btn primary" onclick="saveCoproducer(' + (c ? "'" + c.id + "'" : 'null') + ')">Enregistrer</button>' +
+    (c ? '<button class="drawer-btn" onclick="deleteCoproducer(\'' + c.id + '\')">Supprimer</button>' : '');
+  document.getElementById('drawer-overlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+
+/* Qonto drawer — name + IBAN + is_general (SCHEMA §4.1). null id = create.
+ * §2.8 delete-guard AFFORDANCE: Supprimer disabled when this is the is_general
+ * account AND a Générale event row exists — mirrors the deleteQonto action
+ * guard (defense in depth). Sets its OWN footer (shared #drawer contract). */
+function openQontoDrawer(id) {
+  var a = id ? STAGE2_QONTO.find(function(x) { return x.id === id; }) : null;
+  document.getElementById('drawer-title').textContent = a ? a.name : 'Nouveau compte';
+  document.getElementById('drawer-sub').textContent = 'Compte Qonto';
+  document.getElementById('drawer-status-indicator').innerHTML = '';
+  var checked = (a && a.is_general) ? ' checked' : '';
+  document.getElementById('drawer-body').innerHTML =
+    '<div class="drawer-section">' +
+      '<div class="drawer-section-title">Nom</div>' +
+      '<input id="qonto-name-input" type="text" style="' + _vocabInputStyle + '" value="' + (a ? a.name : '') + '">' +
+    '</div>' +
+    '<div class="drawer-section">' +
+      '<div class="drawer-section-title">IBAN</div>' +
+      '<input id="qonto-iban-input" type="text" style="' + _vocabInputStyle + '" value="' + (a ? a.iban : '') + '">' +
+    '</div>' +
+    '<div class="drawer-section">' +
+      '<label style="display:flex;align-items:center;gap:8px;font-size:.78em;color:var(--text)">' +
+        '<input id="qonto-general-input" type="checkbox"' + checked + '> Compte Générale</label>' +
+    '</div>';
+  var deleteLocked = a && a.is_general && STAGE2_EVENTS.some(function(e) { return e.is_general; });
+  var footer = document.getElementById('drawer-footer');
+  footer.style.display = 'flex';
+  footer.innerHTML =
+    '<button class="drawer-btn primary" onclick="saveQonto(' + (a ? "'" + a.id + "'" : 'null') + ')">Enregistrer</button>' +
+    (a ? '<button class="drawer-btn" onclick="deleteQonto(\'' + a.id + '\')"' + (deleteLocked ? ' disabled' : '') + '>Supprimer</button>' : '');
+  document.getElementById('drawer-overlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+
+function saveCoproducer(id) {
+  var name = document.getElementById('copro-name-input').value.trim();
+  if (!name) return;
+  if (id) {
+    var c = STAGE2_COPRODUCERS.find(function(x) { return x.id === id; });
+    if (c) c.name = name;
+  } else {
+    STAGE2_COPRODUCERS.push({ id:'co-' + Date.now(), name:name, deleted_at:null });
+  }
+  closeDrawer();
+  renderCoproducteurs();
+}
+
+function deleteCoproducer(id) {
+  var c = STAGE2_COPRODUCERS.find(function(x) { return x.id === id; });
+  if (c) c.deleted_at = new Date().toISOString();
+  closeDrawer();
+  renderCoproducteurs();
+}
+
+function saveQonto(id) {
+  var name = document.getElementById('qonto-name-input').value.trim();
+  var iban = document.getElementById('qonto-iban-input').value.trim();
+  var general = document.getElementById('qonto-general-input').checked;
+  if (!name) return;
+  var rec;
+  if (id) {
+    rec = STAGE2_QONTO.find(function(x) { return x.id === id; });
+    if (!rec) return;
+    rec.name = name; rec.iban = iban; rec.is_general = general;
+  } else {
+    rec = { id:'qa-' + Date.now(), name:name, iban:iban, is_general:general, deleted_at:null };
+    STAGE2_QONTO.push(rec);
+  }
+  // §2.8 (a) is_general singleton — setting true clears it on all live others
+  // (partial-unique WHERE is_general=TRUE AND deleted_at IS NULL).
+  if (rec.is_general) {
+    STAGE2_QONTO.forEach(function(x) { if (x !== rec && !x.deleted_at) x.is_general = false; });
+  }
+  closeDrawer();
+  renderQonto();
+}
+
+function deleteQonto(id) {
+  var acct = STAGE2_QONTO.find(function(x) { return x.id === id; });
+  if (!acct) return;
+  // §2.8 (b) delete-guard — is_general account not soft-deletable while a
+  // Générale event row exists. No Générale event in the mock → passes today;
+  // logic present for when one is added.
+  if (acct.is_general && STAGE2_EVENTS.some(function(e) { return e.is_general; })) { return; }
+  acct.deleted_at = new Date().toISOString();
+  closeDrawer();
+  renderQonto();
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.bilan-toggle-btn').forEach(b => {
     b.addEventListener('click', () => setFilter(b.dataset.filter, b));
@@ -738,6 +1077,15 @@ document.addEventListener('DOMContentLoaded', function() {
       window.location.href = 'fiche.html?id=new';   // Fiche create-mode (brief §3)
     });
   }
+  // Admin V1 (split a): invite flow not in (a) scope — stub only.
+  var adminInviteBtn = document.getElementById('admin-invite-btn');
+  if (adminInviteBtn) {
+    adminInviteBtn.addEventListener('click', function() {
+      console.log('[Admin] Invite user — flow not in split (a) scope');
+    });
+  }
+  // Initial dept-tab state stays Dashboard: #panel-dashboard visible, #panel-liste
+  // + #panel-admin carry the hidden attr in markup. No JS toggle needed at boot.
   renderDashboard();
   renderSwitcher();
 });

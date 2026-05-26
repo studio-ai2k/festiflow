@@ -93,3 +93,50 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 @media(max-width:480px){
   body{font-size:15px}
 }
+
+/* ── DEPT-PANEL ROUTING + ADMIN SURFACE (Module Admin V1 · split a) ─────
+ * New component groups: .dept-panel / .dept-panel-stub / .admin-* / .annuaire-*.
+ * Token-only — consumes standalones/design/tokens.md vars verbatim; no invented
+ * hues, spacing primitives, or font families. Active-toggle treatment on
+ * .admin-subtab.on reuses the on-surface .bilan-toggle-btn.active idiom verbatim
+ * (indigo .15/.4 tint + #818cf8, documented inline variation per tokens.md) for
+ * cross-surface coherence. Hover idioms match this file's existing .card /
+ * .bilan-toggle-btn / #nouvelle-date-btn patterns. Logged for absorption-into-
+ * standalones/design/components.md review at next design-language ship, per the
+ * v5.3.x .fiche-* component precedent (playbook §03 token discipline, §07
+ * component-pattern). ───────────────────────────────────────────────────── */
+.dept-panel[hidden],.admin-surface[hidden]{display:none}
+.dept-panel-stub{padding:48px 16px;text-align:center;color:var(--text-dim);font-size:.8em}
+
+.admin-hdr{display:flex;align-items:center;justify-content:space-between;margin-top:24px;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.admin-title{font-size:1.1em;font-weight:700;color:#fff}
+.admin-invite-btn{padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s}
+.admin-invite-btn:hover{background:rgba(255,255,255,.04);color:var(--text)}
+
+.admin-subtabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+.admin-subtab{padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s}
+.admin-subtab:hover:not(.on){background:rgba(255,255,255,.04)}
+.admin-subtab.on{background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.4);color:#818cf8}
+.admin-subtab.is-placeholder{opacity:.55}
+
+.admin-placeholder{padding:32px 16px;color:var(--text-dim);font-size:.8em;line-height:1.6;border:1px dashed var(--border);border-radius:10px;background:var(--surface)}
+
+.annuaire-row{display:flex;align-items:center;gap:16px;padding:14px 16px;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin-bottom:10px;cursor:pointer;transition:border-color .2s}
+.annuaire-row:hover{border-color:rgba(255,255,255,.12)}
+.annuaire-email{flex:1;min-width:0;font-size:.8em;font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.annuaire-role{font-size:.72em;color:var(--text-muted);flex-shrink:0}
+.annuaire-status{font-size:.62em;font-weight:700;text-transform:uppercase;letter-spacing:.6px;flex-shrink:0;padding:3px 9px;border-radius:20px;border:1px solid var(--border)}
+.annuaire-status.status-active{color:var(--green)}
+.annuaire-status.status-invited{color:var(--amber)}
+.annuaire-status.status-disabled{color:var(--text-dim)}
+
+/* ── Vocab-list surfaces (Coproducteurs + Comptes Qonto, Admin V1 split b).
+ * Token-only; mirrors the .annuaire-* row idiom. Logged for components.md absorption. */
+.vocab-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.vocab-title{font-size:.92em;font-weight:700;color:var(--text)}
+.vocab-add-btn{padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.74em;font-weight:600;cursor:pointer}
+.vocab-add-btn:hover{border-color:var(--green);color:var(--green)}
+.vocab-row{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer;background:var(--surface)}
+.vocab-row:hover{border-color:var(--text-muted);background:var(--surface-2)}
+.vocab-name{flex:1;min-width:0;font-size:.82em;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vocab-sub{font-size:.72em;color:var(--text-muted);flex-shrink:0}

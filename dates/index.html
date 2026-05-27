@@ -73,7 +73,7 @@
     <button class="admin-subtab is-placeholder" onclick="goAdminSurface('assignations',this)">Assignations</button>
     <button class="admin-subtab" onclick="goAdminSurface('marques',this)">Marques</button>
     <button class="admin-subtab" onclick="goAdminSurface('coproducteurs',this)">Coproducteurs</button>
-    <button class="admin-subtab" onclick="goAdminSurface('qonto',this)">Comptes Qonto</button>
+    <button class="admin-subtab" onclick="goAdminSurface('qonto',this)">Comptes</button>
   </div>
   <div id="admin-surface-annuaire" class="admin-surface">
     <div id="annuaire-grid"></div>
@@ -93,7 +93,7 @@
   </div>
   <div id="admin-surface-qonto" class="admin-surface" hidden>
     <div class="vocab-hdr">
-      <span class="vocab-title">Comptes Qonto</span>
+      <span class="vocab-title">Comptes</span>
       <button class="vocab-add-btn" onclick="openQontoDrawer(null)">+ Ajouter</button>
     </div>
     <div id="qonto-grid"></div>
@@ -164,7 +164,7 @@ const STAGE2_EVENTS = [
     shotgun_public_buy_url:'https://shotgun.live/en/festivals/madame-loyal-x-sonora',
     budgetflow_url:'https://festiflow.studioai2k.com/budget/bdx',
     billetterie_url:'https://festiflow.studioai2k.com/billetterie/bordeaux' },
-  { id:'evt-cc', qonto_account_id:'qa-cc', in_switcher:false, name:'Madame Loyal x Crazy Carnaval',   status:'En vente', is_general:false,
+  { id:'evt-cc', qonto_account_id:'qa-mic', in_switcher:false, name:'Madame Loyal x Crazy Carnaval',   status:'En vente', is_general:false,
     city:'Paris',    venue:'Cirque Micheletty',        start_date:'2026-07-04', number_of_days:1, poster_url:null, display_initials:'CC',
     budget_target:380000, budget_consumed:115000, edition_number:1, capacity:3800,
     description:null, genre:[], previous_edition_event_id:null, template_id:null,
@@ -262,15 +262,23 @@ window.MD.getUsers = async function() { return STAGE2_USERS; };
  * soft-delete discipline. Soft-delete sets deleted_at — never splices — so
  * past-event references stay resolvable (referential integrity). */
 const STAGE2_QONTO = [
-  { id:'qa-gen', name:'Compte Générale', iban:'FR76 3000 4000 0100 0001', is_general:true,  deleted_at:null },
-  { id:'qa-bdx', name:'Bordeaux',        iban:'FR76 3000 4000 0100 0002', is_general:false, deleted_at:null },
-  { id:'qa-cc',  name:'Cours Carnot',    iban:'FR76 3000 4000 0100 0003', is_general:false, deleted_at:null },
-  { id:'qa-epk', name:'EPK',             iban:'FR76 3000 4000 0100 0004', is_general:false, deleted_at:null }
+  // ⚠ MASKED IBANs — last 3 digits only until V1. DO NOT fill real IBANs here:
+  // /dates ships as public client-side JS (view-source readable). Real coordinates
+  // land server-side at the BudgetFlow API. Unmask trigger: PARKED "Comptes IBAN unmask at V1".
+  { id:'qa-gen', name:'Compte Générale', qonto_name:'MADAME LOYAL PRINCIPAL',               bank:'Qonto', company:'EPISODE', is_general:true,  general_account_id:null,   iban:'FR76 XXXX XXXX XXXX XXXX XXXX 719', deleted_at:null },
+  { id:'qa-vil', name:'Villepinte',      qonto_name:'ML 130326 - VILLEPINTE',               bank:'Qonto', company:'EPISODE', is_general:false, general_account_id:'qa-gen', iban:'FR76 XXXX XXXX XXXX XXXX XXXX 201', deleted_at:null },
+  { id:'qa-bdx', name:'Bordeaux',        qonto_name:'ML 120626 - BORDEAUX',                 bank:'Qonto', company:'EPISODE', is_general:false, general_account_id:'qa-gen', iban:'FR76 XXXX XXXX XXXX XXXX XXXX 473', deleted_at:null },
+  { id:'qa-ren', name:'Rennes',          qonto_name:'ML 061126 - RENNES',                   bank:'Qonto', company:'EPISODE', is_general:false, general_account_id:'qa-gen', iban:'FR76 XXXX XXXX XXXX XXXX XXXX 654', deleted_at:null },
+  { id:'qa-mic', name:'Micheletty',      qonto_name:'ML 040726 - MICHELETTY',               bank:'Qonto', company:'EPISODE', is_general:false, general_account_id:'qa-gen', iban:'FR76 XXXX XXXX XXXX XXXX XXXX 277', deleted_at:null },
+  { id:'qa-epk', name:'Elektric Park',   qonto_name:'MADAME LOYAL X ELECTRICK PARK 050926', bank:'Qonto', company:'EPISODE', is_general:false, general_account_id:'qa-gen', iban:'FR76 XXXX XXXX XXXX XXXX XXXX 440', deleted_at:null }
 ];
 const STAGE2_COPRODUCERS = [
-  { id:'co-exa', name:'Coproduction exemple A', deleted_at:null },
-  { id:'co-exb', name:'Coproduction exemple B', deleted_at:null }
+  { id:'co-exa', name:'Coproduction exemple A', note:'', deleted_at:null },
+  { id:'co-exb', name:'Coproduction exemple B', note:'', deleted_at:null }
 ];
+// Producing-company list (ADR-0016) — Geo's owned companies, dual-use: event producteur + inter-société tag.
+// Seed pending Chloé's full owned set. Cartel + Village du soir are external agencies — NOT here.
+const STAGE2_COMPANIES = ['EPISODE', 'SAGREGA', 'GGS'];
 window.MD.getQontoAccounts = async function() { return STAGE2_QONTO.filter(function(a) { return a.deleted_at === null; }); };
 window.MD.getCoproducers   = async function() { return STAGE2_COPRODUCERS.filter(function(c) { return c.deleted_at === null; }); };
 
@@ -947,7 +955,7 @@ function renderQonto() {
   if (!grid) return;
   window.MD.getQontoAccounts().then(function(rows) {
     grid.innerHTML = rows.map(function(a) {
-      var sub = a.is_general ? 'Générale' : a.iban;
+      var sub = (a.is_general ? 'Générale · ' : '') + a.company + ' · ' + a.qonto_name;
       return '<div class="vocab-row" onclick="openQontoDrawer(\'' + a.id + '\')">' +
         '<span class="vocab-name">' + a.name + '</span>' +
         '<span class="vocab-sub">' + sub + '</span>' +
@@ -958,18 +966,19 @@ function renderQonto() {
 
 var _vocabInputStyle = "width:100%;padding:10px 12px;border-radius:7px;border:1px solid var(--border);background:var(--surface-2);color:#fff;font-family:'DM Sans',sans-serif;font-size:.78em;font-weight:500";
 
-/* Coproducer drawer — name-only (SCHEMA §4.2). null id = create. Sets its OWN
- * footer (shared #drawer footer contract — openEventDrawer restores its own). */
+/* Coproducer drawer — name + note (SCHEMA §4.2 + ADR-0016 note field). null id =
+ * create. Sets its OWN footer (shared #drawer footer contract — openEventDrawer
+ * restores its own). */
 function openCoproducerDrawer(id) {
   var c = id ? STAGE2_COPRODUCERS.find(function(x) { return x.id === id; }) : null;
   document.getElementById('drawer-title').textContent = c ? c.name : 'Nouveau coproducteur';
   document.getElementById('drawer-sub').textContent = 'Coproducteur';
   document.getElementById('drawer-status-indicator').innerHTML = '';
   document.getElementById('drawer-body').innerHTML =
-    '<div class="drawer-section">' +
-      '<div class="drawer-section-title">Nom</div>' +
-      '<input id="copro-name-input" type="text" style="' + _vocabInputStyle + '" value="' + (c ? c.name : '') + '">' +
-    '</div>';
+    '<div class="drawer-section"><div class="drawer-section-title">Nom</div>' +
+      '<input id="copro-name-input" type="text" style="' + _vocabInputStyle + '" value="' + (c ? c.name : '') + '"></div>' +
+    '<div class="drawer-section"><div class="drawer-section-title">Note</div>' +
+      '<textarea id="copro-note-input" rows="3" style="' + _vocabInputStyle + ';resize:vertical">' + (c && c.note ? c.note : '') + '</textarea></div>';
   var footer = document.getElementById('drawer-footer');
   footer.style.display = 'flex';
   footer.innerHTML =
@@ -979,30 +988,49 @@ function openCoproducerDrawer(id) {
   document.getElementById('drawer').classList.add('open');
 }
 
-/* Qonto drawer — name + IBAN + is_general (SCHEMA §4.1). null id = create.
- * §2.8 delete-guard AFFORDANCE: Supprimer disabled when this is the is_general
- * account AND a Générale event row exists — mirrors the deleteQonto action
- * guard (defense in depth). Sets its OWN footer (shared #drawer contract). */
+/* Qonto drawer — Nom interne + Nom Qonto + Banque + Société + IBAN, plus
+ * per-company general flag (create-only toggle) / général-link (event subs)
+ * per ADR-0016. null id = create. Delete-guard AFFORDANCE: Supprimer disabled
+ * when this is a general account AND live event sub-accounts link to it —
+ * mirrors the deleteQonto action guard (defense in depth, Chloé's orphan
+ * warning). Sets its OWN footer (shared #drawer contract). */
 function openQontoDrawer(id) {
   var a = id ? STAGE2_QONTO.find(function(x) { return x.id === id; }) : null;
   document.getElementById('drawer-title').textContent = a ? a.name : 'Nouveau compte';
-  document.getElementById('drawer-sub').textContent = 'Compte Qonto';
+  document.getElementById('drawer-sub').textContent = 'Compte';
   document.getElementById('drawer-status-indicator').innerHTML = '';
-  var checked = (a && a.is_general) ? ' checked' : '';
-  document.getElementById('drawer-body').innerHTML =
-    '<div class="drawer-section">' +
-      '<div class="drawer-section-title">Nom</div>' +
-      '<input id="qonto-name-input" type="text" style="' + _vocabInputStyle + '" value="' + (a ? a.name : '') + '">' +
-    '</div>' +
-    '<div class="drawer-section">' +
-      '<div class="drawer-section-title">IBAN</div>' +
-      '<input id="qonto-iban-input" type="text" style="' + _vocabInputStyle + '" value="' + (a ? a.iban : '') + '">' +
-    '</div>' +
-    '<div class="drawer-section">' +
-      '<label style="display:flex;align-items:center;gap:8px;font-size:.78em;color:var(--text)">' +
-        '<input id="qonto-general-input" type="checkbox"' + checked + '> Compte Générale</label>' +
-    '</div>';
-  var deleteLocked = a && a.is_general && STAGE2_EVENTS.some(function(e) { return e.is_general; });
+  var companyOpts = STAGE2_COMPANIES.map(function(co) {
+    return '<option value="' + co + '"' + (a && a.company === co ? ' selected' : '') + '>' + co + '</option>';
+  }).join('');
+  var generals = STAGE2_QONTO.filter(function(x) { return x.is_general && !x.deleted_at; });
+  var generalOpts = generals.map(function(g) {
+    return '<option value="' + g.id + '"' + (a && a.general_account_id === g.id ? ' selected' : '') + '>' + g.qonto_name + ' (' + g.company + ')</option>';
+  }).join('');
+  var isGeneral = !!(a && a.is_general), isCreate = !a;
+  var body =
+    '<div class="drawer-section"><div class="drawer-section-title">Nom interne</div>' +
+      '<input id="qonto-name-input" type="text" style="' + _vocabInputStyle + '" value="' + (a ? a.name : '') + '"></div>' +
+    '<div class="drawer-section"><div class="drawer-section-title">Nom Qonto</div>' +
+      '<input id="qonto-qname-input" type="text" style="' + _vocabInputStyle + '" value="' + (a ? a.qonto_name : '') + '"></div>' +
+    '<div class="drawer-section"><div class="drawer-section-title">Banque</div>' +
+      '<input id="qonto-bank-input" type="text" placeholder="Qonto" style="' + _vocabInputStyle + '" value="' + (a ? a.bank : '') + '"></div>' +
+    '<div class="drawer-section"><div class="drawer-section-title">Société</div>' +
+      '<select id="qonto-company-input" style="' + _vocabInputStyle + '">' + companyOpts + '</select></div>' +
+    '<div class="drawer-section"><div class="drawer-section-title">IBAN</div>' +
+      '<input id="qonto-iban-input" type="text" style="' + _vocabInputStyle + '" value="' + (a ? a.iban : '') + '"></div>';
+  if (isCreate) {
+    body +=
+      '<div class="drawer-section"><label style="display:flex;align-items:center;gap:8px;font-size:.78em;color:var(--text)">' +
+        '<input id="qonto-general-input" type="checkbox" onchange="document.getElementById(\'qonto-link-wrap\').style.display = this.checked ? \'none\' : \'block\'"> Compte général de la société</label></div>' +
+      '<div class="drawer-section" id="qonto-link-wrap"><div class="drawer-section-title">Compte général lié</div>' +
+        '<select id="qonto-link-input" style="' + _vocabInputStyle + '">' + generalOpts + '</select></div>';
+  } else if (!isGeneral) {
+    body +=
+      '<div class="drawer-section" id="qonto-link-wrap"><div class="drawer-section-title">Compte général lié</div>' +
+        '<select id="qonto-link-input" style="' + _vocabInputStyle + '">' + generalOpts + '</select></div>';
+  }
+  document.getElementById('drawer-body').innerHTML = body;
+  var deleteLocked = a && a.is_general && STAGE2_QONTO.some(function(x) { return !x.deleted_at && x.general_account_id === a.id; });
   var footer = document.getElementById('drawer-footer');
   footer.style.display = 'flex';
   footer.innerHTML =
@@ -1014,12 +1042,13 @@ function openQontoDrawer(id) {
 
 function saveCoproducer(id) {
   var name = document.getElementById('copro-name-input').value.trim();
+  var note = document.getElementById('copro-note-input').value.trim();
   if (!name) return;
   if (id) {
     var c = STAGE2_COPRODUCERS.find(function(x) { return x.id === id; });
-    if (c) c.name = name;
+    if (c) { c.name = name; c.note = note; }
   } else {
-    STAGE2_COPRODUCERS.push({ id:'co-' + Date.now(), name:name, deleted_at:null });
+    STAGE2_COPRODUCERS.push({ id:'co-' + Date.now(), name:name, note:note, deleted_at:null });
   }
   closeDrawer();
   renderCoproducteurs();
@@ -1034,22 +1063,32 @@ function deleteCoproducer(id) {
 
 function saveQonto(id) {
   var name = document.getElementById('qonto-name-input').value.trim();
+  var qname = document.getElementById('qonto-qname-input').value.trim();
+  var bank = document.getElementById('qonto-bank-input').value.trim();
+  var company = document.getElementById('qonto-company-input').value;
   var iban = document.getElementById('qonto-iban-input').value.trim();
-  var general = document.getElementById('qonto-general-input').checked;
   if (!name) return;
   var rec;
   if (id) {
     rec = STAGE2_QONTO.find(function(x) { return x.id === id; });
     if (!rec) return;
-    rec.name = name; rec.iban = iban; rec.is_general = general;
+    rec.name = name; rec.qonto_name = qname; rec.bank = bank; rec.company = company; rec.iban = iban;
+    // is_general immutable in edit (ADR-0016 — no event→general conversion). Event accounts edit their link.
+    if (!rec.is_general) {
+      var linkEl = document.getElementById('qonto-link-input');
+      if (linkEl) rec.general_account_id = linkEl.value;
+    }
   } else {
-    rec = { id:'qa-' + Date.now(), name:name, iban:iban, is_general:general, deleted_at:null };
+    var makeGeneral = document.getElementById('qonto-general-input').checked;
+    // ADR-0016: per-company general singleton — block a 2nd live general for the same company.
+    if (makeGeneral && STAGE2_QONTO.some(function(x) { return x.is_general && !x.deleted_at && x.company === company; })) {
+      alert('La société ' + company + ' a déjà un compte général.');
+      return;
+    }
+    var linkEl2 = document.getElementById('qonto-link-input');
+    rec = { id:'qa-' + Date.now(), name:name, qonto_name:qname, bank:bank, company:company, iban:iban,
+      is_general:makeGeneral, general_account_id: makeGeneral ? null : (linkEl2 ? linkEl2.value : null), deleted_at:null };
     STAGE2_QONTO.push(rec);
-  }
-  // §2.8 (a) is_general singleton — setting true clears it on all live others
-  // (partial-unique WHERE is_general=TRUE AND deleted_at IS NULL).
-  if (rec.is_general) {
-    STAGE2_QONTO.forEach(function(x) { if (x !== rec && !x.deleted_at) x.is_general = false; });
   }
   closeDrawer();
   renderQonto();
@@ -1058,10 +1097,9 @@ function saveQonto(id) {
 function deleteQonto(id) {
   var acct = STAGE2_QONTO.find(function(x) { return x.id === id; });
   if (!acct) return;
-  // §2.8 (b) delete-guard — is_general account not soft-deletable while a
-  // Générale event row exists. No Générale event in the mock → passes today;
-  // logic present for when one is added.
-  if (acct.is_general && STAGE2_EVENTS.some(function(e) { return e.is_general; })) { return; }
+  // ADR-0016 delete-guard: a general account can't be soft-deleted while live event
+  // accounts link to it (orphaning sub-accounts + bank connections — Chloé's warning).
+  if (acct.is_general && STAGE2_QONTO.some(function(x) { return !x.deleted_at && x.general_account_id === acct.id; })) { return; }
   acct.deleted_at = new Date().toISOString();
   closeDrawer();
   renderQonto();

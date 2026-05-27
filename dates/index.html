@@ -153,7 +153,7 @@
  */
 const STAGE2_EVENTS = [
   { id:'evt-sb', qonto_account_id:'qa-bdx', in_switcher:true, name:'Madame Loyal x Sonora Bordeaux',  status:'En vente', is_general:false,
-    city:'Bordeaux', venue:'Parc des Expositions',     start_date:'2026-06-11', number_of_days:3, poster_url:null, display_initials:'SB',
+    city:'Bordeaux', venue:'Parc des Expositions',     start_date:'2026-06-11', number_of_days:3, poster_url:null, display_initials:'SB', producteur:'EPISODE', marque:'Sonora',
     budget_target:950000, budget_consumed:385000, edition_number:4, capacity:44500,
     description:'4e édition du festival Sonora à Bordeaux — programmation électro 3 jours.',
     genre:['Électro','Techno','House'],
@@ -165,14 +165,14 @@ const STAGE2_EVENTS = [
     budgetflow_url:'https://festiflow.studioai2k.com/budget/bdx',
     billetterie_url:'https://festiflow.studioai2k.com/billetterie/bordeaux' },
   { id:'evt-cc', qonto_account_id:'qa-mic', in_switcher:false, name:'Madame Loyal x Crazy Carnaval',   status:'En vente', is_general:false,
-    city:'Paris',    venue:'Cirque Micheletty',        start_date:'2026-07-04', number_of_days:1, poster_url:null, display_initials:'CC',
+    city:'Paris',    venue:'Cirque Micheletty',        start_date:'2026-07-04', number_of_days:1, poster_url:null, display_initials:'CC', producteur:'EPISODE', marque:'Madame Loyal',
     budget_target:380000, budget_consumed:115000, edition_number:1, capacity:3800,
     description:null, genre:[], previous_edition_event_id:null, template_id:null,
     dice_backend_url:'https://dice.fm/event/crazy-carnaval-2026', shotgun_backend_url:null,
     dice_public_buy_url:null, shotgun_public_buy_url:null,
     budgetflow_url:null, billetterie_url:null },
   { id:'evt-ep', qonto_account_id:'qa-epk', in_switcher:true, name:'Madame Loyal x Elektric Park',    status:'En vente', is_general:false,
-    city:'Chatou',   venue:'Ile des Impressionnistes', start_date:'2026-09-05', number_of_days:1, poster_url:null, display_initials:'EP',
+    city:'Chatou',   venue:'Ile des Impressionnistes', start_date:'2026-09-05', number_of_days:1, poster_url:null, display_initials:'EP', producteur:'EPISODE', marque:'Madame Loyal',
     budget_target:720000, budget_consumed:145000, edition_number:1, capacity:12000,
     description:null, genre:['Électro'], previous_edition_event_id:null, template_id:null,
     dice_backend_url:'https://dice.fm/event/elektric-park-2026', shotgun_backend_url:null,
@@ -181,14 +181,14 @@ const STAGE2_EVENTS = [
     budgetflow_url:'https://festiflow.studioai2k.com/budget/epk',
     billetterie_url:'https://festiflow.studioai2k.com/billetterie/epk' },
   { id:'evt-si', qonto_account_id:null, in_switcher:false, name:'SONORA x IMPACT',                 status:'En vente', is_general:false,
-    city:'Paris',    venue:'Parc des Expositions de Villepinte', start_date:'2026-09-25', number_of_days:1, poster_url:null, display_initials:'SI',
+    city:'Paris',    venue:'Parc des Expositions de Villepinte', start_date:'2026-09-25', number_of_days:1, poster_url:null, display_initials:'SI', producteur:'EPISODE', marque:'Sonora',
     budget_target:850000, budget_consumed:155000, edition_number:1, capacity:25000,
     description:null, genre:[], previous_edition_event_id:null, template_id:null,
     dice_backend_url:null, shotgun_backend_url:'https://shotgun.live/event/sonora-impact-2026',
     dice_public_buy_url:null, shotgun_public_buy_url:null,
     budgetflow_url:null, billetterie_url:null },
   { id:'evt-sh', qonto_account_id:null, in_switcher:false, name:'Sonora Halloween XXL 2026',       status:'En préparation', is_general:false,
-    city:'Bordeaux', venue:'Parc des Expositions',     start_date:'2026-10-31', number_of_days:1, poster_url:null, display_initials:'SH',
+    city:'Bordeaux', venue:'Parc des Expositions',     start_date:'2026-10-31', number_of_days:1, poster_url:null, display_initials:'SH', producteur:'EPISODE', marque:'Sonora',
     budget_target:420000, budget_consumed:30000, edition_number:2, capacity:9500,
     description:null, genre:[], previous_edition_event_id:null, template_id:null,
     dice_backend_url:null, shotgun_backend_url:null,
@@ -201,7 +201,7 @@ const STAGE2_EVENTS = [
    * field-level fallback. Sandbox is the 5th status value per v5.3.1 reversal of
    * v5.2.0 carry-pending #2; was orthogonal is_sandbox BOOLEAN pre-v5.3.1. */
   { id:'evt-tc', qonto_account_id:null, in_switcher:false, name:'Test calcul tournée hiver',       status:'Sandbox',  is_general:false,
-    city:null, venue:null, start_date:null, number_of_days:null, poster_url:null, display_initials:'TC',
+    city:null, venue:null, start_date:null, number_of_days:null, poster_url:null, display_initials:'TC', producteur:null, marque:null,
     budget_target:null, budget_consumed:null, edition_number:null, capacity:null,
     description:null, genre:[], previous_edition_event_id:null, template_id:null,
     dice_backend_url:null, shotgun_backend_url:null,
@@ -633,6 +633,44 @@ function statusOptionsHTML(currentStatus) {
     .join('');
 }
 
+/* Drawer DNA rows — Société / Marque / Compte rattaché / Général de société.
+ * Slot into Détails per Ship B (v5.11.0 / ADR-0016 consumer side). Société +
+ * Marque are event-level fields (fallback '—' when null on the event); Compte
+ * resolved + Général de société are derived from STAGE2_QONTO via
+ * evt.qonto_account_id with the two-hop chain through general_account_id, and
+ * render 'non rattaché' when the event has no Qonto link. Read-only — edits
+ * land on Fiche §5 (producteur + marque) + Comptes admin surface (account
+ * coordinates). Reuses drawerRowHTML primitive from L589. */
+function drawerDNARowsHTML(evt) {
+  var societe = evt.producteur || '—';
+  var marque  = evt.marque || '—';
+  var compteResolved, generalResolved;
+  if (!evt.qonto_account_id) {
+    compteResolved  = 'non rattaché';
+    generalResolved = 'non rattaché';
+  } else {
+    var acct = STAGE2_QONTO.find(function(a) { return a.id === evt.qonto_account_id; });
+    if (!acct) {
+      compteResolved  = '—';
+      generalResolved = '—';
+    } else {
+      compteResolved = acct.qonto_name || acct.name || '—';
+      if (acct.is_general) {
+        generalResolved = '— ce compte —';
+      } else if (acct.general_account_id) {
+        var gen = STAGE2_QONTO.find(function(a) { return a.id === acct.general_account_id; });
+        generalResolved = gen ? (gen.qonto_name || gen.name || '—') : '—';
+      } else {
+        generalResolved = '—';
+      }
+    }
+  }
+  return drawerRowHTML('Société',            societe) +
+         drawerRowHTML('Marque',             marque) +
+         drawerRowHTML('Compte rattaché',    compteResolved) +
+         drawerRowHTML('Général de société', generalResolved);
+}
+
 function openEventDrawer(evt) {
   // Header
   document.getElementById('drawer-title').textContent = evt.name;
@@ -659,6 +697,7 @@ function openEventDrawer(evt) {
   document.getElementById('drawer-body').innerHTML = `
     <div class="drawer-section">
       <div class="drawer-section-title">Détails</div>
+      ${drawerDNARowsHTML(evt)}
       ${drawerRowHTML('Date',       dateStr || '—')}
       ${drawerRowHTML('Ville',      evt.city || '—')}
       ${drawerRowHTML('Lieu',       evt.venue || 'À confirmer')}

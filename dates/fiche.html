@@ -382,9 +382,16 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
         <option>EPISODE</option>
         <option>SAGREGA</option>
         <option>GGS</option>
-        <option>CARTEL</option>
-        <option>VILLAGE DU SOIR</option>
         <option disabled>— consultez la page admin pour éditer —</option>
+      </select>
+    </div>
+    <div class="fiche-field">
+      <label class="fiche-field-label">Marque <span class="opt">— optionnel · descriptif · vocabulaire pending Chloé</span></label>
+      <select id="marque-select" class="fiche-select">
+        <option value="">— Aucune marque —</option>
+        <option>Madame Loyal</option>
+        <option>Sonora</option>
+        <option disabled>— vocabulaire pending Chloé · pas de CRUD admin V1 —</option>
       </select>
     </div>
     <div class="fiche-field">
@@ -547,6 +554,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     number_of_days: 3,
     capacity_per_day: [14000, 15500, 15000],
     producteur: 'EPISODE',
+    marque: 'Sonora',
     coproducteur: '',                 // "— Aucun coproducteur —"
     external_coproduction: false,
     qonto_account: 'ML Bordeaux 2026 · FR76 ••2847',
@@ -580,6 +588,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   var countrySelect = document.getElementById('country-select');
   var cityInput = document.getElementById('city-input');
   var producteurSelect = document.getElementById('producteur-select');
+  var marqueSelect = document.getElementById('marque-select');
   var saveBtn = document.getElementById('save-btn');
   var capLabelReq = document.getElementById('cap-label-req');
 
@@ -882,6 +891,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     statusSelect.value     = (event && event.status) || 'En préparation';
     countrySelect.value    = event ? event.country : '';
     producteurSelect.value = event ? event.producteur : '';
+    marqueSelect.value     = event ? (event.marque || '') : '';
     qontoSelect.value      = event ? event.qonto_account : '';
     setVal('coproducteur-select', event ? event.coproducteur : '');
     setVal('prev-edition-select', event ? event.previous_edition : '');
@@ -973,6 +983,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
         function(i){ return parseInt(i.value, 10) || 0; }
       ),
       producteur: producteurSelect.value,
+      marque: marqueSelect.value || null,
       qonto_account: qontoSelect.disabled ? null : qontoSelect.value,
       in_switcher: inSwitcherToggle.checked
     };

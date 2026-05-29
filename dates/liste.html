@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Festiflow — Liste des événements</title>
+<!-- ══════════════════════════════════════════════════════════════════════
+     Festiflow Module Dates · Liste des événements (Stage 1: static layout)
+
+     STATE (this ship, v5.11.1 / module-internal v0.8.1):
+     - First Liste surface ship: separate liste.html page at
+       standalones/module-dates/liste.html, consumes shared/chrome.css from
+       inception per ADR-0011 (no inline chrome).
+     - Static layout: 5 mock rows from STAGE2_EVENTS hardcoded as <tr>
+       blocks. evt-tc Sandbox EXCLUDED from Stage 1 markup per the
+       sandbox-hidden-by-default decision — Stage 2 wires the
+       "Afficher les sandbox" toggle that reveals it.
+     - No JS this stage. No search, no filters, no row-action handlers,
+       no async data wiring. Row-action icons render disabled with
+       title="Stage 3" hints. Matches Fiche Stage 1 v5.3.4 layout-only
+       discipline.
+     - Lower-nav: undefined-handler precedent per fiche.html v5.4.0/v5.4.2
+       (Dashboard/Admin onclick="goDeptTab(...)" knowingly undefined on
+       this page). Stage 4 retires #panel-liste stub + rewires
+       index.html's Liste button to point here.
+     - Reachability this stage: direct URL only (URL-typed or copy-paste
+       to a browser). The lower-nav Liste button in index.html still
+       routes to the in-index #panel-liste stub. Discoverability lands
+       at Stage 4 nav rewire.
+
+     COLUMN SET (V1-locked, dense, bounded by STAGE2_EVENTS shape):
+       Nom · Statut · Marque · Producteur · Ville · Date début · Jauge ·
+       Budget % · Intégrations (BF/Bil dual-cell) · row-actions trailing.
+
+     STAGE 2+ ADDS (subsequent fresh exec chats per Mode 1):
+     - Stage 2: window.MD.getEvents async wrapper consumption, search box,
+       5-value status filter chips (En préparation / En vente / Annulé /
+       Sandbox / Terminé), sandbox toggle ("Afficher les sandbox",
+       default-hidden, reveals evt-tc).
+     - Stage 3: row-actions wired — edit → fiche.html?id=<evt.id>,
+       duplicate (carry-neither V1 per evenements.md §14 + §4),
+       soft-delete (sets deleted_at + toast + read-filter; no recovery V1
+       per brief §4 v5.3.1).
+     - Stage 4: index.html nav rewire (Liste button onclick swap +
+       goDeptTab panel-array drop 'liste' + #panel-liste stub retire per
+       §02 §13) + brief §3 reconcile + final paired-artifact reconciles.
+
+     SCHEMA cascades surfaced this build (input to absorption ship #2):
+     - mock STAGE2_EVENTS carries scalar `capacity`; SCHEMA expects
+       SUM across `event_days` rows. Liste Stage 1 reads the scalar
+       directly in hardcoded markup; Stage 2 wires window.MD.getEvents
+       which can compute SUM when the mock extends to event_days.
+     - country / address / coproducer / external_coproduction missing
+       from STAGE2_EVENTS — Liste columns bounded by mock presence, not
+       Fiche/SCHEMA field set. Those fields stay column-candidates
+       blocked on mock-shape extension at SCHEMA ship #2.
+
+     Zero ADRs this ship — Liste is execution of briefs/evenements.md §3
+     V1 surface intent + HANDOFF §5 explicit liste.html naming + ADR-0011
+     chrome canonical consumption. Sufficient pre-existing authority per
+     playbook §10 §3 significance test.
+     ══════════════════════════════════════════════════════════════════════ -->
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/chrome.css">
+<style>
+/* ═══ FESTIFLOW DESIGN TOKENS — 13 canonical, parity with module-dates/styles.css ═══ */
+:root {
+  --bg:#08080d; --surface:#101017; --surface-2:#16161f;
+  --border:rgba(255,255,255,0.05); --border-h:rgba(255,255,255,0.08);
+  --text:#f0f0f5; --text-muted:#a0a0b0; --text-dim:#5a5a6a;
+  --green:#34d399; --red:#f87171; --amber:#fbbf24;
+  --purple:#a855f7; --indigo:#6366f1;
+}
+
+/* ═══ BASE ═══ */
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',-apple-system,system-ui,sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:inherit;text-decoration:none}
+
+/* ═══ PAGE WRAP + HEADER ═══ */
+.liste-wrap{max-width:1180px;margin:0 auto;padding:24px 20px 60px}
+
+.liste-page-hdr{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:24px;flex-wrap:wrap}
+.liste-page-sub{display:flex;flex-direction:column;gap:6px;min-width:0}
+.liste-page-crumb{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-dim);font-family:'Space Grotesk',sans-serif;letter-spacing:.4px;text-transform:uppercase}
+.liste-page-crumb a{color:var(--text-muted);transition:color .15s}
+.liste-page-crumb a:hover{color:var(--text)}
+.liste-page-crumb .crumb-sep{color:var(--text-dim);opacity:.5}
+.liste-page-title{font-size:28px;font-weight:700;color:var(--text);font-family:'Space Grotesk',sans-serif;letter-spacing:-.5px}
+.liste-page-count{font-size:13px;color:var(--text-dim);font-weight:500;margin-top:2px}
+
+.liste-page-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.liste-btn-new{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:linear-gradient(135deg,var(--purple),var(--indigo));border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:opacity .15s;text-decoration:none}
+.liste-btn-new:hover{opacity:.88}
+
+/* ═══ TABLE ═══ */
+.liste-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.liste-table{width:100%;border-collapse:collapse;font-size:13px}
+
+.liste-table thead{background:var(--surface-2);border-bottom:1px solid var(--border)}
+.liste-table th{padding:11px 14px;text-align:left;font-size:10.5px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.6px;white-space:nowrap}
+.liste-table th.num{text-align:right}
+
+.liste-table tbody tr{border-bottom:1px solid var(--border)}
+.liste-table tbody tr:last-child{border-bottom:none}
+.liste-table tbody tr:hover{background:rgba(255,255,255,.02)}
+.liste-table td{padding:13px 14px;color:var(--text);vertical-align:middle}
+.liste-table td.num{text-align:right;font-variant-numeric:tabular-nums}
+.liste-table td.muted{color:var(--text-muted)}
+
+.col-nom{font-weight:500;color:var(--text)}
+.col-nom .col-nom-sub{display:block;font-size:11px;color:var(--text-dim);font-weight:400;margin-top:2px}
+
+/* ═══ STATUS dot+label ═══ */
+.lstatus{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:500;white-space:nowrap}
+.lstatus-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.lstatus-dot.s-prep{background:var(--amber)}
+.lstatus-dot.s-vente{background:var(--green)}
+.lstatus-dot.s-annule{background:var(--red)}
+.lstatus-dot.s-sandbox{background:var(--purple)}
+.lstatus-dot.s-termine{background:var(--text-dim)}
+
+/* ═══ BUDGET cell ═══ */
+.col-budget{display:flex;flex-direction:column;gap:2px;min-width:80px}
+.col-budget-pct{font-size:13px;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
+.col-budget-target{font-size:10.5px;color:var(--text-dim);font-variant-numeric:tabular-nums}
+
+/* ═══ INTÉGRATIONS dual-cell ═══ */
+.integ-pair{display:inline-flex;align-items:center;gap:6px}
+.integ-mark{display:inline-flex;align-items:center;justify-content:center;min-width:30px;padding:3px 7px;border-radius:6px;font-size:10.5px;font-weight:700;letter-spacing:.4px;font-family:'Space Grotesk',sans-serif}
+.integ-mark.on{background:rgba(52,211,153,.12);color:var(--green);border:1px solid rgba(52,211,153,.25)}
+.integ-mark.off{background:rgba(90,90,106,.08);color:var(--text-dim);border:1px solid rgba(90,90,106,.18)}
+
+/* ═══ ROW ACTIONS ═══ */
+.col-actions{white-space:nowrap;text-align:right}
+.row-action{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin-left:4px;background:transparent;border:1px solid var(--border);border-radius:7px;color:var(--text-muted);font-size:13px;cursor:not-allowed;opacity:.45;transition:opacity .15s}
+.row-action:first-child{margin-left:0}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:780px){
+  .liste-page-hdr{flex-direction:column;align-items:flex-start}
+  .liste-page-actions{width:100%;justify-content:flex-end}
+  .liste-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .liste-table{min-width:980px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ SHARED NAV ══ -->
+<nav class="nav">
+  <div class="nav-top">
+    <div class="nav-sw">
+      <div class="nav-sw-av"><img src="LOGO_ROND_JAUNE.png" alt="GEN" style="width:100%;height:100%;object-fit:cover"></div>
+      <div>
+        <div class="nav-sw-name">Générale<span class="dot"></span></div>
+        <div class="nav-sw-sub">Générale 2026 · Madame Loyal</div>
+      </div>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2.5" style="margin-left:2px;flex-shrink:0"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <button class="nm on" onclick="go('bilan',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Événements</button>
+    <button id="nav-budgetflow" class="nm"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>Budgetflow</button>
+    <button id="nav-billetterie" class="nm"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>Billetterie</button>
+    <button class="nm" onclick="go('fiche',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>Demande D'Achat</button>
+    <button class="nm" onclick="go('factures',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Partenaires</button>
+    <div class="nav-user">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.85"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+  </div>
+  <div class="dept-tabs-bg">
+  <div id="dept-tabs" class="dept-tabs">
+    <button class="dt" data-idx="0" onclick="goDeptTab('dashboard',this)">Dashboard</button>
+    <button class="dt on" data-idx="1" style="border-bottom-color:#fff;color:#fff" onclick="goDeptTab('liste',this)">Liste</button>
+    <button class="dt" data-idx="2" onclick="goDeptTab('admin',this)">Admin</button>
+  </div>
+  </div>
+</nav>
+
+<div class="liste-wrap">
+
+  <!-- Page header -->
+  <div class="liste-page-hdr">
+    <div class="liste-page-sub">
+      <div class="liste-page-crumb">
+        <a href="index.html">← Dashboard</a>
+        <span class="crumb-sep">·</span>
+        <span>Liste des événements</span>
+      </div>
+      <h1 class="liste-page-title">Liste des événements</h1>
+      <div class="liste-page-count">5 événements</div>
+    </div>
+    <div class="liste-page-actions">
+      <a class="liste-btn-new" href="fiche.html?id=new">+ Nouvel événement</a>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="liste-table-wrap">
+    <table class="liste-table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Statut</th>
+          <th>Marque</th>
+          <th>Producteur</th>
+          <th>Ville</th>
+          <th>Date début</th>
+          <th class="num">Jauge</th>
+          <th>Budget</th>
+          <th>Intégrations</th>
+          <th class="col-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <!-- evt-sb · Madame Loyal x Sonora Bordeaux · En vente -->
+        <tr>
+          <td class="col-nom">Madame Loyal x Sonora Bordeaux</td>
+          <td><span class="lstatus"><span class="lstatus-dot s-vente"></span>En vente</span></td>
+          <td>Sonora</td>
+          <td>EPISODE</td>
+          <td>Bordeaux</td>
+          <td>11 juin 2026</td>
+          <td class="num">44 500</td>
+          <td><div class="col-budget"><span class="col-budget-pct">41%</span><span class="col-budget-target">950 k€</span></div></td>
+          <td><span class="integ-pair"><span class="integ-mark on">BF</span><span class="integ-mark on">Bil</span></span></td>
+          <td class="col-actions">
+            <button class="row-action" disabled title="Stage 3" aria-label="Modifier">✎</button>
+            <button class="row-action" disabled title="Stage 3" aria-label="Dupliquer">⧉</button>
+            <button class="row-action" disabled title="Stage 3" aria-label="Supprimer">🗑</button>
+          </td>
+        </tr>
+
+        <!-- evt-cc · Madame Loyal x Crazy Carnaval · En vente -->
+        <tr>
+          <td class="col-nom">Madame Loyal x Crazy Carnaval</td>
+          <td><span class="lstatus"><span class="lstatus-dot s-vente"></span>En vente</span></td>
+          <td>Madame Loyal</td>
+          <td>EPISODE</td>
+          <td>Paris</td>
+          <td>4 juil. 2026</td>
+          <td class="num">3 800</td>
+          <td><div class="col-budget"><span class="col-budget-pct">30%</span><span class="col-budget-target">380 k€</span></div></td>
+          <td><span class="integ-pair"><span class="integ-mark off">BF</span><span class="integ-mark off">Bil</span></span></td>
+          <td class="col-actions">
+            <button class="row-action" disabled title="Stage 3" aria-label="Modifier">✎</button>
+            <button class="row-action" disabled title="Stage 3" aria-label="Dupliquer">⧉</button>
+            <button class="row-action" disabled title="Stage 3" aria-label="Supprimer">🗑</button>
+          </td>
+        </tr>
+
+        <!-- evt-ep · Madame Loyal x Elektric Park · En vente -->
+        <tr>
+          <td class="col-nom">Madame Loyal x Elektric Park</td>
+          <td><span class="lstatus"><span class="lstatus-dot s-vente"></span>En vente</span></td>
+          <td>Madame Loyal</td>
+          <td>EPISODE</td>
+          <td>Chatou</td>
+          <td>5 sept. 2026</td>
+          <td class="num">12 000</td>
+          <td><div class="col-budget"><span class="col-budget-pct">20%</span><span class="col-budget-target">720 k€</span></div></td>
+          <td><span class="integ-pair"><span class="integ-mark on">BF</span><span class="integ-mark on">Bil</span></span></td>
+          <td class="col-actions">
+            <button class="row-action" disabled title="Stage 3" aria-label="Modifier">✎</button>
+            <button class="row-action" disabled title="Stage 3" aria-label="Dupliquer">⧉</button>
+            <button class="row-action" disabled title="Stage 3" aria-label="Supprimer">🗑</button>
+          </td>
+        </tr>
+
+        <!-- evt-si · SONORA x IMPACT · En vente -->
+        <tr>
+          <td class="col-nom">SONORA x IMPACT</td>
+          <td><span class="lstatus"><span class="lstatus-dot s-vente"></span>En vente</span></td>
+          <td>Sonora</td>
+          <td>EPISODE</td>
+          <td>Paris</td>
+          <td>25 sept. 2026</td>
+          <td class="num">25 000</td>
+          <td><div class="col-budget"><span class="col-budget-pct">18%</span><span class="col-budget-target">850 k€</span></div></td>
+          <td><span class="integ-pair"><span class="integ-mark off">BF</span><span class="integ-mark off">Bil</span></span></td>
+          <td class="col-actions">
+            <button class="row-action" disabled title="Stage 3" aria-label="Modifier">✎</button>
+            <button class="row-action" disabled title="Stage 3" aria-label="Dupliquer">⧉</button>
+            <button class="row-action" disabled title="Stage 3" aria-label="Supprimer">🗑</button>
+          </td>
+        </tr>
+
+        <!-- evt-sh · Sonora Halloween XXL 2026 · En préparation -->
+        <tr>
+          <td class="col-nom">Sonora Halloween XXL 2026</td>
+          <td><span class="lstatus"><span class="lstatus-dot s-prep"></span>En préparation</span></td>
+          <td>Sonora</td>
+          <td>EPISODE</td>
+          <td>Bordeaux</td>
+          <td>31 oct. 2026</td>
+          <td class="num">9 500</td>
+          <td><div class="col-budget"><span class="col-budget-pct">7%</span><span class="col-budget-target">420 k€</span></div></td>
+          <td><span class="integ-pair"><span class="integ-mark off">BF</span><span class="integ-mark off">Bil</span></span></td>
+          <td class="col-actions">
+            <button class="row-action" disabled title="Stage 3" aria-label="Modifier">✎</button>
+            <button class="row-action" disabled title="Stage 3" aria-label="Dupliquer">⧉</button>
+            <button class="row-action" disabled title="Stage 3" aria-label="Supprimer">🗑</button>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+</body>
+</html>

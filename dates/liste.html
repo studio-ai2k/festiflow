@@ -5,38 +5,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Festiflow — Liste des événements</title>
 <!-- ══════════════════════════════════════════════════════════════════════
-     Festiflow Module Dates · Liste des événements (Stage 1: static layout)
+     Festiflow Module Dates · Liste des événements (Stage 2: data wiring + filters)
 
-     STATE (this ship, v5.11.1 / module-internal v0.8.1):
-     - First Liste surface ship: separate liste.html page at
-       standalones/module-dates/liste.html, consumes shared/chrome.css from
-       inception per ADR-0011 (no inline chrome).
-     - Static layout: 5 mock rows from STAGE2_EVENTS hardcoded as <tr>
-       blocks. evt-tc Sandbox EXCLUDED from Stage 1 markup per the
-       sandbox-hidden-by-default decision — Stage 2 wires the
-       "Afficher les sandbox" toggle that reveals it.
-     - No JS this stage. No search, no filters, no row-action handlers,
-       no async data wiring. Row-action icons render disabled with
-       title="Stage 3" hints. Matches Fiche Stage 1 v5.3.4 layout-only
-       discipline.
+     STATE (this ship, v5.11.3 / module-internal v0.8.2):
+     - Data wiring: static <tr> rows replaced by a JS render off an inline
+       STAGE2_EVENTS copy (all 6 rows incl. evt-tc Sandbox) + the
+       window.MD.getEvents async wrapper, both verbatim from index.html
+       L154-240. KNOWN CONSOLIDATION DEBT: this is a second inline copy of
+       the array (index.html holds the first); both collapse into a shared
+       extraction at SCHEMA absorption ship #2 under the PARKED Path-C
+       re-walk. Logged as a comment in the script header — not acted on.
+     - Filters: search box (Nom + Ville, accent/case-insensitive substring),
+       single-select status chips (raw 5-value French enum + "Tous"), and
+       the "Afficher les sandbox" toggle (default OFF, evt-tc hidden). The
+       Sandbox chip is always visible; clicking it auto-enables the toggle.
+       Toggling OFF while Sandbox is the active chip snaps the status filter
+       back to "Tous". Pipeline: getEvents() → sandbox gate → status filter
+       → search → render; empty result renders an empty-state row.
+     - Sandbox row marker (brief §4 isolation rule 6): sandbox rows get a
+       subtle purple row-tint + a small "sandbox" badge after the name —
+       row-level legibility beyond Stage 1's status-dot.
+     - No row-action wiring this stage (that's Stage 3). The action icons
+       stay disabled with title="Stage 3" hints, emitted from the render
+       function now instead of hardcoded.
      - Lower-nav: undefined-handler precedent per fiche.html v5.4.0/v5.4.2
-       (Dashboard/Admin onclick="goDeptTab(...)" knowingly undefined on
-       this page). Stage 4 retires #panel-liste stub + rewires
-       index.html's Liste button to point here.
-     - Reachability this stage: direct URL only (URL-typed or copy-paste
-       to a browser). The lower-nav Liste button in index.html still
-       routes to the in-index #panel-liste stub. Discoverability lands
-       at Stage 4 nav rewire.
+       (Dashboard/Admin onclick="goDeptTab(...)" knowingly undefined here).
+       Reachability this stage: direct URL only — the index.html Liste
+       button still routes to the in-index #panel-liste stub. Stage 4
+       retires that stub + rewires the button to point here.
 
      COLUMN SET (V1-locked, dense, bounded by STAGE2_EVENTS shape):
        Nom · Statut · Marque · Producteur · Ville · Date début · Jauge ·
        Budget % · Intégrations (BF/Bil dual-cell) · row-actions trailing.
 
-     STAGE 2+ ADDS (subsequent fresh exec chats per Mode 1):
-     - Stage 2: window.MD.getEvents async wrapper consumption, search box,
-       5-value status filter chips (En préparation / En vente / Annulé /
-       Sandbox / Terminé), sandbox toggle ("Afficher les sandbox",
-       default-hidden, reveals evt-tc).
+     STAGE 3+ ADDS (subsequent fresh exec chats per Mode 1):
      - Stage 3: row-actions wired — edit → fiche.html?id=<evt.id>,
        duplicate (carry-neither V1 per evenements.md §14 + §4),
        soft-delete (sets deleted_at + toast + read-filter; no recovery V1
@@ -136,6 +138,27 @@ a{color:inherit;text-decoration:none}
 .row-action{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin-left:4px;background:transparent;border:1px solid var(--border);border-radius:7px;color:var(--text-muted);font-size:13px;cursor:not-allowed;opacity:.45;transition:opacity .15s}
 .row-action:first-child{margin-left:0}
 
+/* ═══ FILTER BAR (Stage 2) ═══ */
+.liste-filterbar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.liste-search{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+.liste-search:focus-within{border-color:var(--border-h)}
+.liste-search input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:inherit;font-size:13px}
+.liste-search input::placeholder{color:var(--text-dim)}
+.lchips{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.lchip{padding:6px 13px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+.lchip:hover{border-color:var(--border-h);color:var(--text)}
+.lchip.on{background:var(--surface-2);border-color:var(--border-h);color:var(--text)}
+.sandbox-toggle{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--text-muted);cursor:pointer;user-select:none;white-space:nowrap}
+.sandbox-toggle input{accent-color:var(--purple);cursor:pointer}
+
+/* ═══ SANDBOX ROW MARKER (brief §4 isolation rule 6) ═══ */
+.liste-table tbody tr.is-sandbox-row{background:rgba(168,85,247,.05)}
+.liste-table tbody tr.is-sandbox-row:hover{background:rgba(168,85,247,.08)}
+.sandbox-badge{display:inline-flex;align-items:center;padding:1px 6px;margin-left:8px;border-radius:5px;font-size:9.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:rgba(168,85,247,.14);color:var(--purple);border:1px solid rgba(168,85,247,.28);font-family:'Space Grotesk',sans-serif}
+
+/* ═══ EMPTY STATE ═══ */
+.liste-empty td{padding:40px 14px;text-align:center;color:var(--text-dim);font-size:13px}
+
 /* ═══ RESPONSIVE ═══ */
 @media(max-width:780px){
   .liste-page-hdr{flex-direction:column;align-items:flex-start}
@@ -187,11 +210,31 @@ a{color:inherit;text-decoration:none}
         <span>Liste des événements</span>
       </div>
       <h1 class="liste-page-title">Liste des événements</h1>
-      <div class="liste-page-count">5 événements</div>
+      <div class="liste-page-count" id="liste-count">5 événements</div>
     </div>
     <div class="liste-page-actions">
       <a class="liste-btn-new" href="fiche.html?id=new">+ Nouvel événement</a>
     </div>
+  </div>
+
+  <!-- Filter bar (Stage 2) -->
+  <div class="liste-filterbar">
+    <label class="liste-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-dim);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="liste-search-input" placeholder="Rechercher par nom ou ville…" autocomplete="off">
+    </label>
+    <div class="lchips" id="liste-status-chips">
+      <button class="lchip on" data-status="all">Tous</button>
+      <button class="lchip" data-status="En préparation">En préparation</button>
+      <button class="lchip" data-status="En vente">En vente</button>
+      <button class="lchip" data-status="Annulé">Annulé</button>
+      <button class="lchip" data-status="Sandbox">Sandbox</button>
+      <button class="lchip" data-status="Terminé">Terminé</button>
+    </div>
+    <label class="sandbox-toggle">
+      <input type="checkbox" id="liste-sandbox-toggle">
+      Afficher les sandbox
+    </label>
   </div>
 
   <!-- Table -->
@@ -211,103 +254,200 @@ a{color:inherit;text-decoration:none}
           <th class="col-actions">Actions</th>
         </tr>
       </thead>
-      <tbody>
-
-        <!-- evt-sb · Madame Loyal x Sonora Bordeaux · En vente -->
-        <tr>
-          <td class="col-nom">Madame Loyal x Sonora Bordeaux</td>
-          <td><span class="lstatus"><span class="lstatus-dot s-vente"></span>En vente</span></td>
-          <td>Sonora</td>
-          <td>EPISODE</td>
-          <td>Bordeaux</td>
-          <td>11 juin 2026</td>
-          <td class="num">44 500</td>
-          <td><div class="col-budget"><span class="col-budget-pct">41%</span><span class="col-budget-target">950 k€</span></div></td>
-          <td><span class="integ-pair"><span class="integ-mark on">BF</span><span class="integ-mark on">Bil</span></span></td>
-          <td class="col-actions">
-            <button class="row-action" disabled title="Stage 3" aria-label="Modifier">✎</button>
-            <button class="row-action" disabled title="Stage 3" aria-label="Dupliquer">⧉</button>
-            <button class="row-action" disabled title="Stage 3" aria-label="Supprimer">🗑</button>
-          </td>
-        </tr>
-
-        <!-- evt-cc · Madame Loyal x Crazy Carnaval · En vente -->
-        <tr>
-          <td class="col-nom">Madame Loyal x Crazy Carnaval</td>
-          <td><span class="lstatus"><span class="lstatus-dot s-vente"></span>En vente</span></td>
-          <td>Madame Loyal</td>
-          <td>EPISODE</td>
-          <td>Paris</td>
-          <td>4 juil. 2026</td>
-          <td class="num">3 800</td>
-          <td><div class="col-budget"><span class="col-budget-pct">30%</span><span class="col-budget-target">380 k€</span></div></td>
-          <td><span class="integ-pair"><span class="integ-mark off">BF</span><span class="integ-mark off">Bil</span></span></td>
-          <td class="col-actions">
-            <button class="row-action" disabled title="Stage 3" aria-label="Modifier">✎</button>
-            <button class="row-action" disabled title="Stage 3" aria-label="Dupliquer">⧉</button>
-            <button class="row-action" disabled title="Stage 3" aria-label="Supprimer">🗑</button>
-          </td>
-        </tr>
-
-        <!-- evt-ep · Madame Loyal x Elektric Park · En vente -->
-        <tr>
-          <td class="col-nom">Madame Loyal x Elektric Park</td>
-          <td><span class="lstatus"><span class="lstatus-dot s-vente"></span>En vente</span></td>
-          <td>Madame Loyal</td>
-          <td>EPISODE</td>
-          <td>Chatou</td>
-          <td>5 sept. 2026</td>
-          <td class="num">12 000</td>
-          <td><div class="col-budget"><span class="col-budget-pct">20%</span><span class="col-budget-target">720 k€</span></div></td>
-          <td><span class="integ-pair"><span class="integ-mark on">BF</span><span class="integ-mark on">Bil</span></span></td>
-          <td class="col-actions">
-            <button class="row-action" disabled title="Stage 3" aria-label="Modifier">✎</button>
-            <button class="row-action" disabled title="Stage 3" aria-label="Dupliquer">⧉</button>
-            <button class="row-action" disabled title="Stage 3" aria-label="Supprimer">🗑</button>
-          </td>
-        </tr>
-
-        <!-- evt-si · SONORA x IMPACT · En vente -->
-        <tr>
-          <td class="col-nom">SONORA x IMPACT</td>
-          <td><span class="lstatus"><span class="lstatus-dot s-vente"></span>En vente</span></td>
-          <td>Sonora</td>
-          <td>EPISODE</td>
-          <td>Paris</td>
-          <td>25 sept. 2026</td>
-          <td class="num">25 000</td>
-          <td><div class="col-budget"><span class="col-budget-pct">18%</span><span class="col-budget-target">850 k€</span></div></td>
-          <td><span class="integ-pair"><span class="integ-mark off">BF</span><span class="integ-mark off">Bil</span></span></td>
-          <td class="col-actions">
-            <button class="row-action" disabled title="Stage 3" aria-label="Modifier">✎</button>
-            <button class="row-action" disabled title="Stage 3" aria-label="Dupliquer">⧉</button>
-            <button class="row-action" disabled title="Stage 3" aria-label="Supprimer">🗑</button>
-          </td>
-        </tr>
-
-        <!-- evt-sh · Sonora Halloween XXL 2026 · En préparation -->
-        <tr>
-          <td class="col-nom">Sonora Halloween XXL 2026</td>
-          <td><span class="lstatus"><span class="lstatus-dot s-prep"></span>En préparation</span></td>
-          <td>Sonora</td>
-          <td>EPISODE</td>
-          <td>Bordeaux</td>
-          <td>31 oct. 2026</td>
-          <td class="num">9 500</td>
-          <td><div class="col-budget"><span class="col-budget-pct">7%</span><span class="col-budget-target">420 k€</span></div></td>
-          <td><span class="integ-pair"><span class="integ-mark off">BF</span><span class="integ-mark off">Bil</span></span></td>
-          <td class="col-actions">
-            <button class="row-action" disabled title="Stage 3" aria-label="Modifier">✎</button>
-            <button class="row-action" disabled title="Stage 3" aria-label="Dupliquer">⧉</button>
-            <button class="row-action" disabled title="Stage 3" aria-label="Supprimer">🗑</button>
-          </td>
-        </tr>
-
+      <tbody id="liste-tbody">
+        <!-- rows rendered by renderRows() -->
       </tbody>
     </table>
   </div>
 
 </div>
 
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   Liste Stage 2 — data wiring + filters.
+
+   Data source: inline STAGE2_EVENTS copy + window.MD.getEvents wrapper,
+   verbatim from index.html L154-240 per Stage-2 inline-copy decision.
+   KNOWN CONSOLIDATION DEBT: this is a second inline copy of the array
+   (index.html holds the first). Both collapse into a shared extraction
+   at SCHEMA absorption ship #2 under the Path-C re-walk — see PARKED
+   "window.MD vocab-layer consolidation scope (Path C)". Do NOT extract
+   here; that reaches into deliberately-parked scope.
+
+   Filter pipeline: getEvents() -> sandbox gate (drop Sandbox unless
+   toggle on) -> status filter (Tous = all eligible; else exact match)
+   -> search (Nom + Ville substring, accent/case-insensitive) -> render.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const STAGE2_EVENTS = [
+  { id:'evt-sb', qonto_account_id:'qa-bdx', in_switcher:true, name:'Madame Loyal x Sonora Bordeaux',  status:'En vente', is_general:false,
+    city:'Bordeaux', venue:'Parc des Expositions',     start_date:'2026-06-11', number_of_days:3, poster_url:null, display_initials:'SB', producteur:'EPISODE', marque:'Sonora',
+    budget_target:950000, budget_consumed:385000, edition_number:4, capacity:44500,
+    description:'4e édition du festival Sonora à Bordeaux — programmation électro 3 jours.',
+    genre:['Électro','Techno','House'],
+    previous_edition_event_id:null,
+    template_id:null,
+    dice_backend_url:'https://dice.fm/event/sonora-bordeaux-2026', shotgun_backend_url:'https://shotgun.live/event/sonora-bordeaux-2026',
+    dice_public_buy_url:'https://dice.fm/partner/tickets/event/av3vr2',
+    shotgun_public_buy_url:'https://shotgun.live/en/festivals/madame-loyal-x-sonora',
+    budgetflow_url:'https://festiflow.studioai2k.com/budget/bdx',
+    billetterie_url:'https://festiflow.studioai2k.com/billetterie/bordeaux' },
+  { id:'evt-cc', qonto_account_id:'qa-mic', in_switcher:false, name:'Madame Loyal x Crazy Carnaval',   status:'En vente', is_general:false,
+    city:'Paris',    venue:'Cirque Micheletty',        start_date:'2026-07-04', number_of_days:1, poster_url:null, display_initials:'CC', producteur:'EPISODE', marque:'Madame Loyal',
+    budget_target:380000, budget_consumed:115000, edition_number:1, capacity:3800,
+    description:null, genre:[], previous_edition_event_id:null, template_id:null,
+    dice_backend_url:'https://dice.fm/event/crazy-carnaval-2026', shotgun_backend_url:null,
+    dice_public_buy_url:null, shotgun_public_buy_url:null,
+    budgetflow_url:null, billetterie_url:null },
+  { id:'evt-ep', qonto_account_id:'qa-epk', in_switcher:true, name:'Madame Loyal x Elektric Park',    status:'En vente', is_general:false,
+    city:'Chatou',   venue:'Ile des Impressionnistes', start_date:'2026-09-05', number_of_days:1, poster_url:null, display_initials:'EP', producteur:'EPISODE', marque:'Madame Loyal',
+    budget_target:720000, budget_consumed:145000, edition_number:1, capacity:12000,
+    description:null, genre:['Électro'], previous_edition_event_id:null, template_id:null,
+    dice_backend_url:'https://dice.fm/event/elektric-park-2026', shotgun_backend_url:null,
+    dice_public_buy_url:'https://dice.fm/partner/tickets/event/oepro5',
+    shotgun_public_buy_url:null,
+    budgetflow_url:'https://festiflow.studioai2k.com/budget/epk',
+    billetterie_url:'https://festiflow.studioai2k.com/billetterie/epk' },
+  { id:'evt-si', qonto_account_id:null, in_switcher:false, name:'SONORA x IMPACT',                 status:'En vente', is_general:false,
+    city:'Paris',    venue:'Parc des Expositions de Villepinte', start_date:'2026-09-25', number_of_days:1, poster_url:null, display_initials:'SI', producteur:'EPISODE', marque:'Sonora',
+    budget_target:850000, budget_consumed:155000, edition_number:1, capacity:25000,
+    description:null, genre:[], previous_edition_event_id:null, template_id:null,
+    dice_backend_url:null, shotgun_backend_url:'https://shotgun.live/event/sonora-impact-2026',
+    dice_public_buy_url:null, shotgun_public_buy_url:null,
+    budgetflow_url:null, billetterie_url:null },
+  { id:'evt-sh', qonto_account_id:null, in_switcher:false, name:'Sonora Halloween XXL 2026',       status:'En préparation', is_general:false,
+    city:'Bordeaux', venue:'Parc des Expositions',     start_date:'2026-10-31', number_of_days:1, poster_url:null, display_initials:'SH', producteur:'EPISODE', marque:'Sonora',
+    budget_target:420000, budget_consumed:30000, edition_number:2, capacity:9500,
+    description:null, genre:[], previous_edition_event_id:null, template_id:null,
+    dice_backend_url:null, shotgun_backend_url:null,
+    dice_public_buy_url:null, shotgun_public_buy_url:null,
+    budgetflow_url:null, billetterie_url:null },
+  { id:'evt-tc', qonto_account_id:null, in_switcher:false, name:'Test calcul tournée hiver',       status:'Sandbox',  is_general:false,
+    city:null, venue:null, start_date:null, number_of_days:null, poster_url:null, display_initials:'TC', producteur:null, marque:null,
+    budget_target:null, budget_consumed:null, edition_number:null, capacity:null,
+    description:null, genre:[], previous_edition_event_id:null, template_id:null,
+    dice_backend_url:null, shotgun_backend_url:null,
+    dice_public_buy_url:null, shotgun_public_buy_url:null,
+    budgetflow_url:null, billetterie_url:null },
+];
+
+window.MD = window.MD || {};
+window.MD.getEvents = async function() {
+  return STAGE2_EVENTS;
+};
+
+/* ── filter state ── */
+const FILTER = { search:'', status:'all', showSandbox:false };
+
+/* ── helpers ── */
+const STATUS_DOT = {
+  'En préparation':'s-prep', 'En vente':'s-vente', 'Annulé':'s-annule',
+  'Sandbox':'s-sandbox', 'Terminé':'s-termine'
+};
+function norm(s){ return (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+function fmtDate(iso){
+  if(!iso) return '—';
+  return new Date(iso+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
+}
+function fmtJauge(n){ return n==null ? '—' : n.toLocaleString('fr-FR'); }
+function budgetPct(evt){
+  if(evt.budget_target==null||evt.budget_consumed==null) return null;
+  return Math.round(evt.budget_consumed/evt.budget_target*100);
+}
+function fmtTarget(n){ return n==null ? '' : Math.round(n/1000).toLocaleString('fr-FR')+' k€'; }
+function integMark(label,on){
+  return '<span class="integ-mark '+(on?'on':'off')+'">'+label+'</span>';
+}
+function esc(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ── filter pipeline ── */
+function applyFilters(events){
+  return events.filter(function(e){
+    if(e.status==='Sandbox' && !FILTER.showSandbox) return false;        // sandbox gate
+    if(FILTER.status!=='all' && e.status!==FILTER.status) return false;  // status filter
+    if(FILTER.search){                                                    // search Nom + Ville
+      const q = norm(FILTER.search);
+      if(norm(e.name).indexOf(q)===-1 && norm(e.city).indexOf(q)===-1) return false;
+    }
+    return true;
+  });
+}
+
+/* ── row render ── */
+function rowHTML(evt){
+  const isSb = evt.status==='Sandbox';
+  const pct = budgetPct(evt);
+  const sbBadge = isSb ? '<span class="sandbox-badge">sandbox</span>' : '';
+  const budgetCell = pct==null
+    ? '<span class="col-budget-pct">—</span>'
+    : '<div class="col-budget"><span class="col-budget-pct">'+pct+'%</span><span class="col-budget-target">'+fmtTarget(evt.budget_target)+'</span></div>';
+  return ''+
+    '<tr'+(isSb?' class="is-sandbox-row"':'')+'>'+
+      '<td class="col-nom">'+esc(evt.name)+sbBadge+'</td>'+
+      '<td><span class="lstatus"><span class="lstatus-dot '+STATUS_DOT[evt.status]+'"></span>'+esc(evt.status)+'</span></td>'+
+      '<td>'+esc(evt.marque||'—')+'</td>'+
+      '<td>'+esc(evt.producteur||'—')+'</td>'+
+      '<td>'+esc(evt.city||'—')+'</td>'+
+      '<td>'+fmtDate(evt.start_date)+'</td>'+
+      '<td class="num">'+fmtJauge(evt.capacity)+'</td>'+
+      '<td>'+budgetCell+'</td>'+
+      '<td><span class="integ-pair">'+integMark('BF',!!evt.budgetflow_url)+integMark('Bil',!!evt.billetterie_url)+'</span></td>'+
+      '<td class="col-actions">'+
+        '<button class="row-action" disabled title="Stage 3" aria-label="Modifier">✎</button>'+
+        '<button class="row-action" disabled title="Stage 3" aria-label="Dupliquer">⧉</button>'+
+        '<button class="row-action" disabled title="Stage 3" aria-label="Supprimer">🗑</button>'+
+      '</td>'+
+    '</tr>';
+}
+
+/* ── render ── */
+let ALL_EVENTS = [];
+function renderRows(){
+  const rows = applyFilters(ALL_EVENTS);
+  const tbody = document.getElementById('liste-tbody');
+  if(rows.length===0){
+    tbody.innerHTML = '<tr class="liste-empty"><td colspan="10">Aucun événement ne correspond.</td></tr>';
+  } else {
+    tbody.innerHTML = rows.map(rowHTML).join('');
+  }
+  const count = rows.length;
+  document.getElementById('liste-count').textContent = count+' '+(count===1?'événement':'événements');
+}
+
+/* ── wire controls ── */
+function wireControls(){
+  document.getElementById('liste-search-input').addEventListener('input', function(e){
+    FILTER.search = e.target.value; renderRows();
+  });
+  document.getElementById('liste-status-chips').addEventListener('click', function(e){
+    const btn = e.target.closest('.lchip'); if(!btn) return;
+    const status = btn.getAttribute('data-status');
+    FILTER.status = status;
+    document.querySelectorAll('#liste-status-chips .lchip').forEach(function(c){ c.classList.remove('on'); });
+    btn.classList.add('on');
+    if(status==='Sandbox' && !FILTER.showSandbox){           // selecting Sandbox auto-enables toggle
+      FILTER.showSandbox = true;
+      document.getElementById('liste-sandbox-toggle').checked = true;
+    }
+    renderRows();
+  });
+  document.getElementById('liste-sandbox-toggle').addEventListener('change', function(e){
+    FILTER.showSandbox = e.target.checked;
+    if(!FILTER.showSandbox && FILTER.status==='Sandbox'){    // toggle off while Sandbox active → snap to Tous
+      FILTER.status = 'all';
+      document.querySelectorAll('#liste-status-chips .lchip').forEach(function(c){ c.classList.remove('on'); });
+      document.querySelector('#liste-status-chips .lchip[data-status="all"]').classList.add('on');
+    }
+    renderRows();
+  });
+}
+
+/* ── boot ── */
+window.MD.getEvents().then(function(events){
+  ALL_EVENTS = events;
+  wireControls();
+  renderRows();
+});
+</script>
 </body>
 </html>

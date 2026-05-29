@@ -28,24 +28,22 @@
      - No row-action wiring this stage (that's Stage 3). The action icons
        stay disabled with title="Stage 3" hints, emitted from the render
        function now instead of hardcoded.
-     - Lower-nav: undefined-handler precedent per fiche.html v5.4.0/v5.4.2
-       (Dashboard/Admin onclick="goDeptTab(...)" knowingly undefined here).
-       Reachability this stage: direct URL only — the index.html Liste
-       button still routes to the in-index #panel-liste stub. Stage 4
-       retires that stub + rewires the button to point here.
+     - Lower-nav (Stage 4 wired): Dashboard → index.html, Admin →
+       index.html?tab=admin (Admin panel lives in index.html; the boot
+       hook there reads ?tab and opens it via the existing goDeptTab path).
+       Liste is the current page — active marker, no handler. Reachability:
+       the index.html Liste button now routes here (the #panel-liste stub
+       was retired this stage per §02 §13).
 
      COLUMN SET (V1-locked, dense, bounded by STAGE2_EVENTS shape):
        Nom · Statut · Marque · Producteur · Ville · Date début · Jauge ·
        Budget % · Intégrations (BF/Bil dual-cell) · row-actions trailing.
 
-     STAGE 3+ ADDS (subsequent fresh exec chats per Mode 1):
+     STAGE 3 ADDS (subsequent fresh exec chat per Mode 1):
      - Stage 3: row-actions wired — edit → fiche.html?id=<evt.id>,
        duplicate (carry-neither V1 per evenements.md §14 + §4),
        soft-delete (sets deleted_at + toast + read-filter; no recovery V1
        per brief §4 v5.3.1).
-     - Stage 4: index.html nav rewire (Liste button onclick swap +
-       goDeptTab panel-array drop 'liste' + #panel-liste stub retire per
-       §02 §13) + brief §3 reconcile + final paired-artifact reconciles.
 
      SCHEMA cascades surfaced this build (input to absorption ship #2):
      - mock STAGE2_EVENTS carries scalar `capacity`; SCHEMA expects
@@ -192,9 +190,9 @@ a{color:inherit;text-decoration:none}
   </div>
   <div class="dept-tabs-bg">
   <div id="dept-tabs" class="dept-tabs">
-    <button class="dt" data-idx="0" onclick="goDeptTab('dashboard',this)">Dashboard</button>
-    <button class="dt on" data-idx="1" style="border-bottom-color:#fff;color:#fff" onclick="goDeptTab('liste',this)">Liste</button>
-    <button class="dt" data-idx="2" onclick="goDeptTab('admin',this)">Admin</button>
+    <button class="dt" data-idx="0" onclick="window.location.href='index.html'">Dashboard</button>
+    <button class="dt on" data-idx="1" style="border-bottom-color:#fff;color:#fff">Liste</button>
+    <button class="dt" data-idx="2" onclick="window.location.href='index.html?tab=admin'">Admin</button>
   </div>
   </div>
 </nav>

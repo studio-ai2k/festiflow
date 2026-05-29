@@ -35,7 +35,7 @@
   <div class="dept-tabs-bg">
   <div id="dept-tabs" class="dept-tabs">
     <button class="dt on" data-idx="0" style="border-bottom-color:#fff;color:#fff" onclick="goDeptTab('dashboard',this)">Dashboard</button>
-    <button class="dt" data-idx="1" onclick="goDeptTab('liste',this)">Liste</button>
+    <button class="dt" data-idx="1" onclick="window.location.href='liste.html'">Liste</button>
     <button class="dt" data-idx="2" onclick="goDeptTab('admin',this)">Admin</button>
   </div>
   </div>
@@ -58,10 +58,6 @@
   <div id="sort-caption" style="font-size:.72em;color:var(--text-dim);margin-bottom:10px">Trié par date · plus proche d'abord</div>
   <div id="dash-grid"></div>
 </div><!-- /#panel-dashboard -->
-
-<div id="panel-liste" class="dept-panel" hidden>
-  <div class="dept-panel-stub">Liste — bientôt · étape 3.</div>
-</div>
 
 <div id="panel-admin" class="dept-panel" hidden>
   <div class="admin-hdr">
@@ -878,7 +874,7 @@ let _annuaireRendered = false;
  * underline is the inline borderBottomColor:#fff the live Dashboard button
  * carries (chrome.css .dt.on does NOT set border color), so set/clear it here. */
 function goDeptTab(dept, btn) {
-  ['dashboard', 'liste', 'admin'].forEach(function(d) {
+  ['dashboard', 'admin'].forEach(function(d) {
     var panel = document.getElementById('panel-' + d);
     if (panel) panel.hidden = (d !== dept);
   });
@@ -1161,10 +1157,19 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log('[Admin] Invite user — flow not in split (a) scope');
     });
   }
-  // Initial dept-tab state stays Dashboard: #panel-dashboard visible, #panel-liste
-  // + #panel-admin carry the hidden attr in markup. No JS toggle needed at boot.
+  // Initial dept-tab state stays Dashboard: #panel-dashboard visible, #panel-admin
+  // carries the hidden attr in markup. No JS toggle needed at boot.
   renderDashboard();
   renderSwitcher();
+  // Cross-page Admin deep-link (Stage 4): liste.html / fiche.html Admin tabs
+  // navigate to index.html?tab=admin since the Admin panel lives here. Drive the
+  // existing goDeptTab('admin', btn) path (not a panel-only toggle) so the panel
+  // open, the .dt active-state swap off Dashboard, and the lazy renderAnnuaire all
+  // fire exactly as a click would. ?id parsing precedent: fiche.html L1005.
+  if (new URLSearchParams(location.search).get('tab') === 'admin') {
+    var adminTab = document.querySelector('#dept-tabs .dt[data-idx="2"]');
+    if (adminTab) goDeptTab('admin', adminTab);
+  }
 });
 </script>
 </body>

@@ -7,16 +7,18 @@
 <!-- ══════════════════════════════════════════════════════════════════════
      Festiflow Module Dates · Fiche événement (create-mode + de-hardcode)
 
-     STATE (this ship, v5.7.2 / module-internal v0.4.8):
+     STATE (this ship, v0.8.5 / master-zip v5.11.6):
      - Fiche fully de-hardcoded: no field carries a hardcoded value, option
        choice, or checkbox state in markup — all JS-driven via populateForm.
        SAMPLE_EVENT (n=1 mock, built from the v5.7.1 Sonora values) + the
        new populateForm(event | null) are the single fill path for the whole
        surface — create and edit are the SAME page, no second file to sync.
      - populateForm covers the header strip (h1 + 4 .fkpi tiles) AND the form
-       (8 sections, 11 new field ids added → all fields now JS-driven). The
-       header reflects LOAD-TIME state only; live-update-as-you-type is
-       deferred (no input listeners drive the header strip this slice).
+       (8 sections, 11 new field ids added → all fields now JS-driven). Load-
+       time fill lives in populateForm; live-update-as-you-type now repaints
+       the same h1 + 4 tiles via refreshHeader() off the existing input
+       handlers (days / start / cap-rows / name / city) + minimal listeners
+       on edition + venue (the two header-only fields with no prior handler).
      - `?id` routing live: `?id=new` → populateForm(null) create-mode blank,
        heading "Nouvel événement", status En préparation, days 1 + one empty
        cap-row, Save disabled (empty name). Absent / any non-`new` →
@@ -26,21 +28,19 @@
      - Placeholder options added to country/producteur/qonto (disabled blank
        first option) so create-mode renders them blank and validation flags
        them; coproducteur/prev-edition reuse their existing value="" blank.
-     - Stale STAGE-state refresh-marker closed here (was "Stage 3 / v5.3.6 /
-       v0.3.4"): this comment now tracks create-mode at v5.7.2 / v0.4.8.
 
      DEFERRED (later slices, not this ship):
      - Real uuid-lookup against STAGE2_EVENTS (needs the mock-shape extension)
-     - Live-update-as-you-type for the header strip
-     - Inline-create flows (coproducer "+", qonto "+")
+     - Inline-create flows (coproducer "+", qonto "+") — needs a window.MD
+       getter layer in fiche.html first (window.MD = 0 here; Path-C debt)
      - Status-transition BudgetFlow side-effects (brief §7)
      - Permissions gating (blocked on briefs/admin.md Q1 role vocabulary)
      - Real Save persistence (V1-sequence step 8: wire to API)
 
-     Zero ADRs this ship — create-mode is authorized by briefs/evenements.md
-     §3 routing contract + this STAGE-4 plan; SAMPLE_EVENT is a mock-data
-     constant following existing patterns (§10 §3 architectural-significance
-     test: no future session needs to know WHY it was chosen → CHANGELOG-only).
+     Zero ADRs this ship — header live-update is behavior on the existing
+     Fiche surface (§10 §3 architectural-significance test: no future session
+     needs to know WHY → CHANGELOG-only). Reuses fkpiDateRange + the fr-FR
+     SUM path; no new data layer (window.MD stays 0), no SCHEMA touch.
      ══════════════════════════════════════════════════════════════════════ -->
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared/chrome.css">
@@ -686,6 +686,44 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     capTotalB.textContent = sum.toLocaleString('fr-FR');
   }
 
+  // ── Header live-update (as-you-type) ─────────────────────────────────
+  // Repaints the 4 .fkpi tiles + h1 off LIVE form state. Mirrors the
+  // load-time block in populateForm exactly (same fv/fs indices, same
+  // fkpiDateRange formatter, same fr-FR SUM path) so typed state and
+  // loaded state render identically. Called from the existing handlers
+  // (days / start / cap-rows / name / city) + minimal listeners on the
+  // two fields with no prior handler (edition / venue). No new data
+  // layer — reads the DOM inputs directly, window.MD stays 0 here.
+  var editionInput = document.getElementById('edition-input');
+  var venueInput = document.getElementById('venue-input');
+  function refreshHeader() {
+    var fv = document.querySelectorAll('.fkpi-val');
+    var fs = document.querySelectorAll('.fkpi-sub');
+    // h1 — name (blank → create-mode heading)
+    var nm = nameInput.value.trim();
+    var heading = document.getElementById('fiche-heading');
+    if (heading) heading.textContent = nm ? nm : 'Nouvel événement';
+    // Édition — fv[0] only (fs[0] série is event-specific, no form field)
+    var ed = editionInput.value.trim();
+    if (fv[0]) fv[0].textContent = ed ? 'N° ' + ed : '—';
+    // Dates — fv[1] range via the SAME fkpiDateRange formatter; fs[1] N jours
+    var nDaysRaw = parseInt(daysInput.value, 10);
+    var nDays = (isNaN(nDaysRaw) || nDaysRaw < 1) ? 0 : nDaysRaw;
+    if (fv[1]) fv[1].textContent = fkpiDateRange(startInput.value, daysInput.value);
+    if (fs[1]) fs[1].textContent = nDays ? (nDays + ' jour' + (nDays > 1 ? 's' : '')) : '—';
+    // Lieu — fv[2] city, fs[2] venue
+    if (fv[2]) fv[2].textContent = cityInput.value.trim() || '—';
+    if (fs[2]) fs[2].textContent = venueInput.value.trim() || '—';
+    // Jauge totale — fv[3] cap-rows SUM (same fr-FR path as recomputeTotal)
+    var sum = 0;
+    var capInputs = capRows.querySelectorAll('input');
+    for (var i = 0; i < capInputs.length; i++) {
+      var cv = parseInt(capInputs[i].value, 10);
+      if (!isNaN(cv)) sum += cv;
+    }
+    if (fv[3]) fv[3].textContent = capInputs.length ? sum.toLocaleString('fr-FR') : '—';
+  }
+
   // ── Status cascade (display sync + Sandbox release visual + asterisks) ──
   function applyStatusCascade(newVal) {
     var variant = STATUS_VARIANT[newVal] || 'prep';
@@ -826,7 +864,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     saveBtn.disabled = !isFormValid();
   }
 
-  // ── Header strip date-range formatter (load-time only) ───────────────
+  // ── Header strip date-range formatter (load + live-update) ───────────
   function fkpiDateRange(startStr, nDays) {
     if (!startStr) return '—';
     var d1 = new Date(startStr + 'T00:00:00');
@@ -844,13 +882,13 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   // ── populateForm: the single fill path (create + edit share this) ────
   // event = SAMPLE_EVENT shape → edit-preview; null → create-mode blank.
   // Covers the header strip (h1 + 4 .fkpi tiles) AND the form per v5.7.2
-  // scope. Header reflects LOAD-TIME state only — live-update-as-you-type
-  // is deferred (no input listeners drive the header strip this slice).
+  // scope. Load-time fill lives here; live-update-as-you-type is wired
+  // separately via refreshHeader() off the existing input handlers.
   function populateForm(event) {
     var byId = function(id){ return document.getElementById(id); };
     function setVal(id, v){ var el = byId(id); if (el) el.value = (v == null ? '' : v); }
 
-    // Header strip — h1 + 4 .fkpi tiles (load-time only)
+    // Header strip — h1 + 4 .fkpi tiles (load-time fill; live-update via refreshHeader)
     var heading = byId('fiche-heading');
     if (heading) heading.textContent = event ? event.name : 'Nouvel événement';
     var fv = document.querySelectorAll('.fkpi-val');
@@ -928,19 +966,23 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   daysInput.addEventListener('input', function(){
     regenerateCapRows();
     revalidate();
+    refreshHeader();
   });
   startInput.addEventListener('change', function(){
     updateDateLabelsOnly();
     revalidate();
+    refreshHeader();
   });
 
   // Delegate cap-row input events to the cap-rows container so new rows
   // pick up the handler without per-row re-wiring (recompute SUM +
-  // revalidate per-row `.invalid` against current emptiness state)
+  // revalidate per-row `.invalid` against current emptiness state +
+  // repaint the Jauge totale header tile off the same live SUM)
   capRows.addEventListener('input', function(e){
     if (e.target && e.target.tagName === 'INPUT') {
       recomputeTotal();
       revalidate();
+      refreshHeader();
     }
   });
 
@@ -949,13 +991,22 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   });
 
   // Stage 3: revalidate on every required-set input/change event so empty
-  // fields red-border immediately + Save gating tracks live form state
+  // fields red-border immediately + Save gating tracks live form state.
+  // name + city also drive header tiles (h1 + Lieu) so add refreshHeader.
   nameInput.addEventListener('input', revalidate);
+  nameInput.addEventListener('input', refreshHeader);
   countrySelect.addEventListener('change', revalidate);
   cityInput.addEventListener('input', revalidate);
+  cityInput.addEventListener('input', refreshHeader);
   producteurSelect.addEventListener('change', revalidate);
   qontoSelect.addEventListener('change', revalidate);
   qontoSelect.addEventListener('change', updateSwitcherToggle);
+
+  // Header-only fields with no prior handler (edition → Édition tile,
+  // venue → Lieu sub) get minimal input listeners. These don't touch
+  // validation (neither is in the required set) — header repaint only.
+  editionInput.addEventListener('input', refreshHeader);
+  venueInput.addEventListener('input', refreshHeader);
 
   // Confirmer-la-sandbox shortcut: one-way Sandbox → En préparation per
   // brief §4 v5.3.1 (bidirectional regression open per §14 — no V1 UI)

@@ -1,5 +1,5 @@
 /* ============================================================================
- * Module Dates — mock-data.js
+ * Module Dates — mock-data.js  ·  v0.8.6
  * ----------------------------------------------------------------------------
  * Frontend-only V1 mock data. Mirrors `docs/architecture/SCHEMA.md` exactly.
  * Every mock function returns a Promise (mirrors eventual fetch() shape).
@@ -9,22 +9,29 @@
  *
  * Discipline anchors:
  * - SCHEMA §2.1 — UUIDs (server-generated UUID v4 in prod; hardcoded shape in mock)
- * - SCHEMA §2.4 — naming + enum storage convention (UPPERCASE_SNAKE_CASE in storage)
- * - SCHEMA §2.5 — is_sandbox is the canonical sandbox-flag column
+ * - SCHEMA §2.4 — naming + enum storage convention
+ * - SCHEMA §2.5 — events.status = 'Sandbox' is the canonical sandbox marker
+ *      (is_sandbox BOOLEAN dropped pre-v5.3.2; sandbox-ness is the 5th status value)
+ * - SCHEMA §2.8 — qonto_accounts.is_general is PER-PRODUCING-COMPANY (ADR-0016);
+ *      non-general accounts link to their company general via general_account_id
  * - SCHEMA §3.1 — users
- * - SCHEMA §4.1 — qonto_accounts
- * - SCHEMA §4.2 — coproducers
+ * - SCHEMA §4.1 — qonto_accounts (company / bank / qonto_name / general_account_id per ADR-0016)
+ * - SCHEMA §4.2 — coproducers (note per ADR-0016)
  * - SCHEMA §4.3 — event_series
- * - SCHEMA §4.4 — events (26 cols)
+ * - SCHEMA §4.4 — events (producteur = producing company per ADR-0016; marque label;
+ *      public buy URLs carry the _buy_ infix)
  * - SCHEMA §4.5 — event_days
  *
- * Carry-pending decisions surfaced by this mock data (see DESIGN_LOG.md):
- * - #1 events.status enum: PREP / VALIDÉ / LAUNCHED / LIVE / CLOSED (5 vals)
- *      → SANDBOX dropped from enum; is_sandbox boolean is the sandbox flag
- *        (resolves #2). VALIDÉ added per brief §11 line 119.
- * - #2 boolean wins over status='SANDBOX' enum coupling (see #1).
- * - #5 read contract: FLAT shape. getEvent(id) returns events-row columns
- *      only; coproducer/qonto/series names rendered via separate cached calls.
+ * v5.11.7 SCHEMA absorption Mode 2 ship #2 (ADR-0016 cascade):
+ *   - events.status reshaped stale uppercase EN enum → 5-value French
+ *     (En préparation / En vente / Annulé / Sandbox / Terminé).
+ *   - is_sandbox column dropped on event rows; sandbox rows carry status:'Sandbox'.
+ *   - events gain: marque, in_switcher, budgetflow_url, billetterie_url,
+ *     dice_public_buy_url, shotgun_public_buy_url (public URLs renamed from _public_url).
+ *   - qonto_accounts gain: company, bank, qonto_name, general_account_id.
+ *   NOTE: this dormant mock keeps the old 4-account global-singleton topology with
+ *   per-company attributes layered on (proportionate). The live 6-account per-company
+ *   topology is index.html's STAGE2_QONTO (shipped v5.10.0) — out of scope here.
  * ========================================================================= */
 
 'use strict';
@@ -39,12 +46,12 @@ const CURRENT_USER = {
   name: 'Leo',
   google_user_id: 'mock-google-sub-leo-001',
   role: 'admin',          // PLACEHOLDER — vocab pending Module Admin brief (SCHEMA §3.1 Notes)
-  status: 'ACTIVE',       // stable-vocab Option C per SCHEMA §2.4
+  status: 'ACTIVE',       // users.status stable-vocab Option C per SCHEMA §3.1 (INVITED/ACTIVE/DISABLED)
   last_login_at: '2026-05-15T09:00:00Z',
 };
 
-// Status enum vocabulary (resolves Carry-pending #1)
-const STATUS_VALUES = ['PREP', 'VALIDÉ', 'LAUNCHED', 'LIVE', 'CLOSED'];
+// events.status enum vocabulary — 5-value French per SCHEMA §4.4 (v5.3.1 lock)
+const STATUS_VALUES = ['En préparation', 'En vente', 'Annulé', 'Sandbox', 'Terminé'];
 
 // Fiscal-year derive helper (mirrors SCHEMA §4.4 fiscal_year derive rule)
 function deriveFiscalYear(event) {
@@ -58,13 +65,18 @@ function deriveFiscalYear(event) {
  * ------------------------------------------------------------------------- */
 
 const STATE = {
-  // SCHEMA §4.1
+  // SCHEMA §4.1 — per-company Générale model (ADR-0016): company / bank / qonto_name /
+  // general_account_id. Dormant mock keeps the 4-account topology; live set is 6 (index.html).
   qonto_accounts: [
     {
       id: 'q0000001-0000-4000-8000-000000000001',
       name: 'Générale Madame Loyal',
+      qonto_name: 'MADAME LOYAL PRINCIPAL',
+      bank: 'Qonto',
       iban: 'FR76 3000 1000 0100 0000 0000 001',
+      company: 'EPISODE',
       is_general: true,
+      general_account_id: null,
       deleted_at: null,
       created_at: '2024-01-01T00:00:00Z',
       updated_at: '2024-01-01T00:00:00Z',
@@ -72,8 +84,12 @@ const STATE = {
     {
       id: 'q0000002-0000-4000-8000-000000000002',
       name: 'Paris XXL — compte dédié',
+      qonto_name: 'ML PARIS XXL',
+      bank: 'Qonto',
       iban: 'FR76 3000 1000 0100 0000 0000 002',
+      company: 'EPISODE',
       is_general: false,
+      general_account_id: 'q0000001-0000-4000-8000-000000000001',
       deleted_at: null,
       created_at: '2025-09-12T10:30:00Z',
       updated_at: '2025-09-12T10:30:00Z',
@@ -81,8 +97,12 @@ const STATE = {
     {
       id: 'q0000003-0000-4000-8000-000000000003',
       name: 'Bordeaux EPK 2026',
+      qonto_name: 'ML BORDEAUX EPK',
+      bank: 'Qonto',
       iban: 'FR76 3000 1000 0100 0000 0000 003',
+      company: 'EPISODE',
       is_general: false,
+      general_account_id: 'q0000001-0000-4000-8000-000000000001',
       deleted_at: null,
       created_at: '2026-01-15T14:20:00Z',
       updated_at: '2026-01-15T14:20:00Z',
@@ -90,19 +110,24 @@ const STATE = {
     {
       id: 'q0000004-0000-4000-8000-000000000004',
       name: 'Festival Avignon 2026',
+      qonto_name: 'ML AVIGNON',
+      bank: 'Qonto',
       iban: 'FR76 3000 1000 0100 0000 0000 004',
+      company: 'EPISODE',
       is_general: false,
+      general_account_id: 'q0000001-0000-4000-8000-000000000001',
       deleted_at: null,
       created_at: '2026-02-20T11:00:00Z',
       updated_at: '2026-02-20T11:00:00Z',
     },
   ],
 
-  // SCHEMA §4.2 — V1 captures name only
+  // SCHEMA §4.2 — V1 captures name only; note optional (ADR-0016)
   coproducers: [
     {
       id: 'c0000001-0000-4000-8000-000000000001',
       name: 'Sound Productions SARL',
+      note: null,
       deleted_at: null,
       created_at: '2025-11-04T09:15:00Z',
       updated_at: '2025-11-04T09:15:00Z',
@@ -110,6 +135,7 @@ const STATE = {
     {
       id: 'c0000002-0000-4000-8000-000000000002',
       name: 'Live Nation France',
+      note: null,
       deleted_at: null,
       created_at: '2026-01-20T16:45:00Z',
       updated_at: '2026-01-20T16:45:00Z',
@@ -136,16 +162,15 @@ const STATE = {
     },
   ],
 
-  // SCHEMA §4.4 — 26 columns
-  // Sample shape: 1 Générale + 4 active in mixed lifecycle states + 2 sandbox + 2 past
+  // SCHEMA §4.4 — events. 9 rows: 1 Générale + 4 active mixed lifecycle + 2 sandbox + 2 past.
   events: [
     {
       // Générale 2026 — is_general=TRUE annual rollup row
       id: 'e0000000-0000-4000-8000-000000000001',
       name: 'Générale 2026',
-      status: 'LIVE',
-      is_sandbox: false,
+      status: 'En vente',
       is_general: true,
+      in_switcher: true,
       fiscal_year: 2026,
       qonto_account_id: 'q0000001-0000-4000-8000-000000000001',
       series_id: null,
@@ -153,6 +178,7 @@ const STATE = {
       coproducer_id: null,
       external_coproduction: false,
       producteur: 'EPISODE',
+      marque: null,
       country: 'France',
       city: null,
       venue: null,
@@ -161,20 +187,22 @@ const STATE = {
       number_of_days: 365,
       budget_target: 0,
       dice_backend_url: null,
-      dice_public_url: null,
+      dice_public_buy_url: null,
       shotgun_backend_url: null,
-      shotgun_public_url: null,
+      shotgun_public_buy_url: null,
+      budgetflow_url: 'https://festiflow.studioai2k.com/budget/generale-2026',
+      billetterie_url: null,
       deleted_at: null,
       created_at: '2026-01-01T00:00:00Z',
       updated_at: '2026-01-01T00:00:00Z',
     },
     {
-      // PREP — future-future, series recurring (Paris XXL 2027 = edition 4)
+      // En préparation — future-future, series recurring (Paris XXL 2027 = edition 4)
       id: 'e0000001-0000-4000-8000-000000000001',
       name: 'Paris XXL 2027',
-      status: 'PREP',
-      is_sandbox: false,
+      status: 'En préparation',
       is_general: false,
+      in_switcher: true,
       fiscal_year: 2027,
       qonto_account_id: 'q0000002-0000-4000-8000-000000000002',
       series_id: 's0000001-0000-4000-8000-000000000001',
@@ -182,6 +210,7 @@ const STATE = {
       coproducer_id: null,
       external_coproduction: false,
       producteur: 'EPISODE',
+      marque: 'Madame Loyal',
       country: 'France',
       city: 'Paris',
       venue: 'Parc des Expositions',
@@ -190,20 +219,22 @@ const STATE = {
       number_of_days: 3,
       budget_target: 1450000,
       dice_backend_url: null,
-      dice_public_url: null,
+      dice_public_buy_url: null,
       shotgun_backend_url: null,
-      shotgun_public_url: null,
+      shotgun_public_buy_url: null,
+      budgetflow_url: 'https://festiflow.studioai2k.com/budget/paris-xxl-2027',
+      billetterie_url: null,
       deleted_at: null,
       created_at: '2026-04-12T11:20:00Z',
       updated_at: '2026-05-02T15:40:00Z',
     },
     {
-      // VALIDÉ — confirmed, future, coproducer populated
+      // En préparation — confirmed, future, coproducer populated (was VALIDÉ pre-brief)
       id: 'e0000002-0000-4000-8000-000000000002',
       name: 'Bordeaux EPK 2026',
-      status: 'VALIDÉ',
-      is_sandbox: false,
+      status: 'En préparation',
       is_general: false,
+      in_switcher: true,
       fiscal_year: 2026,
       qonto_account_id: 'q0000003-0000-4000-8000-000000000003',
       series_id: null,
@@ -211,6 +242,7 @@ const STATE = {
       coproducer_id: 'c0000001-0000-4000-8000-000000000001',
       external_coproduction: true,
       producteur: 'EPISODE',
+      marque: 'Madame Loyal',
       country: 'France',
       city: 'Bordeaux',
       venue: 'Arkéa Arena',
@@ -219,20 +251,22 @@ const STATE = {
       number_of_days: 2,
       budget_target: 780000,
       dice_backend_url: 'https://backstage.dice.fm/event/bdx-epk-2026',
-      dice_public_url: 'https://dice.fm/event/bdx-epk-2026',
+      dice_public_buy_url: 'https://dice.fm/event/bdx-epk-2026',
       shotgun_backend_url: null,
-      shotgun_public_url: null,
+      shotgun_public_buy_url: null,
+      budgetflow_url: 'https://festiflow.studioai2k.com/budget/bordeaux-epk-2026',
+      billetterie_url: 'https://festiflow.studioai2k.com/billetterie/bordeaux-epk-2026',
       deleted_at: null,
       created_at: '2025-12-08T10:00:00Z',
       updated_at: '2026-03-15T14:25:00Z',
     },
     {
-      // LAUNCHED — tickets on sale, external_coproduction=TRUE without coproducer_id
+      // En vente — tickets on sale, external_coproduction=TRUE without coproducer_id (was LAUNCHED)
       id: 'e0000003-0000-4000-8000-000000000003',
       name: 'Marseille BDX 2026',
-      status: 'LAUNCHED',
-      is_sandbox: false,
+      status: 'En vente',
       is_general: false,
+      in_switcher: true,
       fiscal_year: 2026,
       qonto_account_id: 'q0000002-0000-4000-8000-000000000002',
       series_id: 's0000002-0000-4000-8000-000000000002',
@@ -240,6 +274,7 @@ const STATE = {
       coproducer_id: null,
       external_coproduction: true,
       producteur: 'EPISODE',
+      marque: 'Sonora',
       country: 'France',
       city: 'Marseille',
       venue: 'Plage du Prado',
@@ -248,20 +283,22 @@ const STATE = {
       number_of_days: 2,
       budget_target: 620000,
       dice_backend_url: null,
-      dice_public_url: null,
+      dice_public_buy_url: null,
       shotgun_backend_url: 'https://promoter.shotgun.live/marseille-bdx-2026',
-      shotgun_public_url: 'https://shotgun.live/marseille-bdx-2026',
+      shotgun_public_buy_url: 'https://shotgun.live/marseille-bdx-2026',
+      budgetflow_url: 'https://festiflow.studioai2k.com/budget/marseille-bdx-2026',
+      billetterie_url: 'https://festiflow.studioai2k.com/billetterie/marseille-bdx-2026',
       deleted_at: null,
       created_at: '2026-01-09T08:30:00Z',
       updated_at: '2026-05-10T17:00:00Z',
     },
     {
-      // LIVE — happening this week
+      // En vente — happening this week (was LIVE; no EN COURS sentinel V1)
       id: 'e0000004-0000-4000-8000-000000000004',
       name: 'Festival Avignon 2026',
-      status: 'LIVE',
-      is_sandbox: false,
+      status: 'En vente',
       is_general: false,
+      in_switcher: true,
       fiscal_year: 2026,
       qonto_account_id: 'q0000004-0000-4000-8000-000000000004',
       series_id: null,
@@ -269,6 +306,7 @@ const STATE = {
       coproducer_id: 'c0000002-0000-4000-8000-000000000002',
       external_coproduction: true,
       producteur: 'EPISODE',
+      marque: 'Madame Loyal',
       country: 'France',
       city: 'Avignon',
       venue: 'Palais des Papes',
@@ -277,20 +315,22 @@ const STATE = {
       number_of_days: 4,
       budget_target: 950000,
       dice_backend_url: 'https://backstage.dice.fm/event/avignon-2026',
-      dice_public_url: 'https://dice.fm/event/avignon-2026',
+      dice_public_buy_url: 'https://dice.fm/event/avignon-2026',
       shotgun_backend_url: null,
-      shotgun_public_url: null,
+      shotgun_public_buy_url: null,
+      budgetflow_url: 'https://festiflow.studioai2k.com/budget/avignon-2026',
+      billetterie_url: 'https://festiflow.studioai2k.com/billetterie/avignon-2026',
       deleted_at: null,
       created_at: '2026-02-21T09:00:00Z',
       updated_at: '2026-05-14T18:30:00Z',
     },
     {
-      // SANDBOX 1 — minimal scratch event, no dates / no Qonto
+      // SANDBOX 1 — minimal scratch event, no dates / no Qonto (status='Sandbox' per §2.5)
       id: 'e0000005-0000-4000-8000-000000000005',
       name: 'Test calcul tournée hiver',
-      status: 'PREP',
-      is_sandbox: true,
+      status: 'Sandbox',
       is_general: false,
+      in_switcher: false,
       fiscal_year: 2026,                  // fallback to created_at year per SCHEMA §4.4
       qonto_account_id: null,
       series_id: null,
@@ -298,6 +338,7 @@ const STATE = {
       coproducer_id: null,
       external_coproduction: false,
       producteur: null,
+      marque: null,
       country: null,
       city: null,
       venue: null,
@@ -306,20 +347,22 @@ const STATE = {
       number_of_days: null,
       budget_target: 250000,
       dice_backend_url: null,
-      dice_public_url: null,
+      dice_public_buy_url: null,
       shotgun_backend_url: null,
-      shotgun_public_url: null,
+      shotgun_public_buy_url: null,
+      budgetflow_url: null,
+      billetterie_url: null,
       deleted_at: null,
       created_at: '2026-04-30T16:00:00Z',
       updated_at: '2026-04-30T16:00:00Z',
     },
     {
-      // SANDBOX 2 — partial fill, dates set but Qonto absent
+      // SANDBOX 2 — partial fill, dates set but Qonto absent (status='Sandbox' per §2.5)
       id: 'e0000006-0000-4000-8000-000000000006',
       name: 'Sandbox — concept tournée Italie',
-      status: 'PREP',
-      is_sandbox: true,
+      status: 'Sandbox',
       is_general: false,
+      in_switcher: false,
       fiscal_year: 2026,
       qonto_account_id: null,
       series_id: null,
@@ -327,6 +370,7 @@ const STATE = {
       coproducer_id: null,
       external_coproduction: false,
       producteur: 'EPISODE',
+      marque: null,
       country: 'Italie',
       city: 'Milano',
       venue: null,
@@ -335,20 +379,22 @@ const STATE = {
       number_of_days: 2,
       budget_target: 480000,
       dice_backend_url: null,
-      dice_public_url: null,
+      dice_public_buy_url: null,
       shotgun_backend_url: null,
-      shotgun_public_url: null,
+      shotgun_public_buy_url: null,
+      budgetflow_url: null,
+      billetterie_url: null,
       deleted_at: null,
       created_at: '2026-05-08T11:15:00Z',
       updated_at: '2026-05-08T11:15:00Z',
     },
     {
-      // PAST 1 — Paris XXL 2026 (edition 3 of series Paris XXL)
+      // PAST 1 — Paris XXL 2026 (edition 3 of series Paris XXL) (was CLOSED)
       id: 'e0000007-0000-4000-8000-000000000007',
       name: 'Paris XXL 2026',
-      status: 'CLOSED',
-      is_sandbox: false,
+      status: 'Terminé',
       is_general: false,
+      in_switcher: false,
       fiscal_year: 2026,
       qonto_account_id: 'q0000002-0000-4000-8000-000000000002',
       series_id: 's0000001-0000-4000-8000-000000000001',
@@ -356,6 +402,7 @@ const STATE = {
       coproducer_id: null,
       external_coproduction: false,
       producteur: 'EPISODE',
+      marque: 'Madame Loyal',
       country: 'France',
       city: 'Paris',
       venue: 'Parc des Expositions',
@@ -364,20 +411,22 @@ const STATE = {
       number_of_days: 3,
       budget_target: 1380000,
       dice_backend_url: 'https://backstage.dice.fm/event/paris-xxl-2026',
-      dice_public_url: 'https://dice.fm/event/paris-xxl-2026',
+      dice_public_buy_url: 'https://dice.fm/event/paris-xxl-2026',
       shotgun_backend_url: null,
-      shotgun_public_url: null,
+      shotgun_public_buy_url: null,
+      budgetflow_url: 'https://festiflow.studioai2k.com/budget/paris-xxl-2026',
+      billetterie_url: 'https://festiflow.studioai2k.com/billetterie/paris-xxl-2026',
       deleted_at: null,
       created_at: '2025-08-15T13:00:00Z',
       updated_at: '2026-03-20T10:00:00Z',
     },
     {
-      // PAST 2 — Lyon one-off 2025, no series
+      // PAST 2 — Lyon one-off 2025, no series (was CLOSED)
       id: 'e0000008-0000-4000-8000-000000000008',
       name: 'Lyon Nuits Sonores 2025',
-      status: 'CLOSED',
-      is_sandbox: false,
+      status: 'Terminé',
       is_general: false,
+      in_switcher: false,
       fiscal_year: 2025,
       qonto_account_id: 'q0000001-0000-4000-8000-000000000001',
       series_id: null,
@@ -385,6 +434,7 @@ const STATE = {
       coproducer_id: 'c0000001-0000-4000-8000-000000000001',
       external_coproduction: true,
       producteur: 'EPISODE',
+      marque: 'Sonora',
       country: 'France',
       city: 'Lyon',
       venue: 'Sucrière',
@@ -393,9 +443,11 @@ const STATE = {
       number_of_days: 2,
       budget_target: 540000,
       dice_backend_url: null,
-      dice_public_url: null,
+      dice_public_buy_url: null,
       shotgun_backend_url: 'https://promoter.shotgun.live/lyon-ns-2025',
-      shotgun_public_url: 'https://shotgun.live/lyon-ns-2025',
+      shotgun_public_buy_url: 'https://shotgun.live/lyon-ns-2025',
+      budgetflow_url: 'https://festiflow.studioai2k.com/budget/lyon-ns-2025',
+      billetterie_url: 'https://festiflow.studioai2k.com/billetterie/lyon-ns-2025',
       deleted_at: null,
       created_at: '2024-11-02T09:00:00Z',
       updated_at: '2025-06-05T15:00:00Z',
@@ -473,17 +525,18 @@ function createEvent(eventInput) {
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
     const evt = {
-      // Defaults
+      // Defaults (SCHEMA §4.4)
       id,
-      status: 'PREP',
-      is_sandbox: false,
+      status: 'En préparation',
       is_general: false,
+      in_switcher: true,
       qonto_account_id: null,
       series_id: null,
       edition_number: null,
       coproducer_id: null,
       external_coproduction: false,
       producteur: null,
+      marque: null,
       country: null,
       city: null,
       venue: null,
@@ -492,9 +545,11 @@ function createEvent(eventInput) {
       number_of_days: null,
       budget_target: 0,
       dice_backend_url: null,
-      dice_public_url: null,
+      dice_public_buy_url: null,
       shotgun_backend_url: null,
-      shotgun_public_url: null,
+      shotgun_public_buy_url: null,
+      budgetflow_url: null,
+      billetterie_url: null,
       deleted_at: null,
       created_at: now,
       updated_at: now,
@@ -546,6 +601,7 @@ function createCoproducer(name) {
     const c = {
       id: crypto.randomUUID(),
       name,
+      note: null,
       deleted_at: null,
       created_at: now,
       updated_at: now,
@@ -561,14 +617,18 @@ function getQontoAccounts() {
   );
 }
 
-function createQontoAccount(name, iban) {
+function createQontoAccount(name, iban, company, generalAccountId) {
   return mockDelay().then(() => {
     const now = new Date().toISOString();
     const q = {
       id: crypto.randomUUID(),
       name,
+      qonto_name: null,
+      bank: 'Qonto',
       iban,
-      is_general: false,            // new accounts are never the singleton Générale
+      company: company || null,             // producing company per ADR-0016 §2
+      is_general: false,                    // new accounts are never a company Générale
+      general_account_id: generalAccountId || null,  // link to company general per ADR-0016 §3
       deleted_at: null,
       created_at: now,
       updated_at: now,

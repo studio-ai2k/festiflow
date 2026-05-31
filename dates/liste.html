@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Festiflow — Liste des événements</title>
 <!-- ══════════════════════════════════════════════════════════════════════
-     Festiflow Module Dates · Liste des événements (Stage 2: data wiring + filters)
+     Festiflow Module Dates · Liste des événements (Stage 3: row-actions wired)
 
-     STATE (this ship, v5.11.3 / module-internal v0.8.2):
+     STATE (this ship, v5.11.5 / module-internal v0.8.4):
      - Data wiring: static <tr> rows replaced by a JS render off an inline
        STAGE2_EVENTS copy (all 6 rows incl. evt-tc Sandbox) + the
        window.MD.getEvents async wrapper, both verbatim from index.html
@@ -25,9 +25,20 @@
      - Sandbox row marker (brief §4 isolation rule 6): sandbox rows get a
        subtle purple row-tint + a small "sandbox" badge after the name —
        row-level legibility beyond Stage 1's status-dot.
-     - No row-action wiring this stage (that's Stage 3). The action icons
-       stay disabled with title="Stage 3" hints, emitted from the render
-       function now instead of hardcoded.
+     - Row-actions wired (this stage): edit → fiche.html?id=<evt.id>
+       (verbatim with index.html's row-edit route); duplicate → builds a
+       copy per the LOCKED field-map (carries producteur/marque/genre[copy]/
+       geo/description/copro/template_id; strips dates/edition/prev-id/qonto/
+       switcher flags/all 6 URLs; status resets to 'En préparation'),
+       unshifted to the TOP of ALL_EVENTS so the new row shows first; soft-
+       delete → sets deleted_at, re-renders. A read-filter (e.deleted_at) is
+       the FIRST predicate in applyFilters() so deleted rows drop from view.
+       A minimal self-contained toast element fires on BOTH duplicate
+       ('Copie créée') and delete ('Événement supprimé') — the duplicate
+       toast closes the filtered-out-of-view surprise when a status-chip
+       filter excludes the reset 'En préparation' copy. Write affordances
+       wired UNCONDITIONALLY — role-gating (users.role) deferred to a later
+       gating-overlay ship, not built here.
      - Lower-nav (Stage 4 wired): Dashboard → index.html, Admin →
        index.html?tab=admin (Admin panel lives in index.html; the boot
        hook there reads ?tab and opens it via the existing goDeptTab path).
@@ -38,12 +49,6 @@
      COLUMN SET (V1-locked, dense, bounded by STAGE2_EVENTS shape):
        Nom · Statut · Marque · Producteur · Ville · Date début · Jauge ·
        Budget % · Intégrations (BF/Bil dual-cell) · row-actions trailing.
-
-     STAGE 3 ADDS (subsequent fresh exec chat per Mode 1):
-     - Stage 3: row-actions wired — edit → fiche.html?id=<evt.id>,
-       duplicate (carry-neither V1 per evenements.md §14 + §4),
-       soft-delete (sets deleted_at + toast + read-filter; no recovery V1
-       per brief §4 v5.3.1).
 
      SCHEMA cascades surfaced this build (input to absorption ship #2):
      - mock STAGE2_EVENTS carries scalar `capacity`; SCHEMA expects
@@ -135,6 +140,12 @@ a{color:inherit;text-decoration:none}
 .col-actions{white-space:nowrap;text-align:right}
 .row-action{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin-left:4px;background:transparent;border:1px solid var(--border);border-radius:7px;color:var(--text-muted);font-size:13px;cursor:not-allowed;opacity:.45;transition:opacity .15s}
 .row-action:first-child{margin-left:0}
+.row-action:not([disabled]){cursor:pointer;opacity:1}
+.row-action:not([disabled]):hover{color:var(--text);border-color:var(--border-h)}
+
+/* ═══ TOAST (Stage 3) ═══ */
+#liste-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:9px;font-size:13px;font-weight:600;font-family:'Space Grotesk',sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}
+#liste-toast.show{opacity:1}
 
 /* ═══ FILTER BAR (Stage 2) ═══ */
 .liste-filterbar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
@@ -361,6 +372,7 @@ function esc(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</
 /* ── filter pipeline ── */
 function applyFilters(events){
   return events.filter(function(e){
+    if(e.deleted_at) return false;                                       // soft-delete read-filter (first predicate)
     if(e.status==='Sandbox' && !FILTER.showSandbox) return false;        // sandbox gate
     if(FILTER.status!=='all' && e.status!==FILTER.status) return false;  // status filter
     if(FILTER.search){                                                    // search Nom + Ville
@@ -391,9 +403,9 @@ function rowHTML(evt){
       '<td>'+budgetCell+'</td>'+
       '<td><span class="integ-pair">'+integMark('BF',!!evt.budgetflow_url)+integMark('Bil',!!evt.billetterie_url)+'</span></td>'+
       '<td class="col-actions">'+
-        '<button class="row-action" disabled title="Stage 3" aria-label="Modifier">✎</button>'+
-        '<button class="row-action" disabled title="Stage 3" aria-label="Dupliquer">⧉</button>'+
-        '<button class="row-action" disabled title="Stage 3" aria-label="Supprimer">🗑</button>'+
+        '<button class="row-action" data-act="edit" data-id="'+esc(evt.id)+'" title="Modifier" aria-label="Modifier">✎</button>'+
+        '<button class="row-action" data-act="dup" data-id="'+esc(evt.id)+'" title="Dupliquer" aria-label="Dupliquer">⧉</button>'+
+        '<button class="row-action" data-act="del" data-id="'+esc(evt.id)+'" title="Supprimer" aria-label="Supprimer">🗑</button>'+
       '</td>'+
     '</tr>';
 }
@@ -412,8 +424,64 @@ function renderRows(){
   document.getElementById('liste-count').textContent = count+' '+(count===1?'événement':'événements');
 }
 
+/* ── row actions (Stage 3) ── */
+let toastTimer = null;
+function showToast(msg){
+  let t = document.getElementById('liste-toast');
+  if(!t){ t = document.createElement('div'); t.id = 'liste-toast'; document.body.appendChild(t); }
+  t.textContent = msg;
+  t.classList.add('show');
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 1800);
+}
+function actEdit(id){
+  window.location.href = 'fiche.html?id=' + encodeURIComponent(id);
+}
+function actDuplicate(id){
+  const src = ALL_EVENTS.find(function(e){ return e.id===id; });
+  if(!src) return;
+  const copy = {
+    id:'evt-copy-' + Date.now(),
+    name:'Copie_' + src.name,
+    status:'En préparation',
+    // CARRIES
+    producteur:src.producteur, marque:src.marque, genre:src.genre.slice(),
+    city:src.city, venue:src.venue, country:src.country, address:src.address,
+    description:src.description, coproducer_id:src.coproducer_id,
+    external_coproduction:src.external_coproduction,
+    template_id:src.template_id,                  // inert ref — BudgetFlow owns session generation V1
+    // STRIPS / RESETS
+    start_date:null, number_of_days:null, previous_edition_event_id:null,
+    edition_number:null, qonto_account_id:null, in_switcher:false,
+    is_general:false, deleted_at:null,
+    budgetflow_url:null, billetterie_url:null, dice_backend_url:null,
+    shotgun_backend_url:null, dice_public_buy_url:null, shotgun_public_buy_url:null,
+    // render-safe null defaults (display/budget fields not in spec map)
+    display_initials:null, poster_url:null, budget_target:null,
+    budget_consumed:null, capacity:null
+  };
+  ALL_EVENTS.unshift(copy);
+  renderRows();
+  showToast('Copie créée');
+}
+function actDelete(id){
+  const evt = ALL_EVENTS.find(function(e){ return e.id===id; });
+  if(!evt) return;
+  evt.deleted_at = new Date().toISOString();
+  renderRows();
+  showToast('Événement supprimé');
+}
+
 /* ── wire controls ── */
 function wireControls(){
+  document.getElementById('liste-tbody').addEventListener('click', function(e){
+    const btn = e.target.closest('.row-action'); if(!btn) return;
+    const act = btn.getAttribute('data-act');
+    const id = btn.getAttribute('data-id');
+    if(act==='edit') actEdit(id);
+    else if(act==='dup') actDuplicate(id);
+    else if(act==='del') actDelete(id);
+  });
   document.getElementById('liste-search-input').addEventListener('input', function(e){
     FILTER.search = e.target.value; renderRows();
   });

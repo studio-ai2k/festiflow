@@ -34,7 +34,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .sw-trigger{display:flex;align-items:center;gap:7px;cursor:pointer}
 .sw-chev{flex-shrink:0;transition:transform .2s}
 .sw-wrap.open .sw-chev{transform:rotate(180deg)}
-.sw-menu{position:absolute;top:calc(100% + 8px);min-width:230px;background:var(--surface-2);border:1px solid var(--border-h);border-radius:12px;padding:6px;box-shadow:0 20px 60px rgba(0,0,0,0.45);z-index:200;display:none}
+.sw-menu{position:absolute;top:calc(100% + 8px);min-width:230px;background:var(--surface-2);border:1px solid var(--border-h);border-radius:12px;padding:6px;box-shadow:0 20px 60px rgba(0,0,0,0.45);z-index:300;isolation:isolate;display:none}
 .sw-wrap.open .sw-menu{display:block}
 .sw-menu.left{left:0}
 .sw-menu.right{right:0}
@@ -62,8 +62,8 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   .nm{font-size:12px;padding:8px 10px}
   .nav-top{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;mask-image:linear-gradient(to right,#000 85%,transparent);-webkit-mask-image:linear-gradient(to right,#000 85%,transparent)}
   .nav-top::-webkit-scrollbar{display:none}
-  /* Fix 3: open switcher menu escapes the mobile scroll/mask clip (mobile-only, open-state-only) */
-  .nav-top:has(.sw-wrap.open){overflow:visible;-webkit-mask-image:none;mask-image:none}
+  /* v5.13.3 Fix 1: overflow-flip narrowed to SESSION switcher only (.nav-sw) — module switcher opens in place, no scroll-jump */
+  .nav-top:has(.nav-sw.sw-wrap.open){overflow:visible;-webkit-mask-image:none;mask-image:none}
   .dt{font-size:13px;padding:10px 14px}
   .dept-tabs{mask-image:linear-gradient(to right,#000 85%,transparent);-webkit-mask-image:linear-gradient(to right,#000 85%,transparent)}
 }
@@ -237,8 +237,8 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   .nm{font-size:12px;padding:8px 10px}
   .nav-top{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;mask-image:linear-gradient(to right,#000 85%,transparent);-webkit-mask-image:linear-gradient(to right,#000 85%,transparent)}
   .nav-top::-webkit-scrollbar{display:none}
-  /* Fix 3: open switcher menu escapes the mobile scroll/mask clip (mobile-only, open-state-only) */
-  .nav-top:has(.sw-wrap.open){overflow:visible;-webkit-mask-image:none;mask-image:none}
+  /* v5.13.3 Fix 1: overflow-flip narrowed to SESSION switcher only (.nav-sw) — module switcher opens in place, no scroll-jump */
+  .nav-top:has(.nav-sw.sw-wrap.open){overflow:visible;-webkit-mask-image:none;mask-image:none}
   .dt{font-size:13px;padding:10px 14px}
   .dept-tabs{mask-image:linear-gradient(to right,#000 85%,transparent);-webkit-mask-image:linear-gradient(to right,#000 85%,transparent)}
 
@@ -5405,7 +5405,7 @@ function bootLanding(){ if (typeof go === 'function') go('bilan'); }
 })();
 </script>
 <footer style="max-width:1020px;margin:0 auto;padding:48px 20px 28px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.2);font-family:'DM Sans',sans-serif">
-  <span style="font-weight:600;letter-spacing:.5px">Festiflow <span style="opacity:.5">·</span> Budget v0.3.2 <span style="opacity:.5">·</span> Générale 2026</span>
+  <span style="font-weight:600;letter-spacing:.5px">Festiflow <span style="opacity:.5">·</span> Budget v0.3.3 <span style="opacity:.5">·</span> Générale 2026</span>
   <span id="footer-sync" style="font-variant-numeric:tabular-nums">—</span>
 </footer>
 <script>

@@ -561,7 +561,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   </div>
   <div class="dept-tabs-bg">
   <div id="dept-tabs" class="dept-tabs">
-    <button class="dt on" onclick="goMonth('janvier',this)">Janvier</button>
+    <button class="dt" onclick="goMonth('janvier',this)">Janvier</button>
     <button class="dt" onclick="goMonth('fevrier',this)">Février</button>
     <button class="dt" onclick="goMonth('mars',this)">Mars</button>
     <button class="dt" onclick="goMonth('avril',this)">Avril</button>
@@ -634,7 +634,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 </div><!-- /bilan -->
 
 <!-- ═══════════ MONTH PAGE (Janvier) — preview scaffolding: stacks dept categories ═══════════ -->
-<div id="page-janvier" class="page on">
+<div id="page-janvier" class="page">
   <div style="margin-top:18px;margin-bottom:6px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Janvier 2026 · Frais de structure</div>
   <!-- MONTH KPI ROW (placeholder — content TBD) -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
@@ -3048,12 +3048,12 @@ async function initApp(){
   if (unmJson?.data) _unmatchedRows = unmJson.data;
   if (rawJson?.data) _releveAllTx = rawJson.data;
 
-  renderBilan();
-  // PREVIEW: Janvier month page is the active surface on load
-  renderMonth('janvier');
-  renderMonthSummary('janvier');
-  document.querySelectorAll('.dt').forEach(d=>d.classList.remove('on'));
-  const jt=document.querySelector('.dt'); if(jt) jt.classList.add('on');
+  // Boot landing: the router owns initial page+nav state (prevents the multi-page
+  // stack where Bilan and Janvier both shipped as active pages at boot). The call
+  // below clears all page/nav/month-tab highlights, activates the Bilan page,
+  // highlights the Bilan nav, and runs renderBilan() against the now-populated
+  // DEPTS. Lands on Bilan, Bilan nav highlighted, NO month pre-selected.
+  bootLanding();
   // Load QONTO_RAW and rebuild match map on init
   loadAndMatchQontoRaw();
   // Pre-load transactions tab data in background
@@ -5406,6 +5406,13 @@ function checkPassword() {
     setTimeout(() => { error.textContent = ''; }, 2000);
   }
 }
+
+// Boot to Bilan landing — the router owns initial page+nav state, killing the
+// multi-page-stack bug class (two pages shipped active at boot). Authoritative call
+// is from initApp() AFTER DEPTS is populated, so renderBilan() runs against real data
+// (this engine's init is async — a bare DOMContentLoaded hook would run against an
+// empty DEPTS). Defined in this block (alongside go/initApp) so it always exists.
+function bootLanding(){ if (typeof go === 'function') go('bilan'); }
 
 // On load — check if already authenticated
 (function() {

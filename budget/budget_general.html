@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Festiflow — Générale 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared/chrome.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 /* ═══ FESTIFLOW DESIGN SYSTEM — exact token parity ═══
@@ -26,29 +27,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .wrap{max-width:1020px;margin:0 auto;padding:12px 20px 80px;overflow-x:hidden}
 
 /* ── NAV ─────────────────────────────── */
-/* ── CANONICAL SHARED CHROME (inlined from standalones/shared/chrome.css; on deploy this is a <link>) ── */
-.nav{position:-webkit-sticky;position:sticky;top:0;z-index:100;background:var(--surface);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);padding:0;margin-bottom:0}
-.nav-top{max-width:1020px;margin:0 auto;display:flex;align-items:center;padding:0 20px}
-.nav-sw{display:flex;align-items:center;gap:8px;padding:8px 14px 8px 0;margin-right:8px;border-right:1px solid rgba(255,255,255,.05);flex-shrink:0;cursor:pointer;transition:opacity .15s}
-.nav-sw:hover{opacity:.8}
-.nav-sw-av{width:36px;height:36px;border-radius:50%;background:var(--surface-2);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;overflow:hidden}
-.nav-sw-name{font-size:13px;font-weight:600;color:#fff;display:flex;align-items:center;gap:5px;white-space:nowrap}
-.nav-sw-name .dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0}
-.nav-sw-sub{font-size:10px;color:var(--text-dim);margin-top:3px;white-space:nowrap}
-.nm{font-size:12px;font-weight:500;padding:8px 12px;color:var(--text-dim);cursor:pointer;white-space:nowrap;transition:color .15s;border:none;background:none;font-family:inherit}
-.nm:hover{color:var(--text-muted)}
-.nm.on{color:#fff;font-weight:600}
-.nm.on svg{opacity:1}
-.nm.pl{color:#333;cursor:default;font-style:normal}
-.nm.pl:hover{color:#333}
-.nav-user{margin-left:auto;width:36px;height:36px;border-radius:50%;background:var(--surface-2);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);transition:opacity .15s;flex-shrink:0}
-.nav-user:hover{opacity:.8}
-.dept-tabs-bg{background:rgba(0,0,0,.15);border-top:1px solid rgba(255,255,255,.03)}
-.dept-tabs{max-width:1020px;margin:0 auto;padding:2px 20px;display:flex;overflow-x:auto;scrollbar-width:none}
-.dept-tabs::-webkit-scrollbar{display:none}
-.dt{padding:8px 12px;font-size:12px;font-weight:500;color:var(--text-dim);white-space:nowrap;border:none;border-bottom:2px solid transparent;background:none;font-family:inherit;cursor:pointer;transition:color .15s}
-.dt:hover{color:var(--text-muted)}
-.dt.on{color:#fff;font-weight:600}
+/* canonical chrome frame now loaded via external chrome.css link in <head> (see <link> above) */
 
 /* ── MODULE/SESSION SWITCHER (sw-* lifted verbatim from v5.12.0; .sw-menu hidden+toggle added) ── */
 .sw-wrap{position:relative}
@@ -83,6 +62,8 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   .nm{font-size:12px;padding:8px 10px}
   .nav-top{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;mask-image:linear-gradient(to right,#000 85%,transparent);-webkit-mask-image:linear-gradient(to right,#000 85%,transparent)}
   .nav-top::-webkit-scrollbar{display:none}
+  /* Fix 3: open switcher menu escapes the mobile scroll/mask clip (mobile-only, open-state-only) */
+  .nav-top:has(.sw-wrap.open){overflow:visible;-webkit-mask-image:none;mask-image:none}
   .dt{font-size:13px;padding:10px 14px}
   .dept-tabs{mask-image:linear-gradient(to right,#000 85%,transparent);-webkit-mask-image:linear-gradient(to right,#000 85%,transparent)}
 }
@@ -256,6 +237,8 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   .nm{font-size:12px;padding:8px 10px}
   .nav-top{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;mask-image:linear-gradient(to right,#000 85%,transparent);-webkit-mask-image:linear-gradient(to right,#000 85%,transparent)}
   .nav-top::-webkit-scrollbar{display:none}
+  /* Fix 3: open switcher menu escapes the mobile scroll/mask clip (mobile-only, open-state-only) */
+  .nav-top:has(.sw-wrap.open){overflow:visible;-webkit-mask-image:none;mask-image:none}
   .dt{font-size:13px;padding:10px 14px}
   .dept-tabs{mask-image:linear-gradient(to right,#000 85%,transparent);-webkit-mask-image:linear-gradient(to right,#000 85%,transparent)}
 
@@ -5422,7 +5405,7 @@ function bootLanding(){ if (typeof go === 'function') go('bilan'); }
 })();
 </script>
 <footer style="max-width:1020px;margin:0 auto;padding:48px 20px 28px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.2);font-family:'DM Sans',sans-serif">
-  <span style="font-weight:600;letter-spacing:.5px">Festiflow <span style="opacity:.5">·</span> Budget v3.3 <span style="opacity:.5">·</span> Générale 2026</span>
+  <span style="font-weight:600;letter-spacing:.5px">Festiflow <span style="opacity:.5">·</span> Budget v0.3.2 <span style="opacity:.5">·</span> Générale 2026</span>
   <span id="footer-sync" style="font-variant-numeric:tabular-nums">—</span>
 </footer>
 <script>

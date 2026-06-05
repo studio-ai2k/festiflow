@@ -295,7 +295,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .db-pw-error{font-size:11px;color:#e17055;margin-bottom:8px;min-height:14px;text-align:left}
 
 /* ── BILAN STAT CHIPS ── */
-.bilan-toggle-btn.active,.dep-view-btn.active{background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.4);color:#818cf8}
+.bilan-toggle-btn.active,.dep-view-btn.active,.lisse-toggle-btn.active{background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.4);color:#818cf8}
 .bilan-toggle-btn:hover:not(.active){background:rgba(255,255,255,.04)}
 .bchip{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;transition:border-color .2s}
 .bchip-label{font-size:.6em;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-dim);font-weight:600;margin-bottom:6px}
@@ -599,6 +599,10 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
   </div>
   <div style="display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-bottom:10px">
+    <span id="lisse-wrap" style="display:none;align-items:center;gap:6px;margin-right:14px">
+      <span style="font-size:.65em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Lissé</span>
+      <button id="lisse-btn" class="lisse-toggle-btn" onclick="setLisse(!_lisse)" title="Lisser les charges annuelles sur 12 mois (budget + dépensé ensemble)" style="padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Lisser sur l'année</button>
+    </span>
     <span style="font-size:.65em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-right:6px">Vue</span>
     <button class="dep-view-btn" data-depview="mensuel" onclick="setDepView('mensuel')" style="padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Mensuel</button>
     <button class="dep-view-btn" data-depview="departement" onclick="setDepView('departement')" style="padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Département</button>
@@ -1493,8 +1497,8 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       {section:'SALAIRES', ligne:'Direction générale', est_ht:4500, reel_ht:4500, recurrence:'M', statut:'PAYÉ', typ:'salaire', tva:0},
       {section:'SALAIRES', ligne:'Pôle production', est_ht:3200, reel_ht:3200, recurrence:'M', statut:'PAYÉ', tva:0},
       {section:'SALAIRES', ligne:'Pôle communication', est_ht:2800, reel_ht:2750, recurrence:'M', statut:'PAYÉ', tva:0},
-      {section:'FREELANCES', ligne:'Graphiste freelance', est_ht:1800, reel_ht:1200, recurrence:'A', statut:'ENGAGÉ', tva:0.20},
-      {section:'FREELANCES', ligne:'Développeur web', est_ht:6000, reel_ht:6000, recurrence:'A', statut:'PAYÉ', tva:0.20},
+      {section:'FREELANCES', ligne:'Graphiste freelance', est_ht:1800, reel_ht:1200, recurrence:'A', assigned_month:3, statut:'ENGAGÉ', tva:0.20},
+      {section:'FREELANCES', ligne:'Développeur web', est_ht:6000, reel_ht:6000, recurrence:'A', assigned_month:2, statut:'PAYÉ', tva:0.20},
     ],
     CHARGES_SOCIALES: [
       {section:'URSSAF', ligne:'Cotisations patronales', est_ht:3800, reel_ht:3800, recurrence:'M', statut:'PAYÉ', tva:0},
@@ -1508,17 +1512,17 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       {section:'ÉNERGIE', ligne:'Électricité & eau', est_ht:210, reel_ht:185, recurrence:'M', statut:'ESTIMATION', tva:0.20},
     ],
     ASSURANCES: [
-      {section:'RC PRO', ligne:'Responsabilité civile pro', est_ht:1450, reel_ht:1450, recurrence:'A', statut:'PAYÉ', tva:0},
-      {section:'MULTIRISQUE', ligne:'Multirisque bureau', est_ht:820, reel_ht:820, recurrence:'A', statut:'PAYÉ', tva:0},
+      {section:'RC PRO', ligne:'Responsabilité civile pro', est_ht:1450, reel_ht:1450, recurrence:'A', assigned_month:1, statut:'PAYÉ', tva:0},
+      {section:'MULTIRISQUE', ligne:'Multirisque bureau', est_ht:820, reel_ht:820, recurrence:'A', assigned_month:1, statut:'PAYÉ', tva:0},
     ],
     HONORAIRES: [
       {section:'COMPTABILITÉ', ligne:'Expert-comptable', est_ht:1200, reel_ht:1200, recurrence:'M', statut:'PAYÉ', tva:0.20},
-      {section:'JURIDIQUE', ligne:'Avocat / conseil', est_ht:2500, reel_ht:900, recurrence:'A', statut:'ENGAGÉ', tva:0.20},
+      {section:'JURIDIQUE', ligne:'Avocat / conseil', est_ht:2500, reel_ht:900, recurrence:'A', assigned_month:6, statut:'ENGAGÉ', tva:0.20},
     ],
     DEPLACEMENTS: [
-      {section:'TRANSPORT', ligne:'Billets train équipe', est_ht:1600, reel_ht:1340, recurrence:'A', statut:'PAYÉ', tva:0.10},
-      {section:'HÉBERGEMENT', ligne:'Hôtels repérages', est_ht:980, reel_ht:760, recurrence:'A', statut:'ENGAGÉ', tva:0.10},
-      {section:'VÉHICULE', ligne:'Carburant & péages', est_ht:540, reel_ht:480, recurrence:'A', statut:'ESTIMATION', tva:0.20},
+      {section:'TRANSPORT', ligne:'Billets train équipe', est_ht:1600, reel_ht:1340, recurrence:'A', assigned_month:5, statut:'PAYÉ', tva:0.10},
+      {section:'HÉBERGEMENT', ligne:'Hôtels repérages', est_ht:980, reel_ht:760, recurrence:'A', assigned_month:5, statut:'ENGAGÉ', tva:0.10},
+      {section:'VÉHICULE', ligne:'Carburant & péages', est_ht:540, reel_ht:480, recurrence:'A', assigned_month:9, statut:'ESTIMATION', tva:0.20},
     ],
     ABONNEMENTS: [
       {section:'LOGICIELS', ligne:'Suite Adobe', est_ht:75, reel_ht:75, recurrence:'M', statut:'PAYÉ', tva:0.20},
@@ -1526,17 +1530,17 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       {section:'SERVICES', ligne:'Hébergement web & domaines', est_ht:35, reel_ht:35, recurrence:'M', statut:'PAYÉ', tva:0.20},
     ],
     IMPOTS_TAXES: [
-      {section:'CFE', ligne:'Cotisation foncière entreprise', est_ht:1300, reel_ht:0, recurrence:'A', statut:'ESTIMATION', tva:0},
-      {section:'TVA', ligne:'Acompte TVA', est_ht:0, reel_ht:0, recurrence:'A', statut:'ESTIMATION', tva:0},
+      {section:'CFE', ligne:'Cotisation foncière entreprise', est_ht:1300, reel_ht:0, recurrence:'A', assigned_month:12, statut:'ESTIMATION', tva:0},
+      {section:'TVA', ligne:'Acompte TVA', est_ht:0, reel_ht:0, recurrence:'A', assigned_month:4, statut:'ESTIMATION', tva:0},
     ],
     RESTAURATION: [
       {section:'ÉQUIPE', ligne:'Repas équipe & réunions', est_ht:420, reel_ht:380, recurrence:'M', statut:'PAYÉ', tva:0.10},
-      {section:'RÉCEPTION', ligne:'Réceptions partenaires', est_ht:600, reel_ht:240, recurrence:'A', statut:'ENGAGÉ', tva:0.10},
+      {section:'RÉCEPTION', ligne:'Réceptions partenaires', est_ht:600, reel_ht:240, recurrence:'A', assigned_month:11, statut:'ENGAGÉ', tva:0.10},
     ],
     DIVERS: [
       {section:'GÉNÉRAL', ligne:'Fournitures bureau', est_ht:180, reel_ht:160, recurrence:'M', statut:'PAYÉ', tva:0.20},
       {section:'GÉNÉRAL', ligne:'Frais bancaires', est_ht:90, reel_ht:90, recurrence:'M', statut:'PAYÉ', tva:0},
-      {section:'DÉPENSES IMPRÉVUES', ligne:'Réparation matériel', est_ht:0, reel_ht:850, recurrence:'A', statut:'PAYÉ', tva:0.20},
+      {section:'DÉPENSES IMPRÉVUES', ligne:'Réparation matériel', est_ht:0, reel_ht:850, recurrence:'A', assigned_month:7, statut:'PAYÉ', tva:0.20},
     ],
   };
   const RECETTES = [
@@ -1693,6 +1697,7 @@ function apiRowsToDept(tabName, rows) {
       reel:      row.reel_ht || 0,
       st:        row.statut || 'ESTIMATION',
       rec:       row.recurrence || 'A',
+      am:        row.assigned_month || null,
       _row:      row._row,
     });
   }
@@ -1763,7 +1768,27 @@ const pct = (r,e) => !e?0:Math.min(Math.round(r/e*100),999);
 // ── Mensuel / Annuel toggle (Générale session only) ──────────────────
 let _bilanView = 'annuel'; // 'annuel' or 'mensuel'
 let _depView = 'mensuel'; // Dépenses section grouping: 'mensuel' (by month) | 'departement' (by dept, cumulated)
+let _lisse = false; // Bilan Mensuel-only modifier: false = model (a) lumpy (annual lump in assigned month); true = annual lines spread ÷12 across all months (budget+dépensé together, écart stays valid)
 function setDepView(v){ if(v===_depView) return; _depView=v; renderBilan(); }
+function setLisse(on){ if(on===_lisse) return; _lisse=on; renderBilan(); }
+// Per-month budget/réel for month index N (1-12) under model (a) / lissé.
+// Monthly lines count every month; annual lines: lumpy = in assigned month only; lissé = whole annual pool ÷12.
+function monthBudget(N){
+  let b=0;
+  DEPTS.forEach(d=>d.sections.forEach(s=>s.lines.forEach(l=>{
+    if(l.rec==='M'){ b+=(l.est||0); }
+    else if(l.rec==='A'){ b+= _lisse ? (l.est||0)/12 : ((l.am===N)?(l.est||0):0); }
+  })));
+  return b;
+}
+function monthReel(N){
+  let r=0;
+  DEPTS.forEach(d=>d.sections.forEach(s=>s.lines.forEach(l=>{
+    if(l.rec==='M'){ r+=(l.reel||0); }
+    else if(l.rec==='A'){ r+= _lisse ? (l.reel||0)/12 : ((l.am===N)?(l.reel||0):0); }
+  })));
+  return r;
+}
 let _monthlyReelCache = null; // { month: 'YYYY-MM', byDept: { HUMAIN: 1234, ... } }
 
 // Adjust a line's estimate based on recurrence and current view
@@ -2004,14 +2029,15 @@ function renderBilan(){
       </tr>`;
     });
   } else {
-    // BY MONTH — temporal (placeholder spread until month-scoping wiring)
+    // BY MONTH — temporal. Real per-month values from model (a) / lissé (assigned_month-driven; see monthBudget/monthReel).
     MONTHS_BILAN.forEach(([mid,mname],mi)=>{
-      const ec4=mEst-mReel; const p3=pct(mReel,mEst);
+      const N=mi+1; const mB=monthBudget(N); const mR=monthReel(N);
+      const ec4=mB-mR; const p3=pct(mR,mB);
       depRows+=`<tr style="cursor:pointer" onclick="goMonth('${mid}', document.querySelector('.dt:nth-child('+(mi+1)+')'))">
         <td><span style="display:inline-flex;align-items:center;gap:7px;flex-wrap:wrap"><span style="width:7px;height:7px;border-radius:50%;background:var(--indigo);flex-shrink:0"></span>${mname}</span></td>
-        <td class="b-ht-col">${fe(mEst)}</td>
-        <td class="b-ht-col">${mReel?fe(mReel):'—'}</td>
-        <td>${ecH(ec4,false,mReel>0)}</td>
+        <td class="b-ht-col">${fe(mB)}</td>
+        <td class="b-ht-col">${mR?fe(mR):'—'}</td>
+        <td>${ecH(ec4,false,mR>0)}</td>
         <td style="color:${mImp>0?'var(--red)':'var(--text-dim)'};font-weight:600;white-space:nowrap">${mImp>0?fe(mImp):'—'}</td>
         <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden"><div style="width:${Math.min(p3,100)}%;height:100%;background:var(--indigo);opacity:.8;border-radius:2px"></div></div><span style="font-size:13px;font-weight:700;color:${p3>=100?'var(--red)':p3>=75?'var(--amber)':'var(--indigo)'};white-space:nowrap">${p3}%</span></div></td>
       </tr>`;
@@ -2038,6 +2064,9 @@ function renderBilan(){
 
   // sync VUE toggle active state + section title to _depView
   document.querySelectorAll('.dep-view-btn').forEach(b=>b.classList.toggle('active', b.dataset.depview===_depView));
+  // Lissé toggle: visible only in Mensuel view (meaningless grouped by dept); sync active state.
+  const lw=document.getElementById('lisse-wrap'); if(lw) lw.style.display = (_depView==='mensuel') ? 'inline-flex' : 'none';
+  const lb=document.getElementById('lisse-btn'); if(lb) lb.classList.toggle('active', _lisse);
   const dst=document.getElementById('dep-section-title'); if(dst) dst.textContent = _depView==='departement'?'Dépenses par département':'Dépenses par mois';
   if(el('b-dep-wrapper')) {
     el('b-dep-wrapper').innerHTML = `
@@ -2057,8 +2086,8 @@ function renderBilan(){
           <table class="btbl" id="dep-table">
             <thead><tr>
               <th class="tl">${_depView==='departement'?'Département':'Mois'}</th>
-              <th class="b-ht-col">${_bilanView==='mensuel'?'Budget mensuel HT':'Budget annuel HT'}</th>
-              <th class="b-ht-col">${_bilanView==='mensuel'?'Dépensé ce mois':'Dépensé YTD'}</th>
+              <th class="b-ht-col">${_depView==='mensuel'&&_lisse?'Budget lissé HT':(_bilanView==='mensuel'?'Budget mensuel HT':'Budget annuel HT')}</th>
+              <th class="b-ht-col">${_depView==='mensuel'&&_lisse?'Dépensé lissé HT':(_bilanView==='mensuel'?'Dépensé ce mois':'Dépensé YTD')}</th>
               <th>Écart HT</th><th>Imprévus</th><th>Consommé</th>
             </tr></thead>
             <tbody>${depRows}</tbody>

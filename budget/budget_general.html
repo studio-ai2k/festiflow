@@ -58,6 +58,8 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .pill.unset{color:var(--text-dim)}
 .month-cat{margin-bottom:30px}
 .month-cat-head{font-size:1.05em;font-weight:700;color:#fff;letter-spacing:.3px;padding:10px 0 4px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:8px}
+.dt{border-bottom:2px solid transparent}
+.dept-tabs .dt.on{color:#fff;font-weight:600;border-bottom:2px solid #fff;background:rgba(255,255,255,.06)}
 @media(max-width:480px){
   .nav-sw{padding:6px 10px 6px 0;margin-right:4px}
   .nav-sw-av{width:30px;height:30px}
@@ -98,6 +100,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .sdiv{display:flex;align-items:center;gap:12px;margin:28px 0 14px}
 .sdl{flex:1;height:1px;background:var(--border)}
 .sdt{font-size:.63em;text-transform:uppercase;letter-spacing:3px;color:var(--text-dim);font-weight:600;white-space:nowrap}
+.tsep{width:36px;height:1px;background:var(--border);margin:18px auto}
 /* ── Option C dept header ── */
 .dept-hdr{display:grid;grid-template-columns:3px 1fr;border-radius:12px 12px 0 0;overflow:hidden;border:1px solid var(--border);border-bottom:none;margin:8px 0 0}
 .dept-hdr-rail{width:3px}
@@ -479,7 +482,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   <div class="nav-top">
     <div class="nav-sw sw-wrap" style="position:relative">
       <div class="sw-trigger" data-sw-trigger>
-        <div class="nav-sw-av"><div style="width:100%;height:100%;background:linear-gradient(135deg,#f4c430,#e0a800);border-radius:inherit"></div></div>
+        <div class="nav-sw-av"><img src="LOGO_ROND_JAUNE.png" alt="GEN" style="width:100%;height:100%;object-fit:cover"></div>
         <div>
           <div class="nav-sw-name">Générale<span class="dot"></span></div>
           <div class="nav-sw-sub">Générale 2026 · Madame Loyal</div>
@@ -599,7 +602,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
   </div>
   <div style="display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-bottom:10px">
-    <span id="lisse-wrap" style="display:none;align-items:center;gap:6px;margin-right:14px">
+    <span id="lisse-wrap" style="display:none;align-items:center;gap:6px;margin-right:auto">
       <span style="font-size:.65em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Lissé</span>
       <button id="lisse-btn" class="lisse-toggle-btn" onclick="setLisse(!_lisse)" title="Lisser les charges annuelles sur 12 mois (budget + dépensé ensemble)" style="padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Lisser sur l'année</button>
     </span>
@@ -625,7 +628,6 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 
 <!-- ═══════════ MONTH PAGE (Janvier) — preview scaffolding: stacks dept categories ═══════════ -->
 <div id="page-janvier" class="page">
-  <div style="margin-top:18px;margin-bottom:6px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Janvier 2026 · Frais de structure</div>
   <!-- MONTH KPI ROW (placeholder — content TBD) -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
     <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
@@ -633,52 +635,59 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
     <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
   </div>
-    <div style="margin-bottom:8px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Synthèse du mois</div>
+<div class="sdiv" style="align-items:center">
+      <div class="sdl"></div>
+      <div class="sdt" style="white-space:nowrap">Synthèse du mois Janvier</div>
+      <div class="sdl"></div>
+    </div>
   <div id="month-summary-janvier" style="margin-bottom:26px"></div>
+<div class="sdiv" style="align-items:center">
+    <div class="sdl"></div>
+    <div class="sdt" style="white-space:nowrap">Tous les départements</div>
+    <div class="sdl"></div>
+  </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-janvier-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-janvier-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-janvier-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-janvier-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-janvier-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-janvier-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-janvier-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-janvier-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-janvier-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-janvier-divers"></div>
   </div>
 </div>
 
 <div id="page-fevrier" class="page">
-  <div style="margin-top:18px;margin-bottom:6px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Février 2026 · Frais de structure</div>
   <!-- MONTH KPI ROW (placeholder — content TBD) -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
     <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
@@ -686,52 +695,59 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
     <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
   </div>
-    <div style="margin-bottom:8px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Synthèse du mois</div>
+<div class="sdiv" style="align-items:center">
+      <div class="sdl"></div>
+      <div class="sdt" style="white-space:nowrap">Synthèse du mois Février</div>
+      <div class="sdl"></div>
+    </div>
   <div id="month-summary-fevrier" style="margin-bottom:26px"></div>
+<div class="sdiv" style="align-items:center">
+    <div class="sdl"></div>
+    <div class="sdt" style="white-space:nowrap">Tous les départements</div>
+    <div class="sdl"></div>
+  </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-fevrier-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-fevrier-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-fevrier-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-fevrier-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-fevrier-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-fevrier-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-fevrier-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-fevrier-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-fevrier-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-fevrier-divers"></div>
   </div>
 </div>
 
 <div id="page-mars" class="page">
-  <div style="margin-top:18px;margin-bottom:6px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Mars 2026 · Frais de structure</div>
   <!-- MONTH KPI ROW (placeholder — content TBD) -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
     <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
@@ -739,52 +755,59 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
     <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
   </div>
-    <div style="margin-bottom:8px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Synthèse du mois</div>
+<div class="sdiv" style="align-items:center">
+      <div class="sdl"></div>
+      <div class="sdt" style="white-space:nowrap">Synthèse du mois Mars</div>
+      <div class="sdl"></div>
+    </div>
   <div id="month-summary-mars" style="margin-bottom:26px"></div>
+<div class="sdiv" style="align-items:center">
+    <div class="sdl"></div>
+    <div class="sdt" style="white-space:nowrap">Tous les départements</div>
+    <div class="sdl"></div>
+  </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-mars-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-mars-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-mars-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-mars-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-mars-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-mars-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-mars-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-mars-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-mars-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-mars-divers"></div>
   </div>
 </div>
 
 <div id="page-avril" class="page">
-  <div style="margin-top:18px;margin-bottom:6px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Avril 2026 · Frais de structure</div>
   <!-- MONTH KPI ROW (placeholder — content TBD) -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
     <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
@@ -792,52 +815,59 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
     <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
   </div>
-    <div style="margin-bottom:8px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Synthèse du mois</div>
+<div class="sdiv" style="align-items:center">
+      <div class="sdl"></div>
+      <div class="sdt" style="white-space:nowrap">Synthèse du mois Avril</div>
+      <div class="sdl"></div>
+    </div>
   <div id="month-summary-avril" style="margin-bottom:26px"></div>
+<div class="sdiv" style="align-items:center">
+    <div class="sdl"></div>
+    <div class="sdt" style="white-space:nowrap">Tous les départements</div>
+    <div class="sdl"></div>
+  </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-avril-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-avril-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-avril-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-avril-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-avril-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-avril-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-avril-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-avril-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-avril-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-avril-divers"></div>
   </div>
 </div>
 
 <div id="page-mai" class="page">
-  <div style="margin-top:18px;margin-bottom:6px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Mai 2026 · Frais de structure</div>
   <!-- MONTH KPI ROW (placeholder — content TBD) -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
     <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
@@ -845,52 +875,59 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
     <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
   </div>
-    <div style="margin-bottom:8px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Synthèse du mois</div>
+<div class="sdiv" style="align-items:center">
+      <div class="sdl"></div>
+      <div class="sdt" style="white-space:nowrap">Synthèse du mois Mai</div>
+      <div class="sdl"></div>
+    </div>
   <div id="month-summary-mai" style="margin-bottom:26px"></div>
+<div class="sdiv" style="align-items:center">
+    <div class="sdl"></div>
+    <div class="sdt" style="white-space:nowrap">Tous les départements</div>
+    <div class="sdl"></div>
+  </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-mai-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-mai-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-mai-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-mai-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-mai-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-mai-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-mai-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-mai-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-mai-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-mai-divers"></div>
   </div>
 </div>
 
 <div id="page-juin" class="page">
-  <div style="margin-top:18px;margin-bottom:6px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Juin 2026 · Frais de structure</div>
   <!-- MONTH KPI ROW (placeholder — content TBD) -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
     <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
@@ -898,52 +935,59 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
     <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
   </div>
-    <div style="margin-bottom:8px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Synthèse du mois</div>
+<div class="sdiv" style="align-items:center">
+      <div class="sdl"></div>
+      <div class="sdt" style="white-space:nowrap">Synthèse du mois Juin</div>
+      <div class="sdl"></div>
+    </div>
   <div id="month-summary-juin" style="margin-bottom:26px"></div>
+<div class="sdiv" style="align-items:center">
+    <div class="sdl"></div>
+    <div class="sdt" style="white-space:nowrap">Tous les départements</div>
+    <div class="sdl"></div>
+  </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-juin-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-juin-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-juin-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-juin-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-juin-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-juin-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-juin-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-juin-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-juin-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-juin-divers"></div>
   </div>
 </div>
 
 <div id="page-juillet" class="page">
-  <div style="margin-top:18px;margin-bottom:6px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Juillet 2026 · Frais de structure</div>
   <!-- MONTH KPI ROW (placeholder — content TBD) -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
     <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
@@ -951,52 +995,59 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
     <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
   </div>
-    <div style="margin-bottom:8px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Synthèse du mois</div>
+<div class="sdiv" style="align-items:center">
+      <div class="sdl"></div>
+      <div class="sdt" style="white-space:nowrap">Synthèse du mois Juillet</div>
+      <div class="sdl"></div>
+    </div>
   <div id="month-summary-juillet" style="margin-bottom:26px"></div>
+<div class="sdiv" style="align-items:center">
+    <div class="sdl"></div>
+    <div class="sdt" style="white-space:nowrap">Tous les départements</div>
+    <div class="sdl"></div>
+  </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-juillet-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-juillet-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-juillet-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-juillet-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-juillet-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-juillet-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-juillet-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-juillet-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-juillet-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-juillet-divers"></div>
   </div>
 </div>
 
 <div id="page-aout" class="page">
-  <div style="margin-top:18px;margin-bottom:6px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Août 2026 · Frais de structure</div>
   <!-- MONTH KPI ROW (placeholder — content TBD) -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
     <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
@@ -1004,52 +1055,59 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
     <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
   </div>
-    <div style="margin-bottom:8px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Synthèse du mois</div>
+<div class="sdiv" style="align-items:center">
+      <div class="sdl"></div>
+      <div class="sdt" style="white-space:nowrap">Synthèse du mois Août</div>
+      <div class="sdl"></div>
+    </div>
   <div id="month-summary-aout" style="margin-bottom:26px"></div>
+<div class="sdiv" style="align-items:center">
+    <div class="sdl"></div>
+    <div class="sdt" style="white-space:nowrap">Tous les départements</div>
+    <div class="sdl"></div>
+  </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-aout-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-aout-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-aout-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-aout-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-aout-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-aout-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-aout-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-aout-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-aout-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-aout-divers"></div>
   </div>
 </div>
 
 <div id="page-septembre" class="page">
-  <div style="margin-top:18px;margin-bottom:6px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Septembre 2026 · Frais de structure</div>
   <!-- MONTH KPI ROW (placeholder — content TBD) -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
     <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
@@ -1057,52 +1115,59 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
     <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
   </div>
-    <div style="margin-bottom:8px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Synthèse du mois</div>
+<div class="sdiv" style="align-items:center">
+      <div class="sdl"></div>
+      <div class="sdt" style="white-space:nowrap">Synthèse du mois Septembre</div>
+      <div class="sdl"></div>
+    </div>
   <div id="month-summary-septembre" style="margin-bottom:26px"></div>
+<div class="sdiv" style="align-items:center">
+    <div class="sdl"></div>
+    <div class="sdt" style="white-space:nowrap">Tous les départements</div>
+    <div class="sdl"></div>
+  </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-septembre-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-septembre-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-septembre-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-septembre-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-septembre-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-septembre-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-septembre-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-septembre-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-septembre-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-septembre-divers"></div>
   </div>
 </div>
 
 <div id="page-octobre" class="page">
-  <div style="margin-top:18px;margin-bottom:6px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Octobre 2026 · Frais de structure</div>
   <!-- MONTH KPI ROW (placeholder — content TBD) -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
     <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
@@ -1110,52 +1175,59 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
     <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
   </div>
-    <div style="margin-bottom:8px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Synthèse du mois</div>
+<div class="sdiv" style="align-items:center">
+      <div class="sdl"></div>
+      <div class="sdt" style="white-space:nowrap">Synthèse du mois Octobre</div>
+      <div class="sdl"></div>
+    </div>
   <div id="month-summary-octobre" style="margin-bottom:26px"></div>
+<div class="sdiv" style="align-items:center">
+    <div class="sdl"></div>
+    <div class="sdt" style="white-space:nowrap">Tous les départements</div>
+    <div class="sdl"></div>
+  </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-octobre-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-octobre-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-octobre-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-octobre-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-octobre-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-octobre-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-octobre-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-octobre-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-octobre-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-octobre-divers"></div>
   </div>
 </div>
 
 <div id="page-novembre" class="page">
-  <div style="margin-top:18px;margin-bottom:6px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Novembre 2026 · Frais de structure</div>
   <!-- MONTH KPI ROW (placeholder — content TBD) -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
     <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
@@ -1163,52 +1235,59 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
     <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
   </div>
-    <div style="margin-bottom:8px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Synthèse du mois</div>
+<div class="sdiv" style="align-items:center">
+      <div class="sdl"></div>
+      <div class="sdt" style="white-space:nowrap">Synthèse du mois Novembre</div>
+      <div class="sdl"></div>
+    </div>
   <div id="month-summary-novembre" style="margin-bottom:26px"></div>
+<div class="sdiv" style="align-items:center">
+    <div class="sdl"></div>
+    <div class="sdt" style="white-space:nowrap">Tous les départements</div>
+    <div class="sdl"></div>
+  </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-novembre-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-novembre-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-novembre-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-novembre-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-novembre-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-novembre-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-novembre-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-novembre-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-novembre-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-novembre-divers"></div>
   </div>
 </div>
 
 <div id="page-decembre" class="page">
-  <div style="margin-top:18px;margin-bottom:6px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Décembre 2026 · Frais de structure</div>
   <!-- MONTH KPI ROW (placeholder — content TBD) -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
     <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
@@ -1216,46 +1295,54 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
     <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
   </div>
-    <div style="margin-bottom:8px;font-size:.7em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Synthèse du mois</div>
+<div class="sdiv" style="align-items:center">
+      <div class="sdl"></div>
+      <div class="sdt" style="white-space:nowrap">Synthèse du mois Décembre</div>
+      <div class="sdl"></div>
+    </div>
   <div id="month-summary-decembre" style="margin-bottom:26px"></div>
+<div class="sdiv" style="align-items:center">
+    <div class="sdl"></div>
+    <div class="sdt" style="white-space:nowrap">Tous les départements</div>
+    <div class="sdl"></div>
+  </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-decembre-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-decembre-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-decembre-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-decembre-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-decembre-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-decembre-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-decembre-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-decembre-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-decembre-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-decembre-divers"></div>
   </div>
 </div>
@@ -1964,7 +2051,7 @@ function renderBilan(){
 
     el('b-imp-total').textContent = totalImp > 0 ? fe(totalImp) : (totalImpEst > 0 ? fe(totalImpEst) + ' budgeté' : '0 €');
     el('b-imp-total').style.color = totalImp > 0 ? 'var(--red)' : 'var(--text-dim)';
-    el('b-imp-detail').textContent = deptsWithImp > 0 ? `${deptsWithImp} pôle${deptsWithImp>1?'s':''} concerné${deptsWithImp>1?'s':''}` : 'Aucune dépense imprévue';
+    el('b-imp-detail').textContent = deptsWithImp > 0 ? `${deptsWithImp} département${deptsWithImp>1?'s':''} concerné${deptsWithImp>1?'s':''}` : 'Aucune dépense imprévue';
 
     el('b-imp-bars').innerHTML = impData.map(d => {
       const hasSpend = d.reel > 0;
@@ -2056,7 +2143,7 @@ function renderBilan(){
       <td colspan="6" style="padding:6px 14px;font-size:12px;color:var(--red);font-style:italic;border-top:1px solid rgba(255,255,255,.04)">
         <span style="display:inline-flex;align-items:center;gap:6px">
           <span style="width:8px;height:8px;border-radius:2px;background:rgba(248,113,113,.5);flex-shrink:0"></span>
-          dont ${fe(totalImprevus)} imprévus · ${deptsWithImprevus} pôle${deptsWithImprevus>1?'s':''}
+          dont ${fe(totalImprevus)} imprévus · ${deptsWithImprevus} département${deptsWithImprevus>1?'s':''}
         </span>
       </td>
     </tr>`;
@@ -2893,6 +2980,9 @@ function toggleAllSections(deptId, btn){
 }
 function applyDeptTabColor(){
   document.querySelectorAll('.dt').forEach(d=>{
+    // v5.13.7: only dept tabs carry data-idx. Month tabs (no data-idx) opt out of
+    // inline dept-coloring so the CSS .dept-tabs .dt.on white-underline rule governs them.
+    if(Number.isNaN(parseInt(d.dataset.idx))) return;
     if(d.classList.contains('on')){
       const idx=parseInt(d.dataset.idx);
       const col=DEPT_COLORS[idx]||'#fff';
@@ -2996,7 +3086,7 @@ function renderMonthSummary(monthId){
   const totImpEst=imp.reduce((a,d)=>a+d.est,0);
   const nDept=imp.filter(d=>d.hasSpend).length;
   const totText=totImp>0?fe(totImp):(totImpEst>0?fe(totImpEst)+' budgeté':'0 €');
-  const detText=nDept>0?`${nDept} pôle${nDept>1?'s':''} concerné${nDept>1?'s':''}`:'Aucune dépense imprévue';
+  const detText=nDept>0?`${nDept} département${nDept>1?'s':''} concerné${nDept>1?'s':''}`:'Aucune dépense imprévue';
   const boxes=imp.map(d=>{
     const hasSpend=d.reel>0; const hasBudget=d.est>0&&!hasSpend;
     const col=DEPT_COLORS[d.idx]||'var(--indigo)';

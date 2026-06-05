@@ -481,7 +481,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   <div class="nav-top">
     <div class="nav-sw sw-wrap" style="position:relative">
       <div class="sw-trigger" data-sw-trigger>
-        <div class="nav-sw-av"><div style="width:100%;height:100%;background:linear-gradient(135deg,#f4c430,#e0a800);border-radius:inherit"></div></div>
+        <div class="nav-sw-av"><img src="LOGO_ROND_JAUNE.png" alt="GEN" style="width:100%;height:100%;object-fit:cover"></div>
         <div>
           <div class="nav-sw-name">Générale<span class="dot"></span></div>
           <div class="nav-sw-sub">Générale 2026 · Madame Loyal</div>
@@ -2895,6 +2895,9 @@ function toggleAllSections(deptId, btn){
 }
 function applyDeptTabColor(){
   document.querySelectorAll('.dt').forEach(d=>{
+    // v5.13.7: only dept tabs carry data-idx. Month tabs (no data-idx) opt out of
+    // inline dept-coloring so the CSS .dept-tabs .dt.on white-underline rule governs them.
+    if(Number.isNaN(parseInt(d.dataset.idx))) return;
     if(d.classList.contains('on')){
       const idx=parseInt(d.dataset.idx);
       const col=DEPT_COLORS[idx]||'#fff';

@@ -14,7 +14,7 @@
        content zone would otherwise crush the real Budget/Consommé/Restant tiles
        off the card edge. Kept on desktop (reserved for V1 Billetterie KPIs). */
     @media (max-width: 600px) {
-      .ec-v2-tiles { display: none; }
+      .ec-v2-tiles { display: none !important; }
     }
   </style>
 </head>
@@ -159,7 +159,7 @@
  */
 const STAGE2_EVENTS = [
   { id:'evt-sb', qonto_account_id:'qa-bdx', in_switcher:true, name:'Madame Loyal x Sonora Bordeaux',  status:'En vente', is_general:false,
-    city:'Bordeaux', venue:'Parc des Expositions',     start_date:'2026-06-11', number_of_days:3, poster_url:'https://res.cloudinary.com/shotgun/image/upload/c_limit,w_1200,h_630/f_jpg/q_auto/production/artworks/ARTWORKS_BORDEAUX_2026_hl5m1f.png', display_initials:'SB', producteur:'EPISODE', marque:'Sonora',
+    city:'Bordeaux', venue:'Parc des Expositions',     start_date:'2026-06-11', number_of_days:3, poster_url:'https://res.cloudinary.com/shotgun/image/upload/c_fill,ar_3:4,w_600/f_jpg/q_auto/production/artworks/ARTWORKS_BORDEAUX_2026_hl5m1f.png', display_initials:'SB', producteur:'EPISODE', marque:'Sonora',
     budget_target:950000, budget_consumed:385000, edition_number:4, capacity:44500,
     description:'4e édition du festival Sonora à Bordeaux — programmation électro 3 jours.',
     genre:['Électro','Techno','House'],
@@ -171,14 +171,14 @@ const STAGE2_EVENTS = [
     budgetflow_url:'https://festiflow.studioai2k.com/budget/bdx',
     billetterie_url:'https://festiflow.studioai2k.com/billetterie/bordeaux' },
   { id:'evt-cc', qonto_account_id:'qa-mic', in_switcher:false, name:'Madame Loyal x Crazy Carnaval',   status:'En vente', is_general:false,
-    city:'Paris',    venue:'Cirque Micheletty',        start_date:'2026-07-04', number_of_days:1, poster_url:'https://res.cloudinary.com/shotgun/image/upload/c_limit,w_1200,h_630/f_jpg/q_auto/c_limit,f_auto,fl_lossy,q_auto,w_1920/v1777732885/production/artworks/AFFICHE_4_JUILLET_FACEBOOK_wxtrww', display_initials:'CC', producteur:'EPISODE', marque:'Madame Loyal',
+    city:'Paris',    venue:'Cirque Micheletty',        start_date:'2026-07-04', number_of_days:1, poster_url:'https://res.cloudinary.com/shotgun/image/upload/c_fill,ar_3:4,w_600/f_jpg/q_auto/v1777732885/production/artworks/AFFICHE_4_JUILLET_FACEBOOK_wxtrww', display_initials:'CC', producteur:'EPISODE', marque:'Madame Loyal',
     budget_target:380000, budget_consumed:115000, edition_number:1, capacity:3800,
     description:null, genre:[], previous_edition_event_id:null, template_id:null,
     dice_backend_url:null, shotgun_backend_url:null,
     dice_public_buy_url:null, shotgun_public_buy_url:'https://shotgun.live/en/festivals/madame-loyal-paris-crazy-carnaval-edition',
     budgetflow_url:null, billetterie_url:null },
   { id:'evt-ep', qonto_account_id:'qa-epk', in_switcher:true, name:'Madame Loyal x Elektric Park',    status:'En vente', is_general:false,
-    city:'Chatou',   venue:'Ile des Impressionnistes', start_date:'2026-09-05', number_of_days:1, poster_url:'https://res.cloudinary.com/shotgun/image/upload/c_limit,w_1200,h_630/f_jpg/q_auto/c_limit,f_auto,fl_lossy,q_auto,w_1920/v1775148372/production/artworks/REPARTITION_ML_X_EPK_FACEBOOK_j4zmmj', display_initials:'EP', producteur:'EPISODE', marque:'Madame Loyal',
+    city:'Chatou',   venue:'Ile des Impressionnistes', start_date:'2026-09-05', number_of_days:1, poster_url:'https://res.cloudinary.com/shotgun/image/upload/c_fill,ar_3:4,w_600/f_jpg/q_auto/v1775148372/production/artworks/REPARTITION_ML_X_EPK_FACEBOOK_j4zmmj', display_initials:'EP', producteur:'EPISODE', marque:'Madame Loyal',
     budget_target:720000, budget_consumed:145000, edition_number:1, capacity:12000,
     description:null, genre:['Électro'], previous_edition_event_id:null, template_id:null,
     dice_backend_url:null, shotgun_backend_url:null,
@@ -187,14 +187,14 @@ const STAGE2_EVENTS = [
     budgetflow_url:'https://festiflow.studioai2k.com/budget/epk',
     billetterie_url:'https://festiflow.studioai2k.com/billetterie/epk' },
   { id:'evt-si', qonto_account_id:null, in_switcher:false, name:'SONORA x IMPACT',                 status:'En vente', is_general:false,
-    city:'Paris',    venue:'Parc des Expositions de Villepinte', start_date:'2026-09-25', number_of_days:1, poster_url:'https://res.cloudinary.com/shotgun/image/upload/c_limit,w_1200,h_630/f_jpg/q_auto/production/artworks/SONORA_X_IMPACT_-_1920x1080_REPARTITION_oc4a08.jpg', display_initials:'SI', producteur:'EPISODE', marque:'Sonora',
+    city:'Paris',    venue:'Parc des Expositions de Villepinte', start_date:'2026-09-25', number_of_days:1, poster_url:'https://res.cloudinary.com/shotgun/image/upload/c_fill,ar_3:4,w_600/f_jpg/q_auto/production/artworks/SONORA_X_IMPACT_-_1920x1080_REPARTITION_oc4a08.jpg', display_initials:'SI', producteur:'EPISODE', marque:'Sonora',
     budget_target:850000, budget_consumed:155000, edition_number:1, capacity:25000,
     description:null, genre:[], previous_edition_event_id:null, template_id:null,
     dice_backend_url:null, shotgun_backend_url:null,
     dice_public_buy_url:null, shotgun_public_buy_url:'https://shotgun.live/en/events/sonora-x-impact',
     budgetflow_url:null, billetterie_url:null },
   { id:'evt-gv', qonto_account_id:null, in_switcher:false, name:'Madame Loyal Genève : 16 & 17 Octobre', status:'En vente', is_general:false,
-    city:'Genève',   venue:'Palexpo',                  start_date:'2026-10-16', number_of_days:2, poster_url:'https://res.cloudinary.com/shotgun/image/upload/c_limit,w_1200,h_630/f_jpg/q_auto/c_limit,f_auto,fl_lossy,q_auto,w_1920/v1778088218/production/artworks/FACEBOOK_REPART_fm6ezx', display_initials:'GV', producteur:'EPISODE', marque:'Madame Loyal',
+    city:'Genève',   venue:'Palexpo',                  start_date:'2026-10-16', number_of_days:2, poster_url:'https://res.cloudinary.com/shotgun/image/upload/c_fill,ar_3:4,w_600/f_jpg/q_auto/v1778088218/production/artworks/FACEBOOK_REPART_fm6ezx', display_initials:'GV', producteur:'EPISODE', marque:'Madame Loyal',
     budget_target:600000, budget_consumed:120000, edition_number:1, capacity:15000, /* PLACEHOLDER financials — Leo to confirm */
     description:null, genre:[], previous_edition_event_id:null, template_id:null,
     dice_backend_url:null, shotgun_backend_url:null,
@@ -202,7 +202,7 @@ const STAGE2_EVENTS = [
     shotgun_public_buy_url:'https://shotgun.live/en/festivals/madame-loyal-geneve-16-17-octobre',
     budgetflow_url:null, billetterie_url:null },
   { id:'evt-rn', qonto_account_id:null, in_switcher:false, name:'Madame Loyal Rennes : 6 & 7 Novembre', status:'En vente', is_general:false,
-    city:'Rennes',   venue:'Rennes Parc Expo',          start_date:'2026-11-06', number_of_days:2, poster_url:'https://res.cloudinary.com/shotgun/image/upload/c_limit,w_1200,h_630/f_jpg/q_auto/c_limit,f_auto,fl_lossy,q_auto,w_1920/v1780419102/production/artworks/REPARTITION_DECLINAISONS_RENNES_2026_Re%CC%81cupe%CC%81re%CC%81__FACEBOOK_kuzat8', display_initials:'RN', producteur:'EPISODE', marque:'Madame Loyal',
+    city:'Rennes',   venue:'Rennes Parc Expo',          start_date:'2026-11-06', number_of_days:2, poster_url:'https://res.cloudinary.com/shotgun/image/upload/c_fill,ar_3:4,w_600/f_jpg/q_auto/v1780419102/production/artworks/REPARTITION_DECLINAISONS_RENNES_2026_Re%CC%81cupe%CC%81re%CC%81__FACEBOOK_kuzat8', display_initials:'RN', producteur:'EPISODE', marque:'Madame Loyal',
     budget_target:550000, budget_consumed:90000, edition_number:1, capacity:14000, /* PLACEHOLDER financials — Leo to confirm */
     description:null, genre:[], previous_edition_event_id:null, template_id:null,
     dice_backend_url:null, shotgun_backend_url:null,

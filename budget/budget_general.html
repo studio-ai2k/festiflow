@@ -34,7 +34,10 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .sw-trigger{display:flex;align-items:center;gap:7px;cursor:pointer}
 .sw-chev{flex-shrink:0;transition:transform .2s}
 .sw-wrap.open .sw-chev{transform:rotate(180deg)}
-.sw-menu{position:absolute;top:calc(100% + 8px);min-width:230px;background:var(--surface-2);border:1px solid var(--border-h);border-radius:12px;padding:6px;box-shadow:0 20px 60px rgba(0,0,0,0.45);z-index:300;isolation:isolate;display:none}
+.sw-menu{position:absolute;top:calc(100% + 8px);min-width:230px;background:var(--surface-2);border:1px solid var(--border-h);border-radius:12px;padding:6px;box-shadow:0 20px 60px rgba(0,0,0,0.45);z-index:200;display:none}
+/* when re-parented to <body> on open: fixed to viewport, escapes .nav's backdrop-filter layer */
+.sw-menu.sw-float{position:fixed;display:block;z-index:1000;top:var(--sw-top);left:var(--sw-left)}
+.sw-menu.sw-float.right{left:auto;right:var(--sw-right)}
 .sw-wrap.open .sw-menu{display:block}
 .sw-menu.left{left:0}
 .sw-menu.right{right:0}
@@ -5405,7 +5408,7 @@ function bootLanding(){ if (typeof go === 'function') go('bilan'); }
 })();
 </script>
 <footer style="max-width:1020px;margin:0 auto;padding:48px 20px 28px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.2);font-family:'DM Sans',sans-serif">
-  <span style="font-weight:600;letter-spacing:.5px">Festiflow <span style="opacity:.5">·</span> Budget v0.3.3 <span style="opacity:.5">·</span> Générale 2026</span>
+  <span style="font-weight:600;letter-spacing:.5px">Festiflow <span style="opacity:.5">·</span> Budget v0.3.4 <span style="opacity:.5">·</span> Générale 2026</span>
   <span id="footer-sync" style="font-variant-numeric:tabular-nums">—</span>
 </footer>
 <script>
@@ -5421,22 +5424,59 @@ function bootLanding(){ if (typeof go === 'function') go('bilan'); }
 })();
 </script>
 <script>
-/* Minimal dropdown toggle for sw-* switchers (closed by default, click to open). Styling untouched. */
+/* sw-* switcher toggle. On open: re-parent the menu to <body> as a fixed overlay so it escapes
+   .nav's backdrop-filter compositing context (Safari traps z-index/isolation/position:fixed
+   inside a backdrop-filter ancestor — the menu must physically leave the .nav subtree). */
 (function(){
+  function placeFloat(wrap){
+    var menu = wrap._swMenu, trig = wrap.querySelector('[data-sw-trigger]');
+    if(!menu || !trig) return;
+    var r = trig.getBoundingClientRect();
+    menu.style.setProperty('--sw-top', (r.bottom + 8) + 'px');
+    if(menu.classList.contains('right')){
+      menu.style.setProperty('--sw-right', (window.innerWidth - r.right) + 'px');
+    } else {
+      menu.style.setProperty('--sw-left', r.left + 'px');
+    }
+  }
+  function openWrap(wrap){
+    var menu = wrap.querySelector('.sw-menu');
+    if(!menu) return;
+    wrap._swMenu = menu;
+    wrap._swHome = menu.parentNode;          // remember where it lives
+    wrap._swNext = menu.nextSibling;
+    document.body.appendChild(menu);          // escape .nav subtree
+    menu.classList.add('sw-float');
+    wrap.classList.add('open');
+    placeFloat(wrap);
+  }
+  function closeWrap(wrap){
+    var menu = wrap._swMenu;
+    if(menu){
+      menu.classList.remove('sw-float');
+      menu.style.cssText = '';                // clear fixed coords
+      if(wrap._swHome) wrap._swHome.insertBefore(menu, wrap._swNext || null); // put it back
+    }
+    wrap.classList.remove('open');
+    wrap._swMenu = wrap._swHome = wrap._swNext = null;
+  }
+  function closeAll(){ document.querySelectorAll('.sw-wrap.open').forEach(closeWrap); }
+
   document.addEventListener('click', function(e){
     var trig = e.target.closest('[data-sw-trigger]');
-    var wraps = document.querySelectorAll('.sw-wrap');
     if(trig){
       var wrap = trig.closest('.sw-wrap');
       var wasOpen = wrap.classList.contains('open');
-      wraps.forEach(w=>w.classList.remove('open'));
-      if(!wasOpen) wrap.classList.add('open');
+      closeAll();
+      if(!wasOpen) openWrap(wrap);
       e.stopPropagation();
       return;
     }
-    if(!e.target.closest('.sw-menu')) wraps.forEach(w=>w.classList.remove('open'));
+    if(!e.target.closest('.sw-menu')) closeAll();   // menu now lives on body, so this still matches
   });
-  document.addEventListener('keydown', function(e){ if(e.key==='Escape') document.querySelectorAll('.sw-wrap').forEach(w=>w.classList.remove('open')); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeAll(); });
+  window.addEventListener('resize', function(){ document.querySelectorAll('.sw-wrap.open').forEach(placeFloat); });
+  window.addEventListener('scroll', function(){ document.querySelectorAll('.sw-wrap.open').forEach(placeFloat); }, true);
 })();
 </script>
 </body>

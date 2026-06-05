@@ -13,8 +13,20 @@
        Hides the reserved V2 placeholder KPI tiles on mobile where the two-column
        content zone would otherwise crush the real Budget/Consommé/Restant tiles
        off the card edge. Kept on desktop (reserved for V1 Billetterie KPIs). */
+    /* Euro value: full form on desktop, k-abbreviated on mobile. Both render
+       in markup; CSS shows one. Default (desktop) = full, abbr hidden. */
+    .eur-abbr { display: none; }
     @media (max-width: 600px) {
       .ec-v2-tiles { display: none !important; }
+      /* Stack the content-zone's two columns on mobile so the 3 real KPI tiles
+         get full card width instead of being crushed into a half-width column
+         (the v5.14.1 empty-tiles-hide unmasked this — real tiles were never in
+         the freed space, they live in the left column). !important beats the
+         div's inline flex-direction:row. */
+      .ec-content-cols { flex-direction: column !important; }
+      /* Swap euro form: hide full, show k-abbreviated. */
+      .eur-full { display: none; }
+      .eur-abbr { display: inline; }
     }
   </style>
 </head>
@@ -361,6 +373,16 @@ function formatEuro(amount) {
   return new Intl.NumberFormat('fr-FR', { style:'currency', currency:'EUR', maximumFractionDigits:0 }).format(amount);
 }
 
+/* Mobile-abbreviated euro: 265000 → "265k €". All dashboard budget values are
+   clean multiples of 1000, so integer division reads cleanly (no 264,8k). Null
+   passthrough mirrors formatEuro so the —-fallback survives. Used only by the
+   .eur-abbr span in kpiTileHTML; .eur-full carries the full formatEuro form,
+   CSS swaps them at the ≤600px breakpoint. */
+function formatEuroK(amount) {
+  if (amount == null) return '—';
+  return Math.round(amount / 1000) + 'k\u00a0€';
+}
+
 /* Identity row 2 formatters — Édition / Plateforme / Capacité.
  *   formatEdition: "1ère édition" for null/1, "Édition N" for N≥2.
  *   platformFor:   derived from dice_public_buy_url + shotgun_public_buy_url presence.
@@ -491,10 +513,10 @@ function identityRow2HTML(evt) {
         </div>`;
 }
 
-function kpiTileHTML(label, value) {
+function kpiTileHTML(label, amount) {
   return `<div style="${BCHIP_STYLE}">
             <div style="${BCHIP_LABEL_STYLE}">${label}</div>
-            <div style="${BCHIP_VAL_STYLE}">${value}</div>
+            <div style="${BCHIP_VAL_STYLE}"><span class="eur-full">${formatEuro(amount)}</span><span class="eur-abbr">${formatEuroK(amount)}</span></div>
           </div>`;
 }
 
@@ -503,9 +525,9 @@ function tilesEnvelopeHTML(evt) {
   const consumed  = evt.budget_consumed;
   const remaining = (total != null && consumed != null) ? total - consumed : null;
   return `<div style="display:flex;gap:10px">
-          ${kpiTileHTML('Budget',    formatEuro(total))}
-          ${kpiTileHTML('Consommé',  formatEuro(consumed))}
-          ${kpiTileHTML('Restant',   formatEuro(remaining))}
+          ${kpiTileHTML('Budget',    total)}
+          ${kpiTileHTML('Consommé',  consumed)}
+          ${kpiTileHTML('Restant',   remaining)}
         </div>`;
 }
 
@@ -562,7 +584,7 @@ function cardHTML(evt, idx) {
             ${statusHTML}
           </div>
           ${HEADER_SEPARATOR_HTML}
-          <div style="display:flex;flex-direction:row;gap:20px;min-width:0">
+          <div class="ec-content-cols" style="display:flex;flex-direction:row;gap:20px;min-width:0">
             <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px">
               ${identityRow1HTML(evt)}
               ${tilesEnvelopeHTML(evt)}

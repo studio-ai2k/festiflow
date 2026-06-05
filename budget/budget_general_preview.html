@@ -59,7 +59,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .month-cat{margin-bottom:30px}
 .month-cat-head{font-size:1.05em;font-weight:700;color:#fff;letter-spacing:.3px;padding:10px 0 4px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:8px}
 .dt{border-bottom:2px solid transparent}
-.dept-tabs .dt.on{color:#fff;font-weight:600;border-bottom:2px solid #fff}
+.dept-tabs .dt.on{color:#fff;font-weight:600;border-bottom:2px solid #fff;background:rgba(255,255,255,.06)}
 @media(max-width:480px){
   .nav-sw{padding:6px 10px 6px 0;margin-right:4px}
   .nav-sw-av{width:30px;height:30px}
@@ -100,6 +100,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .sdiv{display:flex;align-items:center;gap:12px;margin:28px 0 14px}
 .sdl{flex:1;height:1px;background:var(--border)}
 .sdt{font-size:.63em;text-transform:uppercase;letter-spacing:3px;color:var(--text-dim);font-weight:600;white-space:nowrap}
+.tsep{width:36px;height:1px;background:var(--border);margin:18px auto}
 /* ── Option C dept header ── */
 .dept-hdr{display:grid;grid-template-columns:3px 1fr;border-radius:12px 12px 0 0;overflow:hidden;border:1px solid var(--border);border-bottom:none;margin:8px 0 0}
 .dept-hdr-rail{width:3px}
@@ -646,43 +647,42 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
   </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-janvier-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-janvier-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-janvier-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-janvier-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-janvier-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-janvier-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-janvier-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-janvier-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-janvier-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-janvier-divers"></div>
   </div>
 </div>
@@ -707,43 +707,42 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
   </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-fevrier-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-fevrier-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-fevrier-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-fevrier-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-fevrier-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-fevrier-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-fevrier-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-fevrier-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-fevrier-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-fevrier-divers"></div>
   </div>
 </div>
@@ -768,43 +767,42 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
   </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-mars-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-mars-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-mars-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-mars-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-mars-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-mars-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-mars-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-mars-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-mars-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-mars-divers"></div>
   </div>
 </div>
@@ -829,43 +827,42 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
   </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-avril-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-avril-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-avril-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-avril-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-avril-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-avril-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-avril-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-avril-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-avril-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-avril-divers"></div>
   </div>
 </div>
@@ -890,43 +887,42 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
   </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-mai-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-mai-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-mai-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-mai-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-mai-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-mai-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-mai-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-mai-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-mai-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-mai-divers"></div>
   </div>
 </div>
@@ -951,43 +947,42 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
   </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-juin-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-juin-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-juin-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-juin-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-juin-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-juin-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-juin-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-juin-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-juin-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-juin-divers"></div>
   </div>
 </div>
@@ -1012,43 +1007,42 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
   </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-juillet-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-juillet-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-juillet-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-juillet-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-juillet-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-juillet-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-juillet-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-juillet-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-juillet-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-juillet-divers"></div>
   </div>
 </div>
@@ -1073,43 +1067,42 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
   </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-aout-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-aout-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-aout-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-aout-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-aout-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-aout-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-aout-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-aout-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-aout-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-aout-divers"></div>
   </div>
 </div>
@@ -1134,43 +1127,42 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
   </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-septembre-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-septembre-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-septembre-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-septembre-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-septembre-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-septembre-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-septembre-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-septembre-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-septembre-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-septembre-divers"></div>
   </div>
 </div>
@@ -1195,43 +1187,42 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
   </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-octobre-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-octobre-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-octobre-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-octobre-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-octobre-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-octobre-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-octobre-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-octobre-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-octobre-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-octobre-divers"></div>
   </div>
 </div>
@@ -1256,43 +1247,42 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
   </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-novembre-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-novembre-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-novembre-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-novembre-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-novembre-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-novembre-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-novembre-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-novembre-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-novembre-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-novembre-divers"></div>
   </div>
 </div>
@@ -1317,43 +1307,42 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
   </div>
 <div class="month-cat" data-cat="humain">
-    <div class="month-cat-head">Humain</div>
     <div id="month-block-decembre-humain"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="charges_sociales">
-    <div class="month-cat-head">Charges sociales</div>
     <div id="month-block-decembre-charges_sociales"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="locaux">
-    <div class="month-cat-head">Locaux</div>
     <div id="month-block-decembre-locaux"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="assurances">
-    <div class="month-cat-head">Assurances</div>
     <div id="month-block-decembre-assurances"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="honoraires">
-    <div class="month-cat-head">Honoraires</div>
     <div id="month-block-decembre-honoraires"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="deplacements">
-    <div class="month-cat-head">Déplacements</div>
     <div id="month-block-decembre-deplacements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="abonnements">
-    <div class="month-cat-head">Abonnements</div>
     <div id="month-block-decembre-abonnements"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="impots_taxes">
-    <div class="month-cat-head">Impôts & Taxes</div>
     <div id="month-block-decembre-impots_taxes"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="restauration">
-    <div class="month-cat-head">Restauration</div>
     <div id="month-block-decembre-restauration"></div>
   </div>
+  <div class="tsep"></div>
   <div class="month-cat" data-cat="divers">
-    <div class="month-cat-head">Divers</div>
     <div id="month-block-decembre-divers"></div>
   </div>
 </div>

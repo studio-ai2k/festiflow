@@ -7,6 +7,16 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared/chrome.css">
 <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Page-local layout rule (NOT chrome — T1 guard scope is canonical chrome
+       selectors like .nav/.dt; .ec-v2-tiles is a Module-Dates-card-local class).
+       Hides the reserved V2 placeholder KPI tiles on mobile where the two-column
+       content zone would otherwise crush the real Budget/Consommé/Restant tiles
+       off the card edge. Kept on desktop (reserved for V1 Billetterie KPIs). */
+    @media (max-width: 600px) {
+      .ec-v2-tiles { display: none; }
+    }
+  </style>
 </head>
 <body>
 <nav class="nav">
@@ -149,39 +159,55 @@
  */
 const STAGE2_EVENTS = [
   { id:'evt-sb', qonto_account_id:'qa-bdx', in_switcher:true, name:'Madame Loyal x Sonora Bordeaux',  status:'En vente', is_general:false,
-    city:'Bordeaux', venue:'Parc des Expositions',     start_date:'2026-06-11', number_of_days:3, poster_url:null, display_initials:'SB', producteur:'EPISODE', marque:'Sonora',
+    city:'Bordeaux', venue:'Parc des Expositions',     start_date:'2026-06-11', number_of_days:3, poster_url:'https://res.cloudinary.com/shotgun/image/upload/c_limit,w_1200,h_630/f_jpg/q_auto/production/artworks/ARTWORKS_BORDEAUX_2026_hl5m1f.png', display_initials:'SB', producteur:'EPISODE', marque:'Sonora',
     budget_target:950000, budget_consumed:385000, edition_number:4, capacity:44500,
     description:'4e édition du festival Sonora à Bordeaux — programmation électro 3 jours.',
     genre:['Électro','Techno','House'],
     previous_edition_event_id:null,
     template_id:null,
-    dice_backend_url:'https://dice.fm/event/sonora-bordeaux-2026', shotgun_backend_url:'https://shotgun.live/event/sonora-bordeaux-2026',
-    dice_public_buy_url:'https://dice.fm/partner/tickets/event/av3vr2-madame-loyal-x-sonora-bordeaux-12-13-juin-2026-11th-jun-parc-des-expositions-de-bordeaux-bordeaux-tickets',
-    shotgun_public_buy_url:'https://shotgun.live/en/festivals/madame-loyal-x-sonora',
+    dice_backend_url:null, shotgun_backend_url:null,
+    dice_public_buy_url:'https://dice.fm/event/av3vr2-madame-loyal-x-sonora-bordeaux-11-12-13-juin-2026-11th-jun-parc-des-expositions-de-bordeaux-bordeaux-tickets',
+    shotgun_public_buy_url:'https://shotgun.live/en/festivals/madame-loyal-x-sonora-bordeaux',
     budgetflow_url:'https://festiflow.studioai2k.com/budget/bdx',
     billetterie_url:'https://festiflow.studioai2k.com/billetterie/bordeaux' },
   { id:'evt-cc', qonto_account_id:'qa-mic', in_switcher:false, name:'Madame Loyal x Crazy Carnaval',   status:'En vente', is_general:false,
-    city:'Paris',    venue:'Cirque Micheletty',        start_date:'2026-07-04', number_of_days:1, poster_url:null, display_initials:'CC', producteur:'EPISODE', marque:'Madame Loyal',
+    city:'Paris',    venue:'Cirque Micheletty',        start_date:'2026-07-04', number_of_days:1, poster_url:'https://res.cloudinary.com/shotgun/image/upload/c_limit,w_1200,h_630/f_jpg/q_auto/c_limit,f_auto,fl_lossy,q_auto,w_1920/v1777732885/production/artworks/AFFICHE_4_JUILLET_FACEBOOK_wxtrww', display_initials:'CC', producteur:'EPISODE', marque:'Madame Loyal',
     budget_target:380000, budget_consumed:115000, edition_number:1, capacity:3800,
     description:null, genre:[], previous_edition_event_id:null, template_id:null,
-    dice_backend_url:'https://dice.fm/event/crazy-carnaval-2026', shotgun_backend_url:null,
-    dice_public_buy_url:null, shotgun_public_buy_url:null,
+    dice_backend_url:null, shotgun_backend_url:null,
+    dice_public_buy_url:null, shotgun_public_buy_url:'https://shotgun.live/en/festivals/madame-loyal-paris-crazy-carnaval-edition',
     budgetflow_url:null, billetterie_url:null },
   { id:'evt-ep', qonto_account_id:'qa-epk', in_switcher:true, name:'Madame Loyal x Elektric Park',    status:'En vente', is_general:false,
-    city:'Chatou',   venue:'Ile des Impressionnistes', start_date:'2026-09-05', number_of_days:1, poster_url:null, display_initials:'EP', producteur:'EPISODE', marque:'Madame Loyal',
+    city:'Chatou',   venue:'Ile des Impressionnistes', start_date:'2026-09-05', number_of_days:1, poster_url:'https://res.cloudinary.com/shotgun/image/upload/c_limit,w_1200,h_630/f_jpg/q_auto/c_limit,f_auto,fl_lossy,q_auto,w_1920/v1775148372/production/artworks/REPARTITION_ML_X_EPK_FACEBOOK_j4zmmj', display_initials:'EP', producteur:'EPISODE', marque:'Madame Loyal',
     budget_target:720000, budget_consumed:145000, edition_number:1, capacity:12000,
     description:null, genre:['Électro'], previous_edition_event_id:null, template_id:null,
-    dice_backend_url:'https://dice.fm/event/elektric-park-2026', shotgun_backend_url:null,
-    dice_public_buy_url:'https://dice.fm/partner/tickets/event/oepro5-madame-loyal-x-elektric-park-xxl-edition-5th-sep-ile-des-impressionnistes-paris-tickets',
-    shotgun_public_buy_url:null,
+    dice_backend_url:null, shotgun_backend_url:null,
+    dice_public_buy_url:'https://dice.fm/event/oepro5-madame-loyal-x-elektric-park-xxl-edition-5th-sep-ile-des-impressionnistes-paris-tickets',
+    shotgun_public_buy_url:'https://shotgun.live/en/festivals/madame-loyal-x-elektric-park',
     budgetflow_url:'https://festiflow.studioai2k.com/budget/epk',
     billetterie_url:'https://festiflow.studioai2k.com/billetterie/epk' },
   { id:'evt-si', qonto_account_id:null, in_switcher:false, name:'SONORA x IMPACT',                 status:'En vente', is_general:false,
-    city:'Paris',    venue:'Parc des Expositions de Villepinte', start_date:'2026-09-25', number_of_days:1, poster_url:null, display_initials:'SI', producteur:'EPISODE', marque:'Sonora',
+    city:'Paris',    venue:'Parc des Expositions de Villepinte', start_date:'2026-09-25', number_of_days:1, poster_url:'https://res.cloudinary.com/shotgun/image/upload/c_limit,w_1200,h_630/f_jpg/q_auto/production/artworks/SONORA_X_IMPACT_-_1920x1080_REPARTITION_oc4a08.jpg', display_initials:'SI', producteur:'EPISODE', marque:'Sonora',
     budget_target:850000, budget_consumed:155000, edition_number:1, capacity:25000,
     description:null, genre:[], previous_edition_event_id:null, template_id:null,
-    dice_backend_url:null, shotgun_backend_url:'https://shotgun.live/event/sonora-impact-2026',
-    dice_public_buy_url:null, shotgun_public_buy_url:null,
+    dice_backend_url:null, shotgun_backend_url:null,
+    dice_public_buy_url:null, shotgun_public_buy_url:'https://shotgun.live/en/events/sonora-x-impact',
+    budgetflow_url:null, billetterie_url:null },
+  { id:'evt-gv', qonto_account_id:null, in_switcher:false, name:'Madame Loyal Genève : 16 & 17 Octobre', status:'En vente', is_general:false,
+    city:'Genève',   venue:'Palexpo',                  start_date:'2026-10-16', number_of_days:2, poster_url:'https://res.cloudinary.com/shotgun/image/upload/c_limit,w_1200,h_630/f_jpg/q_auto/c_limit,f_auto,fl_lossy,q_auto,w_1920/v1778088218/production/artworks/FACEBOOK_REPART_fm6ezx', display_initials:'GV', producteur:'EPISODE', marque:'Madame Loyal',
+    budget_target:600000, budget_consumed:120000, edition_number:1, capacity:15000, /* PLACEHOLDER financials — Leo to confirm */
+    description:null, genre:[], previous_edition_event_id:null, template_id:null,
+    dice_backend_url:null, shotgun_backend_url:null,
+    dice_public_buy_url:null,
+    shotgun_public_buy_url:'https://shotgun.live/en/festivals/madame-loyal-geneve-16-17-octobre',
+    budgetflow_url:null, billetterie_url:null },
+  { id:'evt-rn', qonto_account_id:null, in_switcher:false, name:'Madame Loyal Rennes : 6 & 7 Novembre', status:'En vente', is_general:false,
+    city:'Rennes',   venue:'Rennes Parc Expo',          start_date:'2026-11-06', number_of_days:2, poster_url:'https://res.cloudinary.com/shotgun/image/upload/c_limit,w_1200,h_630/f_jpg/q_auto/c_limit,f_auto,fl_lossy,q_auto,w_1920/v1780419102/production/artworks/REPARTITION_DECLINAISONS_RENNES_2026_Re%CC%81cupe%CC%81re%CC%81__FACEBOOK_kuzat8', display_initials:'RN', producteur:'EPISODE', marque:'Madame Loyal',
+    budget_target:550000, budget_consumed:90000, edition_number:1, capacity:14000, /* PLACEHOLDER financials — Leo to confirm */
+    description:null, genre:[], previous_edition_event_id:null, template_id:null,
+    dice_backend_url:null, shotgun_backend_url:null,
+    dice_public_buy_url:'https://dice.fm/event/rykl5v-madame-loyal-rennes-6-7-novembre-6th-nov-parc-des-expositions-de-rennes-rennes-tickets',
+    shotgun_public_buy_url:'https://shotgun.live/en/festivals/madame-loyal-rennes-6-7-novembre',
     budgetflow_url:null, billetterie_url:null },
   { id:'evt-sh', qonto_account_id:null, in_switcher:false, name:'Sonora Halloween XXL 2026',       status:'En préparation', is_general:false,
     city:'Bordeaux', venue:'Parc des Expositions',     start_date:'2026-10-31', number_of_days:1, poster_url:null, display_initials:'SH', producteur:'EPISODE', marque:'Sonora',
@@ -337,7 +363,7 @@ function formatEuro(amount) {
 
 /* Identity row 2 formatters — Édition / Plateforme / Capacité.
  *   formatEdition: "1ère édition" for null/1, "Édition N" for N≥2.
- *   platformFor:   derived from dice_backend_url + shotgun_backend_url presence.
+ *   platformFor:   derived from dice_public_buy_url + shotgun_public_buy_url presence.
  *                  Neither populated → "—" (defining trait of En préparation pill).
  *   formatCapacity: fr-FR thousands-sep, no suffix. Field-level "—" fallback.
  *                   V1 reads event.capacity (event-level total); V2 Postgres SCHEMA
@@ -350,8 +376,8 @@ function formatEdition(n) {
 }
 
 function platformFor(evt) {
-  const d = !!evt.dice_backend_url;
-  const s = !!evt.shotgun_backend_url;
+  const d = !!evt.dice_public_buy_url;
+  const s = !!evt.shotgun_public_buy_url;
   if (d && s) return 'Dice + Shotgun';
   if (d)      return 'Dice';
   if (s)      return 'Shotgun';
@@ -499,7 +525,7 @@ function emptyTileHTML() {
 }
 
 function emptyTilesEnvelopeHTML() {
-  return `<div style="display:flex;gap:10px">
+  return `<div class="ec-v2-tiles" style="display:flex;gap:10px">
           ${emptyTileHTML()}
           ${emptyTileHTML()}
           ${emptyTileHTML()}

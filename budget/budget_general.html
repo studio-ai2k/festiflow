@@ -576,18 +576,18 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 
   <!-- (top Mensuel/Annuel toggle removed — replaced by the VUE toggle inside Dépenses par mois) -->
 
-  <!-- ── ROW 1: hub-shape KPI chips (placeholder — content TBD at build session per brief §54; profit framing dropped, Générale is profit-inert) ── -->
+  <!-- ── ROW 1: hub-shape KPI chips — cost-structure axis only (throughput / spend / remaining / risk); no profit/résultat-net card, Générale is profit-inert per brief §3 per-session-type KPI block ── -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;margin-top:18px" id="bilan-chips">
-    <div class="bchip"><div class="bchip-label">KPI hub 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI hub 2</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI hub 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI hub 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
+    <div class="bchip" style="cursor:pointer" onclick="go('billetterie',this)"><div class="bchip-label">Billetterie encaissé</div><div class="bchip-val" id="kpi-bill-val">—</div><div class="bchip-sub" id="kpi-bill-sub">transit · voir page →</div></div>
+    <div class="bchip"><div class="bchip-label">Dépenses de structure</div><div class="bchip-val" id="kpi-dep-val">—</div><div class="bchip-sub" id="kpi-dep-sub">à définir</div></div>
+    <div class="bchip"><div class="bchip-label">Écart budget</div><div class="bchip-val" id="kpi-ecart-val">—</div><div class="bchip-sub" id="kpi-ecart-sub">restant sur l'enveloppe</div></div>
+    <div class="bchip"><div class="bchip-label">Imprévus</div><div class="bchip-val" id="kpi-imp-val">—</div><div class="bchip-sub" id="kpi-imp-sub">à définir</div></div>
   </div>
 
   <!-- P&L Recettes — summary + expandable detail -->
   <div class="sdiv" style="align-items:center">
     <div class="sdl"></div>
-    <div class="sdt" style="white-space:nowrap">Recettes</div>
+    <div class="sdt" style="white-space:nowrap">Recettes (hors billetterie)</div>
     <div class="sdl"></div>
     <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
   </div>
@@ -1974,7 +1974,6 @@ function renderBilan(){
   const tR=DEPTS.reduce((a,d)=>a+dtotAdj(d).reel,0);
   const rawRecHT=REC.flatMap(c=>c.rows).reduce((a,r)=>a+r.ht,0);
   const recHT = _bilanView === 'mensuel' ? rawRecHT / 12 : rawRecHT;
-  const res=recHT-tE;
   const p=pct(tR,tE);
   const allL=DEPTS.flatMap(d=>d.sections.flatMap(s=>s.lines));
   const STORDER=['ESTIMATION','EN COURS','DEVIS SIGNÉ','VALIDÉ','PAYÉ'];
@@ -1985,56 +1984,8 @@ function renderBilan(){
   const unsignedAmt=(stAmounts['ESTIMATION']||0)+(stAmounts['EN COURS']||0);
   const signedAmt=(stAmounts['DEVIS SIGNÉ']||0)+(stAmounts['VALIDÉ']||0)+(stAmounts['PAYÉ']||0);
 
-  // ── ROW 1: Stat chips ──────────────────────────────────────────────
-  const resColor = res>0 ? 'var(--green)' : 'var(--red)';
+  // ── ROW 1: hub-shape KPI cards — filled below, after ge/gr are computed (see "ROW 1 KPI fills") ──
   const el = id => document.getElementById(id);
-
-  if(el('chip-res-val')) {
-    el('chip-res-val').textContent = fe(res);
-    el('chip-res-val').style.color = resColor;
-    el('chip-res-sub').textContent = res>0
-      ? `Marge ${(res/recHT*100).toFixed(1)}% sur recettes`
-      : `Déficit de ${fe(Math.abs(res))}`;
-    el('chip-res-sub').style.color = resColor;
-  }
-  if(el('chip-rec-val')) {
-    el('chip-rec-val').textContent = fe(recHT);
-    el('chip-rec-sub').textContent = _bilanView === 'mensuel' ? 'Estimation mensuelle (÷12)' : 'Sponsors + Marketing + Divers';
-  }
-  if(el('chip-dep-val')) {
-    el('chip-dep-val').textContent = fe(tE);
-    el('chip-dep-sub').textContent = `${DEPTS.length} départements · ${allL.filter(l=>l.est>0).length} lignes`;
-  }
-  if(el('chip-pct-val')) {
-    const pctColor = p>=100?'var(--red)':p>=75?'var(--amber)':'var(--indigo)';
-    el('chip-pct-val').textContent = p+'%';
-    el('chip-pct-val').style.color = pctColor;
-    const bar = el('chip-burn-bar');
-    if(bar){
-      // Build stacked segments by department
-      const segments = DEPTS.map((d,i) => {
-        const dReel = dtotAdj(d).reel;
-        if(dReel <= 0 || tE <= 0) return '';
-        const w = Math.min(dReel / tE * 100, 100);
-        return `<div title="${d.name}: ${fe(dReel)}" style="height:100%;width:${w.toFixed(2)}%;background:${DEPT_COLORS[i]||'var(--indigo)'};flex-shrink:0"></div>`;
-      }).join('');
-      bar.style.width = '100%';
-      bar.style.background = 'none';
-      bar.style.display = 'flex';
-      bar.style.borderRadius = '3px';
-      bar.style.overflow = 'hidden';
-      bar.innerHTML = segments;
-    }
-    const sub = el('chip-pct-val').parentElement.querySelector('.bchip-sub');
-    if(!sub){
-      const s=document.createElement('div');
-      s.className='bchip-sub';
-      s.textContent=`${fe(tR)} réel · ${fe(tE-tR)} restant`;
-      el('chip-pct-val').parentElement.appendChild(s);
-    } else {
-      sub.textContent=`${fe(tR)} réel · ${fe(tE-tR)} restant`;
-    }
-  }
 
   // ── Dépenses imprévues par pôle ──────────────────────────
   if(el('b-imp-total')) {
@@ -2173,14 +2124,42 @@ function renderBilan(){
           <table class="btbl" id="dep-table">
             <thead><tr>
               <th class="tl">${_depView==='departement'?'Département':'Mois'}</th>
-              <th class="b-ht-col">${_depView==='mensuel'&&_lisse?'Budget lissé HT':(_bilanView==='mensuel'?'Budget mensuel HT':'Budget annuel HT')}</th>
-              <th class="b-ht-col">${_depView==='mensuel'&&_lisse?'Dépensé lissé HT':(_bilanView==='mensuel'?'Dépensé ce mois':'Dépensé YTD')}</th>
+              <th class="b-ht-col">${_depView==='mensuel' ? (_lisse?'Budget lissé HT':'Budget mensuel HT') : 'Budget annuel HT'}</th>
+              <th class="b-ht-col">${_depView==='mensuel' ? (_lisse?'Dépensé lissé HT':'Dépensé ce mois') : 'Dépensé YTD'}</th>
               <th>Écart HT</th><th>Imprévus</th><th>Consommé</th>
             </tr></thead>
             <tbody>${depRows}</tbody>
           </table>
         </div>
       </div>`;
+  }
+
+  // ── ROW 1 KPI fills — cost-structure axis only (throughput / spend / remaining / risk); profit-inert, no résultat-net ──
+  // Card 1: Billetterie encaissé (ticketing throughput in transit — counted on its own page, surfaced here only)
+  if(el('kpi-bill-val')){
+    const enc = (window.__BILL && window.__BILL.tx) ? window.__BILL.tx.filter(t=>t.primitive_type==='RECETTE').reduce((a,t)=>a+t.montant_ht,0) : 0;
+    el('kpi-bill-val').textContent = fe(enc);
+    el('kpi-bill-sub').textContent = 'transit · voir page →';
+  }
+  // Card 2: Dépenses de structure (engagé vs budgété + burn)
+  if(el('kpi-dep-val')){
+    el('kpi-dep-val').textContent = fe(gr);
+    el('kpi-dep-sub').textContent = `${fe(ge)} budgété · ${depBurnPct}% consommé`;
+    el('kpi-dep-sub').style.color = depBurnColor;
+  }
+  // Card 3: Écart budget (remaining on the envelope; signed)
+  if(el('kpi-ecart-val')){
+    const ecart = ge - gr;
+    el('kpi-ecart-val').textContent = fe(ecart);
+    el('kpi-ecart-val').style.color = ecart>=0 ? 'var(--green)' : 'var(--red)';
+    el('kpi-ecart-sub').textContent = "restant sur l'enveloppe";
+  }
+  // Card 4: Imprévus (annual imprévu total + dept count) — annualImp is the real total (totalImprevus var is unpopulated)
+  if(el('kpi-imp-val')){
+    const impDeptCount = DEPTS.reduce((a,d)=>{const sec=d.sections.find(x=>x.s==='DÉPENSES IMPRÉVUES');const r=sec?sec.lines.reduce((b,l)=>b+(l.reel||0),0):0;const e=sec?sec.lines.reduce((b,l)=>b+(l.est||0),0):0;return a+((r>0||e>0)?1:0);},0);
+    el('kpi-imp-val').textContent = fe(annualImp);
+    el('kpi-imp-val').style.color = annualImp>0 ? 'var(--red)' : 'var(--text-dim)';
+    el('kpi-imp-sub').textContent = `${impDeptCount} département${impDeptCount>1?'s':''}`;
   }
 
   // ── Recettes — one card per category ────────────────────────────
@@ -5527,7 +5506,7 @@ function bootLanding(){ if (typeof go === 'function') go('bilan'); }
 })();
 </script>
 <footer style="max-width:1020px;margin:0 auto;padding:48px 20px 28px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.2);font-family:'DM Sans',sans-serif">
-  <span style="font-weight:600;letter-spacing:.5px">Festiflow <span style="opacity:.5">·</span> Budget v0.3.4 <span style="opacity:.5">·</span> Générale 2026</span>
+  <span style="font-weight:600;letter-spacing:.5px">Festiflow <span style="opacity:.5">·</span> Budget v0.3.7 <span style="opacity:.5">·</span> Générale 2026</span>
   <span id="footer-sync" style="font-variant-numeric:tabular-nums">—</span>
 </footer>
 <script>

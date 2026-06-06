@@ -57,7 +57,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .pill{margin-left:auto;font-size:10px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--surface-2);border:1px solid var(--border-h);color:var(--text-dim);white-space:nowrap}
 .pill.soon{color:var(--amber);border-color:rgba(251,191,36,0.25)}
 .pill.unset{color:var(--text-dim)}
-.month-cat{margin-bottom:30px}
+.month-cat{margin-bottom:30px;scroll-margin-top:14px}
 .month-cat-head{font-size:1.05em;font-weight:700;color:#fff;letter-spacing:.3px;padding:10px 0 4px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:8px}
 .dt{border-bottom:2px solid transparent}
 .dept-tabs .dt.on{color:#fff;font-weight:600;border-bottom:2px solid #fff;background:rgba(255,255,255,.06)}
@@ -623,7 +623,6 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div id="b-imp-bars" style="display:grid;grid-template-columns:repeat(10,1fr);gap:6px"></div>
   </div>
 
-  <!-- (Résultat net P&L bottom-line removed — Générale is profit-inert per brief §54) -->
 
 </div><!-- /bilan -->
 
@@ -1698,6 +1697,7 @@ async function loadRecettes() {
 
 // ── DEPTS will be populated from API ──────────────────────────────────
 let DEPTS = [];
+function EXP_DEPTS(){ return DEPTS.filter(d=>d.id!=='billetterie'); } // expense-walk view: billetterie is throughput, never an expense dept (v5.16.4)
 
 const DEPT_META = {
   'HUMAIN':          {id:'humain',          name:'HUMAIN'},
@@ -1835,7 +1835,7 @@ function syncMonthLisseBtns(){
 // Monthly lines count every month; annual lines: lumpy = in assigned month only; lissé = whole annual pool ÷12.
 function monthBudget(N){
   let b=0;
-  DEPTS.forEach(d=>d.sections.forEach(s=>s.lines.forEach(l=>{
+  EXP_DEPTS().forEach(d=>d.sections.forEach(s=>s.lines.forEach(l=>{
     if(l.rec==='M'){ b+=(l.est||0); }
     else if(l.rec==='A'){ b+= _lisse ? (l.est||0)/12 : ((l.am===N)?(l.est||0):0); }
     else if(l.rec==='P'){ b+= (l.am===N)?(l.est||0):0; }   // ponctuel: assigned month only, NEVER lissé
@@ -1844,7 +1844,7 @@ function monthBudget(N){
 }
 function monthReel(N){
   let r=0;
-  DEPTS.forEach(d=>d.sections.forEach(s=>s.lines.forEach(l=>{
+  EXP_DEPTS().forEach(d=>d.sections.forEach(s=>s.lines.forEach(l=>{
     if(l.rec==='M'){ r+=(l.reel||0); }
     else if(l.rec==='A'){ r+= _lisse ? (l.reel||0)/12 : ((l.am===N)?(l.reel||0):0); }
     else if(l.rec==='P'){ r+= (l.am===N)?(l.reel||0):0; }   // ponctuel: assigned month only, NEVER lissé
@@ -1869,7 +1869,7 @@ function deptMonth(d, N){
 // (Sourced from the live per-line walk, NOT the dead totalImprevus/deptsWithImprevus vars.)
 function monthAnnualShare(N){
   let a=0;
-  DEPTS.forEach(d=>d.sections.forEach(s=>s.lines.forEach(l=>{
+  EXP_DEPTS().forEach(d=>d.sections.forEach(s=>s.lines.forEach(l=>{
     if(l.rec==='A'){ a+= _lisse ? (l.reel||0)/12 : ((l.am===N)?(l.reel||0):0); }
   })));
   return a;
@@ -1968,12 +1968,12 @@ const DEPT_COLORS = [
 /* ═══ BILAN ═══ */
 function renderBilan(){
   const viewLabel = _bilanView === 'mensuel' ? 'Mensuel' : 'Annuel';
-  const tE=DEPTS.reduce((a,d)=>a+dtotAdj(d).est,0);
-  const tR=DEPTS.reduce((a,d)=>a+dtotAdj(d).reel,0);
+  const tE=EXP_DEPTS().reduce((a,d)=>a+dtotAdj(d).est,0);
+  const tR=EXP_DEPTS().reduce((a,d)=>a+dtotAdj(d).reel,0);
   const rawRecHT=REC.flatMap(c=>c.rows).reduce((a,r)=>a+r.ht,0);
   const recHT = _bilanView === 'mensuel' ? rawRecHT / 12 : rawRecHT;
   const p=pct(tR,tE);
-  const allL=DEPTS.flatMap(d=>d.sections.flatMap(s=>s.lines));
+  const allL=EXP_DEPTS().flatMap(d=>d.sections.flatMap(s=>s.lines));
   const STORDER=['ESTIMATION','EN COURS','DEVIS SIGNÉ','VALIDÉ','PAYÉ'];
   const STCOL={'ESTIMATION':'var(--text-dim)','EN COURS':'var(--amber)','DEVIS SIGNÉ':'#818cf8','VALIDÉ':'var(--green)','PAYÉ':'var(--green)'};
   const STCHIP={'ESTIMATION':'chip-est','EN COURS':'chip-ec','DEVIS SIGNÉ':'chip-ds','VALIDÉ':'chip-val','PAYÉ':'chip-pay'};
@@ -1987,7 +1987,7 @@ function renderBilan(){
 
   // ── Dépenses imprévues par pôle ──────────────────────────
   if(el('b-imp-total')) {
-    const impData = DEPTS.map((d,i) => {
+    const impData = EXP_DEPTS().map((d,i) => {
       const impSection = d.sections.find(s => s.s === 'DÉPENSES IMPRÉVUES');
       const impEst = impSection ? impSection.lines.reduce((a,l) => a + (l.est||0), 0) : 0;
       const impReel = impSection ? impSection.lines.reduce((a,l) => a + (l.reel||0), 0) : 0;
@@ -2031,7 +2031,7 @@ function renderBilan(){
 
   // ── Dept rows (P&L table) — match recettes card style ────────────
   let ge=0, gr=0;
-  DEPTS.forEach(d=>{ const t=dtotAdj(d); ge+=t.est; gr+=t.reel; });
+  EXP_DEPTS().forEach(d=>{ const t=dtotAdj(d); ge+=t.est; gr+=t.reel; });
   const depBurnPct = ge>0 ? Math.round(gr/ge*100) : 0;
   const depBurnColor = depBurnPct>=100?'var(--red)':depBurnPct>=75?'var(--amber)':'var(--green)';
 
@@ -2042,7 +2042,7 @@ function renderBilan(){
     ['mai','Mai'],['juin','Juin'],['juillet','Juillet'],['aout','Août'],
     ['septembre','Septembre'],['octobre','Octobre'],['novembre','Novembre'],['decembre','Décembre']];
   // annual imprévus total + per-month placeholder spread (real month-scoping deferred to wiring)
-  const annualImp = DEPTS.reduce((a,d)=>{const sec=d.sections.find(x=>x.s==='DÉPENSES IMPRÉVUES');return a+(sec?sec.lines.reduce((b,l)=>b+(l.reel||0),0):0);},0);
+  const annualImp = EXP_DEPTS().reduce((a,d)=>{const sec=d.sections.find(x=>x.s==='DÉPENSES IMPRÉVUES');return a+(sec?sec.lines.reduce((b,l)=>b+(l.reel||0),0):0);},0);
   const mImp = annualImp/12;
   const mEst = ge/12, mReel = gr/12;
   let depRows = '';
@@ -2050,7 +2050,7 @@ function renderBilan(){
   let deptsWithImprevus = 0;
   if(_depView==='departement'){
     // BY DEPARTMENT — cumulated across all 12 months (each dept's full-year budget vs spend)
-    DEPTS.forEach((d,i)=>{
+    EXP_DEPTS().forEach((d,i)=>{
       const t=dtotAdj(d); const ec4=t.est-t.reel; const p3=pct(t.reel,t.est);
       const col=DEPT_COLORS[i]||'var(--indigo)';
       const sec=d.sections.find(x=>x.s==='DÉPENSES IMPRÉVUES');
@@ -2069,7 +2069,7 @@ function renderBilan(){
     MONTHS_BILAN.forEach(([mid,mname],mi)=>{
       const N=mi+1; const mB=monthBudget(N); const mR=monthReel(N);
       const ec4=mB-mR; const p3=pct(mR,mB);
-      depRows+=`<tr style="cursor:pointer" onclick="goMonth('${mid}', document.querySelector('.dt:nth-child('+(mi+1)+')'))">
+      depRows+=`<tr style="cursor:pointer" onclick="goMonth('${mid}', document.querySelector('.dt:nth-child(${N})'))">
         <td><span style="display:inline-flex;align-items:center;gap:7px;flex-wrap:wrap"><span style="width:7px;height:7px;border-radius:50%;background:var(--indigo);flex-shrink:0"></span>${mname}</span></td>
         <td class="b-ht-col">${fe(mB)}</td>
         <td class="b-ht-col">${mR?fe(mR):'—'}</td>
@@ -2116,7 +2116,7 @@ function renderBilan(){
           </span>
         </div>
         <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-bottom:14px;display:flex;box-shadow:inset 0 1px 2px rgba(0,0,0,.2)">
-          ${DEPTS.map((d,i)=>{const dR=dtotAdj(d).reel;if(dR<=0||ge<=0)return'';return`<div title="${d.name}: ${fe(dR)}" style="height:100%;width:${(dR/ge*100).toFixed(2)}%;background:${DEPT_COLORS[i]||'var(--indigo)'};flex-shrink:0"></div>`;}).join('')}
+          ${EXP_DEPTS().map((d,i)=>{const dR=dtotAdj(d).reel;if(dR<=0||ge<=0)return'';return`<div title="${d.name}: ${fe(dR)}" style="height:100%;width:${(dR/ge*100).toFixed(2)}%;background:${DEPT_COLORS[i]||'var(--indigo)'};flex-shrink:0"></div>`;}).join('')}
         </div>`:''}
         <div class="twrap">
           <table class="btbl" id="dep-table">
@@ -2154,7 +2154,7 @@ function renderBilan(){
   }
   // Card 4: Imprévus (annual imprévu total + dept count) — annualImp is the real total (totalImprevus var is unpopulated)
   if(el('kpi-imp-val')){
-    const impDeptCount = DEPTS.reduce((a,d)=>{const sec=d.sections.find(x=>x.s==='DÉPENSES IMPRÉVUES');const r=sec?sec.lines.reduce((b,l)=>b+(l.reel||0),0):0;const e=sec?sec.lines.reduce((b,l)=>b+(l.est||0),0):0;return a+((r>0||e>0)?1:0);},0);
+    const impDeptCount = EXP_DEPTS().reduce((a,d)=>{const sec=d.sections.find(x=>x.s==='DÉPENSES IMPRÉVUES');const r=sec?sec.lines.reduce((b,l)=>b+(l.reel||0),0):0;const e=sec?sec.lines.reduce((b,l)=>b+(l.est||0),0):0;return a+((r>0||e>0)?1:0);},0);
     el('kpi-imp-val').textContent = fe(annualImp);
     el('kpi-imp-val').style.color = annualImp>0 ? 'var(--red)' : 'var(--text-dim)';
     el('kpi-imp-sub').textContent = `${impDeptCount} département${impDeptCount>1?'s':''}`;
@@ -3043,8 +3043,10 @@ function fillMonthKPIs(monthId, N){
   const lensSub=_lisse?'lissé':'réel';
   const sharePct = mR>0 ? Math.round(ann/mR*100)+'\u00a0%' : '—';
   const shareSub = _lisse ? 'charges annuelles ÷12' : 'charges annuelles (lump)';
-  // Card 3 écart reuses ecH colouring (green positif / rouge dépassé); strip the outer cell wrapper.
-  const ecCell = ecH(ec,false,mR>0);
+  // Card 3 écart — emitted directly as a .bchip-val string (sign + inline colour), matching cards 1/2/4 sizing.
+  // NOT routed through ecH: ecH returns a .cpos/.cneg span whose 13px/right-align CSS overrode .bchip-val (v5.16.4).
+  const ecCell = (mR<=0 || Math.abs(ec)<1) ? '<span style="color:var(--text-dim)">—</span>'
+    : `<span style="color:var(--${ec>0?'green':'red'})">${ec>0?'+':''}${fe(ec)}</span>`;
   row.innerHTML=`
     <div class="bchip"><div class="bchip-label">Dépensé ce mois</div><div class="bchip-val">${fe(mR)}</div><div class="bchip-sub">${lensSub}</div></div>
     <div class="bchip"><div class="bchip-label">Budget du mois</div><div class="bchip-val">${fe(mB)}</div><div class="bchip-sub">${lensSub}</div></div>
@@ -3060,9 +3062,9 @@ function renderMonthSummary(monthId){
   if(!target) return;
   const N=monthIndexOf(monthId);
   let ge=0,gr=0;
-  DEPTS.forEach(d=>{const t=deptMonth(d,N);ge+=t.est;gr+=t.reel;});
+  EXP_DEPTS().forEach(d=>{const t=deptMonth(d,N);ge+=t.est;gr+=t.reel;});
   let rows='';
-  DEPTS.forEach((d,i)=>{
+  EXP_DEPTS().forEach((d,i)=>{
     const t=deptMonth(d,N);const ec4=t.est-t.reel;const p3=pct(t.reel,t.est);
     const col=DEPT_COLORS[i]||'var(--indigo)';
     rows+=`<tr style="cursor:pointer" onclick="scrollToDept('${d.id}')">
@@ -3077,7 +3079,7 @@ function renderMonthSummary(monthId){
   target.innerHTML=`<div class="card"><div class="twrap"><table class="btbl"><thead><tr><th class="tl">Département</th><th class="b-ht-col">Budget HT</th><th class="b-ht-col">Dépensé HT</th><th>Écart HT</th><th>Consommé</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
 
   // ── Imprévus strip (per-dept), below the summary table ──
-  const imp=DEPTS.map((d,i)=>{
+  const imp=EXP_DEPTS().map((d,i)=>{
     const sec=d.sections.find(x=>x.s==='DÉPENSES IMPRÉVUES');
     const est=sec?sec.lines.reduce((a,l)=>a+(l.est||0),0):0;
     const reel=sec?sec.lines.reduce((a,l)=>a+(l.reel||0),0):0;
@@ -5557,7 +5559,7 @@ function bootLanding(){ if (typeof go === 'function') go('bilan'); }
 })();
 </script>
 <footer style="max-width:1020px;margin:0 auto;padding:48px 20px 28px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.2);font-family:'DM Sans',sans-serif">
-  <span style="font-weight:600;letter-spacing:.5px">Festiflow <span style="opacity:.5">·</span> Budget v0.5.3 <span style="opacity:.5">·</span> Générale 2026</span>
+  <span style="font-weight:600;letter-spacing:.5px">Festiflow <span style="opacity:.5">·</span> Budget v0.5.4 <span style="opacity:.5">·</span> Générale 2026</span>
   <span id="footer-sync" style="font-variant-numeric:tabular-nums">—</span>
 </footer>
 <script>

@@ -628,17 +628,13 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 
 <!-- ═══════════ MONTH PAGE (Janvier) — preview scaffolding: stacks dept categories ═══════════ -->
 <div id="page-janvier" class="page">
-  <!-- MONTH KPI ROW (placeholder — content TBD) -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
-    <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 2</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-  </div>
+  <!-- MONTH KPI ROW (item 7b — 4 cards, lissé-aware, filled by fillMonthKPIs) -->
+  <div id="month-kpi-janvier" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px"></div>
 <div class="sdiv" style="align-items:center">
       <div class="sdl"></div>
       <div class="sdt" style="white-space:nowrap">Synthèse du mois Janvier</div>
       <div class="sdl"></div>
+      <button class="lisse-toggle-btn" onclick="setLisse(!_lisse)" title="Lisser les charges annuelles sur 12 mois (budget + dépensé ensemble)" style="flex-shrink:0;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Lisser sur l'année</button>
     </div>
   <div id="month-summary-janvier" style="margin-bottom:26px"></div>
 <div class="sdiv" style="align-items:center">
@@ -688,17 +684,13 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 </div>
 
 <div id="page-fevrier" class="page">
-  <!-- MONTH KPI ROW (placeholder — content TBD) -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
-    <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 2</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-  </div>
+  <!-- MONTH KPI ROW (item 7b — 4 cards, lissé-aware, filled by fillMonthKPIs) -->
+  <div id="month-kpi-fevrier" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px"></div>
 <div class="sdiv" style="align-items:center">
       <div class="sdl"></div>
       <div class="sdt" style="white-space:nowrap">Synthèse du mois Février</div>
       <div class="sdl"></div>
+      <button class="lisse-toggle-btn" onclick="setLisse(!_lisse)" title="Lisser les charges annuelles sur 12 mois (budget + dépensé ensemble)" style="flex-shrink:0;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Lisser sur l'année</button>
     </div>
   <div id="month-summary-fevrier" style="margin-bottom:26px"></div>
 <div class="sdiv" style="align-items:center">
@@ -748,17 +740,13 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 </div>
 
 <div id="page-mars" class="page">
-  <!-- MONTH KPI ROW (placeholder — content TBD) -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
-    <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 2</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-  </div>
+  <!-- MONTH KPI ROW (item 7b — 4 cards, lissé-aware, filled by fillMonthKPIs) -->
+  <div id="month-kpi-mars" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px"></div>
 <div class="sdiv" style="align-items:center">
       <div class="sdl"></div>
       <div class="sdt" style="white-space:nowrap">Synthèse du mois Mars</div>
       <div class="sdl"></div>
+      <button class="lisse-toggle-btn" onclick="setLisse(!_lisse)" title="Lisser les charges annuelles sur 12 mois (budget + dépensé ensemble)" style="flex-shrink:0;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Lisser sur l'année</button>
     </div>
   <div id="month-summary-mars" style="margin-bottom:26px"></div>
 <div class="sdiv" style="align-items:center">
@@ -808,17 +796,13 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 </div>
 
 <div id="page-avril" class="page">
-  <!-- MONTH KPI ROW (placeholder — content TBD) -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
-    <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 2</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-  </div>
+  <!-- MONTH KPI ROW (item 7b — 4 cards, lissé-aware, filled by fillMonthKPIs) -->
+  <div id="month-kpi-avril" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px"></div>
 <div class="sdiv" style="align-items:center">
       <div class="sdl"></div>
       <div class="sdt" style="white-space:nowrap">Synthèse du mois Avril</div>
       <div class="sdl"></div>
+      <button class="lisse-toggle-btn" onclick="setLisse(!_lisse)" title="Lisser les charges annuelles sur 12 mois (budget + dépensé ensemble)" style="flex-shrink:0;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Lisser sur l'année</button>
     </div>
   <div id="month-summary-avril" style="margin-bottom:26px"></div>
 <div class="sdiv" style="align-items:center">
@@ -868,17 +852,13 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 </div>
 
 <div id="page-mai" class="page">
-  <!-- MONTH KPI ROW (placeholder — content TBD) -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
-    <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 2</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-  </div>
+  <!-- MONTH KPI ROW (item 7b — 4 cards, lissé-aware, filled by fillMonthKPIs) -->
+  <div id="month-kpi-mai" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px"></div>
 <div class="sdiv" style="align-items:center">
       <div class="sdl"></div>
       <div class="sdt" style="white-space:nowrap">Synthèse du mois Mai</div>
       <div class="sdl"></div>
+      <button class="lisse-toggle-btn" onclick="setLisse(!_lisse)" title="Lisser les charges annuelles sur 12 mois (budget + dépensé ensemble)" style="flex-shrink:0;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Lisser sur l'année</button>
     </div>
   <div id="month-summary-mai" style="margin-bottom:26px"></div>
 <div class="sdiv" style="align-items:center">
@@ -928,17 +908,13 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 </div>
 
 <div id="page-juin" class="page">
-  <!-- MONTH KPI ROW (placeholder — content TBD) -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
-    <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 2</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-  </div>
+  <!-- MONTH KPI ROW (item 7b — 4 cards, lissé-aware, filled by fillMonthKPIs) -->
+  <div id="month-kpi-juin" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px"></div>
 <div class="sdiv" style="align-items:center">
       <div class="sdl"></div>
       <div class="sdt" style="white-space:nowrap">Synthèse du mois Juin</div>
       <div class="sdl"></div>
+      <button class="lisse-toggle-btn" onclick="setLisse(!_lisse)" title="Lisser les charges annuelles sur 12 mois (budget + dépensé ensemble)" style="flex-shrink:0;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Lisser sur l'année</button>
     </div>
   <div id="month-summary-juin" style="margin-bottom:26px"></div>
 <div class="sdiv" style="align-items:center">
@@ -988,17 +964,13 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 </div>
 
 <div id="page-juillet" class="page">
-  <!-- MONTH KPI ROW (placeholder — content TBD) -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
-    <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 2</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-  </div>
+  <!-- MONTH KPI ROW (item 7b — 4 cards, lissé-aware, filled by fillMonthKPIs) -->
+  <div id="month-kpi-juillet" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px"></div>
 <div class="sdiv" style="align-items:center">
       <div class="sdl"></div>
       <div class="sdt" style="white-space:nowrap">Synthèse du mois Juillet</div>
       <div class="sdl"></div>
+      <button class="lisse-toggle-btn" onclick="setLisse(!_lisse)" title="Lisser les charges annuelles sur 12 mois (budget + dépensé ensemble)" style="flex-shrink:0;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Lisser sur l'année</button>
     </div>
   <div id="month-summary-juillet" style="margin-bottom:26px"></div>
 <div class="sdiv" style="align-items:center">
@@ -1048,17 +1020,13 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 </div>
 
 <div id="page-aout" class="page">
-  <!-- MONTH KPI ROW (placeholder — content TBD) -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
-    <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 2</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-  </div>
+  <!-- MONTH KPI ROW (item 7b — 4 cards, lissé-aware, filled by fillMonthKPIs) -->
+  <div id="month-kpi-aout" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px"></div>
 <div class="sdiv" style="align-items:center">
       <div class="sdl"></div>
       <div class="sdt" style="white-space:nowrap">Synthèse du mois Août</div>
       <div class="sdl"></div>
+      <button class="lisse-toggle-btn" onclick="setLisse(!_lisse)" title="Lisser les charges annuelles sur 12 mois (budget + dépensé ensemble)" style="flex-shrink:0;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Lisser sur l'année</button>
     </div>
   <div id="month-summary-aout" style="margin-bottom:26px"></div>
 <div class="sdiv" style="align-items:center">
@@ -1108,17 +1076,13 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 </div>
 
 <div id="page-septembre" class="page">
-  <!-- MONTH KPI ROW (placeholder — content TBD) -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
-    <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 2</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-  </div>
+  <!-- MONTH KPI ROW (item 7b — 4 cards, lissé-aware, filled by fillMonthKPIs) -->
+  <div id="month-kpi-septembre" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px"></div>
 <div class="sdiv" style="align-items:center">
       <div class="sdl"></div>
       <div class="sdt" style="white-space:nowrap">Synthèse du mois Septembre</div>
       <div class="sdl"></div>
+      <button class="lisse-toggle-btn" onclick="setLisse(!_lisse)" title="Lisser les charges annuelles sur 12 mois (budget + dépensé ensemble)" style="flex-shrink:0;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Lisser sur l'année</button>
     </div>
   <div id="month-summary-septembre" style="margin-bottom:26px"></div>
 <div class="sdiv" style="align-items:center">
@@ -1168,17 +1132,13 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 </div>
 
 <div id="page-octobre" class="page">
-  <!-- MONTH KPI ROW (placeholder — content TBD) -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
-    <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 2</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-  </div>
+  <!-- MONTH KPI ROW (item 7b — 4 cards, lissé-aware, filled by fillMonthKPIs) -->
+  <div id="month-kpi-octobre" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px"></div>
 <div class="sdiv" style="align-items:center">
       <div class="sdl"></div>
       <div class="sdt" style="white-space:nowrap">Synthèse du mois Octobre</div>
       <div class="sdl"></div>
+      <button class="lisse-toggle-btn" onclick="setLisse(!_lisse)" title="Lisser les charges annuelles sur 12 mois (budget + dépensé ensemble)" style="flex-shrink:0;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Lisser sur l'année</button>
     </div>
   <div id="month-summary-octobre" style="margin-bottom:26px"></div>
 <div class="sdiv" style="align-items:center">
@@ -1228,17 +1188,13 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 </div>
 
 <div id="page-novembre" class="page">
-  <!-- MONTH KPI ROW (placeholder — content TBD) -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
-    <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 2</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-  </div>
+  <!-- MONTH KPI ROW (item 7b — 4 cards, lissé-aware, filled by fillMonthKPIs) -->
+  <div id="month-kpi-novembre" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px"></div>
 <div class="sdiv" style="align-items:center">
       <div class="sdl"></div>
       <div class="sdt" style="white-space:nowrap">Synthèse du mois Novembre</div>
       <div class="sdl"></div>
+      <button class="lisse-toggle-btn" onclick="setLisse(!_lisse)" title="Lisser les charges annuelles sur 12 mois (budget + dépensé ensemble)" style="flex-shrink:0;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Lisser sur l'année</button>
     </div>
   <div id="month-summary-novembre" style="margin-bottom:26px"></div>
 <div class="sdiv" style="align-items:center">
@@ -1288,17 +1244,13 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 </div>
 
 <div id="page-decembre" class="page">
-  <!-- MONTH KPI ROW (placeholder — content TBD) -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px">
-    <div class="bchip"><div class="bchip-label">KPI 1</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 2</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 3</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">KPI 4</div><div class="bchip-val">—</div><div class="bchip-sub">à définir</div></div>
-  </div>
+  <!-- MONTH KPI ROW (item 7b — 4 cards, lissé-aware, filled by fillMonthKPIs) -->
+  <div id="month-kpi-decembre" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;margin-bottom:22px"></div>
 <div class="sdiv" style="align-items:center">
       <div class="sdl"></div>
       <div class="sdt" style="white-space:nowrap">Synthèse du mois Décembre</div>
       <div class="sdl"></div>
+      <button class="lisse-toggle-btn" onclick="setLisse(!_lisse)" title="Lisser les charges annuelles sur 12 mois (budget + dépensé ensemble)" style="flex-shrink:0;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Lisser sur l'année</button>
     </div>
   <div id="month-summary-decembre" style="margin-bottom:26px"></div>
 <div class="sdiv" style="align-items:center">
@@ -1857,7 +1809,27 @@ let _bilanView = 'annuel'; // 'annuel' or 'mensuel'
 let _depView = 'mensuel'; // Dépenses section grouping: 'mensuel' (by month) | 'departement' (by dept, cumulated)
 let _lisse = false; // Bilan Mensuel-only modifier: false = model (a) lumpy (annual lump in assigned month); true = annual lines spread ÷12 across all months (budget+dépensé together, écart stays valid)
 function setDepView(v){ if(v===_depView) return; _depView=v; renderBilan(); }
-function setLisse(on){ if(on===_lisse) return; _lisse=on; renderBilan(); }
+function setLisse(on){ if(on===_lisse) return; _lisse=on; repaintActive(); }
+// Repaint whichever surface is active so the lissé flip lands everywhere it shows.
+// Bilan active → renderBilan(); a month tab active → re-render that month's blocks + Synthèse + 4 KPIs
+// (all three share this re-render — the month KPIs and Synthèse must move together with the toggle).
+function repaintActive(){
+  const active=document.querySelector('.page.on');
+  if(!active){ renderBilan(); return; }
+  if(active.id==='page-bilan'){ renderBilan(); syncMonthLisseBtns(); return; }
+  const mid=active.id.replace(/^page-/,'');
+  const MONTH_KEYS=['janvier','fevrier','mars','avril','mai','juin','juillet','aout','septembre','octobre','novembre','decembre'];
+  if(MONTH_KEYS.includes(mid)){
+    renderMonth(mid);          // renderDept-then-clone (idempotent; repopulates source page first, no double-blank)
+    renderMonthSummary(mid);   // Synthèse table + imprévus strip, month-scoped + lissé-aware
+    fillMonthKPIs(mid, MONTH_KEYS.indexOf(mid)+1); // 4 month KPIs (item 7b)
+  } else { renderBilan(); }
+  syncMonthLisseBtns();
+}
+// Sync every month-tab lissé button's .active class + the Bilan one to the global _lisse state.
+function syncMonthLisseBtns(){
+  document.querySelectorAll('.lisse-toggle-btn').forEach(b=>b.classList.toggle('active', _lisse));
+}
 // Per-month budget/réel for month index N (1-12) under model (a) / lissé.
 // Monthly lines count every month; annual lines: lumpy = in assigned month only; lissé = whole annual pool ÷12.
 function monthBudget(N){
@@ -1877,6 +1849,29 @@ function monthReel(N){
     else if(l.rec==='P'){ r+= (l.am===N)?(l.reel||0):0; }   // ponctuel: assigned month only, NEVER lissé
   })));
   return r;
+}
+// Per-DEPT month-scoped budget/réel for month N (1-12) — the SAME M/A/P per-line walk as
+// monthBudget/monthReel, scoped to one dept's lines. The écart-stays-valid invariant lives in
+// this walk (budget+dépensé spread into the same month under lissé); do NOT re-derive the spread.
+// By construction Σ over DEPTS of deptMonth(d,N) === monthBudget(N)/monthReel(N) in both lissé states.
+function deptMonth(d, N){
+  let est=0, reel=0;
+  d.sections.forEach(s=>s.lines.forEach(l=>{
+    if(l.rec==='M'){ est+=(l.est||0); reel+=(l.reel||0); }
+    else if(l.rec==='A'){ if(_lisse){ est+=(l.est||0)/12; reel+=(l.reel||0)/12; } else if(l.am===N){ est+=(l.est||0); reel+=(l.reel||0); } }
+    else if(l.rec==='P'){ if(l.am===N){ est+=(l.est||0); reel+=(l.reel||0); } }  // ponctuel: assigned month only, NEVER lissé
+  }));
+  return {est, reel};
+}
+// Card-4 source: annual-line (rec==='A') REEL contribution to month N — same walk as monthReel
+// but accumulating ONLY annual lines. Lumpy = full lump in assigned month; lissé = lump÷12.
+// (Sourced from the live per-line walk, NOT the dead totalImprevus/deptsWithImprevus vars.)
+function monthAnnualShare(N){
+  let a=0;
+  DEPTS.forEach(d=>d.sections.forEach(s=>s.lines.forEach(l=>{
+    if(l.rec==='A'){ a+= _lisse ? (l.reel||0)/12 : ((l.am===N)?(l.reel||0):0); }
+  })));
+  return a;
 }
 let _monthlyReelCache = null; // { month: 'YYYY-MM', byDept: { HUMAIN: 1234, ... } }
 
@@ -3033,17 +3028,41 @@ function scrollToDept(deptId){
     if(head){ head.style.transition='color .2s'; const o=head.style.color; head.style.color='var(--green)'; setTimeout(()=>{head.style.color=o;},900); }
   }
 }
+// Month-key → index 1-12 (MONTHS_BILAN un-accented order). Single source for the month-page surface.
+const MONTH_KEYS_ORDER=['janvier','fevrier','mars','avril','mai','juin','juillet','aout','septembre','octobre','novembre','decembre'];
+function monthIndexOf(monthId){ return MONTH_KEYS_ORDER.indexOf(monthId)+1; }
+
+// ── Item 7b — fill a month page's 4 KPI cards (lissé-aware) ──
+// Cards: 1 Dépensé ce mois (réel) · 2 Budget du mois · 3 Écart du mois (signed+coloured) ·
+// 4 Part des charges annuelles dans le mois. All read monthBudget/monthReel/monthAnnualShare.
+function fillMonthKPIs(monthId, N){
+  const row=document.getElementById('month-kpi-'+monthId);
+  if(!row) return;
+  const mB=monthBudget(N), mR=monthReel(N), ec=mB-mR, ann=monthAnnualShare(N);
+  const lensSub=_lisse?'lissé':'réel';
+  const sharePct = mR>0 ? Math.round(ann/mR*100)+'\u00a0%' : '—';
+  const shareSub = _lisse ? 'charges annuelles ÷12' : 'charges annuelles (lump)';
+  // Card 3 écart reuses ecH colouring (green positif / rouge dépassé); strip the outer cell wrapper.
+  const ecCell = ecH(ec,false,mR>0);
+  row.innerHTML=`
+    <div class="bchip"><div class="bchip-label">Dépensé ce mois</div><div class="bchip-val">${fe(mR)}</div><div class="bchip-sub">${lensSub}</div></div>
+    <div class="bchip"><div class="bchip-label">Budget du mois</div><div class="bchip-val">${fe(mB)}</div><div class="bchip-sub">${lensSub}</div></div>
+    <div class="bchip"><div class="bchip-label">Écart du mois</div><div class="bchip-val">${ecCell}</div><div class="bchip-sub">budget − dépensé</div></div>
+    <div class="bchip"><div class="bchip-label">Part charges annuelles</div><div class="bchip-val">${sharePct}</div><div class="bchip-sub">${shareSub}</div></div>`;
+}
 function renderMonthSummary(monthId){
   // Month-page summary = per-DEPARTMENT roll-up (distinct from the Bilan page, which is per-MONTH).
   // Built independently here so the two tables don't share render. Click a dept row → scrollToDept.
-  // Data is the annual aggregate placeholder until month-scoping wiring lands.
+  // Month-scoped + lissé-aware via deptMonth(d,N) — the SAME M/A/P walk as monthBudget/monthReel
+  // (Σ over depts === monthBudget(N)/monthReel(N) in both lissé states; écart-stays-valid invariant preserved).
   const target=document.getElementById('month-summary-'+monthId);
   if(!target) return;
+  const N=monthIndexOf(monthId);
   let ge=0,gr=0;
-  DEPTS.forEach(d=>{const t=dtotAdj(d);ge+=t.est;gr+=t.reel;});
+  DEPTS.forEach(d=>{const t=deptMonth(d,N);ge+=t.est;gr+=t.reel;});
   let rows='';
   DEPTS.forEach((d,i)=>{
-    const t=dtotAdj(d);const ec4=t.est-t.reel;const p3=pct(t.reel,t.est);
+    const t=deptMonth(d,N);const ec4=t.est-t.reel;const p3=pct(t.reel,t.est);
     const col=DEPT_COLORS[i]||'var(--indigo)';
     rows+=`<tr style="cursor:pointer" onclick="scrollToDept('${d.id}')">
       <td><span style="display:inline-flex;align-items:center;gap:7px"><span style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0"></span>${d.name}</span></td>
@@ -3105,6 +3124,8 @@ function goMonth(id, tabEl){
   page.classList.add('on');
   renderMonth(id);
   renderMonthSummary(id);
+  fillMonthKPIs(id, monthIndexOf(id));
+  syncMonthLisseBtns();
   document.querySelectorAll('.dt').forEach(d=>d.classList.remove('on'));
   if(tabEl) tabEl.classList.add('on');
   window.scrollTo({top:0,behavior:'smooth'});
@@ -5515,7 +5536,7 @@ function bootLanding(){ if (typeof go === 'function') go('bilan'); }
 })();
 </script>
 <footer style="max-width:1020px;margin:0 auto;padding:48px 20px 28px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.2);font-family:'DM Sans',sans-serif">
-  <span style="font-weight:600;letter-spacing:.5px">Festiflow <span style="opacity:.5">·</span> Budget v0.4.0 <span style="opacity:.5">·</span> Générale 2026</span>
+  <span style="font-weight:600;letter-spacing:.5px">Festiflow <span style="opacity:.5">·</span> Budget v0.5.0 <span style="opacity:.5">·</span> Générale 2026</span>
   <span id="footer-sync" style="font-variant-numeric:tabular-nums">—</span>
 </footer>
 <script>

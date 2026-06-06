@@ -38,6 +38,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 /* when re-parented to <body> on open: fixed to viewport, escapes .nav's backdrop-filter layer */
 .sw-menu.sw-float{position:fixed;display:block;z-index:1000;top:var(--sw-top);left:var(--sw-left)}
 .sw-menu.sw-float.right{left:auto;right:var(--sw-right)}
+.sw-menu.sw-float.left{left:var(--sw-left)}
 .sw-wrap.open .sw-menu{display:block}
 .sw-menu.left{left:0}
 .sw-menu.right{right:0}
@@ -3571,7 +3572,7 @@ function buildEditDrawer(deptId, sectionIdx, lineIdx, isNew) {
   if (!dept) return;
 
   const line = isNew
-    ? {l:'', obs:'', typ:'', tva:'0.2', est:0, st:'ESTIMATION', rec:'A', _row: null}
+    ? {l:'', obs:'', typ:'', tva:'0.2', est:0, st:'ESTIMATION', rec:'P', _row: null}
     : dept.sections[sectionIdx]?.lines[lineIdx];
   if (!line) return;
 
@@ -4634,9 +4635,18 @@ function populateAssignLines(tabName) {
 
   let lines = [];
   if (window._assignIsBill) {
-    // Recette lines (event-side TICKETS recognition). Display-only — this page writes
-    // none; the names stand in for the recette_lines the recognition lands in (brief §6).
-    lines = ['TICKETS · EARLY', 'TICKETS · REGULAR', 'TICKETS · LAST', '(autre ligne de recette)'];
+    // Existing distribution-wire lines for the SELECTED event account.
+    // Same source renderBilletterie uses: TRANSFERT tx where dest_account_id === the account id.
+    // Display-only — this page writes no recette_lines (recognition is event-side, brief §3/§6).
+    const wires = (window.__BILL?.tx || []).filter(
+      t => t.primitive_type === 'TRANSFERT' && t.dest_account_id === tabName
+    );
+    lines = wires.map(w =>
+      `${w.contrepartie} · ${new Date(w.date_operation).toLocaleDateString('fr-FR', {day:'numeric', month:'short'})}`
+    );
+    // '+ Ajouter une ligne' → opens the EXISTING create-line drawer for this account's section
+    // (sentinel handled in selectAssignLine → openAddLigne('billetterie', sectionIdx)).
+    lines.push('+ Ajouter une ligne');
   } else if (tabName === 'RECETTES') {
     lines = REC.flatMap(cat => cat.rows).filter(r => r.l).map(r => r.l);
   } else {
@@ -4698,6 +4708,17 @@ function renderAssignList(lines) {
 
 function selectAssignLine(el, value) {
   const sel = document.getElementById('assign-ligne');
+  // Billetterie add-line sentinel: open the EXISTING create-line drawer for the
+  // selected account's section instead of selecting a line. Section index = the
+  // account's position among non-general accounts (renderBilletterie builds the
+  // billetterie dept's sections in that exact order).
+  if (window._assignIsBill && value === '+ Ajouter une ligne') {
+    const acctId = document.getElementById('assign-dept')?.value;
+    const evAccts = (window.__BILL?.accounts || []).filter(a => !a.is_general);
+    const sectionIdx = evAccts.findIndex(a => a.id === acctId);
+    if (sectionIdx >= 0) openAddLigne('billetterie', sectionIdx);
+    return;
+  }
   window._isAtrier = false;
   // Update hidden select
   sel.innerHTML = `<option value="${value}" selected>${value}</option>`;
@@ -5536,7 +5557,7 @@ function bootLanding(){ if (typeof go === 'function') go('bilan'); }
 })();
 </script>
 <footer style="max-width:1020px;margin:0 auto;padding:48px 20px 28px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.2);font-family:'DM Sans',sans-serif">
-  <span style="font-weight:600;letter-spacing:.5px">Festiflow <span style="opacity:.5">·</span> Budget v0.5.0 <span style="opacity:.5">·</span> Générale 2026</span>
+  <span style="font-weight:600;letter-spacing:.5px">Festiflow <span style="opacity:.5">·</span> Budget v0.5.3 <span style="opacity:.5">·</span> Générale 2026</span>
   <span id="footer-sync" style="font-variant-numeric:tabular-nums">—</span>
 </footer>
 <script>

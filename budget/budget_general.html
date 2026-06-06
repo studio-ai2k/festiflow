@@ -1783,7 +1783,7 @@ function apiRowsToDept(tabName, rows) {
       rh:        row.rh,
       reel:      row.reel_ht || 0,
       st:        row.statut || 'ESTIMATION',
-      rec:       row.recurrence || 'A',
+      rec:       row.recurrence || 'P',
       am:        row.assigned_month || null,
       _row:      row._row,
     });
@@ -1865,6 +1865,7 @@ function monthBudget(N){
   DEPTS.forEach(d=>d.sections.forEach(s=>s.lines.forEach(l=>{
     if(l.rec==='M'){ b+=(l.est||0); }
     else if(l.rec==='A'){ b+= _lisse ? (l.est||0)/12 : ((l.am===N)?(l.est||0):0); }
+    else if(l.rec==='P'){ b+= (l.am===N)?(l.est||0):0; }   // ponctuel: assigned month only, NEVER lissé
   })));
   return b;
 }
@@ -1873,6 +1874,7 @@ function monthReel(N){
   DEPTS.forEach(d=>d.sections.forEach(s=>s.lines.forEach(l=>{
     if(l.rec==='M'){ r+=(l.reel||0); }
     else if(l.rec==='A'){ r+= _lisse ? (l.reel||0)/12 : ((l.am===N)?(l.reel||0):0); }
+    else if(l.rec==='P'){ r+= (l.am===N)?(l.reel||0):0; }   // ponctuel: assigned month only, NEVER lissé
   })));
   return r;
 }
@@ -3614,10 +3616,11 @@ function buildEditDrawer(deptId, sectionIdx, lineIdx, isNew) {
       <div class="df-group">
         <label class="df-label">Récurrence</label>
         <select id="ef-rec" class="df-select">
-          <option value="A" ${(line.rec||'A')==='A'?'selected':''}>Annuel / Ponctuel</option>
+          <option value="P" ${(line.rec||'P')==='P'?'selected':''}>Ponctuel</option>
           <option value="M" ${line.rec==='M'?'selected':''}>Mensuel</option>
+          <option value="A" ${line.rec==='A'?'selected':''}>Annuel</option>
         </select>
-        <div style="font-size:11px;color:var(--text-dim);margin-top:4px">Mensuel = le montant est multiplié ×12 en vue annuelle</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:4px">Ponctuel = imputé une seule fois sur son mois. Mensuel = compté chaque mois. Annuel = imputé sur son mois, ou lissé sur 12 si l'option « Lisser sur l'année » est active.</div>
       </div>
 
       <div class="df-group">
@@ -3690,7 +3693,7 @@ async function saveLigne(deptId, sectionIdx, lineIdx, isNew) {
   const typ     = document.getElementById('ef-typ')?.value;
   const est     = parseFloat(document.getElementById('ef-est')?.value) || 0;
   const st      = document.getElementById('ef-st')?.value;
-  const rec     = document.getElementById('ef-rec')?.value || 'A';
+  const rec     = document.getElementById('ef-rec')?.value || 'P';
   const obs        = document.getElementById('ef-obs')?.value.trim();
   const qonto_ref  = document.getElementById('ef-qonto-ref')?.value.trim();
   // Read dept from dropdown (user may have changed it)
@@ -3782,14 +3785,15 @@ let _bilanRecTTC = false;
 // ════════════════════════════════════════════════════
 // PANEL 2 — AU BUDGET (Estimation source) — VISION
 // ════════════════════════════════════════════════════
-async function toggleRecurrence(deptId, sectionIdx, lineIdx, checkbox) {
+async function toggleRecurrence(deptId, sectionIdx, lineIdx, el) {
   const dept = DEPTS.find(d => d.id === deptId);
   if (!dept) return;
   const line = dept.sections[sectionIdx]?.lines[lineIdx];
   if (!line?._row) return;
   const tabName = Object.entries(DEPT_META).find(([,m]) => m.id === deptId)?.[0] || deptId.toUpperCase();
-  const newVal = checkbox.checked ? 'M' : 'A';
-  checkbox.disabled = true;
+  const prevVal = line.rec;        // capture the SPECIFIC previous value for restore-on-error
+  const newVal = el.value;          // read the 3-value control directly, not checkbox.checked
+  el.disabled = true;
   try {
     const resp = await fetch(`${API}/api/budget/update`, {
       method: 'POST',
@@ -3799,15 +3803,16 @@ async function toggleRecurrence(deptId, sectionIdx, lineIdx, checkbox) {
     if (!resp.ok) throw new Error(`Erreur ${resp.status}`);
     line.rec = newVal;
     _monthlyReelCache = null; // invalidate cache since totals will change
-    // Update hint text
+    // Update hint text (3-way)
     const hint = document.getElementById('rec-hint');
-    if (hint) hint.textContent = newVal === 'M' ? '×12 en vue annuelle' : '÷12 en vue mensuelle';
-    showToast('✓ Récurrence', newVal === 'M' ? 'Coût mensuel' : 'Coût annuel / ponctuel', 'green');
+    if (hint) hint.textContent = newVal === 'M' ? 'chaque mois' : newVal === 'A' ? 'sur son mois — lissé sur 12 si l\'option active' : 'une fois, sur son mois';
+    showToast('✓ Récurrence', newVal === 'M' ? 'Coût mensuel' : newVal === 'A' ? 'Coût annuel' : 'Dépense ponctuelle', 'green');
   } catch(e) {
-    checkbox.checked = !checkbox.checked; // revert on error
+    el.value = prevVal;   // restore exactly the previous value (a select has 3 states; "flip" is meaningless)
+    line.rec = prevVal;
     showToast('⚠ Erreur', e.message, 'red');
   } finally {
-    checkbox.disabled = false;
+    el.disabled = false;
   }
 }
 function openEstDrawer(deptId, sectionIdx, lineIdx) {
@@ -3890,11 +3895,15 @@ function openEstDrawer(deptId, sectionIdx, lineIdx) {
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;padding:8px 0;margin-top:4px">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.75em;color:var(--text-muted)">
-          <input type="checkbox" ${line.rec==='M'?'checked':''} onchange="toggleRecurrence('${deptId}',${sectionIdx},${lineIdx},this)" style="width:16px;height:16px;accent-color:#818cf8;cursor:pointer">
-          Coût mensuel
+        <label style="display:flex;align-items:center;gap:8px;font-size:.75em;color:var(--text-muted)">
+          Récurrence
+          <select class="ss" onchange="toggleRecurrence('${deptId}',${sectionIdx},${lineIdx},this)" onclick="event.stopPropagation()" style="cursor:pointer">
+            <option value="P" ${line.rec==='P'?'selected':''}>Ponctuel</option>
+            <option value="M" ${line.rec==='M'?'selected':''}>Mensuel</option>
+            <option value="A" ${line.rec==='A'?'selected':''}>Annuel</option>
+          </select>
         </label>
-        <span id="rec-hint" style="font-size:.62em;color:var(--text-dim)">${line.rec==='M'?'×12 en vue annuelle':'÷12 en vue mensuelle'}</span>
+        <span id="rec-hint" style="font-size:.62em;color:var(--text-dim)">${line.rec==='M'?'×12 en vue annuelle':line.rec==='A'?'÷12 en vue mensuelle — lissé si actif':'une fois'}</span>
       </div>
       ${line.obs ? `<div style="font-size:.72em;color:var(--text-dim);padding:8px 10px;background:var(--surface-2);border-radius:6px;border-left:2px solid rgba(99,102,241,.3)">${line.obs}</div>` : ''}
     </div>
@@ -5506,7 +5515,7 @@ function bootLanding(){ if (typeof go === 'function') go('bilan'); }
 })();
 </script>
 <footer style="max-width:1020px;margin:0 auto;padding:48px 20px 28px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.2);font-family:'DM Sans',sans-serif">
-  <span style="font-weight:600;letter-spacing:.5px">Festiflow <span style="opacity:.5">·</span> Budget v0.3.7 <span style="opacity:.5">·</span> Générale 2026</span>
+  <span style="font-weight:600;letter-spacing:.5px">Festiflow <span style="opacity:.5">·</span> Budget v0.4.0 <span style="opacity:.5">·</span> Générale 2026</span>
   <span id="footer-sync" style="font-variant-numeric:tabular-nums">—</span>
 </footer>
 <script>

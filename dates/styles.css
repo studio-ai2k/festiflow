@@ -1,16 +1,4 @@
-/* ═══ FESTIFLOW DESIGN SYSTEM — exact token parity ═══
-   Accent palette (3 semantic + 2 brand = 5 total):
-   green #34d399 · red #f87171 · amber #fbbf24
-   purple #a855f7 (day-0) · indigo #6366f1 (day-1)
-   NO other hue is introduced anywhere.
-   ══════════════════════════════════════════════════ */
-:root {
-  --bg:#08080d; --surface:#101017; --surface-2:#16161f;
-  --border:rgba(255,255,255,0.05); --border-h:rgba(255,255,255,0.08);
-  --text:#f0f0f5; --text-muted:#a0a0b0; --text-dim:#5a5a6a;
-  --green:#34d399; --red:#f87171; --amber:#fbbf24;
-  --purple:#a855f7; --indigo:#6366f1;
-}
+/* Accent palette discipline: 5 hues only (green/red/amber/purple/indigo) — tokens in shared/tokens.css. NO other hue introduced anywhere. */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-padding-top:56px}
 body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;font-size:19px;line-height:1.55;overflow-x:hidden}

@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared/tokens.css">
 <link rel="stylesheet" href="../shared/chrome.css">
+<link rel="stylesheet" href="../shared/components.css">
 <link rel="stylesheet" href="styles.css">
   <style>
     /* Page-local layout rule (NOT chrome — T1 guard scope is canonical chrome
@@ -30,38 +31,8 @@
       .eur-abbr { display: inline; }
     }
 
-    /* ═══ liste-table language (ported BY REFERENCE from liste.html v5.16.5 ═══
-       Ship 1 restyle: the three built admin tabs (Annuaire / Coproducteurs /
-       Banque) + the new Marques tab render onto liste.html's table language.
-       Values read from standalones/module-dates/liste.html at build (port-by-
-       reference, not port-by-copy). Consumes existing chrome.css tokens only —
-       no new tokens introduced. The retired card CSS (.annuaire-* / .vocab-row /
-       .vocab-name / .vocab-sub / .status-*) lives in styles.css, out of this
-       ship's diff scope — orphaned this ship, deletion flagged as follow-up. */
-    .liste-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
-    .liste-table{width:100%;border-collapse:collapse;font-size:13px}
-    .liste-table thead{background:var(--surface-2);border-bottom:1px solid var(--border)}
-    .liste-table th{padding:11px 14px;text-align:left;font-size:10.5px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.6px;white-space:nowrap}
-    .liste-table th.num{text-align:right}
-    .liste-table tbody tr{border-bottom:1px solid var(--border)}
-    .liste-table tbody tr:last-child{border-bottom:none}
-    .liste-table tbody tr:hover{background:rgba(255,255,255,.02)}
-    .liste-table td{padding:13px 14px;color:var(--text);vertical-align:middle}
-    .liste-table td.num{text-align:right;font-variant-numeric:tabular-nums}
-    .liste-table td.muted{color:var(--text-muted)}
-    .liste-filterbar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
-    .liste-search{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px}
-    .liste-search:focus-within{border-color:var(--border-h)}
-    .liste-search input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:inherit;font-size:13px}
-    .liste-search input::placeholder{color:var(--text-dim)}
-    .lchips{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-    .lchip{padding:6px 13px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
-    .lchip:hover{border-color:var(--border-h);color:var(--text)}
-    .lchip.on{background:var(--surface-2);border-color:var(--border-h);color:var(--text)}
-    .liste-empty td{padding:40px 14px;text-align:center;color:var(--text-dim);font-size:13px}
-    @media(max-width:640px){
-      .liste-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
-    }
+    /* liste-table skeleton + filterbar/tbar CSS extracted to
+       ../shared/components.css (Ship B, ADR-0020 content layer). */
   </style>
 </head>
 <body>

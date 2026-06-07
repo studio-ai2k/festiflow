@@ -68,6 +68,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared/tokens.css">
 <link rel="stylesheet" href="../shared/chrome.css">
+<link rel="stylesheet" href="../shared/components.css">
 <style>
 
 /* ═══ BASE ═══ */
@@ -91,23 +92,11 @@ a{color:inherit;text-decoration:none}
 .liste-btn-new{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:linear-gradient(135deg,var(--purple),var(--indigo));border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:opacity .15s;text-decoration:none}
 .liste-btn-new:hover{opacity:.88}
 
-/* ═══ TABLE ═══ */
-.liste-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
-.liste-table{width:100%;border-collapse:collapse;font-size:13px}
-
-.liste-table thead{background:var(--surface-2);border-bottom:1px solid var(--border)}
-.liste-table th{padding:11px 14px;text-align:left;font-size:10.5px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.6px;white-space:nowrap}
-.liste-table th.num{text-align:right}
-
-.liste-table tbody tr{border-bottom:1px solid var(--border)}
-.liste-table tbody tr:last-child{border-bottom:none}
-.liste-table tbody tr:hover{background:rgba(255,255,255,.02)}
-.liste-table td{padding:13px 14px;color:var(--text);vertical-align:middle}
-.liste-table td.num{text-align:right;font-variant-numeric:tabular-nums}
-.liste-table td.muted{color:var(--text-muted)}
+/* ═══ TABLE — skeleton extracted to ../shared/components.css (Ship B, ADR-0020) ═══ */
 
 .col-nom{font-weight:500;color:var(--text)}
 .col-nom .col-nom-sub{display:block;font-size:11px;color:var(--text-dim);font-weight:400;margin-top:2px}
+
 
 /* ═══ STATUS dot+label ═══ */
 .lstatus{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:500;white-space:nowrap}
@@ -140,16 +129,8 @@ a{color:inherit;text-decoration:none}
 #liste-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:9px;font-size:13px;font-weight:600;font-family:'Space Grotesk',sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}
 #liste-toast.show{opacity:1}
 
-/* ═══ FILTER BAR (Stage 2) ═══ */
-.liste-filterbar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
-.liste-search{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px}
-.liste-search:focus-within{border-color:var(--border-h)}
-.liste-search input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:inherit;font-size:13px}
-.liste-search input::placeholder{color:var(--text-dim)}
-.lchips{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.lchip{padding:6px 13px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
-.lchip:hover{border-color:var(--border-h);color:var(--text)}
-.lchip.on{background:var(--surface-2);border-color:var(--border-h);color:var(--text)}
+/* ═══ FILTER BAR (Stage 2) — primitive extracted to ../shared/components.css (Ship B) ═══ */
+
 .sandbox-toggle{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--text-muted);cursor:pointer;user-select:none;white-space:nowrap}
 .sandbox-toggle input{accent-color:var(--purple);cursor:pointer}
 
@@ -158,8 +139,7 @@ a{color:inherit;text-decoration:none}
 .liste-table tbody tr.is-sandbox-row:hover{background:rgba(168,85,247,.08)}
 .sandbox-badge{display:inline-flex;align-items:center;padding:1px 6px;margin-left:8px;border-radius:5px;font-size:9.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:rgba(168,85,247,.14);color:var(--purple);border:1px solid rgba(168,85,247,.28);font-family:'Space Grotesk',sans-serif}
 
-/* ═══ EMPTY STATE ═══ */
-.liste-empty td{padding:40px 14px;text-align:center;color:var(--text-dim);font-size:13px}
+/* ═══ EMPTY STATE — .liste-empty td extracted to ../shared/components.css (Ship B) ═══ */
 
 /* ═══ RESPONSIVE ═══ */
 @media(max-width:780px){

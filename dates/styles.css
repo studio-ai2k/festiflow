@@ -83,7 +83,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 }
 
 /* ── DEPT-PANEL ROUTING + ADMIN SURFACE (Module Admin V1 · split a) ─────
- * New component groups: .dept-panel / .dept-panel-stub / .admin-* / .annuaire-*.
+ * New component groups: .dept-panel / .dept-panel-stub / .admin-*.
  * Token-only — consumes standalones/design/tokens.md vars verbatim; no invented
  * hues, spacing primitives, or font families. Active-toggle treatment on
  * .admin-subtab.on reuses the on-surface .bilan-toggle-btn.active idiom verbatim
@@ -109,22 +109,12 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 
 .admin-placeholder{padding:32px 16px;color:var(--text-dim);font-size:.8em;line-height:1.6;border:1px dashed var(--border);border-radius:10px;background:var(--surface)}
 
-.annuaire-row{display:flex;align-items:center;gap:16px;padding:14px 16px;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin-bottom:10px;cursor:pointer;transition:border-color .2s}
-.annuaire-row:hover{border-color:rgba(255,255,255,.12)}
-.annuaire-email{flex:1;min-width:0;font-size:.8em;font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.annuaire-role{font-size:.72em;color:var(--text-muted);flex-shrink:0}
-.annuaire-status{font-size:.62em;font-weight:700;text-transform:uppercase;letter-spacing:.6px;flex-shrink:0;padding:3px 9px;border-radius:20px;border:1px solid var(--border)}
-.annuaire-status.status-active{color:var(--green)}
-.annuaire-status.status-invited{color:var(--amber)}
-.annuaire-status.status-disabled{color:var(--text-dim)}
-
 /* ── Vocab-list surfaces (Coproducteurs + Comptes Qonto, Admin V1 split b).
- * Token-only; mirrors the .annuaire-* row idiom. Logged for components.md absorption. */
+ * Token-only. The header chrome below (.vocab-hdr / .vocab-title / .vocab-add-btn)
+ * is the surviving idiom; the .vocab-row list idiom was retired at Ship B
+ * (rows now render onto the shared liste-table skeleton). Logged for
+ * components.md absorption. */
 .vocab-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
 .vocab-title{font-size:.92em;font-weight:700;color:var(--text)}
 .vocab-add-btn{padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.74em;font-weight:600;cursor:pointer}
 .vocab-add-btn:hover{border-color:var(--green);color:var(--green)}
-.vocab-row{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer;background:var(--surface)}
-.vocab-row:hover{border-color:var(--text-muted);background:var(--surface-2)}
-.vocab-name{flex:1;min-width:0;font-size:.82em;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.vocab-sub{font-size:.72em;color:var(--text-muted);flex-shrink:0}

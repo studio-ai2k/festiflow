@@ -75,7 +75,6 @@
       <h2 style="font-size:1.1em;font-weight:700;color:#fff;margin-bottom:4px">Dashboard</h2>
       <div style="font-size:.75em;color:var(--text-dim)">Aperçu de tous vos événements en préparation, en vente et sandbox</div>
     </div>
-    <button id="nouvelle-date-btn" style="padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">+ Nouvelle date</button>
   </div>
   <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap">
     <button class="bilan-toggle-btn" data-filter="planned" style="padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">En préparation</button>
@@ -1192,19 +1191,20 @@ function renderQonto() {
     // Sort general-account-on-top (per Item 3) AFTER filter; general-on-top holds within the filtered view.
     var sorted = filtered.slice().sort(function(a, b) { return (b.is_general ? 1 : 0) - (a.is_general ? 1 : 0); });
     var body = sorted.map(function(a) {
-      var general = a.is_general ? '<span style="color:var(--green);font-weight:600">Générale</span>' : '<span class="muted">—</span>';
+      var typeBadge = a.is_general
+        ? '<span style="display:inline-block;font-size:.7em;font-weight:600;padding:2px 9px;border-radius:6px;background:rgba(99,102,241,.14);color:var(--indigo)">Générale</span>'
+        : '<span style="display:inline-block;font-size:.7em;font-weight:600;padding:2px 9px;border-radius:6px;background:var(--surface-2);color:var(--text-muted)">Événement</span>';
       return '<tr onclick="openQontoDrawer(\'' + a.id + '\')" style="cursor:pointer">' +
         '<td>' + a.name + '</td>' +
         '<td class="muted">' + a.qonto_name + '</td>' +
         '<td class="muted">' + a.company + '</td>' +
         '<td class="muted">' + a.bank + '</td>' +
-        '<td class="muted">' + a.iban + '</td>' +
-        '<td>' + general + '</td>' +
+        '<td>' + typeBadge + '</td>' +
       '</tr>';
     }).join('');
-    if (sorted.length === 0) body = '<tr class="liste-empty"><td colspan="6">Aucun compte ne correspond.</td></tr>';
+    if (sorted.length === 0) body = '<tr class="liste-empty"><td colspan="5">Aucun compte ne correspond.</td></tr>';
     grid.innerHTML = '<div class="liste-table-wrap"><table class="liste-table">' +
-      '<thead><tr><th>Nom interne</th><th>Nom Qonto</th><th>Société</th><th>Banque</th><th>IBAN</th><th>Général</th></tr></thead>' +
+      '<thead><tr><th>Nom interne</th><th>Nom Qonto</th><th>Société</th><th>Banque</th><th>Type</th></tr></thead>' +
       '<tbody>' + body + '</tbody></table></div>';
   });
 }
@@ -1420,12 +1420,6 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.bilan-toggle-btn').forEach(b => {
     b.addEventListener('click', () => setFilter(b.dataset.filter, b));
   });
-  var nouvelleDateBtn = document.getElementById('nouvelle-date-btn');
-  if (nouvelleDateBtn) {
-    nouvelleDateBtn.addEventListener('click', function() {
-      window.location.href = 'fiche.html?id=new';   // Fiche create-mode (brief §3)
-    });
-  }
   // Admin V1 (split a): invite flow not in (a) scope — stub only.
   var adminInviteBtn = document.getElementById('admin-invite-btn');
   if (adminInviteBtn) {

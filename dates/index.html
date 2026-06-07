@@ -61,7 +61,7 @@
   </div>
   <div class="dept-tabs-bg">
   <div id="dept-tabs" class="dept-tabs">
-    <button class="dt on" data-idx="0" style="border-bottom-color:#fff;color:#fff" onclick="goDeptTab('dashboard',this)">Dashboard</button>
+    <button class="dt on" data-idx="0" onclick="goDeptTab('dashboard',this)">Dashboard</button>
     <button class="dt" data-idx="1" onclick="window.location.href='liste.html'">Liste</button>
     <button class="dt" data-idx="2" onclick="goDeptTab('admin',this)">Admin</button>
   </div>
@@ -99,6 +99,18 @@
     <button class="admin-subtab" onclick="goAdminSurface('qonto',this)">Banque</button>
   </div>
   <div id="admin-surface-annuaire" class="admin-surface">
+    <div class="liste-filterbar">
+      <label class="liste-search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-dim);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="annuaire-search-input" placeholder="Rechercher par nom ou email…" autocomplete="off">
+      </label>
+      <div class="lchips" id="annuaire-status-chips">
+        <button class="lchip on" data-status="all">Tous</button>
+        <button class="lchip" data-status="ACTIVE">Actif</button>
+        <button class="lchip" data-status="INVITED">Invité</button>
+        <button class="lchip" data-status="DISABLED">Désactivé</button>
+      </div>
+    </div>
     <div id="annuaire-grid"></div>
   </div>
   <div id="admin-surface-assignations" class="admin-surface" hidden>
@@ -109,6 +121,12 @@
       <span class="vocab-title">Marques</span>
       <button class="vocab-add-btn" onclick="openMarqueDrawer(null)">+ Ajouter</button>
     </div>
+    <div class="liste-filterbar">
+      <label class="liste-search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-dim);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="marques-search-input" placeholder="Rechercher une marque…" autocomplete="off">
+      </label>
+    </div>
     <div id="marques-grid"></div>
   </div>
   <div id="admin-surface-coproducteurs" class="admin-surface" hidden>
@@ -116,12 +134,29 @@
       <span class="vocab-title">Coproducteurs</span>
       <button class="vocab-add-btn" onclick="openCoproducerDrawer(null)">+ Ajouter</button>
     </div>
+    <div class="liste-filterbar">
+      <label class="liste-search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-dim);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="coproducteurs-search-input" placeholder="Rechercher un coproducteur…" autocomplete="off">
+      </label>
+    </div>
     <div id="coproducteurs-grid"></div>
   </div>
   <div id="admin-surface-qonto" class="admin-surface" hidden>
     <div class="vocab-hdr">
       <span class="vocab-title">Banque</span>
       <button class="vocab-add-btn" onclick="openQontoDrawer(null)">+ Ajouter</button>
+    </div>
+    <div class="liste-filterbar">
+      <label class="liste-search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-dim);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="qonto-search-input" placeholder="Rechercher par compte ou nom Qonto…" autocomplete="off">
+      </label>
+      <div class="lchips" id="qonto-gen-chips">
+        <button class="lchip on" data-gen="all">Tous</button>
+        <button class="lchip" data-gen="general">Général</button>
+        <button class="lchip" data-gen="event">Événement</button>
+      </div>
     </div>
     <div id="qonto-grid"></div>
   </div>
@@ -937,9 +972,9 @@ function renderSwitcher() {
 let _annuaireRendered = false;
 
 /* Dept-tab routing — toggles .dept-panel by id + .on on the .dt buttons.
- * .on (color/weight) comes from shared chrome.css per ADR-0011; the active
- * underline is the inline borderBottomColor:#fff the live Dashboard button
- * carries (chrome.css .dt.on does NOT set border color), so set/clear it here. */
+ * The full active highlight (color/weight + white underline + fill block) is
+ * carried entirely by shared chrome.css .dt.on per ADR-0011/0020 (promoted
+ * v0.13.0) — .on is the single source, no inline style set here. */
 function goDeptTab(dept, btn) {
   ['dashboard', 'admin'].forEach(function(d) {
     var panel = document.getElementById('panel-' + d);
@@ -948,8 +983,6 @@ function goDeptTab(dept, btn) {
   document.querySelectorAll('#dept-tabs .dt').forEach(function(b) {
     var active = (b === btn);
     b.classList.toggle('on', active);
-    b.style.borderBottomColor = active ? '#fff' : '';
-    b.style.color = active ? '#fff' : '';
   });
   if (dept === 'admin' && !_annuaireRendered) {
     renderAnnuaire();
@@ -971,10 +1004,51 @@ function goAdminSurface(surface, btn) {
   if (surface === 'qonto') renderQonto();
 }
 
+/* Bind admin filterbar listeners ONCE (Concern 1, _adminFiltersBound guard).
+ * The filterbar markup is static in each .admin-surface, so these bind safely at
+ * boot regardless of which surface is visible. Each handler re-renders ONLY the
+ * owning *-grid table (the render fn reads live input/chip state from the DOM),
+ * so typing never rebuilds the filterbar → no focus loss. Chip clicks use
+ * event-delegation (.closest('.lchip')) mirroring liste.html's wiring. */
+function bindAdminFilters() {
+  if (_adminFiltersBound) return;
+  _adminFiltersBound = true;
+  // Search inputs — one per entity tab.
+  var sIn = function(id, fn) { var el = document.getElementById(id); if (el) el.addEventListener('input', fn); };
+  sIn('annuaire-search-input', renderAnnuaire);
+  sIn('coproducteurs-search-input', renderCoproducteurs);
+  sIn('qonto-search-input', renderQonto);
+  sIn('marques-search-input', renderMarques);
+  // Chip rows — Annuaire + Qonto only; single-select swap + re-render.
+  var chipBind = function(containerId, fn) {
+    var box = document.getElementById(containerId);
+    if (!box) return;
+    box.addEventListener('click', function(e) {
+      var btn = e.target.closest('.lchip'); if (!btn) return;
+      box.querySelectorAll('.lchip').forEach(function(c) { c.classList.remove('on'); });
+      btn.classList.add('on');
+      fn();
+    });
+  };
+  chipBind('annuaire-status-chips', renderAnnuaire);
+  chipBind('qonto-gen-chips', renderQonto);
+}
+
 /* Display maps — SCHEMA §2.4 stores enum values uppercase/accent-stripped;
  * UI renders accented French. Stored ↔ display kept in one place. */
 const USER_ROLE_LABELS = { ADMIN: 'Admin', CHEF_POLE: 'Chef de pôle', EXTERNAL: 'Externe' };
 const USER_STATUS_LABELS = { ACTIVE: 'Actif', INVITED: 'Invité', DISABLED: 'Désactivé' };
+
+/* Accent/case-insensitive search helper — identical to liste.html L329.
+ * Defined once here for the admin filterbars (Concern 1, v0.13.0). */
+function norm(s){ return (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+
+/* Admin filterbar state (Concern 1). Static filterbar markup lives in the
+ * .admin-surface blocks; render fns read live input value + active chip from
+ * the DOM, filter, then write only the table into the *-grid div (no
+ * per-keystroke filterbar rebuild → no focus loss). Listeners bound once at
+ * init via _adminFiltersBound guard. */
+var _adminFiltersBound = false;
 
 /* Annuaire render — reads the users mock, emits a liste-table (thead + tbody),
  * one row per user. Columns: Nom (prenom + nom) / Email / Rôle / Statut. Row
@@ -985,7 +1059,20 @@ async function renderAnnuaire() {
   if (!grid) return;
   var users = await window.MD.getUsers();
   var STATUS_COLOR = { ACTIVE:'var(--green)', INVITED:'var(--amber)', DISABLED:'var(--text-dim)' };
-  var rows = users.map(function(u) {
+  // Read live filterbar state (static markup in #admin-surface-annuaire).
+  var searchEl = document.getElementById('annuaire-search-input');
+  var q = norm(searchEl ? searchEl.value : '');
+  var chipEl = document.querySelector('#annuaire-status-chips .lchip.on');
+  var statusFilter = chipEl ? chipEl.getAttribute('data-status') : 'all';
+  var filtered = users.filter(function(u) {
+    if (statusFilter !== 'all' && u.status !== statusFilter) return false;   // chip → raw enum
+    if (q) {                                                                 // search rendered Nom + email
+      var nom = (u.prenom + ' ' + (u.nom || '')).trim();
+      if (norm(nom).indexOf(q) === -1 && norm(u.email).indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+  var rows = filtered.map(function(u) {
     var roleLabel = USER_ROLE_LABELS[u.role] || u.role;
     var statusLabel = USER_STATUS_LABELS[u.status] || u.status;
     var statusColor = STATUS_COLOR[u.status] || 'var(--text)';
@@ -997,6 +1084,7 @@ async function renderAnnuaire() {
       '<td><span style="color:' + statusColor + ';font-weight:600">' + statusLabel + '</span></td>' +
     '</tr>';
   }).join('');
+  if (filtered.length === 0) rows = '<tr class="liste-empty"><td colspan="4">Aucun utilisateur ne correspond.</td></tr>';
   grid.innerHTML = '<div class="liste-table-wrap"><table class="liste-table">' +
     '<thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Statut</th></tr></thead>' +
     '<tbody>' + rows + '</tbody></table></div>';
@@ -1066,14 +1154,21 @@ function openUserDrawer(userId) {
 function renderCoproducteurs() {
   var grid = document.getElementById('coproducteurs-grid');
   if (!grid) return;
+  var searchEl = document.getElementById('coproducteurs-search-input');
+  var q = norm(searchEl ? searchEl.value : '');
   window.MD.getCoproducers().then(function(rows) {
-    var body = rows.map(function(c) {
+    var filtered = rows.filter(function(c) {
+      if (q && norm(c.name).indexOf(q) === -1 && norm(c.societe).indexOf(q) === -1) return false;  // name + societe
+      return true;
+    });
+    var body = filtered.map(function(c) {
       return '<tr onclick="openCoproducerDrawer(\'' + c.id + '\')" style="cursor:pointer">' +
         '<td>' + c.name + '</td>' +
         '<td class="muted">' + (c.societe || '—') + '</td>' +
         '<td class="muted">' + (c.note || '—') + '</td>' +
       '</tr>';
     }).join('');
+    if (filtered.length === 0) body = '<tr class="liste-empty"><td colspan="3">Aucun coproducteur ne correspond.</td></tr>';
     grid.innerHTML = '<div class="liste-table-wrap"><table class="liste-table">' +
       '<thead><tr><th>Nom</th><th>Société</th><th>Note</th></tr></thead>' +
       '<tbody>' + body + '</tbody></table></div>';
@@ -1083,9 +1178,19 @@ function renderCoproducteurs() {
 function renderQonto() {
   var grid = document.getElementById('qonto-grid');
   if (!grid) return;
+  var searchEl = document.getElementById('qonto-search-input');
+  var q = norm(searchEl ? searchEl.value : '');
+  var chipEl = document.querySelector('#qonto-gen-chips .lchip.on');
+  var genFilter = chipEl ? chipEl.getAttribute('data-gen') : 'all';
   window.MD.getQontoAccounts().then(function(rows) {
-    // Sort general-account-on-top (per Item 3); stable order otherwise.
-    var sorted = rows.slice().sort(function(a, b) { return (b.is_general ? 1 : 0) - (a.is_general ? 1 : 0); });
+    var filtered = rows.filter(function(a) {
+      if (genFilter === 'general' && a.is_general !== true) return false;     // Général → is_general===true
+      if (genFilter === 'event' && a.is_general !== false) return false;      // Événement → is_general===false
+      if (q && norm(a.name).indexOf(q) === -1 && norm(a.qonto_name).indexOf(q) === -1) return false;  // name + qonto_name
+      return true;
+    });
+    // Sort general-account-on-top (per Item 3) AFTER filter; general-on-top holds within the filtered view.
+    var sorted = filtered.slice().sort(function(a, b) { return (b.is_general ? 1 : 0) - (a.is_general ? 1 : 0); });
     var body = sorted.map(function(a) {
       var general = a.is_general ? '<span style="color:var(--green);font-weight:600">Générale</span>' : '<span class="muted">—</span>';
       return '<tr onclick="openQontoDrawer(\'' + a.id + '\')" style="cursor:pointer">' +
@@ -1097,6 +1202,7 @@ function renderQonto() {
         '<td>' + general + '</td>' +
       '</tr>';
     }).join('');
+    if (sorted.length === 0) body = '<tr class="liste-empty"><td colspan="6">Aucun compte ne correspond.</td></tr>';
     grid.innerHTML = '<div class="liste-table-wrap"><table class="liste-table">' +
       '<thead><tr><th>Nom interne</th><th>Nom Qonto</th><th>Société</th><th>Banque</th><th>IBAN</th><th>Général</th></tr></thead>' +
       '<tbody>' + body + '</tbody></table></div>';
@@ -1113,11 +1219,17 @@ var _vocabInputStyle = "width:100%;padding:10px 12px;border-radius:7px;border:1p
 function renderMarques() {
   var grid = document.getElementById('marques-grid');
   if (!grid) return;
-  var body = STAGE2_MARQUES.map(function(m, i) {
-    return '<tr onclick="openMarqueDrawer(' + i + ')" style="cursor:pointer">' +
-      '<td>' + m + '</td>' +
+  var searchEl = document.getElementById('marques-search-input');
+  var q = norm(searchEl ? searchEl.value : '');
+  // Keep the ORIGINAL index so openMarqueDrawer(i) still targets STAGE2_MARQUES correctly after filter.
+  var matched = STAGE2_MARQUES.map(function(m, i) { return { m: m, i: i }; })
+    .filter(function(o) { return !q || norm(o.m).indexOf(q) !== -1; });
+  var body = matched.map(function(o) {
+    return '<tr onclick="openMarqueDrawer(' + o.i + ')" style="cursor:pointer">' +
+      '<td>' + o.m + '</td>' +
     '</tr>';
   }).join('');
+  if (matched.length === 0) body = '<tr class="liste-empty"><td colspan="1">Aucune marque ne correspond.</td></tr>';
   grid.innerHTML = '<div class="liste-table-wrap"><table class="liste-table">' +
     '<thead><tr><th>Nom</th></tr></thead>' +
     '<tbody>' + body + '</tbody></table></div>';
@@ -1325,6 +1437,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // carries the hidden attr in markup. No JS toggle needed at boot.
   renderDashboard();
   renderSwitcher();
+  bindAdminFilters();
   // Cross-page Admin deep-link (Stage 4): liste.html / fiche.html Admin tabs
   // navigate to index.html?tab=admin since the Admin panel lives here. Drive the
   // existing goDeptTab('admin', btn) path (not a panel-only toggle) so the panel

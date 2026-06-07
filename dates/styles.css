@@ -99,7 +99,6 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .dept-panel-stub{padding:48px 16px;text-align:center;color:var(--text-dim);font-size:.8em}
 
 .admin-hdr{display:flex;align-items:center;justify-content:space-between;margin-top:24px;margin-bottom:24px;flex-wrap:wrap;gap:12px}
-.admin-title{font-size:1.1em;font-weight:700;color:#fff}
 .admin-invite-btn{padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s}
 .admin-invite-btn:hover{background:rgba(255,255,255,.04);color:var(--text)}
 

@@ -86,9 +86,11 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
  * New component groups: .dept-panel / .dept-panel-stub / .admin-*.
  * Token-only — consumes standalones/design/tokens.md vars verbatim; no invented
  * hues, spacing primitives, or font families. Active-toggle treatment on
- * .admin-subtab.on reuses the on-surface .bilan-toggle-btn.active idiom verbatim
- * (indigo .15/.4 tint + #818cf8, documented inline variation per tokens.md) for
- * cross-surface coherence. Hover idioms match this file's existing .card /
+ * .admin-subtab.on is an indigo (--indigo) 2px bottom-underline on a 1px
+ * --border strip rule (no fill block, no border box) — the mid-level of the
+ * three-tier tab hierarchy (page tabs = block+white-underline, sub-tabs =
+ * indigo underline, chips = pills), restyled from the prior pill idiom in
+ * v0.13.0. Hover idioms match this file's existing .card /
  * .bilan-toggle-btn / #nouvelle-date-btn patterns. Logged for absorption-into-
  * standalones/design/components.md review at next design-language ship, per the
  * v5.3.x .fiche-* component precedent (playbook §03 token discipline, §07
@@ -101,10 +103,10 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .admin-invite-btn{padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s}
 .admin-invite-btn:hover{background:rgba(255,255,255,.04);color:var(--text)}
 
-.admin-subtabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
-.admin-subtab{padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s}
-.admin-subtab:hover:not(.on){background:rgba(255,255,255,.04)}
-.admin-subtab.on{background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.4);color:#818cf8}
+.admin-subtabs{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:18px;border-bottom:1px solid var(--border)}
+.admin-subtab{padding:8px 2px;border:none;border-bottom:2px solid transparent;border-radius:0;background:none;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:color .15s,border-color .15s;margin-bottom:-1px}
+.admin-subtab:hover:not(.on){color:var(--text);background:none}
+.admin-subtab.on{border-bottom-color:var(--indigo);color:var(--text);background:none}
 .admin-subtab.is-placeholder{opacity:.55}
 
 .admin-placeholder{padding:32px 16px;color:var(--text-dim);font-size:.8em;line-height:1.6;border:1px dashed var(--border);border-radius:10px;background:var(--surface)}

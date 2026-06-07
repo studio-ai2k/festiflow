@@ -79,13 +79,11 @@ a{color:inherit;text-decoration:none}
 /* ═══ PAGE WRAP + HEADER ═══ */
 .liste-wrap{max-width:1020px;margin:0 auto;padding:24px 20px 60px}
 
-.liste-page-hdr{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:24px;flex-wrap:wrap}
-.liste-page-sub{display:flex;flex-direction:column;gap:6px;min-width:0}
-.liste-page-count{font-size:13px;color:var(--text-dim);font-weight:500;margin-top:2px}
+.liste-page-hdr{display:flex;align-items:center;justify-content:flex-end;gap:20px;margin-bottom:24px;flex-wrap:wrap}
 
 .liste-page-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.liste-btn-new{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:linear-gradient(135deg,var(--purple),var(--indigo));border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:opacity .15s;text-decoration:none}
-.liste-btn-new:hover{opacity:.88}
+.liste-btn-new{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .15s;text-decoration:none}
+.liste-btn-new:hover{background:rgba(255,255,255,.04);color:var(--text)}
 
 /* ═══ TABLE — skeleton extracted to ../shared/components.css (Ship B, ADR-0020) ═══ */
 
@@ -180,9 +178,6 @@ a{color:inherit;text-decoration:none}
 
   <!-- Page header -->
   <div class="liste-page-hdr">
-    <div class="liste-page-sub">
-      <div class="liste-page-count" id="liste-count">5 événements</div>
-    </div>
     <div class="liste-page-actions">
       <a class="liste-btn-new" href="fiche.html?id=new">+ Nouvel événement</a>
     </div>
@@ -382,8 +377,25 @@ function renderRows(){
   } else {
     tbody.innerHTML = rows.map(rowHTML).join('');
   }
-  const count = rows.length;
-  document.getElementById('liste-count').textContent = count+' '+(count===1?'événement':'événements');
+  injectChipCounts(ALL_EVENTS);
+}
+
+/* ── compute-and-inject chip counts (Ship 2.5; Ship 3a reuses this pattern) ──
+   Counts are STATIC per data state: computed ONCE per render off the same
+   events array the table reads (ALL_EVENTS), NOT off the active-chip filter —
+   switching the active chip never changes the numbers, only a data change
+   (duplicate / soft-delete) does. Each chip shows `Label (N)`; Tous = all
+   non-deleted events (liste's data is all non-general, so Tous = total),
+   each status chip = events with that status. Injection preserves each chip's
+   data-status attr + its .on class by writing only the text node. */
+function injectChipCounts(events){
+  const live = events.filter(function(e){ return !e.deleted_at; });
+  document.querySelectorAll('#liste-status-chips .lchip').forEach(function(chip){
+    const s = chip.getAttribute('data-status');
+    const label = chip.getAttribute('data-label') || (chip.setAttribute('data-label', chip.textContent.trim()), chip.getAttribute('data-label'));
+    const n = (s==='all') ? live.length : live.filter(function(e){ return e.status===s; }).length;
+    chip.textContent = label + ' (' + n + ')';
+  });
 }
 
 /* ── row actions (Stage 3) ── */

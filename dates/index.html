@@ -110,7 +110,6 @@
   </div>
   <div id="admin-surface-marques" class="admin-surface" hidden>
     <div class="vocab-hdr">
-      <span class="vocab-title">Marques</span>
       <button class="vocab-add-btn" onclick="openMarqueDrawer(null)">+ Ajouter</button>
     </div>
     <div class="liste-filterbar">
@@ -123,7 +122,6 @@
   </div>
   <div id="admin-surface-coproducteurs" class="admin-surface" hidden>
     <div class="vocab-hdr">
-      <span class="vocab-title">Coproducteurs</span>
       <button class="vocab-add-btn" onclick="openCoproducerDrawer(null)">+ Ajouter</button>
     </div>
     <div class="liste-filterbar">
@@ -136,7 +134,6 @@
   </div>
   <div id="admin-surface-qonto" class="admin-surface" hidden>
     <div class="vocab-hdr">
-      <span class="vocab-title">Banque</span>
       <button class="vocab-add-btn" onclick="openQontoDrawer(null)">+ Ajouter</button>
     </div>
     <div class="liste-filterbar">
@@ -1002,6 +999,25 @@ function goAdminSurface(surface, btn) {
  * owning *-grid table (the render fn reads live input/chip state from the DOM),
  * so typing never rebuilds the filterbar → no focus loss. Chip clicks use
  * event-delegation (.closest('.lchip')) mirroring liste.html's wiring. */
+/* Compute-and-inject chip counts for an Admin chip row (same pattern as
+   liste.html injectChipCounts; Ship 3a reuses). Counts are STATIC per data
+   state: computed off the SAME pre-chip-filter data the render reads, NOT off
+   the active chip — switching chips never changes the numbers, only a data
+   change (CRUD add/delete on re-render) does. `attr` is the chip's filter attr
+   ('data-status' annuaire / 'data-gen' qonto); `countOf(value, items)` returns
+   the count for a given chip value. Injection preserves attr + .on by writing
+   only the chip's text node (bare label stashed in data-label on first pass). */
+function injectAdminChipCounts(containerId, attr, items, countOf) {
+  var box = document.getElementById(containerId);
+  if (!box) return;
+  box.querySelectorAll('.lchip').forEach(function(chip) {
+    var v = chip.getAttribute(attr);
+    var label = chip.getAttribute('data-label');
+    if (label === null) { label = chip.textContent.trim(); chip.setAttribute('data-label', label); }
+    chip.textContent = label + ' (' + countOf(v, items) + ')';
+  });
+}
+
 function bindAdminFilters() {
   if (_adminFiltersBound) return;
   _adminFiltersBound = true;
@@ -1050,6 +1066,9 @@ async function renderAnnuaire() {
   var grid = document.getElementById('annuaire-grid');
   if (!grid) return;
   var users = await window.MD.getUsers();
+  injectAdminChipCounts('annuaire-status-chips', 'data-status', users, function(v, list) {
+    return (v === 'all') ? list.length : list.filter(function(u) { return u.status === v; }).length;
+  });
   var STATUS_COLOR = { ACTIVE:'var(--green)', INVITED:'var(--amber)', DISABLED:'var(--text-dim)' };
   // Read live filterbar state (static markup in #admin-surface-annuaire).
   var searchEl = document.getElementById('annuaire-search-input');
@@ -1175,6 +1194,11 @@ function renderQonto() {
   var chipEl = document.querySelector('#qonto-gen-chips .lchip.on');
   var genFilter = chipEl ? chipEl.getAttribute('data-gen') : 'all';
   window.MD.getQontoAccounts().then(function(rows) {
+    injectAdminChipCounts('qonto-gen-chips', 'data-gen', rows, function(v, list) {
+      if (v === 'general') return list.filter(function(a) { return a.is_general === true; }).length;
+      if (v === 'event') return list.filter(function(a) { return a.is_general === false; }).length;
+      return list.length;
+    });
     var filtered = rows.filter(function(a) {
       if (genFilter === 'general' && a.is_general !== true) return false;     // Général → is_general===true
       if (genFilter === 'event' && a.is_general !== false) return false;      // Événement → is_general===false

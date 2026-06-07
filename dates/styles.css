@@ -99,7 +99,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .dept-panel-stub{padding:48px 16px;text-align:center;color:var(--text-dim);font-size:.8em}
 
 .admin-hdr{display:flex;align-items:center;justify-content:space-between;margin-top:24px;margin-bottom:24px;flex-wrap:wrap;gap:12px}
-.admin-invite-btn{padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s}
+.admin-invite-btn{margin-left:auto;padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s}
 .admin-invite-btn:hover{background:rgba(255,255,255,.04);color:var(--text)}
 
 .admin-subtabs{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:18px;border-bottom:1px solid var(--border)}
@@ -111,11 +111,10 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .admin-placeholder{padding:32px 16px;color:var(--text-dim);font-size:.8em;line-height:1.6;border:1px dashed var(--border);border-radius:10px;background:var(--surface)}
 
 /* ── Vocab-list surfaces (Coproducteurs + Comptes Qonto, Admin V1 split b).
- * Token-only. The header chrome below (.vocab-hdr / .vocab-title / .vocab-add-btn)
- * is the surviving idiom; the .vocab-row list idiom was retired at Ship B
+ * Token-only. The header chrome below (.vocab-hdr / .vocab-add-btn) is the
+ * surviving idiom; the .vocab-row list idiom was retired at Ship B
  * (rows now render onto the shared liste-table skeleton). Logged for
  * components.md absorption. */
-.vocab-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.vocab-title{font-size:.92em;font-weight:700;color:var(--text)}
+.vocab-hdr{display:flex;justify-content:flex-end;align-items:center;margin-bottom:14px}
 .vocab-add-btn{padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.74em;font-weight:600;cursor:pointer}
 .vocab-add-btn:hover{border-color:var(--green);color:var(--green)}

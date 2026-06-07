@@ -28,6 +28,39 @@
       .eur-full { display: none; }
       .eur-abbr { display: inline; }
     }
+
+    /* ═══ liste-table language (ported BY REFERENCE from liste.html v5.16.5 ═══
+       Ship 1 restyle: the three built admin tabs (Annuaire / Coproducteurs /
+       Banque) + the new Marques tab render onto liste.html's table language.
+       Values read from standalones/module-dates/liste.html at build (port-by-
+       reference, not port-by-copy). Consumes existing chrome.css tokens only —
+       no new tokens introduced. The retired card CSS (.annuaire-* / .vocab-row /
+       .vocab-name / .vocab-sub / .status-*) lives in styles.css, out of this
+       ship's diff scope — orphaned this ship, deletion flagged as follow-up. */
+    .liste-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+    .liste-table{width:100%;border-collapse:collapse;font-size:13px}
+    .liste-table thead{background:var(--surface-2);border-bottom:1px solid var(--border)}
+    .liste-table th{padding:11px 14px;text-align:left;font-size:10.5px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.6px;white-space:nowrap}
+    .liste-table th.num{text-align:right}
+    .liste-table tbody tr{border-bottom:1px solid var(--border)}
+    .liste-table tbody tr:last-child{border-bottom:none}
+    .liste-table tbody tr:hover{background:rgba(255,255,255,.02)}
+    .liste-table td{padding:13px 14px;color:var(--text);vertical-align:middle}
+    .liste-table td.num{text-align:right;font-variant-numeric:tabular-nums}
+    .liste-table td.muted{color:var(--text-muted)}
+    .liste-filterbar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+    .liste-search{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+    .liste-search:focus-within{border-color:var(--border-h)}
+    .liste-search input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:inherit;font-size:13px}
+    .liste-search input::placeholder{color:var(--text-dim)}
+    .lchips{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .lchip{padding:6px 13px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+    .lchip:hover{border-color:var(--border-h);color:var(--text)}
+    .lchip.on{background:var(--surface-2);border-color:var(--border-h);color:var(--text)}
+    .liste-empty td{padding:40px 14px;text-align:center;color:var(--text-dim);font-size:13px}
+    @media(max-width:640px){
+      .liste-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+    }
   </style>
 </head>
 <body>
@@ -91,7 +124,7 @@
     <button class="admin-subtab is-placeholder" onclick="goAdminSurface('assignations',this)">Assignations</button>
     <button class="admin-subtab" onclick="goAdminSurface('marques',this)">Marques</button>
     <button class="admin-subtab" onclick="goAdminSurface('coproducteurs',this)">Coproducteurs</button>
-    <button class="admin-subtab" onclick="goAdminSurface('qonto',this)">Comptes</button>
+    <button class="admin-subtab" onclick="goAdminSurface('qonto',this)">Banque</button>
   </div>
   <div id="admin-surface-annuaire" class="admin-surface">
     <div id="annuaire-grid"></div>
@@ -100,7 +133,11 @@
     <div class="admin-placeholder">Assignations par événement — bientôt. Cette section gérera l'attribution des chefs de pôle aux événements et catégories, avec accès aux autorisations correspondantes. Disponible à la mise en ligne du module DA.</div>
   </div>
   <div id="admin-surface-marques" class="admin-surface" hidden>
-    <div class="admin-placeholder">Marques — bientôt. Vocabulaire Producteur (liste fermée Geoffrey/Odile). En attente de la table SCHEMA + des valeurs confirmées par Geo.</div>
+    <div class="vocab-hdr">
+      <span class="vocab-title">Marques</span>
+      <button class="vocab-add-btn" onclick="openMarqueDrawer(null)">+ Ajouter</button>
+    </div>
+    <div id="marques-grid"></div>
   </div>
   <div id="admin-surface-coproducteurs" class="admin-surface" hidden>
     <div class="vocab-hdr">
@@ -111,7 +148,7 @@
   </div>
   <div id="admin-surface-qonto" class="admin-surface" hidden>
     <div class="vocab-hdr">
-      <span class="vocab-title">Comptes</span>
+      <span class="vocab-title">Banque</span>
       <button class="vocab-add-btn" onclick="openQontoDrawer(null)">+ Ajouter</button>
     </div>
     <div id="qonto-grid"></div>
@@ -282,11 +319,16 @@ window.MD.getEvents = async function() {
  * until DA. NB: exec prompt EDIT C draft carried lowercase literals — reconciled to
  * §2.4 per the prompt's own "verify, do not assume" casing clause (rule 39). */
 const STAGE2_USERS = [
-  { id:'usr-geo', email:'geoffrey@madameloyal.fr', role:'ADMIN',     name:'Geoffrey', status:'ACTIVE',  google_user_id:'g-001' },
-  { id:'usr-odi', email:'odile@madameloyal.fr',    role:'ADMIN',     name:'Odile',    status:'ACTIVE',  google_user_id:'g-002' },
-  { id:'usr-chl', email:'chloe@madameloyal.fr',    role:'ADMIN',     name:'Chloé',    status:'ACTIVE',  google_user_id:'g-003' },
-  { id:'usr-leo', email:'leo@studioai2k.com',      role:'ADMIN',     name:'Leo',      status:'ACTIVE',  google_user_id:'g-004' },
-  { id:'usr-pau', email:'paul@madameloyal.fr',     role:'CHEF_POLE', name:'Paul',     status:'INVITED', google_user_id:null }
+  // Name shape (§5a, ADR-0006): prenom/nom are tool-owned + editable; google_name is a
+  // read-only reference (what OAuth given_name/family_name would populate). OAuth populates
+  // google_name ONLY — never prenom/nom; identity match is on email + google_user_id, never name.
+  // Mock rows: single seed names split sensibly (nom present-but-empty when no surname known,
+  // so the shape stays uniform); google_name stands in with the display name until real OAuth.
+  { id:'usr-geo', email:'geoffrey@madameloyal.fr', role:'ADMIN',     prenom:'Geoffrey', nom:'',     google_name:'Geoffrey', status:'ACTIVE',  google_user_id:'g-001' },
+  { id:'usr-odi', email:'odile@madameloyal.fr',    role:'ADMIN',     prenom:'Odile',    nom:'',     google_name:'Odile',    status:'ACTIVE',  google_user_id:'g-002' },
+  { id:'usr-chl', email:'chloe@madameloyal.fr',    role:'ADMIN',     prenom:'Chloé',    nom:'',     google_name:'Chloé',    status:'ACTIVE',  google_user_id:'g-003' },
+  { id:'usr-leo', email:'leo@studioai2k.com',      role:'ADMIN',     prenom:'Leo',      nom:'',     google_name:'Leo',      status:'ACTIVE',  google_user_id:'g-004' },
+  { id:'usr-pau', email:'paul@madameloyal.fr',     role:'CHEF_POLE', prenom:'Paul',     nom:'',     google_name:'Paul',     status:'INVITED', google_user_id:null }
 ];
 window.MD.getUsers = async function() { return STAGE2_USERS; };
 
@@ -307,12 +349,17 @@ const STAGE2_QONTO = [
   { id:'qa-epk', name:'Elektric Park',   qonto_name:'MADAME LOYAL X ELECTRICK PARK 050926', bank:'Qonto', company:'EPISODE', is_general:false, general_account_id:'qa-gen', iban:'FR76 XXXX XXXX XXXX XXXX XXXX 440', deleted_at:null }
 ];
 const STAGE2_COPRODUCERS = [
-  { id:'co-exa', name:'Coproduction exemple A', note:'', deleted_at:null },
-  { id:'co-exb', name:'Coproduction exemple B', note:'', deleted_at:null }
+  { id:'co-exa', name:'Coproduction exemple A', societe:'', note:'', deleted_at:null },
+  { id:'co-exb', name:'Coproduction exemple B', societe:'', note:'', deleted_at:null }
 ];
 // Producing-company list (ADR-0016) — Geo's owned companies, dual-use: event producteur + inter-société tag.
 // Seed pending Chloé's full owned set. Cartel + Village du soir are external agencies — NOT here.
 const STAGE2_COMPANIES = ['EPISODE', 'SAGREGA', 'GGS'];
+// Marques (§Item 4) — FRONTEND ONLY this ship. Thin vocab mirroring Coproducteurs.
+// Seed EXACTLY these two, this casing (matches event-row marque: values at source:
+// 'Madame Loyal' / 'Sonora', NOT 'SONORA'). SCHEMA shape (real table vs TEXT-with-seed
+// vocab) is an OPEN carried to BudgetFlow V1 — NOT decided here, NO marques table in SCHEMA.
+const STAGE2_MARQUES = ['Madame Loyal', 'Sonora'];
 window.MD.getQontoAccounts = async function() { return STAGE2_QONTO.filter(function(a) { return a.deleted_at === null; }); };
 window.MD.getCoproducers   = async function() { return STAGE2_COPRODUCERS.filter(function(c) { return c.deleted_at === null; }); };
 
@@ -947,6 +994,7 @@ function goAdminSurface(surface, btn) {
   document.querySelectorAll('#admin-subtabs .admin-subtab').forEach(function(b) {
     b.classList.toggle('on', b === btn);
   });
+  if (surface === 'marques') renderMarques();
   if (surface === 'coproducteurs') renderCoproducteurs();
   if (surface === 'qonto') renderQonto();
 }
@@ -956,21 +1004,30 @@ function goAdminSurface(surface, btn) {
 const USER_ROLE_LABELS = { ADMIN: 'Admin', CHEF_POLE: 'Chef de pôle', EXTERNAL: 'Externe' };
 const USER_STATUS_LABELS = { ACTIVE: 'Actif', INVITED: 'Invité', DISABLED: 'Désactivé' };
 
-/* Annuaire render — reads the users mock, one .annuaire-row per user. */
+/* Annuaire render — reads the users mock, emits a liste-table (thead + tbody),
+ * one row per user. Columns: Nom (prenom + nom) / Email / Rôle / Statut. Row
+ * onclick opens the user drawer. Statut keeps the status-colour treatment the
+ * retired .annuaire-status pills carried (green/amber/dim), applied inline. */
 async function renderAnnuaire() {
   var grid = document.getElementById('annuaire-grid');
   if (!grid) return;
   var users = await window.MD.getUsers();
-  grid.innerHTML = users.map(function(u) {
+  var STATUS_COLOR = { ACTIVE:'var(--green)', INVITED:'var(--amber)', DISABLED:'var(--text-dim)' };
+  var rows = users.map(function(u) {
     var roleLabel = USER_ROLE_LABELS[u.role] || u.role;
     var statusLabel = USER_STATUS_LABELS[u.status] || u.status;
-    var statusClass = 'status-' + String(u.status).toLowerCase();
-    return '<div class="annuaire-row" onclick="openUserDrawer(\'' + u.id + '\')">' +
-      '<span class="annuaire-email">' + u.email + '</span>' +
-      '<span class="annuaire-role">' + roleLabel + '</span>' +
-      '<span class="annuaire-status ' + statusClass + '">' + statusLabel + '</span>' +
-    '</div>';
+    var statusColor = STATUS_COLOR[u.status] || 'var(--text)';
+    var nom = (u.prenom + ' ' + (u.nom || '')).trim();
+    return '<tr onclick="openUserDrawer(\'' + u.id + '\')" style="cursor:pointer">' +
+      '<td>' + nom + '</td>' +
+      '<td class="muted">' + u.email + '</td>' +
+      '<td>' + roleLabel + '</td>' +
+      '<td><span style="color:' + statusColor + ';font-weight:600">' + statusLabel + '</span></td>' +
+    '</tr>';
   }).join('');
+  grid.innerHTML = '<div class="liste-table-wrap"><table class="liste-table">' +
+    '<thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Statut</th></tr></thead>' +
+    '<tbody>' + rows + '</tbody></table></div>';
 }
 
 /* User drawer — reuses the live #drawer shell + drawerRowHTML. Email read-only;
@@ -981,11 +1038,13 @@ function openUserDrawer(userId) {
   var u = STAGE2_USERS.find(function(x) { return x.id === userId; });
   if (!u) return;
 
-  document.getElementById('drawer-title').textContent = u.name || u.email;
+  var fullName = (u.prenom + ' ' + (u.nom || '')).trim();
+  document.getElementById('drawer-title').textContent = fullName || u.email;
   document.getElementById('drawer-sub').textContent = u.email;
   document.getElementById('drawer-status-indicator').innerHTML = '';   // hidden for user context
 
   var selStyle = "width:100%;padding:10px 12px;border-radius:7px;border:1px solid var(--border);background:var(--surface-2);color:#fff;font-family:'DM Sans',sans-serif;font-size:.78em;font-weight:500;cursor:pointer";
+  var inpStyle = "width:100%;padding:10px 12px;border-radius:7px;border:1px solid var(--border);background:var(--surface-2);color:#fff;font-family:'DM Sans',sans-serif;font-size:.78em;font-weight:500";
   var roleOpts = Object.keys(USER_ROLE_LABELS).map(function(r) {
     return '<option value="' + r + '"' + (r === u.role ? ' selected' : '') + '>' + USER_ROLE_LABELS[r] + '</option>';
   }).join('');
@@ -995,8 +1054,19 @@ function openUserDrawer(userId) {
 
   document.getElementById('drawer-body').innerHTML =
     '<div class="drawer-section">' +
-      '<div class="drawer-section-title">Utilisateur</div>' +
+      '<div class="drawer-section-title">Prénom</div>' +
+      '<input id="user-prenom-input" type="text" style="' + inpStyle + '" value="' + (u.prenom || '') + '">' +
+    '</div>' +
+    '<div class="drawer-section">' +
+      '<div class="drawer-section-title">Nom</div>' +
+      '<input id="user-nom-input" type="text" style="' + inpStyle + '" value="' + (u.nom || '') + '">' +
+    '</div>' +
+    '<div class="drawer-section">' +
+      '<div class="drawer-section-title">Compte</div>' +
+      // Email read-only (§5b). Nom Google read-only reference (§5a / ADR-0006):
+      // OAuth-populated, powerless for identity — match is on email + google_user_id, never name.
       drawerRowHTML('Email', u.email) +
+      drawerRowHTML('Nom Google', u.google_name || '—') +
     '</div>' +
     '<div class="drawer-section">' +
       '<div class="drawer-section-title">Rôle</div>' +
@@ -1025,11 +1095,16 @@ function renderCoproducteurs() {
   var grid = document.getElementById('coproducteurs-grid');
   if (!grid) return;
   window.MD.getCoproducers().then(function(rows) {
-    grid.innerHTML = rows.map(function(c) {
-      return '<div class="vocab-row" onclick="openCoproducerDrawer(\'' + c.id + '\')">' +
-        '<span class="vocab-name">' + c.name + '</span>' +
-      '</div>';
+    var body = rows.map(function(c) {
+      return '<tr onclick="openCoproducerDrawer(\'' + c.id + '\')" style="cursor:pointer">' +
+        '<td>' + c.name + '</td>' +
+        '<td class="muted">' + (c.societe || '—') + '</td>' +
+        '<td class="muted">' + (c.note || '—') + '</td>' +
+      '</tr>';
     }).join('');
+    grid.innerHTML = '<div class="liste-table-wrap"><table class="liste-table">' +
+      '<thead><tr><th>Nom</th><th>Société</th><th>Note</th></tr></thead>' +
+      '<tbody>' + body + '</tbody></table></div>';
   });
 }
 
@@ -1037,17 +1112,82 @@ function renderQonto() {
   var grid = document.getElementById('qonto-grid');
   if (!grid) return;
   window.MD.getQontoAccounts().then(function(rows) {
-    grid.innerHTML = rows.map(function(a) {
-      var sub = (a.is_general ? 'Générale · ' : '') + a.company + ' · ' + a.qonto_name;
-      return '<div class="vocab-row" onclick="openQontoDrawer(\'' + a.id + '\')">' +
-        '<span class="vocab-name">' + a.name + '</span>' +
-        '<span class="vocab-sub">' + sub + '</span>' +
-      '</div>';
+    // Sort general-account-on-top (per Item 3); stable order otherwise.
+    var sorted = rows.slice().sort(function(a, b) { return (b.is_general ? 1 : 0) - (a.is_general ? 1 : 0); });
+    var body = sorted.map(function(a) {
+      var general = a.is_general ? '<span style="color:var(--green);font-weight:600">Générale</span>' : '<span class="muted">—</span>';
+      return '<tr onclick="openQontoDrawer(\'' + a.id + '\')" style="cursor:pointer">' +
+        '<td>' + a.name + '</td>' +
+        '<td class="muted">' + a.qonto_name + '</td>' +
+        '<td class="muted">' + a.company + '</td>' +
+        '<td class="muted">' + a.bank + '</td>' +
+        '<td class="muted">' + a.iban + '</td>' +
+        '<td>' + general + '</td>' +
+      '</tr>';
     }).join('');
+    grid.innerHTML = '<div class="liste-table-wrap"><table class="liste-table">' +
+      '<thead><tr><th>Nom interne</th><th>Nom Qonto</th><th>Société</th><th>Banque</th><th>IBAN</th><th>Général</th></tr></thead>' +
+      '<tbody>' + body + '</tbody></table></div>';
   });
 }
 
 var _vocabInputStyle = "width:100%;padding:10px 12px;border-radius:7px;border:1px solid var(--border);background:var(--surface-2);color:#fff;font-family:'DM Sans',sans-serif;font-size:.78em;font-weight:500";
+
+/* Marques vocab (§Item 4) — FRONTEND ONLY. Thin vocab surface mirroring
+ * Coproducteurs: a liste-table with one Nom column over STAGE2_MARQUES (a flat
+ * string array). In-memory CRUD only (no cross-reload persistence, same as the
+ * other vocab tables). The SCHEMA shape is an OPEN carried to BudgetFlow V1 —
+ * no marques table here; the array is keyed by value/index. */
+function renderMarques() {
+  var grid = document.getElementById('marques-grid');
+  if (!grid) return;
+  var body = STAGE2_MARQUES.map(function(m, i) {
+    return '<tr onclick="openMarqueDrawer(' + i + ')" style="cursor:pointer">' +
+      '<td>' + m + '</td>' +
+    '</tr>';
+  }).join('');
+  grid.innerHTML = '<div class="liste-table-wrap"><table class="liste-table">' +
+    '<thead><tr><th>Nom</th></tr></thead>' +
+    '<tbody>' + body + '</tbody></table></div>';
+}
+
+/* Marque drawer — single Nom input, mirrors openCoproducerDrawer shape. null id
+ * = create (Enregistrer-only); index = edit (Enregistrer + Supprimer). */
+function openMarqueDrawer(id) {
+  var isEdit = (id !== null && id !== undefined);
+  var current = isEdit ? STAGE2_MARQUES[id] : '';
+  document.getElementById('drawer-title').textContent = isEdit ? current : 'Nouvelle marque';
+  document.getElementById('drawer-sub').textContent = 'Marque';
+  document.getElementById('drawer-status-indicator').innerHTML = '';
+  document.getElementById('drawer-body').innerHTML =
+    '<div class="drawer-section"><div class="drawer-section-title">Nom</div>' +
+      '<input id="marque-name-input" type="text" style="' + _vocabInputStyle + '" value="' + current + '"></div>';
+  var footer = document.getElementById('drawer-footer');
+  footer.style.display = 'flex';
+  footer.innerHTML =
+    '<button class="drawer-btn primary" onclick="saveMarque(' + (isEdit ? id : 'null') + ')">Enregistrer</button>' +
+    (isEdit ? '<button class="drawer-btn" onclick="deleteMarque(' + id + ')">Supprimer</button>' : '');
+  document.getElementById('drawer-overlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+
+function saveMarque(id) {
+  var name = document.getElementById('marque-name-input').value.trim();
+  if (!name) return;
+  if (id !== null && id !== undefined) {
+    STAGE2_MARQUES[id] = name;
+  } else {
+    STAGE2_MARQUES.push(name);
+  }
+  closeDrawer();
+  renderMarques();
+}
+
+function deleteMarque(id) {
+  STAGE2_MARQUES.splice(id, 1);
+  closeDrawer();
+  renderMarques();
+}
 
 /* Coproducer drawer — name + note (SCHEMA §4.2 + ADR-0016 note field). null id =
  * create. Sets its OWN footer (shared #drawer footer contract — openEventDrawer
@@ -1060,6 +1200,9 @@ function openCoproducerDrawer(id) {
   document.getElementById('drawer-body').innerHTML =
     '<div class="drawer-section"><div class="drawer-section-title">Nom</div>' +
       '<input id="copro-name-input" type="text" style="' + _vocabInputStyle + '" value="' + (c ? c.name : '') + '"></div>' +
+    '<div class="drawer-section"><div class="drawer-section-title">Société</div>' +
+      // §5c free-text: the partner's OWN company name (NOT the internal EPISODE/SAGREGA/GGS vocab).
+      '<input id="copro-societe-input" type="text" style="' + _vocabInputStyle + '" value="' + (c && c.societe ? c.societe : '') + '"></div>' +
     '<div class="drawer-section"><div class="drawer-section-title">Note</div>' +
       '<textarea id="copro-note-input" rows="3" style="' + _vocabInputStyle + ';resize:vertical">' + (c && c.note ? c.note : '') + '</textarea></div>';
   var footer = document.getElementById('drawer-footer');
@@ -1125,13 +1268,14 @@ function openQontoDrawer(id) {
 
 function saveCoproducer(id) {
   var name = document.getElementById('copro-name-input').value.trim();
+  var societe = document.getElementById('copro-societe-input').value.trim();
   var note = document.getElementById('copro-note-input').value.trim();
   if (!name) return;
   if (id) {
     var c = STAGE2_COPRODUCERS.find(function(x) { return x.id === id; });
-    if (c) { c.name = name; c.note = note; }
+    if (c) { c.name = name; c.societe = societe; c.note = note; }
   } else {
-    STAGE2_COPRODUCERS.push({ id:'co-' + Date.now(), name:name, note:note, deleted_at:null });
+    STAGE2_COPRODUCERS.push({ id:'co-' + Date.now(), name:name, societe:societe, note:note, deleted_at:null });
   }
   closeDrawer();
   renderCoproducteurs();

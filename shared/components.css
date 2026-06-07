@@ -1,0 +1,43 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   components.css — shared content-primitive layer (Ship B)
+   Links THIRD per ADR-0020: tokens.css → chrome.css → components.css → [styles.css]
+   Consumes tokens.css var()s only; declares no tokens.
+   Promotion bar (ADR-0020): n≥2 modules OR concrete named forward-need.
+
+   .data-table — SKELETON ONLY. Shared by liste.html + index.html admin tables.
+     Per the Q2 split (guide v1.4.98): budget-v1's financial table (.tbl/.btbl/
+     .bcat/.btot/.bgt/.ce) is a SEPARATE primitive (opposite th/td align defaults,
+     row-type machinery) and STAYS INLINE in budget until n≥2 financial consumers.
+   .tbar family — toolbar/filter-strip primitive (search + chips). The owed
+     admin filterbar (next ship) CONSUMES this; built here, emitted there.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── data-table skeleton (was .liste-table, byte-identical in index+liste) ── */
+.liste-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.liste-table{width:100%;border-collapse:collapse;font-size:13px}
+.liste-table thead{background:var(--surface-2);border-bottom:1px solid var(--border)}
+.liste-table th{padding:11px 14px;text-align:left;font-size:10.5px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.6px;white-space:nowrap}
+.liste-table th.num{text-align:right}
+.liste-table tbody tr{border-bottom:1px solid var(--border)}
+.liste-table tbody tr:last-child{border-bottom:none}
+.liste-table tbody tr:hover{background:rgba(255,255,255,.02)}
+.liste-table td{padding:13px 14px;color:var(--text);vertical-align:middle}
+.liste-table td.num{text-align:right;font-variant-numeric:tabular-nums}
+.liste-table td.muted{color:var(--text-muted)}
+.liste-empty td{padding:40px 14px;text-align:center;color:var(--text-dim);font-size:13px}
+
+/* ── tbar toolbar/filter-strip (was .liste-filterbar family, byte-identical) ── */
+.liste-filterbar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.liste-search{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+.liste-search:focus-within{border-color:var(--border-h)}
+.liste-search input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:inherit;font-size:13px}
+.liste-search input::placeholder{color:var(--text-dim)}
+.lchips{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.lchip{padding:6px 13px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+.lchip:hover{border-color:var(--border-h);color:var(--text)}
+.lchip.on{background:var(--surface-2);border-color:var(--border-h);color:var(--text)}
+
+/* ── shared responsive: table-wrap horizontal scroll on narrow viewports ── */
+@media(max-width:640px){
+  .liste-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+}

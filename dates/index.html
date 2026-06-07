@@ -70,10 +70,31 @@
 
 <main class="wrap">
 <div id="panel-dashboard" class="dept-panel">
-  <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap">
-    <button class="bilan-toggle-btn" data-filter="planned" style="padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">En préparation</button>
-    <button class="bilan-toggle-btn active" data-filter="selling" style="padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">En vente</button>
-    <button class="bilan-toggle-btn" data-filter="sandbox" style="padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Sandbox</button>
+  <!-- KPI row: self-labeling, grouped 2+2, no group-header band. Left two =
+       Module-Dates (indigo edge, LIVE off STAGE2_EVENTS). Right two =
+       BudgetFlow-Générale (green edge, PLACEHOLDER — cross-module, Phase-C/D). -->
+  <div class="kpi-row" id="dash-kpi-row">
+    <div class="kpi"><div class="kpi-edge dates"></div><div class="kpi-label">Événements actifs</div><div class="kpi-val" id="kpi-actifs">—</div><div class="kpi-delta flat" id="kpi-actifs-delta">&nbsp;</div></div>
+    <div class="kpi"><div class="kpi-edge dates"></div><div class="kpi-label">Jauge totale</div><div class="kpi-val" id="kpi-jauge">—<span class="u">pax</span></div><div class="kpi-delta flat">&nbsp;</div></div>
+    <div class="kpi"><div class="kpi-edge budget"></div><div class="kpi-label">Budget engagé <span class="gen">· Générale</span></div><div class="kpi-val">—</div><div class="kpi-delta flat">&nbsp;</div></div>
+    <div class="kpi"><div class="kpi-edge budget"></div><div class="kpi-label">Marge prévue <span class="gen">· Générale</span></div><div class="kpi-val">—</div><div class="kpi-delta flat">&nbsp;</div></div>
+  </div>
+  <!-- Filterbar (admin-Banque idiom: .liste-filterbar / .liste-search + .lchips/.lchip).
+       Search flex:1 pushes chips right (right-aligned, per Leo + mock). Active chip
+       inherits the shared .lchip.on highlight — no new rule. data-filter keys match
+       the FILTERS map (planned/selling/sandbox) + all=Tous. Counts injected via the
+       reused injectAdminChipCounts. -->
+  <div class="liste-filterbar">
+    <label class="liste-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-dim);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="dash-search-input" placeholder="Rechercher un événement…" autocomplete="off">
+    </label>
+    <div class="lchips" id="dash-status-chips">
+      <button class="lchip on" data-filter="all">Tous</button>
+      <button class="lchip" data-filter="planned">En préparation</button>
+      <button class="lchip" data-filter="selling">En vente</button>
+      <button class="lchip" data-filter="sandbox">Sandbox</button>
+    </div>
   </div>
   <div id="sort-caption" style="font-size:.72em;color:var(--text-dim);margin-bottom:10px">Trié par date · plus proche d'abord</div>
   <div id="dash-grid"></div>
@@ -889,20 +910,55 @@ function emptyStateHTML(filterName) {
 }
 
 function setFilter(filterName, btnEl) {
-  if (!FILTERS[filterName]) return;
+  // 'all' (Tous) has no FILTERS predicate — renderDashboard falls through to the
+  // default (e => !e.is_general). planned/selling/sandbox map to FILTERS keys.
+  if (filterName !== 'all' && !FILTERS[filterName]) return;
   _currentFilter = filterName;
-  document.querySelectorAll('.bilan-toggle-btn').forEach(b => b.classList.remove('active'));
-  if (btnEl) btnEl.classList.add('active');
+  // Highlight: swap the shared .lchip.on (the chrome highlight) — no new rule.
+  document.querySelectorAll('#dash-status-chips .lchip').forEach(b => b.classList.remove('on'));
+  if (btnEl) btnEl.classList.add('on');
   renderDashboard();
+}
+
+/* Dashboard chip counts — REUSES the generic injectAdminChipCounts (no third
+   helper). countOf maps each data-filter value to its event count via the
+   FILTERS predicates ('all' = all non-general; planned/selling/sandbox use the
+   predicate). Counts are static per data-state, re-derived each render. */
+function injectDashChipCounts(events) {
+  injectAdminChipCounts('dash-status-chips', 'data-filter', events, function(v, list) {
+    var fn = FILTERS[v] || (e => !e.is_general);
+    return list.filter(fn).length;
+  });
+}
+
+/* Module-Dates KPIs — LIVE off the events array. "Événements actifs" = active
+   pipeline (En vente + En préparation, excludes Sandbox) — product-call surfaced
+   to Leo, default per prompt. "Jauge totale" = Σ capacity over the same set. The
+   two BudgetFlow-Générale tiles stay markup placeholders (—): cross-module data,
+   Phase-C/D — NO cross-module read introduced here. */
+function renderDashKPIs(events) {
+  var actifs = events.filter(e => !e.is_general && (e.status === 'En vente' || e.status === 'En préparation'));
+  var elA = document.getElementById('kpi-actifs');
+  if (elA) elA.textContent = actifs.length;
+  var jauge = actifs.reduce((s, e) => s + (Number(e.capacity) || 0), 0);
+  var elJ = document.getElementById('kpi-jauge');
+  if (elJ) elJ.innerHTML = jauge.toLocaleString('fr-FR') + '<span class="u">pax</span>';
 }
 
 async function renderDashboard() {
   const grid = document.getElementById('dash-grid');
   if (!grid) return;
   const all = await window.MD.getEvents();
+  injectDashChipCounts(all);
+  renderDashKPIs(all);
   const filterFn = FILTERS[_currentFilter] || (e => !e.is_general);
+  // Live search over the same render path (name + city). Reads the static
+  // filterbar input; the chip predicate (filterFn) is applied first, unchanged.
+  const _q = (function(){ var el = document.getElementById('dash-search-input'); return norm(el ? el.value : ''); })();
+  const _searchFn = e => !_q || norm(e.name).includes(_q) || norm(e.city).includes(_q);
   const sorted = all
     .filter(filterFn)
+    .filter(_searchFn)
     .slice()
     .sort((a, b) => {
       if (!a.start_date && !b.start_date) return 0;
@@ -1434,9 +1490,19 @@ function deleteQonto(id) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.bilan-toggle-btn').forEach(b => {
-    b.addEventListener('click', () => setFilter(b.dataset.filter, b));
-  });
+  // Dashboard filterbar wiring (admin idiom: delegate on the chip container,
+  // bind once). Chip click → setFilter swaps .lchip.on + re-renders. Default
+  // chip is Tous (.on in markup) → sync _currentFilter to 'all' at boot.
+  _currentFilter = 'all';
+  var dashChips = document.getElementById('dash-status-chips');
+  if (dashChips) {
+    dashChips.addEventListener('click', function(e) {
+      var btn = e.target.closest('.lchip'); if (!btn) return;
+      setFilter(btn.dataset.filter, btn);
+    });
+  }
+  var dashSearch = document.getElementById('dash-search-input');
+  if (dashSearch) dashSearch.addEventListener('input', renderDashboard);
   // Admin V1 (split a): invite flow not in (a) scope — stub only.
   var adminInviteBtn = document.getElementById('admin-invite-btn');
   if (adminInviteBtn) {

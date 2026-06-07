@@ -1,0 +1,15 @@
+/* tokens.css — canonical AI2K design tokens (value layer).
+   Consumed FIRST by every standalone page, before chrome.css + components.css.
+   Mirror of design/tokens.md. Single source of truth for color vars.
+   Accent palette (3 semantic + 2 brand = 5 total):
+     green #34d399 · red #f87171 · amber #fbbf24
+     purple #a855f7 (day-0) · indigo #6366f1 (day-1)
+   NO other hue is introduced anywhere.
+   Established Ship A (ADR-0020). */
+:root {
+  --bg:#08080d; --surface:#101017; --surface-2:#16161f;
+  --border:rgba(255,255,255,0.05); --border-h:rgba(255,255,255,0.08);
+  --text:#f0f0f5; --text-muted:#a0a0b0; --text-dim:#5a5a6a;
+  --green:#34d399; --red:#f87171; --amber:#fbbf24;
+  --purple:#a855f7; --indigo:#6366f1;
+}

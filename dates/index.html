@@ -96,7 +96,6 @@
       <button class="lchip" data-filter="sandbox">Sandbox</button>
     </div>
   </div>
-  <div id="sort-caption" style="font-size:.72em;color:var(--text-dim);margin-bottom:10px">Trié par date · plus proche d'abord</div>
   <div id="dash-grid"></div>
 </div><!-- /#panel-dashboard -->
 
@@ -967,13 +966,10 @@ async function renderDashboard() {
       return a.start_date.localeCompare(b.start_date);
     });
 
-  const caption = document.getElementById('sort-caption');
   if (sorted.length === 0) {
-    if (caption) caption.style.display = 'none';
     grid.innerHTML = emptyStateHTML(_currentFilter);
     return;
   }
-  if (caption) caption.style.display = '';
   grid.innerHTML = sorted.map((evt, idx) => cardHTML(evt, idx)).join('');
   Array.from(grid.children).forEach((cardEl, idx) => {
     cardEl.addEventListener('click', () => openEventDrawer(sorted[idx]));

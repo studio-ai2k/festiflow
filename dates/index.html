@@ -33,6 +33,37 @@
 
     /* liste-table skeleton + filterbar/tbar CSS extracted to
        ../shared/components.css (Ship B, ADR-0020 content layer). */
+
+    /* ── Ship 3b: event-card view-toggle + compact-grid (PAGE-LOCAL, n=1).
+       Standing do-not-pre-promote — view-toggle is dashboard-only today; a
+       2nd surface (Liste) would earn the components.css promotion later. All
+       colours via existing tokens, no token invented. ── */
+    /* Segmented toggle, same chip-container family as .lchips. Mounts as the
+       last item in .liste-filterbar (margin-left:auto pushes it right). */
+    .dash-view-toggle { display:inline-flex; margin-left:auto; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+    .dash-view-toggle button { padding:7px 10px; background:transparent; border:none; color:var(--text-dim); cursor:pointer; display:flex; align-items:center; }
+    .dash-view-toggle button.on { background:var(--surface-2); color:var(--text); }
+    .dash-view-toggle button svg { display:block; }
+    /* Detailed (default): #dash-grid is the existing vertical stack — cards are
+       full-width 1-per-row via their own .card block layout, no grid rule needed.
+       Compact: responsive grid, 3-up desktop / 2-up mobile (mirrors the mock's
+       .dash-grid-compact). */
+    #dash-grid.dash-grid--compact { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    @media (max-width: 600px) {
+      #dash-grid.dash-grid--compact { grid-template-columns:repeat(2,1fr); }
+      /* Item 2 fix (render-only): on the mobile stack, the real budget tiles
+         must emit LAST instead of mid-list. The tiles are nested inside the
+         left identity column, so `order` alone can't move them across the
+         nesting. Promote the left column to display:contents at ≤600px → its
+         two children (identity1 block + .ec-real-tiles) become direct flex
+         children of the stacked .ec-content-cols, alongside .ec-col-right.
+         Then order: identity1 = 0 (default) → right col = 1 → real tiles = 2,
+         giving Date/Ville/Lieu → Édition/Plateforme/Capacité → [budget tiles].
+         Desktop (>600px) is untouched: .ec-col-left stays a normal flex column. */
+      .ec-col-left { display:contents; }
+      .ec-col-right { order:1; }
+      .ec-real-tiles { order:2; }
+    }
   </style>
 </head>
 <body>
@@ -94,6 +125,13 @@
       <button class="lchip" data-filter="planned">En préparation</button>
       <button class="lchip" data-filter="selling">En vente</button>
       <button class="lchip" data-filter="sandbox">Sandbox</button>
+    </div>
+    <!-- Ship 3b: event-card view-toggle, LAST filterbar item (right-aligned via
+         margin-left:auto). Segmented two-button: list icon = detailed (default),
+         grid icon = compact. Page-local (n=1), wired once in DOMContentLoaded. -->
+    <div class="dash-view-toggle" id="dash-view-toggle">
+      <button type="button" class="on" data-view="detailed" title="Vue détaillée" aria-label="Vue détaillée"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <button type="button" data-view="compact" title="Vue compacte" aria-label="Vue compacte"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
     </div>
   </div>
   <div id="dash-grid"></div>
@@ -627,7 +665,15 @@ function emptyTilesEnvelopeHTML() {
  */
 const HEADER_SEPARATOR_HTML = '<div style="height:1px;background:rgba(255,255,255,0.15)"></div>';
 
-function cardHTML(evt, idx) {
+/* Ship 3b: ONE render function, mode-branched (Leo's load-bearing constraint —
+ * NOT a second renderer; two independent renderers drift the way .kpi drifted
+ * from .bchip). The event name + statusHTML header is built ONCE here and used
+ * by BOTH branches (constant across detailed/compact per the mock). The body
+ * branches on `compact`; compact suppresses the poster + budget tiles and emits
+ * three rows (Statut · Jauge · Société). Compact reuses existing getters — no
+ * new data plumbing. cardHTML stays INLINE-styled (the inline→class extraction
+ * is the post-V1 component session's job, not this ship). */
+function cardHTML(evt, idx, compact) {
   const s = statusFor(evt);
   const timeStr = timeIndicatorFor(evt);
   const statusHTML = s ? `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
@@ -637,22 +683,50 @@ function cardHTML(evt, idx) {
             </div>
             <div style="font-size:.65em;color:var(--text-dim)">${timeStr}</div>
           </div>` : '';
+  // Shared header: event name + status zone. Identical markup in both modes.
+  const headerHTML = `<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+            <div style="font-size:.85em;font-weight:700;color:#fff;letter-spacing:-.2px;min-width:0;word-break:break-word">${evt.name}</div>
+            ${statusHTML}
+          </div>`;
+
+  if (compact) {
+    // Compact body: NO poster, NO budget tiles. Three label/value rows —
+    // Statut (reuse `s` built above) · Jauge (formatCapacity) · Société (producteur).
+    const dot = s ? `<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:${s.color}"></span><span style="color:var(--text-muted);font-weight:500">${s.label}</span></span>` : '<span style="color:var(--text-muted)">—</span>';
+    const rowStyle = 'display:flex;justify-content:space-between;align-items:center;font-size:.72em;padding:4px 0;border-top:1px solid var(--border)';
+    const kStyle = 'color:var(--text-dim)';
+    return `
+    <div class="card" style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+      ${headerHTML}
+      <div style="display:flex;flex-direction:column">
+        <div style="${rowStyle}"><span style="${kStyle}">Statut</span><span>${dot}</span></div>
+        <div style="${rowStyle}"><span style="${kStyle}">Jauge</span><span style="color:var(--text-muted);font-weight:500">${formatCapacity(evt.capacity)}</span></div>
+        <div style="${rowStyle}"><span style="${kStyle}">Société</span><span style="color:var(--text-muted);font-weight:500">${evt.producteur || '—'}</span></div>
+      </div>
+    </div>
+  `;
+  }
+
+  // Detailed body (default): poster + the EXISTING two-column identity/tiles
+  // block — structurally unchanged from v5.20.5 (desktop layout identical).
+  // Item 2 fix lives in CSS, not here: the real-tiles envelope is wrapped in
+  // .ec-real-tiles, and on mobile (L21 block) the left column goes
+  // display:contents so identity1 + tiles become direct flex children of the
+  // stacked .ec-content-cols, then `order` drops the tiles LAST. Desktop is
+  // untouched (the wrapper is transparent in the desktop flex-row).
   return `
     <div class="card" style="padding:0;overflow:hidden">
       <div style="display:flex;flex-direction:row">
         ${posterZoneHTML(evt, idx)}
         <div style="flex:1;padding:16px 24px;display:flex;flex-direction:column;gap:14px;min-width:0">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
-            <div style="font-size:.85em;font-weight:700;color:#fff;letter-spacing:-.2px;min-width:0;word-break:break-word">${evt.name}</div>
-            ${statusHTML}
-          </div>
+          ${headerHTML}
           ${HEADER_SEPARATOR_HTML}
           <div class="ec-content-cols" style="display:flex;flex-direction:row;gap:20px;min-width:0">
-            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px">
+            <div class="ec-col-left" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px">
               ${identityRow1HTML(evt)}
-              ${tilesEnvelopeHTML(evt)}
+              <div class="ec-real-tiles">${tilesEnvelopeHTML(evt)}</div>
             </div>
-            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px">
+            <div class="ec-col-right" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px">
               ${identityRow2HTML(evt)}
               ${emptyTilesEnvelopeHTML()}
             </div>
@@ -903,6 +977,10 @@ const EMPTY_COPY = {
 };
 
 let _currentFilter = 'selling';
+// Ship 3b: dashboard event-card view mode. 'detailed' (default) = 1-per-row
+// poster cards; 'compact' = 3-up/2-up no-poster Statut·Jauge·Société cards.
+// Set by the view-toggle, read by renderDashboard. Page-local state (n=1).
+let _dashView = 'detailed';
 
 function emptyStateHTML(filterName) {
   return `<div style="text-align:center;padding:60px 24px;color:var(--text-dim);font-size:.85em">${EMPTY_COPY[filterName] || ''}</div>`;
@@ -966,11 +1044,18 @@ async function renderDashboard() {
       return a.start_date.localeCompare(b.start_date);
     });
 
+  // Ship 3b: drive the grid layout mode off _dashView. Detailed = the existing
+  // vertical stack (no grid class); compact = responsive grid via the page-local
+  // .dash-grid--compact rule. Set BEFORE the empty-state early-return so the
+  // mode class is consistent regardless of result count.
+  const _compact = _dashView === 'compact';
+  grid.classList.toggle('dash-grid--compact', _compact);
+
   if (sorted.length === 0) {
     grid.innerHTML = emptyStateHTML(_currentFilter);
     return;
   }
-  grid.innerHTML = sorted.map((evt, idx) => cardHTML(evt, idx)).join('');
+  grid.innerHTML = sorted.map((evt, idx) => cardHTML(evt, idx, _compact)).join('');
   Array.from(grid.children).forEach((cardEl, idx) => {
     cardEl.addEventListener('click', () => openEventDrawer(sorted[idx]));
   });
@@ -1499,6 +1584,19 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   var dashSearch = document.getElementById('dash-search-input');
   if (dashSearch) dashSearch.addEventListener('input', renderDashboard);
+  // Ship 3b: view-toggle wiring — bound ONCE here (not per-render), same idiom
+  // as the chip delegate above. Click → set _dashView, swap the active button,
+  // re-render. Detailed/compact both keep the per-card openEventDrawer binding.
+  var dashViewToggle = document.getElementById('dash-view-toggle');
+  if (dashViewToggle) {
+    dashViewToggle.addEventListener('click', function(e) {
+      var btn = e.target.closest('button[data-view]'); if (!btn) return;
+      _dashView = btn.dataset.view;
+      dashViewToggle.querySelectorAll('button').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      renderDashboard();
+    });
+  }
   // Admin V1 (split a): invite flow not in (a) scope — stub only.
   var adminInviteBtn = document.getElementById('admin-invite-btn');
   if (adminInviteBtn) {

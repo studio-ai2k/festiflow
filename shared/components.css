@@ -41,8 +41,8 @@
    module-dates dashboard now. n>=2 consolidation candidates to adopt later:
    BCHIP_* inline consts (index.html, 10 refs) + budget_general.html .bchip —
    NOT migrated in this feature build (logged in STATUS). Tokens only. ── */
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
-.kpi{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:15px 17px;position:relative;overflow:hidden}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;margin-top:18px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;position:relative;overflow:hidden}
 .kpi-edge{position:absolute;left:0;top:0;bottom:0;width:3px}
 .kpi-edge.dates{background:var(--indigo)}
 .kpi-edge.budget{background:var(--green)}
@@ -54,7 +54,7 @@
 .kpi-delta.up{color:var(--green)}
 .kpi-delta.down{color:var(--red)}
 .kpi-delta.flat{color:var(--text-dim)}
-@media(max-width:600px){.kpi-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.kpi-row{grid-template-columns:repeat(2,1fr)}.kpi{padding:12px 14px}}
 
 /* ── shared responsive: table-wrap horizontal scroll on narrow viewports ── */
 @media(max-width:640px){

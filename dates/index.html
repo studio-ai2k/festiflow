@@ -51,18 +51,20 @@
     #dash-grid.dash-grid--compact { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
     @media (max-width: 600px) {
       #dash-grid.dash-grid--compact { grid-template-columns:repeat(2,1fr); }
-      /* Item 2 fix (render-only): on the mobile stack, the real budget tiles
-         must emit LAST instead of mid-list. The tiles are nested inside the
-         left identity column, so `order` alone can't move them across the
-         nesting. Promote the left column to display:contents at ≤600px → its
-         two children (identity1 block + .ec-real-tiles) become direct flex
-         children of the stacked .ec-content-cols, alongside .ec-col-right.
-         Then order: identity1 = 0 (default) → right col = 1 → real tiles = 2,
-         giving Date/Ville/Lieu → Édition/Plateforme/Capacité → [budget tiles].
-         Desktop (>600px) is untouched: .ec-col-left stays a normal flex column. */
-      .ec-col-left { display:contents; }
-      .ec-col-right { order:1; }
-      .ec-real-tiles { order:2; }
+      /* Item 2: center every compact-card title on the 2-up mobile grid. The
+         shared headerHTML is a space-between flex (name | status); on mobile
+         compact cards we center it so titles read consistently across all
+         cards regardless of whether a status chip is present. Targets the
+         compact card's header (its first child div); detailed cards + desktop
+         compact are untouched. */
+      .dash-card--compact > div:first-child { justify-content:center; text-align:center; }
+      /* Item 3: stack the view-toggle ABOVE the search field on mobile. The
+         filterbar is a flex-wrap row (search → chips → toggle on desktop);
+         giving the toggle order:-1 + full-row basis floats it onto its own
+         row at the top, above the search. margin-left:auto (the desktop
+         right-push) is reset so it doesn't fight the new full-width row.
+         Desktop filterbar layout is unchanged. */
+      .liste-filterbar .dash-view-toggle { order:-1; margin-left:0; flex-basis:100%; width:max-content; }
     }
   </style>
 </head>
@@ -696,7 +698,7 @@ function cardHTML(evt, idx, compact) {
     const rowStyle = 'display:flex;justify-content:space-between;align-items:center;font-size:.72em;padding:4px 0;border-top:1px solid var(--border)';
     const kStyle = 'color:var(--text-dim)';
     return `
-    <div class="card" style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+    <div class="card dash-card--compact" style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
       ${headerHTML}
       <div style="display:flex;flex-direction:column">
         <div style="${rowStyle}"><span style="${kStyle}">Statut</span><span>${dot}</span></div>
@@ -707,13 +709,12 @@ function cardHTML(evt, idx, compact) {
   `;
   }
 
-  // Detailed body (default): poster + the EXISTING two-column identity/tiles
-  // block — structurally unchanged from v5.20.5 (desktop layout identical).
-  // Item 2 fix lives in CSS, not here: the real-tiles envelope is wrapped in
-  // .ec-real-tiles, and on mobile (L21 block) the left column goes
-  // display:contents so identity1 + tiles become direct flex children of the
-  // stacked .ec-content-cols, then `order` drops the tiles LAST. Desktop is
-  // untouched (the wrapper is transparent in the desktop flex-row).
+  // Detailed body (default): poster + the budget-tiles row + the two-column
+  // identity block. The real-tiles envelope (.ec-real-tiles) is a full-width
+  // sibling emitted ABOVE .ec-content-cols, so source order alone is correct
+  // on every viewport — desktop reads it as a full-width row under the title;
+  // mobile (the columns stack via the L21 block) reads it first, then the two
+  // stacked identity columns. No fragile display-promotion trick, no order.
   return `
     <div class="card" style="padding:0;overflow:hidden">
       <div style="display:flex;flex-direction:row">
@@ -721,10 +722,10 @@ function cardHTML(evt, idx, compact) {
         <div style="flex:1;padding:16px 24px;display:flex;flex-direction:column;gap:14px;min-width:0">
           ${headerHTML}
           ${HEADER_SEPARATOR_HTML}
+          <div class="ec-real-tiles">${tilesEnvelopeHTML(evt)}</div>
           <div class="ec-content-cols" style="display:flex;flex-direction:row;gap:20px;min-width:0">
             <div class="ec-col-left" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px">
               ${identityRow1HTML(evt)}
-              <div class="ec-real-tiles">${tilesEnvelopeHTML(evt)}</div>
             </div>
             <div class="ec-col-right" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px">
               ${identityRow2HTML(evt)}

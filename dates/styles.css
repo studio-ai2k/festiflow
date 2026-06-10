@@ -1,7 +1,7 @@
 /* Accent palette discipline: 5 hues only (green/red/amber/purple/indigo) — tokens in shared/tokens.css. NO other hue introduced anywhere. */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-padding-top:56px}
-body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;font-size:19px;line-height:1.55;overflow-x:hidden}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;font-size:19px;line-height:1.55;overflow-x:clip}
 .wrap{max-width:1020px;margin:0 auto;padding:12px 20px 80px;overflow-x:hidden}
 
 /* ── NAV ─────────────────────────────── */
@@ -64,7 +64,6 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .drawer-btn.primary:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:#fff}
 
 @media(max-width:720px){
-  html,body{overflow-x:hidden}
   body{font-size:15px}
   .wrap{padding:0 12px 60px}
   /* drawer becomes bottom sheet — ported from budget_pa.html L243-244 + L417-422.

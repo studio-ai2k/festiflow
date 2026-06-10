@@ -25,7 +25,7 @@
          (the v5.14.1 empty-tiles-hide unmasked this — real tiles were never in
          the freed space, they live in the left column). !important beats the
          div's inline flex-direction:row. */
-      .ec-content-cols { flex-direction: column !important; }
+      .ec-content-cols { flex-direction: column !important; gap: 14px; }
       /* Swap euro form: hide full, show k-abbreviated. */
       .eur-full { display: none; }
       .eur-abbr { display: inline; }
@@ -58,13 +58,14 @@
          compact card's header (its first child div); detailed cards + desktop
          compact are untouched. */
       .dash-card--compact > div:first-child { justify-content:center; text-align:center; }
-      /* Item 3: stack the view-toggle ABOVE the search field on mobile. The
-         filterbar is a flex-wrap row (search → chips → toggle on desktop);
-         giving the toggle order:-1 + full-row basis floats it onto its own
-         row at the top, above the search. margin-left:auto (the desktop
-         right-push) is reset so it doesn't fight the new full-width row.
-         Desktop filterbar layout is unchanged. */
-      .liste-filterbar .dash-view-toggle { order:-1; margin-left:0; flex-basis:100%; width:max-content; }
+      /* Item 3: stack the view-toggle ABOVE the search field on mobile and
+         right-align it on that row. The filterbar is a flex-wrap row (search →
+         chips → toggle on desktop); giving the toggle order:-1 + full-row basis
+         floats it onto its own row at the top, above the search. width:max-content
+         keeps it content-width, and margin-left:auto pushes it to the right edge
+         of its own full-width row (right-aligned, not left). Desktop filterbar
+         layout is unchanged. */
+      .liste-filterbar .dash-view-toggle { order:-1; margin-left:auto; flex-basis:100%; width:max-content; }
     }
   </style>
 </head>
@@ -627,7 +628,7 @@ function tilesEnvelopeHTML(evt) {
   const total     = evt.budget_target;
   const consumed  = evt.budget_consumed;
   const remaining = (total != null && consumed != null) ? total - consumed : null;
-  return `<div style="display:flex;gap:10px;flex:1 1 0">
+  return `<div style="display:flex;gap:10px;flex:1 1 0;min-width:0">
           ${kpiTileHTML('Budget',    total)}
           ${kpiTileHTML('Consommé',  consumed)}
           ${kpiTileHTML('Restant',   remaining)}
@@ -656,7 +657,7 @@ function placeholderTileHTML(label) {
 }
 
 function emptyTilesEnvelopeHTML() {
-  return `<div class="ec-v2-tiles" style="display:flex;gap:10px;flex:1 1 0">
+  return `<div class="ec-v2-tiles" style="display:flex;gap:10px;flex:1 1 0;min-width:0">
           ${placeholderTileHTML('Non relié')}
           ${placeholderTileHTML('Imprévus')}
           ${placeholderTileHTML('Résultat Net')}
@@ -698,16 +699,15 @@ function cardHTML(evt, idx, compact) {
           </div>`;
 
   if (compact) {
-    // Compact body: NO poster, NO budget tiles. Three label/value rows —
-    // Statut (reuse `s` built above) · Jauge (formatCapacity) · Société (producteur).
-    const dot = s ? `<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:${s.color}"></span><span style="color:var(--text-muted);font-weight:500">${s.label}</span></span>` : '<span style="color:var(--text-muted)">—</span>';
+    // Compact body: NO poster, NO budget tiles. Two label/value rows —
+    // Jauge (formatCapacity) · Société (producteur). Statut is header-only
+    // (the shared headerHTML status chip), no redundant in-body row.
     const rowStyle = 'display:flex;justify-content:space-between;align-items:center;font-size:.72em;padding:4px 0;border-top:1px solid var(--border)';
     const kStyle = 'color:var(--text-dim)';
     return `
     <div class="card dash-card--compact" style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
       ${headerHTML}
       <div style="display:flex;flex-direction:column">
-        <div style="${rowStyle}"><span style="${kStyle}">Statut</span><span>${dot}</span></div>
         <div style="${rowStyle}"><span style="${kStyle}">Jauge</span><span style="color:var(--text-muted);font-weight:500">${formatCapacity(evt.capacity)}</span></div>
         <div style="${rowStyle}"><span style="${kStyle}">Société</span><span style="color:var(--text-muted);font-weight:500">${evt.producteur || '—'}</span></div>
       </div>
@@ -1601,6 +1601,16 @@ document.addEventListener('DOMContentLoaded', function() {
       dashViewToggle.querySelectorAll('button').forEach(function(b){ b.classList.remove('on'); });
       btn.classList.add('on');
       renderDashboard();
+      // Item 5 (mobile-gated, net-new): on the compact toggle, scroll the
+      // top KPI cards (#dash-kpi-row) out of view so the compact grid is what's
+      // in view. Gated to compact + mobile (600px, matching the page-local
+      // @media breakpoint idiom); desktop and the detailed view are unaffected.
+      // Reads _dashView (the module-level state var) — NOT _compact, which is a
+      // renderDashboard-local const and out of scope here.
+      if (_dashView === 'compact' && window.matchMedia('(max-width: 600px)').matches) {
+        var dashGrid = document.getElementById('dash-grid');
+        if (dashGrid) dashGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     });
   }
   // Admin V1 (split a): invite flow not in (a) scope — stub only.

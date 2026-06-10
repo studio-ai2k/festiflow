@@ -627,33 +627,39 @@ function tilesEnvelopeHTML(evt) {
   const total     = evt.budget_target;
   const consumed  = evt.budget_consumed;
   const remaining = (total != null && consumed != null) ? total - consumed : null;
-  return `<div style="display:flex;gap:10px">
+  return `<div style="display:flex;gap:10px;flex:1 1 0">
           ${kpiTileHTML('Budget',    total)}
           ${kpiTileHTML('Consommé',  consumed)}
           ${kpiTileHTML('Restant',   remaining)}
         </div>`;
 }
 
-/* KPI row 2 — V2 Billetterie scaffolding. Sits in the right column of the
- * content-zone two-column split, anchored under identity column 2. Empty
- * bare-chrome tiles with &nbsp; placeholders on label + value lines to
- * preserve filled-tile dimensions (envelope reads as "reserved for V2", not
- * "stage-incomplete"). Extends Stage 2's reserve-envelope-for-next-stage
- * precedent from Stage 3 to V2.
- * Stage 6 retrospective: keep scaffolding at V1 ship, or strip at ship time?
+/* KPI row — placeholder half. Three RESERVED tiles (Non relié · Imprévus ·
+ * Résultat Net) surfaced as labelled tiles with em-dash values, NOT blank
+ * chrome — Leo's lock: placement is the ship, surface the reserved slots,
+ * don't hide them. Reserved for future module/budget content (which is TBD);
+ * no backing data fields exist yet, so the values are a literal em-dash —
+ * data deferred to a later decision, NOT billetterie, no getters wired.
+ * Merged into the full-width .ec-real-tiles row (6-up: 3 live + 3 reserved).
+ * Each tile is individually addressable (label-taking helper) so a future
+ * module/budget value can replace one cleanly. Mobile keeps the real 3 via
+ * the .ec-v2-tiles { display:none !important } rule above (re-derived at L22)
+ * — the .ec-v2-tiles wrapper is preserved precisely so that hide still fires.
+ * Reverses the prior bare-reserve rationale (Stage 3 &nbsp; envelope) —
+ * superseded here.
  */
-function emptyTileHTML() {
+function placeholderTileHTML(label) {
   return `<div style="${BCHIP_STYLE}">
-            <div style="${BCHIP_LABEL_STYLE}">&nbsp;</div>
-            <div style="${BCHIP_VAL_STYLE}">&nbsp;</div>
+            <div style="${BCHIP_LABEL_STYLE}">${label}</div>
+            <div style="${BCHIP_VAL_STYLE}">—</div>
           </div>`;
 }
 
 function emptyTilesEnvelopeHTML() {
-  return `<div class="ec-v2-tiles" style="display:flex;gap:10px">
-          ${emptyTileHTML()}
-          ${emptyTileHTML()}
-          ${emptyTileHTML()}
+  return `<div class="ec-v2-tiles" style="display:flex;gap:10px;flex:1 1 0">
+          ${placeholderTileHTML('Non relié')}
+          ${placeholderTileHTML('Imprévus')}
+          ${placeholderTileHTML('Résultat Net')}
         </div>`;
 }
 
@@ -722,14 +728,13 @@ function cardHTML(evt, idx, compact) {
         <div style="flex:1;padding:16px 24px;display:flex;flex-direction:column;gap:14px;min-width:0">
           ${headerHTML}
           ${HEADER_SEPARATOR_HTML}
-          <div class="ec-real-tiles">${tilesEnvelopeHTML(evt)}</div>
+          <div class="ec-real-tiles" style="display:flex;gap:10px">${tilesEnvelopeHTML(evt)}${emptyTilesEnvelopeHTML()}</div>
           <div class="ec-content-cols" style="display:flex;flex-direction:row;gap:20px;min-width:0">
             <div class="ec-col-left" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px">
               ${identityRow1HTML(evt)}
             </div>
             <div class="ec-col-right" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px">
               ${identityRow2HTML(evt)}
-              ${emptyTilesEnvelopeHTML()}
             </div>
           </div>
         </div>

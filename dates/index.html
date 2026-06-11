@@ -25,7 +25,7 @@
          (the v5.14.1 empty-tiles-hide unmasked this — real tiles were never in
          the freed space, they live in the left column). !important beats the
          div's inline flex-direction:row. */
-      .ec-content-cols { flex-direction: column !important; gap: 14px; }
+      .ec-content-cols { flex-direction: column !important; gap: 14px !important; }
       /* Swap euro form: hide full, show k-abbreviated. */
       .eur-full { display: none; }
       .eur-abbr { display: inline; }
@@ -58,14 +58,18 @@
          compact card's header (its first child div); detailed cards + desktop
          compact are untouched. */
       .dash-card--compact > div:first-child { justify-content:center; text-align:center; }
-      /* Item 3: stack the view-toggle ABOVE the search field on mobile and
-         right-align it on that row. The filterbar is a flex-wrap row (search →
-         chips → toggle on desktop); giving the toggle order:-1 + full-row basis
-         floats it onto its own row at the top, above the search. width:max-content
-         keeps it content-width, and margin-left:auto pushes it to the right edge
-         of its own full-width row (right-aligned, not left). Desktop filterbar
+      /* Item 3 (re-fix, device-gated candidate): the view-toggle should sit
+         inline-right at the end of the wrapped filterbar row on mobile. The
+         filterbar is a flex-wrap row (search → chips → toggle on desktop);
+         order:-1 moves the toggle ahead in source-order, width:max-content keeps
+         it content-width, and margin-left:auto pushes it to the right edge.
+         The prior own-row width basis was removed — that mechanism forced the toggle
+         onto its own full-width row but rendered full-width-left on Leo's device; this
+         candidate tests content-width-right instead. If on-device the toggle collapses back into
+         the search/chips row, the armed fallback is a plain full-width <div>
+         wrapper with justify-content:flex-end (see CHANGELOG). Desktop filterbar
          layout is unchanged. */
-      .liste-filterbar .dash-view-toggle { order:-1; margin-left:auto; flex-basis:100%; width:max-content; }
+      .liste-filterbar .dash-view-toggle { order:-1; margin-left:auto; width:max-content; }
     }
   </style>
 </head>
@@ -584,7 +588,7 @@ function posterZoneHTML(evt, idx) {
  * all pills per Leo Stage 3 sign-off. Field-level "—" fallback applies tile-by-tile
  * when budget_target or budget_consumed is null/0, independent of event pill row.
  */
-const BCHIP_STYLE       = 'background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;transition:border-color .2s;flex:1 1 0;min-width:0';
+const BCHIP_STYLE       = 'background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;transition:border-color .2s;flex:1 1 0;min-width:0;text-align:center';
 const BCHIP_LABEL_STYLE = 'font-size:.6em;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-dim);font-weight:600;margin-bottom:6px';
 const BCHIP_VAL_STYLE   = 'font-size:.95em;font-weight:700;color:#fff;letter-spacing:-.3px;line-height:1.1';
 const BCHIP_SUB_STYLE   = 'font-size:.65em;color:var(--text-muted);margin-top:4px';

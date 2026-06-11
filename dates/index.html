@@ -44,6 +44,12 @@
     .dash-view-toggle button { padding:7px 10px; background:transparent; border:none; color:var(--text-dim); cursor:pointer; display:flex; align-items:center; }
     .dash-view-toggle button.on { background:var(--surface-2); color:var(--text); }
     .dash-view-toggle button svg { display:block; }
+    /* v5.20.14 #3 fallback: the .dash-toggle-row wrapper is transparent on desktop
+       (display:contents) so the inner .dash-view-toggle stays a direct filterbar
+       flex child and keeps its inline-right position via margin-left:auto. The
+       mobile override below turns the wrapper into its own full-width right-aligned
+       row. */
+    .dash-toggle-row { display:contents; }
     /* Detailed (default): #dash-grid is the existing vertical stack — cards are
        full-width 1-per-row via their own .card block layout, no grid rule needed.
        Compact: responsive grid, 3-up desktop / 2-up mobile (mirrors the mock's
@@ -58,18 +64,17 @@
          compact card's header (its first child div); detailed cards + desktop
          compact are untouched. */
       .dash-card--compact > div:first-child { justify-content:center; text-align:center; }
-      /* Item 3 (re-fix, device-gated candidate): the view-toggle should sit
-         inline-right at the end of the wrapped filterbar row on mobile. The
-         filterbar is a flex-wrap row (search → chips → toggle on desktop);
-         order:-1 moves the toggle ahead in source-order, width:max-content keeps
-         it content-width, and margin-left:auto pushes it to the right edge.
-         The prior own-row width basis was removed — that mechanism forced the toggle
-         onto its own full-width row but rendered full-width-left on Leo's device; this
-         candidate tests content-width-right instead. If on-device the toggle collapses back into
-         the search/chips row, the armed fallback is a plain full-width <div>
-         wrapper with justify-content:flex-end (see CHANGELOG). Desktop filterbar
-         layout is unchanged. */
-      .liste-filterbar .dash-view-toggle { order:-1; margin-left:auto; width:max-content; }
+      /* Item 3 (re-fix round 2, device-gated candidate — SHIPPED FALLBACK): the
+         v5.20.13 candidate (toggle content-width + margin-left:auto, no own-row
+         basis) collapsed the toggle inline into the search row on Leo's device, as
+         the prior author comment warned. That candidate is retired. The toggle now
+         gets its own right-aligned mobile row STRUCTURALLY: the .dash-toggle-row
+         wrapper (transparent on desktop) becomes a flex row here that spans the
+         full filterbar width (flex shorthand basis 100% + width:100%), so it wraps
+         onto its own line, and justify-content:flex-end pushes the toggle to the
+         right edge of that line. The inner .dash-view-toggle keeps its desktop
+         margin-left:auto; no per-toggle order/width override is needed on mobile. */
+      .dash-toggle-row { display:flex; justify-content:flex-end; flex:0 0 100%; width:100%; }
     }
   </style>
 </head>
@@ -133,12 +138,18 @@
       <button class="lchip" data-filter="selling">En vente</button>
       <button class="lchip" data-filter="sandbox">Sandbox</button>
     </div>
-    <!-- Ship 3b: event-card view-toggle, LAST filterbar item (right-aligned via
-         margin-left:auto). Segmented two-button: list icon = detailed (default),
-         grid icon = compact. Page-local (n=1), wired once in DOMContentLoaded. -->
-    <div class="dash-view-toggle" id="dash-view-toggle">
-      <button type="button" class="on" data-view="detailed" title="Vue détaillée" aria-label="Vue détaillée"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-      <button type="button" data-view="compact" title="Vue compacte" aria-label="Vue compacte"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
+    <!-- Ship 3b: event-card view-toggle. Segmented two-button: list icon =
+         detailed (default), grid icon = compact. Page-local (n=1), wired once in
+         DOMContentLoaded. v5.20.14: wrapped in .dash-toggle-row — on desktop the
+         wrapper is transparent (display:contents) so the toggle stays the inline
+         last filterbar item via margin-left:auto (unchanged); on mobile (≤600px)
+         the wrapper becomes a full-width flex row that right-aligns the toggle on
+         its own line via justify-content:flex-end (structural, see <style>). -->
+    <div class="dash-toggle-row">
+      <div class="dash-view-toggle" id="dash-view-toggle">
+        <button type="button" class="on" data-view="detailed" title="Vue détaillée" aria-label="Vue détaillée"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <button type="button" data-view="compact" title="Vue compacte" aria-label="Vue compacte"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
+      </div>
     </div>
   </div>
   <div id="dash-grid"></div>

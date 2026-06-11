@@ -44,11 +44,11 @@
     .dash-view-toggle button { padding:7px 10px; background:transparent; border:none; color:var(--text-dim); cursor:pointer; display:flex; align-items:center; }
     .dash-view-toggle button.on { background:var(--surface-2); color:var(--text); }
     .dash-view-toggle button svg { display:block; }
-    /* v5.20.14 #3 fallback: the .dash-toggle-row wrapper is transparent on desktop
-       (display:contents) so the inner .dash-view-toggle stays a direct filterbar
-       flex child and keeps its inline-right position via margin-left:auto. The
-       mobile override below turns the wrapper into its own full-width right-aligned
-       row. */
+    /* #3 (v5.20.15): the .dash-toggle-row wrapper is transparent (display:contents)
+       so the inner .dash-view-toggle is a direct .liste-filterbar flex child and sits
+       inline-right via its base margin-left:auto — on desktop AND mobile (Tier 1). The
+       mobile block below restates this and documents the Tier-2 own-row-above flip if
+       the device proves the toggle cannot fit inline at mobile width. */
     .dash-toggle-row { display:contents; }
     /* Detailed (default): #dash-grid is the existing vertical stack — cards are
        full-width 1-per-row via their own .card block layout, no grid rule needed.
@@ -64,17 +64,23 @@
          compact card's header (its first child div); detailed cards + desktop
          compact are untouched. */
       .dash-card--compact > div:first-child { justify-content:center; text-align:center; }
-      /* Item 3 (re-fix round 2, device-gated candidate — SHIPPED FALLBACK): the
-         v5.20.13 candidate (toggle content-width + margin-left:auto, no own-row
-         basis) collapsed the toggle inline into the search row on Leo's device, as
-         the prior author comment warned. That candidate is retired. The toggle now
-         gets its own right-aligned mobile row STRUCTURALLY: the .dash-toggle-row
-         wrapper (transparent on desktop) becomes a flex row here that spans the
-         full filterbar width (flex shorthand basis 100% + width:100%), so it wraps
-         onto its own line, and justify-content:flex-end pushes the toggle to the
-         right edge of that line. The inner .dash-view-toggle keeps its desktop
-         margin-left:auto; no per-toggle order/width override is needed on mobile. */
-      .dash-toggle-row { display:flex; justify-content:flex-end; flex:0 0 100%; width:100%; }
+      /* Item 3 (re-fix round 3, device-gated — TWO-TIER retarget). TIER 1 (primary,
+         shipped): keep the toggle inline-right ON the search row, exactly as desktop
+         does it — make the wrapper transparent here too (display:contents) so the
+         inner .dash-view-toggle is a direct .liste-filterbar flex child and rides the
+         search line, pushed right by its base margin-left:auto (the L43 rule). The
+         prior forced own-row width basis is dropped — that produced an own row BELOW
+         search, which Leo rejected. If the toggle fits inline at the target width
+         (~360-380px) it sits inline-right (Tier 1); if the device cannot fit it, it
+         naturally wraps to its own line — worst case no regression, just relocated.
+         TIER 2 (documented flip, NOT shipped — only if Leo's device proves Tier 1
+         cannot fit inline): give the wrapper its own row ABOVE search, right-aligned,
+         by flipping the two lines below to:
+            .dash-toggle-row { display:flex; justify-content:flex-end; order:-1; width:100%; }
+         order:-1 floats the wrapped row to the TOP of the wrapped filterbar (above
+         search — correcting v5.20.14's below-search regression); justify-content
+         right-aligns the toggle on that row. The eyeball decides Tier 1 vs Tier 2. */
+      .dash-toggle-row { display:contents; }
     }
   </style>
 </head>
@@ -140,11 +146,10 @@
     </div>
     <!-- Ship 3b: event-card view-toggle. Segmented two-button: list icon =
          detailed (default), grid icon = compact. Page-local (n=1), wired once in
-         DOMContentLoaded. v5.20.14: wrapped in .dash-toggle-row — on desktop the
-         wrapper is transparent (display:contents) so the toggle stays the inline
-         last filterbar item via margin-left:auto (unchanged); on mobile (≤600px)
-         the wrapper becomes a full-width flex row that right-aligns the toggle on
-         its own line via justify-content:flex-end (structural, see <style>). -->
+         DOMContentLoaded. v5.20.15: wrapped in .dash-toggle-row, transparent
+         (display:contents) at all widths so the toggle stays a direct filterbar
+         child and sits inline-right via margin-left:auto (Tier 1, desktop + mobile);
+         Tier-2 own-row-above flip documented in the <style> mobile block. -->
     <div class="dash-toggle-row">
       <div class="dash-view-toggle" id="dash-view-toggle">
         <button type="button" class="on" data-view="detailed" title="Vue détaillée" aria-label="Vue détaillée"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
@@ -600,7 +605,7 @@ function posterZoneHTML(evt, idx) {
  * when budget_target or budget_consumed is null/0, independent of event pill row.
  */
 const BCHIP_STYLE       = 'background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;transition:border-color .2s;flex:1 1 0;min-width:0;text-align:center';
-const BCHIP_LABEL_STYLE = 'font-size:.6em;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-dim);font-weight:600;margin-bottom:6px';
+const BCHIP_LABEL_STYLE = 'font-size:.6em;text-transform:uppercase;letter-spacing:1.2px;text-indent:1.2px;color:var(--text-dim);font-weight:600;margin-bottom:6px';
 const BCHIP_VAL_STYLE   = 'font-size:.95em;font-weight:700;color:#fff;letter-spacing:-.3px;line-height:1.1';
 const BCHIP_SUB_STYLE   = 'font-size:.65em;color:var(--text-muted);margin-top:4px';
 

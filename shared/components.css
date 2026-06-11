@@ -56,6 +56,15 @@
 .kpi-delta.flat{color:var(--text-dim)}
 @media(max-width:600px){.kpi-row{grid-template-columns:repeat(2,1fr)}.kpi{padding:12px 14px}}
 
+/* ── Vocab-list header chrome (admin add-button idiom). Promoted from
+   module-dates/styles.css at Ship B per ADR-0011/0020 shared-layer pattern;
+   font-size normalized .74em → 13px (absolute, matches the content-layer
+   baseline; the relative .74em rode the body font → oversized desktop /
+   shrunk mobile). Four consumers in the Admin tab (index.html). ── */
+.vocab-hdr{display:flex;justify-content:flex-end;align-items:center;margin-bottom:14px}
+.vocab-add-btn{padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer}
+.vocab-add-btn:hover{border-color:var(--green);color:var(--green)}
+
 /* ── shared responsive: table-wrap horizontal scroll on narrow viewports ── */
 @media(max-width:640px){
   .liste-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}

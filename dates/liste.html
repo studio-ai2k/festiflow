@@ -194,12 +194,12 @@ a{color:inherit;text-decoration:none}
       <button class="lchip" data-status="En préparation">En préparation</button>
       <button class="lchip" data-status="En vente">En vente</button>
       <button class="lchip" data-status="Annulé">Annulé</button>
-      <button class="lchip" data-status="Sandbox">Sandbox</button>
+      <button class="lchip" data-status="Sandbox">Brouillon</button>
       <button class="lchip" data-status="Terminé">Terminé</button>
     </div>
     <label class="sandbox-toggle">
       <input type="checkbox" id="liste-sandbox-toggle">
-      Afficher les sandbox
+      Afficher les brouillons
     </label>
   </div>
 
@@ -310,6 +310,7 @@ const STATUS_DOT = {
   'En préparation':'s-prep', 'En vente':'s-vente', 'Annulé':'s-annule',
   'Sandbox':'s-sandbox', 'Terminé':'s-termine'
 };
+const EVENT_STATUS_LABELS = { 'En préparation':'En préparation', 'En vente':'En vente', 'Annulé':'Annulé', 'Sandbox':'Brouillon', 'Terminé':'Terminé' };
 function norm(s){ return (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
 function fmtDate(iso){
   if(!iso) return '—';
@@ -344,14 +345,14 @@ function applyFilters(events){
 function rowHTML(evt){
   const isSb = evt.status==='Sandbox';
   const pct = budgetPct(evt);
-  const sbBadge = isSb ? '<span class="sandbox-badge">sandbox</span>' : '';
+  const sbBadge = isSb ? '<span class="sandbox-badge">brouillon</span>' : '';
   const budgetCell = pct==null
     ? '<span class="col-budget-pct">—</span>'
     : '<div class="col-budget"><span class="col-budget-pct">'+pct+'%</span><span class="col-budget-target">'+fmtTarget(evt.budget_target)+'</span></div>';
   return ''+
     '<tr'+(isSb?' class="is-sandbox-row"':'')+'>'+
       '<td class="col-nom">'+esc(evt.name)+sbBadge+'</td>'+
-      '<td><span class="lstatus"><span class="lstatus-dot '+STATUS_DOT[evt.status]+'"></span>'+esc(evt.status)+'</span></td>'+
+      '<td><span class="lstatus"><span class="lstatus-dot '+STATUS_DOT[evt.status]+'"></span>'+esc(EVENT_STATUS_LABELS[evt.status] || evt.status)+'</span></td>'+
       '<td>'+esc(evt.marque||'—')+'</td>'+
       '<td>'+esc(evt.producteur||'—')+'</td>'+
       '<td>'+esc(evt.city||'—')+'</td>'+

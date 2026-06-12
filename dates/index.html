@@ -142,7 +142,7 @@
       <button class="lchip on" data-filter="all">Tous</button>
       <button class="lchip" data-filter="planned">En préparation</button>
       <button class="lchip" data-filter="selling">En vente</button>
-      <button class="lchip" data-filter="sandbox">Sandbox</button>
+      <button class="lchip" data-filter="sandbox">Brouillon</button>
     </div>
     <!-- Ship 3b: event-card view-toggle. Segmented two-button: list icon =
          detailed (default), grid icon = compact. Page-local (n=1), wired once in
@@ -454,7 +454,7 @@ window.MD.getCoproducers   = async function() { return STAGE2_COPRODUCERS.filter
  *   Terminé          → muted dot (rarely on Dashboard — Anciens surface)
  */
 function statusFor(evt) {
-  if (evt.status === 'Sandbox')        return { label:'Sandbox',        color:'var(--text-dim)' };
+  if (evt.status === 'Sandbox')        return { label:EVENT_STATUS_LABELS['Sandbox'], color:'var(--text-dim)' };
   if (evt.status === 'En vente')       return { label:'En vente',       color:'var(--green)' };
   if (evt.status === 'En préparation') return { label:'En préparation', color:'#818cf8' };
   if (evt.status === 'Annulé')         return { label:'Annulé',         color:'var(--red)' };
@@ -830,7 +830,7 @@ const STATUS_OPTIONS = [
   { schema: 'En préparation', label: 'En préparation' },
   { schema: 'En vente',       label: 'En vente' },
   { schema: 'Annulé',         label: 'Annulé' },
-  { schema: 'Sandbox',        label: 'Sandbox' },
+  { schema: 'Sandbox',        label: 'Brouillon' },   // display floats; canonical source EVENT_STATUS_LABELS (direct-string here: array literal init precedes the map def)
   { schema: 'Terminé',        label: 'Terminé' }
 ];
 
@@ -999,7 +999,7 @@ const FILTERS = {
 const EMPTY_COPY = {
   planned: 'Aucun événement en préparation.',
   selling: 'Aucun événement en vente.',
-  sandbox: 'Aucun événement sandbox.'
+  sandbox: 'Aucun événement brouillon.'
 };
 
 let _currentFilter = 'selling';
@@ -1209,6 +1209,7 @@ function bindAdminFilters() {
  * UI renders accented French. Stored ↔ display kept in one place. */
 const USER_ROLE_LABELS = { ADMIN: 'Admin', CHEF_POLE: 'Chef de pôle', EXTERNAL: 'Externe' };
 const USER_STATUS_LABELS = { ACTIVE: 'Actif', INVITED: 'Invité', DISABLED: 'Désactivé' };
+const EVENT_STATUS_LABELS = { 'En préparation':'En préparation', 'En vente':'En vente', 'Annulé':'Annulé', 'Sandbox':'Brouillon', 'Terminé':'Terminé' };
 
 /* Accent/case-insensitive search helper — identical to liste.html L329.
  * Defined once here for the admin filterbars (Concern 1, v0.13.0). */

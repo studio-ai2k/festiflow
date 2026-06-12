@@ -284,17 +284,17 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       <div class="fiche-field">
         <label class="fiche-field-label">Changer le statut</label>
         <select id="status-select" class="fiche-select">
-          <option>En préparation</option>
-          <option>En vente</option>
-          <option>Annulé</option>
-          <option>Sandbox</option>
-          <option>Terminé</option>
+          <option value="En préparation">En préparation</option>
+          <option value="En vente">En vente</option>
+          <option value="Annulé">Annulé</option>
+          <option value="Sandbox">Brouillon</option>
+          <option value="Terminé">Terminé</option>
         </select>
       </div>
     </div>
     <div id="sandbox-confirm-wrapper" class="fiche-field" style="margin-top:14px;display:none">
-      <button id="sandbox-confirm-btn" class="fiche-btn sandbox-confirm">✓ Confirmer la sandbox · passe à En préparation</button>
-      <div class="cond-note">[s'affiche uniquement quand statut actuel = Sandbox · raccourci UX one-way]</div>
+      <button id="sandbox-confirm-btn" class="fiche-btn sandbox-confirm">✓ Confirmer le brouillon · passe à En préparation</button>
+      <div class="cond-note">[s'affiche uniquement quand statut actuel = Brouillon · raccourci UX one-way]</div>
     </div>
     <div class="fiche-field" style="margin-top:12px">
       <label class="fiche-field-label">Sélecteur de session</label>
@@ -315,7 +315,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="fiche-section-hdr"><div class="fiche-section-title">3 · Localisation</div></div>
     <div class="fiche-row c2">
       <div class="fiche-field">
-        <label class="fiche-field-label">Pays <span class="req">*</span> <span class="opt">— sauf Sandbox</span></label>
+        <label class="fiche-field-label">Pays <span class="req">*</span> <span class="opt">— sauf Brouillon</span></label>
         <select id="country-select" class="fiche-select">
           <option value="" disabled>— Pays —</option>
           <option>France</option>
@@ -325,7 +325,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
         </select>
       </div>
       <div class="fiche-field">
-        <label class="fiche-field-label">Ville <span class="req">*</span> <span class="opt">— sauf Sandbox</span></label>
+        <label class="fiche-field-label">Ville <span class="req">*</span> <span class="opt">— sauf Brouillon</span></label>
         <input id="city-input" class="fiche-input" type="text">
       </div>
     </div>
@@ -348,7 +348,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       <div class="fiche-section-hint">capacité par jour · SCHEMA §4.5</div>
     </div>
     <div class="fiche-field">
-      <label class="fiche-field-label">Date de début <span class="req">*</span> <span class="opt">— sauf Sandbox</span></label>
+      <label class="fiche-field-label">Date de début <span class="req">*</span> <span class="opt">— sauf Brouillon</span></label>
       <input id="start-date-input" class="fiche-input" type="date">
     </div>
     <div class="fiche-field">
@@ -408,7 +408,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   <section class="fiche-section">
     <div class="fiche-section-hdr"><div class="fiche-section-title">6 · Compte Qonto</div></div>
     <div class="fiche-field" style="margin-bottom:0">
-      <label class="fiche-field-label">Compte bancaire <span class="opt">— optionnel V1 · désactivé en Sandbox</span></label>
+      <label class="fiche-field-label">Compte bancaire <span class="opt">— optionnel V1 · désactivé en Brouillon</span></label>
       <select id="qonto-select" class="fiche-select">
         <option value="" disabled>— Aucun compte —</option>
         <option>ML Bordeaux 2026 · FR76 ••2847</option>
@@ -599,7 +599,14 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     producteur: producteurSelect.parentElement.querySelector('.fiche-field-label .req')
   };
 
-  // ── Status enum map (display label === storage form per brief §6) ────
+  // ── Status enum map (storage form; display floats via EVENT_STATUS_LABELS at Brouillon-B — 'Sandbox' renders "Brouillon", storage stays 'Sandbox' pending Phase-D SCHEMA) ──
+  var EVENT_STATUS_LABELS = {
+    'En préparation': 'En préparation',
+    'En vente': 'En vente',
+    'Annulé': 'Annulé',
+    'Sandbox': 'Brouillon',
+    'Terminé': 'Terminé'
+  };
   var STATUS_VARIANT = {
     'En préparation': 'prep',
     'En vente': 'vente',
@@ -724,7 +731,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 
     // 1+2. Status dot + label track the select
     statusDot.className = 'status-dot ' + variant;
-    statusLabel.textContent = newVal;
+    statusLabel.textContent = EVENT_STATUS_LABELS[newVal] || newVal;
 
     // 3. Confirmer-la-sandbox button visibility
     sandboxConfirmWrapper.style.display = isSandbox ? '' : 'none';

@@ -531,7 +531,8 @@ query FetchOrders($eventId: ID!, $first: Int!, $after: String) {
             total
             fees {
               category
-              amount
+              dice
+              promoter
             }
             ticketType {
               name
@@ -574,7 +575,8 @@ query FetchOrdersWithDates($first: Int!, $after: String) {
             total
             fees {
               category
-              amount
+              dice
+              promoter
             }
             ticketType {
               name
@@ -810,9 +812,9 @@ def fetch_dice_tickets(dice_event_id, token, event_days=None):
         vat_amount = 0.0
         for fee in t.get('fees', []):
             cat = (fee.get('category') or '').upper()
-            amount = cents_to_euros(fee.get('amount', 0))
+            fee_total = cents_to_euros(fee.get('dice', 0)) + cents_to_euros(fee.get('promoter', 0))
             if cat == 'SALES_TAX' or 'TAX' in cat or 'TVA' in cat:
-                vat_amount += amount
+                vat_amount += fee_total
 
         gross_price = total  # total is what buyer paid (face + fees)
         fees_organizer = commission

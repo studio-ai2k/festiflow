@@ -1085,75 +1085,125 @@ def aggregate(tickets, event_config):
 # COMPARISON / REFERENCE DATA
 # ============================================================================
 
-def load_reference_data(compare_to, event_config_path, csv_database_dir):
+def resolve_reference(compare_to, config_path, csv_database_dir):
     """
-    Load stored reference event data for comparison.
-    Returns: (reference_tickets list, snapshot_date string) or (None, None)
+    Resolve reference event data. Tries LIVE API fetch first (if the reference
+    event has API credentials), falls back to stored CSV.
+
+    Returns: (reference_tickets list, ref_config dict, source "live"|"stored") or (None, None, None)
     """
     if not compare_to:
-        return None, None
+        return None, None, None
 
-    ref_config = load_event_config(event_config_path, event_id=compare_to)
+    ref_config = load_event_config(config_path, event_id=compare_to)
     if not ref_config:
-        return None, None
+        log(f"Reference event '{compare_to}' not found in config")
+        return None, None, None
 
-    # Look for merged CSV
+    # Try LIVE fetch if API credentials exist
+    has_shotgun = bool(ref_config.get('shotgun_event_id', '').strip())
+    has_dice = bool(ref_config.get('dice_mio_id', '').strip())
+
+    if has_shotgun or has_dice:
+        log(f"Reference '{compare_to}': live-fetching (shotgun={has_shotgun}, dice={has_dice})")
+
+        shotgun_token = os.environ.get('SHOTGUN_TOKEN', '')
+        shotgun_org_id = os.environ.get('SHOTGUN_ORGANIZER_ID', DEFAULT_ORGANIZER_ID)
+        dice_token = os.environ.get('DICE_TOKEN', '')
+        ref_days = ref_config['days']
+
+        ref_tickets = []
+
+        if has_shotgun and shotgun_token:
+            sg_tickets, sg_source = fetch_shotgun_tickets(
+                ref_config['shotgun_event_id'], shotgun_token, shotgun_org_id,
+                event_days=ref_days
+            )
+            ref_tickets.extend(sg_tickets)
+            log(f"  Reference Shotgun: {sg_source['tickets_fetched']} tickets ({sg_source['status']})")
+
+        if has_dice and dice_token:
+            dice_tickets, dice_source = fetch_dice_tickets(
+                ref_config['dice_mio_id'], dice_token,
+                event_days=ref_days
+            )
+            ref_tickets.extend(dice_tickets)
+            log(f"  Reference DICE: {dice_source['tickets_fetched']} tickets ({dice_source['status']})")
+
+        if ref_tickets:
+            ref_tickets.sort(key=lambda t: t.get('order_date', ''))
+            log_ok(f"Reference '{compare_to}': {len(ref_tickets)} tickets fetched live")
+            return ref_tickets, ref_config, 'live'
+        else:
+            log(f"Reference '{compare_to}': live fetch returned 0 tickets, trying stored CSV")
+
+    # Fall back to stored CSV (e.g. EPK 2023 coproduction case)
     merged_path = Path(csv_database_dir) / compare_to / f"{compare_to}_merged.csv"
-    if not merged_path.exists():
-        log(f"Reference CSV not found: {merged_path}")
-        return None, None
+    if merged_path.exists():
+        log(f"Reference '{compare_to}': loading from stored CSV {merged_path}")
+        tickets = []
+        with open(merged_path, 'r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                tickets.append({
+                    'order_date': row.get('order_date', ''),
+                    'gross_price': clean_price(row.get('gross_price', '0')),
+                    'fees_organizer': clean_price(row.get('fees_organizer', '0')),
+                    'fees_platform': clean_price(row.get('fees_platform', '0')),
+                    'fees_user': clean_price(row.get('fees_user', '0')),
+                    'vat': clean_price(row.get('vat', '0')),
+                    'is_paid': int(row.get('is_paid', 1)),
+                })
+        log_ok(f"Reference '{compare_to}': {len(tickets)} tickets from stored CSV")
+        return tickets, ref_config, 'stored'
 
-    log(f"Loading reference data from {merged_path}")
-    tickets = []
-    with open(merged_path, 'r', encoding='utf-8') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            tickets.append({
-                'order_date': row.get('order_date', ''),
-                'gross_price': clean_price(row.get('gross_price', '0')),
-                'is_paid': int(row.get('is_paid', 1)),
-            })
-
-    snapshot_date = ref_config['event_date_last'].isoformat() if ref_config.get('event_date_last') else ''
-    return tickets, snapshot_date
+    log(f"Reference '{compare_to}': no API credentials and no stored CSV — comparison unavailable")
+    return None, None, None
 
 
-def compute_comparison(current_tickets, reference_tickets, event_config, ref_snapshot_date):
+def compute_comparison(current_tickets, reference_tickets, event_config, ref_config, ref_source):
     """
     Compute comparison metrics between current event and reference event.
-    Uses the same point-in-time logic based on comparison_mode.
+    Implements j_minus time windowing: filters reference tickets to the
+    equivalent point in the reference event's lifecycle.
     """
-    if not reference_tickets:
+    if not reference_tickets or not ref_config:
         return None
 
     compare_to = event_config.get('compare_to', '')
-    mode = event_config.get('comparison_mode', 'j_minus')
-
-    # Reference totals at the same point in time
     today = date.today()
+
     event_last = event_config.get('event_date_last')
-    if not event_last:
+    ref_last = ref_config.get('event_date_last')
+    if not event_last or not ref_last:
         return None
 
-    # For 'days_since_launch': count how many days before event end = today
-    # Then find the same offset in the reference event
-    ref_config_path = None  # We'd need the ref config for the anchor date
-    # Simplified: just use all reference data (total comparison)
-    # The full _prev_match_dsl logic would need the reference event config
+    # Time windowing: how many days until current event?
+    days_until = (event_last - today).days
 
-    ref_total_tickets = len(reference_tickets)
-    ref_total_revenue = round(sum(t['gross_price'] for t in reference_tickets), 2)
+    if days_until <= 0:
+        # Current event is past — use all reference tickets (final vs final)
+        ref_filtered = reference_tickets
+        ref_snapshot = ref_last.isoformat()
+    else:
+        # Current event is upcoming — find the equivalent cutoff in reference year
+        ref_cutoff = ref_last - timedelta(days=days_until)
+        ref_filtered = [t for t in reference_tickets if t.get('order_date', '') <= ref_cutoff.isoformat()]
+        ref_snapshot = ref_cutoff.isoformat()
+
+    ref_total_tickets = len(ref_filtered)
+    ref_total_revenue = round(sum(t.get('gross_price', 0) for t in ref_filtered), 2)
 
     curr_total_tickets = len(current_tickets)
-    curr_total_revenue = round(sum(t['gross_price'] for t in current_tickets), 2)
+    curr_total_revenue = round(sum(t.get('gross_price', 0) for t in current_tickets), 2)
 
     delta_tickets = round((curr_total_tickets - ref_total_tickets) / ref_total_tickets, 4) if ref_total_tickets > 0 else None
     delta_revenue = round((curr_total_revenue - ref_total_revenue) / ref_total_revenue, 4) if ref_total_revenue > 0 else None
 
     return {
         'reference_event': compare_to,
-        'reference_source': 'stored',
-        'reference_snapshot_date': ref_snapshot_date,
+        'reference_source': ref_source,
+        'reference_snapshot_date': ref_snapshot,
         'reference_at_same_point': {
             'tickets_sold': ref_total_tickets,
             'gross_revenue': ref_total_revenue,
@@ -1221,13 +1271,13 @@ def fetch_event(event_id, config_path='event_config.csv', csv_database='csv_data
     # Aggregate
     aggregated = aggregate(all_tickets, event_config)
 
-    # Comparison
-    ref_tickets, ref_snapshot = load_reference_data(
+    # Comparison (live fetch first, stored CSV fallback)
+    ref_tickets, ref_config, ref_source = resolve_reference(
         event_config.get('compare_to', ''),
         config_path,
         csv_database
     )
-    comparison = compute_comparison(all_tickets, ref_tickets, event_config, ref_snapshot)
+    comparison = compute_comparison(all_tickets, ref_tickets, event_config, ref_config, ref_source)
 
     # Build final JSON
     result = {

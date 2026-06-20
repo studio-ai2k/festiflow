@@ -509,7 +509,7 @@ def fetch_shotgun_tickets(shotgun_event_id, token, organizer_id, event_days=None
 # ============================================================================
 
 DICE_ORDERS_QUERY = """
-query FetchOrders($eventId: ID!, $first: Int!, $after: String) {
+query FetchTickets($eventId: ID!, $first: Int!, $after: String) {
   node(id: $eventId) {
     ... on Event {
       name
@@ -536,11 +536,6 @@ query FetchOrders($eventId: ID!, $first: Int!, $after: String) {
             }
             ticketType {
               name
-              description
-            }
-            priceTier {
-              name
-              type
             }
             claimedAt
           }
@@ -564,28 +559,8 @@ query FetchOrdersWithDates($first: Int!, $after: String) {
         node {
           id
           purchasedAt
-          quantity
-          salesChannel
           tickets {
-            id
             code
-            fullPrice
-            commission
-            diceCommission
-            total
-            fees {
-              category
-              dice
-              promoter
-            }
-            ticketType {
-              name
-              description
-            }
-            priceTier {
-              name
-              type
-            }
           }
         }
       }

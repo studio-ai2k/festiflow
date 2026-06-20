@@ -1,6 +1,0 @@
-event_id,event_name,brand,venue,city,currency,on_sale_date,poster_url,dice_mio_id,dice_public_id,dice_url,shotgun_event_id,shotgun_url,day_number,day_name,day_date,day_capacity,compare_to,comparison_mode,merge_into,status,output_filename,login_password,login_bg_image,notes
-bordeaux_2026,Madame Loyal x Sonora Bordeaux 2026,Sonora,Parc des Expositions de Bordeaux,Bordeaux,EUR,,,DICE_MIO_ID_CONFIRM,,,505434,https://shotgun.live/en/festivals/madame-loyal-x-sonora-bordeaux,1,Jeudi,2026-06-11,0,bordeaux_2025,days_since_launch,,active,,,,3-day event — confirm dice_mio_id + per-day capacities
-bordeaux_2026,,,,,,,,,,,,,2,Vendredi,2026-06-12,0,,,,active,,,,
-bordeaux_2026,,,,,,,,,,,,,3,Samedi,2026-06-13,0,,,,active,,,,
-bordeaux_2025,Madame Loyal x Sonora Bordeaux 2025,Sonora,Parc des Expositions de Bordeaux,Bordeaux,EUR,,,DICE_MIO_ID_2025_CONFIRM,,,408231,,1,Vendredi,2025-06-13,0,,,,archive,,,,2-day event 2025 (reference) — confirm dice id + capacities
-bordeaux_2025,,,,,,,,,,,,,2,Samedi,2025-06-14,0,,,,archive,,,,

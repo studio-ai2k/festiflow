@@ -1,0 +1,6 @@
+event_id,event_name,brand,venue,city,currency,on_sale_date,poster_url,dice_mio_id,dice_public_id,dice_url,shotgun_event_id,shotgun_url,day_number,day_name,day_date,day_capacity,compare_to,comparison_mode,merge_into,status,output_filename,login_password,login_bg_image,notes
+bordeaux_2026,Sonora Bordeaux 2026,ML x Sonora,Parc Expo Bordeaux,Bordeaux,EUR,,,695258630f87670001c3bf66,7978503,,505434,,1,Jeudi,2026-06-11,8500,bordeaux_2025,j_minus,,active,bordeaux.json,,,
+bordeaux_2026,,,,,,,,,,,,,2,Vendredi,2026-06-12,18000,,,,active,,,,
+bordeaux_2026,,,,,,,,,,,,,3,Samedi,2026-06-13,18000,,,,active,,,,
+bordeaux_2025,Sonora Bordeaux 2025,ML x Sonora,Parc Expo Bordeaux,Bordeaux,EUR,,,667092c70dcfdb000168aae9,3380730,,408231,,1,Vendredi,2025-06-13,18000,,,,reference,,,,
+bordeaux_2025,,,,,,,,,,,,,2,Samedi,2025-06-14,18000,,,,reference,,,,

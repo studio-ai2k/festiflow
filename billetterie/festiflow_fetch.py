@@ -705,77 +705,42 @@ def fetch_dice_tickets(dice_event_id, token, event_days=None):
 
     log(f"  DICE: {len(ticket_map)} tickets from event node")
 
-    # Step 3: Fetch orders for purchase dates
-    # Query viewer.orders and match to our event's tickets
-    log("  DICE: Fetching orders for purchase dates...")
-    order_cursor = None
-    order_page = 0
-    purchase_dates = {}  # ticket_code -> purchasedAt
-    total_orders_scanned = 0
+    # Step 3: Resolve a per-ticket date.
+    #
+    # DICE exposes purchase dates only via viewer.orders, which on a
+    # promoter-level token paginates over EVERY order across ALL of the
+    # promoter's events (there is no event filter on that connection). For a
+    # promoter with many events that scan runs 15+ minutes and effectively
+    # hangs the fetch — it is the reason DICE never completed end-to-end.
+    #
+    # The event-node `tickets` query already returns `claimedAt` per ticket
+    # for free, scoped to this event. We use claimedAt as the ticket date
+    # (it was already the script's fallback) and skip the unbounded order
+    # scan entirely. NOTE for consumers: this makes DICE order_date a proxy
+    # (claim time, not purchase time). Totals, revenue, fees, VAT, ticket
+    # counts, by-day and the comparison block are unaffected; only DICE's
+    # purchase-over-time velocity granularity becomes approximate.
+    fallback_date = None
+    if event_days:
+        day_dates = [d.get('day_date') for d in event_days if d.get('day_date')]
+        if day_dates:
+            fallback_date = min(day_dates).isoformat()
+    if not fallback_date:
+        fallback_date = date.today().isoformat()
 
-    while True:
-        order_page += 1
-        log(f"  DICE orders page {order_page}...")
-        variables = {'first': 50}
-        if order_cursor:
-            variables['after'] = order_cursor
-
-        resp = make_request(DICE_GRAPHQL_ENDPOINT, headers=headers, data={
-            'query': DICE_ORDERS_WITH_DATES_QUERY,
-            'variables': variables
-        }, method='POST')
-
-        if resp is None or 'errors' in resp:
-            err_msg = 'Order fetch failed'
-            if resp and 'errors' in resp:
-                err_msg = str(resp['errors'][0].get('message', err_msg))
-            errors.append(err_msg)
-            break
-
-        viewer = resp.get('data', {}).get('viewer', {})
-        orders_conn = viewer.get('orders', {})
-        edges = orders_conn.get('edges', [])
-
-        if not edges:
-            break
-
-        for edge in edges:
-            order = edge.get('node', {})
-            purchased_at = order.get('purchasedAt', '')
-            order_tickets = order.get('tickets', [])
-
-            for ot in order_tickets:
-                code = ot.get('code', '')
-                if code in ticket_map:
-                    purchase_dates[code] = purchased_at
-
-        total_orders_scanned += len(edges)
-
-        page_info = orders_conn.get('pageInfo', {})
-        if page_info.get('hasNextPage'):
-            order_cursor = page_info.get('endCursor')
-        else:
-            break
-
-        # Early exit if we've found dates for all our tickets
-        if len(purchase_dates) >= len(ticket_map):
-            break
-
-    log(f"  DICE: matched {len(purchase_dates)}/{len(ticket_map)} purchase dates from {total_orders_scanned} orders")
+    log(f"  DICE: dating {len(ticket_map)} tickets from claimedAt (unbounded order scan skipped)")
 
     # Step 4: Normalize tickets
+    undated_count = 0
     for code, t in ticket_map.items():
-        purchased_at = purchase_dates.get(code, t.get('claimedAt', ''))
-        order_date = purchased_at[:10] if purchased_at else None
-
-        if not order_date:
-            # Use claimedAt as fallback
-            claimed = t.get('claimedAt', '')
-            order_date = claimed[:10] if claimed else None
-
-        if not order_date:
-            null_price_count += 1
-            continue
+        # claimedAt is the per-ticket date. Fall back to the event's first
+        # day so a ticket with no claimedAt is still counted, not dropped.
+        claimed = t.get('claimedAt') or ''
+        if claimed:
+            order_date = claimed[:10]
+        else:
+            order_date = fallback_date
+            undated_count += 1
 
         # Prices
         full_price = t['fullPrice']  # face value without commissions
@@ -811,7 +776,7 @@ def fetch_dice_tickets(dice_event_id, token, event_days=None):
 
         all_tickets.append({
             'order_date': order_date,
-            'order_datetime': purchased_at or '',
+            'order_datetime': claimed or '',
             'ticket_type': ticket_type,
             'access_level': access_level,
             'attendance_days': attendance_days,
@@ -826,8 +791,8 @@ def fetch_dice_tickets(dice_event_id, token, event_days=None):
             'is_paid': is_paid,
         })
 
-    if null_price_count > 0:
-        errors.append(f"{null_price_count} tickets with null date on dice")
+    if undated_count > 0:
+        log(f"  DICE: {undated_count} tickets had no claimedAt — dated to event start ({fallback_date})")
 
     log_ok(f"DICE: {len(all_tickets)} valid tickets normalized")
 

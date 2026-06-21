@@ -1,0 +1,118 @@
+{
+  "meta": {
+    "event_id": "bordeaux_2026",
+    "event_name": "Sonora Bordeaux 2026",
+    "generated_at": "2026-06-21T00:07:36.157975Z",
+    "status": "ok",
+    "errors": [],
+    "version": "1.0.0",
+    "sources": {
+      "shotgun": {
+        "status": "skipped",
+        "tickets_fetched": 0,
+        "event_id": "505434"
+      },
+      "dice": {
+        "status": "skipped",
+        "tickets_fetched": 0,
+        "event_id": "540197"
+      }
+    }
+  },
+  "event": {
+    "days": [
+      {
+        "name": "Jeudi",
+        "date": "2026-06-11",
+        "capacity": 8500
+      },
+      {
+        "name": "Vendredi",
+        "date": "2026-06-12",
+        "capacity": 18000
+      },
+      {
+        "name": "Samedi",
+        "date": "2026-06-13",
+        "capacity": 18000
+      }
+    ],
+    "currency": "EUR",
+    "compare_to": "bordeaux_2025",
+    "comparison_mode": "j_minus"
+  },
+  "totals": {
+    "tickets_sold": 0,
+    "tickets_paid": 0,
+    "tickets_unpaid": 0,
+    "gross_revenue": 0.0,
+    "fees_organizer": 0.0,
+    "fees_platform": 0.0,
+    "fees_user": 0.0,
+    "vat": 0.0,
+    "net_revenue": 0.0,
+    "capacity_total": 44500,
+    "fill_rate": 0.0
+  },
+  "by_ticket_type": [],
+  "by_platform": [],
+  "by_day": [
+    {
+      "day": "Jeudi",
+      "date": "2026-06-11",
+      "count": 0,
+      "count_paid": 0,
+      "count_unpaid": 0,
+      "capacity": 8500,
+      "fill_rate": 0.0,
+      "gross_revenue": 0.0,
+      "fees_organizer": 0.0,
+      "fees_platform": 0.0,
+      "fees_user": 0.0,
+      "vat": 0.0
+    },
+    {
+      "day": "Vendredi",
+      "date": "2026-06-12",
+      "count": 0,
+      "count_paid": 0,
+      "count_unpaid": 0,
+      "capacity": 18000,
+      "fill_rate": 0.0,
+      "gross_revenue": 0.0,
+      "fees_organizer": 0.0,
+      "fees_platform": 0.0,
+      "fees_user": 0.0,
+      "vat": 0.0
+    },
+    {
+      "day": "Samedi",
+      "date": "2026-06-13",
+      "count": 0,
+      "count_paid": 0,
+      "count_unpaid": 0,
+      "capacity": 18000,
+      "fill_rate": 0.0,
+      "gross_revenue": 0.0,
+      "fees_organizer": 0.0,
+      "fees_platform": 0.0,
+      "fees_user": 0.0,
+      "vat": 0.0
+    }
+  ],
+  "by_access_level": [],
+  "by_ticket_type_and_day": [],
+  "velocity": {
+    "current_week": {
+      "week_number": 2,
+      "tickets": 0,
+      "gross_revenue": 0.0
+    },
+    "previous_week": {
+      "week_number": 1,
+      "tickets": 0,
+      "gross_revenue": 0.0
+    },
+    "week_over_week_delta": null
+  }
+}

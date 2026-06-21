@@ -1,7 +1,7 @@
 {
   "event_id": "bordeaux_2026",
   "event_name": "Sonora Bordeaux 2026",
-  "generated_at": "2026-06-21T12:41:11.769669+00:00",
+  "generated_at": "2026-06-21T13:40:41.193205+00:00",
   "last_ticket_sold": "2026-06-13T19:23:16",
   "cutoffs": {
     "cumulative": "2026-06-13",
@@ -217,787 +217,787 @@
       {
         "date": "2026-01-06",
         "cumulative_current": 4091,
-        "cumulative_reference": 2761
+        "cumulative_reference": 4123
       },
       {
         "date": "2026-01-07",
         "cumulative_current": 4602,
-        "cumulative_reference": 2792
+        "cumulative_reference": 4176
       },
       {
         "date": "2026-01-08",
         "cumulative_current": 5082,
-        "cumulative_reference": 2828
+        "cumulative_reference": 4234
       },
       {
         "date": "2026-01-09",
         "cumulative_current": 5387,
-        "cumulative_reference": 2857
+        "cumulative_reference": 4288
       },
       {
         "date": "2026-01-10",
         "cumulative_current": 5617,
-        "cumulative_reference": 2902
+        "cumulative_reference": 4362
       },
       {
         "date": "2026-01-11",
         "cumulative_current": 5786,
-        "cumulative_reference": 2929
+        "cumulative_reference": 4409
       },
       {
         "date": "2026-01-12",
         "cumulative_current": 5918,
-        "cumulative_reference": 2957
+        "cumulative_reference": 4454
       },
       {
         "date": "2026-01-13",
         "cumulative_current": 6022,
-        "cumulative_reference": 2974
+        "cumulative_reference": 4481
       },
       {
         "date": "2026-01-14",
         "cumulative_current": 6189,
-        "cumulative_reference": 2995
+        "cumulative_reference": 4517
       },
       {
         "date": "2026-01-15",
         "cumulative_current": 6327,
-        "cumulative_reference": 3047
+        "cumulative_reference": 4585
       },
       {
         "date": "2026-01-16",
         "cumulative_current": 6439,
-        "cumulative_reference": 3072
+        "cumulative_reference": 4622
       },
       {
         "date": "2026-01-17",
         "cumulative_current": 6561,
-        "cumulative_reference": 3105
+        "cumulative_reference": 4679
       },
       {
         "date": "2026-01-18",
         "cumulative_current": 6668,
-        "cumulative_reference": 3133
+        "cumulative_reference": 4719
       },
       {
         "date": "2026-01-19",
         "cumulative_current": 6761,
-        "cumulative_reference": 3148
+        "cumulative_reference": 4740
       },
       {
         "date": "2026-01-20",
         "cumulative_current": 6816,
-        "cumulative_reference": 3169
+        "cumulative_reference": 4780
       },
       {
         "date": "2026-01-21",
         "cumulative_current": 6894,
-        "cumulative_reference": 3190
+        "cumulative_reference": 4822
       },
       {
         "date": "2026-01-22",
         "cumulative_current": 6942,
-        "cumulative_reference": 3209
+        "cumulative_reference": 4857
       },
       {
         "date": "2026-01-23",
         "cumulative_current": 7011,
-        "cumulative_reference": 3224
+        "cumulative_reference": 4900
       },
       {
         "date": "2026-01-24",
         "cumulative_current": 7091,
-        "cumulative_reference": 3251
+        "cumulative_reference": 4951
       },
       {
         "date": "2026-01-25",
         "cumulative_current": 7152,
-        "cumulative_reference": 3276
+        "cumulative_reference": 4985
       },
       {
         "date": "2026-01-26",
         "cumulative_current": 7205,
-        "cumulative_reference": 3300
+        "cumulative_reference": 5028
       },
       {
         "date": "2026-01-27",
         "cumulative_current": 7238,
-        "cumulative_reference": 3317
+        "cumulative_reference": 5065
       },
       {
         "date": "2026-01-28",
         "cumulative_current": 7328,
-        "cumulative_reference": 3348
+        "cumulative_reference": 5136
       },
       {
         "date": "2026-01-29",
         "cumulative_current": 7411,
-        "cumulative_reference": 3396
+        "cumulative_reference": 5251
       },
       {
         "date": "2026-01-30",
         "cumulative_current": 7489,
-        "cumulative_reference": 3439
+        "cumulative_reference": 5341
       },
       {
         "date": "2026-01-31",
         "cumulative_current": 7573,
-        "cumulative_reference": 3481
+        "cumulative_reference": 5427
       },
       {
         "date": "2026-02-01",
         "cumulative_current": 7661,
-        "cumulative_reference": 3541
+        "cumulative_reference": 5541
       },
       {
         "date": "2026-02-02",
         "cumulative_current": 7738,
-        "cumulative_reference": 3585
+        "cumulative_reference": 5622
       },
       {
         "date": "2026-02-03",
         "cumulative_current": 7799,
-        "cumulative_reference": 3619
+        "cumulative_reference": 5701
       },
       {
         "date": "2026-02-04",
         "cumulative_current": 7871,
-        "cumulative_reference": 3654
+        "cumulative_reference": 5764
       },
       {
         "date": "2026-02-05",
         "cumulative_current": 7957,
-        "cumulative_reference": 3696
+        "cumulative_reference": 5848
       },
       {
         "date": "2026-02-06",
         "cumulative_current": 8069,
-        "cumulative_reference": 3746
+        "cumulative_reference": 5926
       },
       {
         "date": "2026-02-07",
         "cumulative_current": 8168,
-        "cumulative_reference": 3787
+        "cumulative_reference": 5986
       },
       {
         "date": "2026-02-08",
         "cumulative_current": 8250,
-        "cumulative_reference": 3835
+        "cumulative_reference": 6061
       },
       {
         "date": "2026-02-09",
         "cumulative_current": 8315,
-        "cumulative_reference": 3863
+        "cumulative_reference": 6120
       },
       {
         "date": "2026-02-10",
         "cumulative_current": 8384,
-        "cumulative_reference": 3901
+        "cumulative_reference": 6199
       },
       {
         "date": "2026-02-11",
         "cumulative_current": 8444,
-        "cumulative_reference": 3936
+        "cumulative_reference": 6260
       },
       {
         "date": "2026-02-12",
         "cumulative_current": 8508,
-        "cumulative_reference": 3962
+        "cumulative_reference": 6301
       },
       {
         "date": "2026-02-13",
         "cumulative_current": 8561,
-        "cumulative_reference": 3984
+        "cumulative_reference": 6342
       },
       {
         "date": "2026-02-14",
         "cumulative_current": 8624,
-        "cumulative_reference": 4025
+        "cumulative_reference": 6408
       },
       {
         "date": "2026-02-15",
         "cumulative_current": 8680,
-        "cumulative_reference": 4041
+        "cumulative_reference": 6450
       },
       {
         "date": "2026-02-16",
         "cumulative_current": 8732,
-        "cumulative_reference": 4068
+        "cumulative_reference": 6498
       },
       {
         "date": "2026-02-17",
         "cumulative_current": 8781,
-        "cumulative_reference": 4090
+        "cumulative_reference": 6532
       },
       {
         "date": "2026-02-18",
         "cumulative_current": 8823,
-        "cumulative_reference": 4115
+        "cumulative_reference": 6577
       },
       {
         "date": "2026-02-19",
         "cumulative_current": 8859,
-        "cumulative_reference": 4131
+        "cumulative_reference": 6610
       },
       {
         "date": "2026-02-20",
         "cumulative_current": 8917,
-        "cumulative_reference": 4149
+        "cumulative_reference": 6642
       },
       {
         "date": "2026-02-21",
         "cumulative_current": 8961,
-        "cumulative_reference": 4177
+        "cumulative_reference": 6686
       },
       {
         "date": "2026-02-22",
         "cumulative_current": 9009,
-        "cumulative_reference": 4199
+        "cumulative_reference": 6728
       },
       {
         "date": "2026-02-23",
         "cumulative_current": 9044,
-        "cumulative_reference": 4218
+        "cumulative_reference": 6769
       },
       {
         "date": "2026-02-24",
         "cumulative_current": 9069,
-        "cumulative_reference": 4255
+        "cumulative_reference": 6824
       },
       {
         "date": "2026-02-25",
         "cumulative_current": 9123,
-        "cumulative_reference": 4293
+        "cumulative_reference": 6891
       },
       {
         "date": "2026-02-26",
         "cumulative_current": 9178,
-        "cumulative_reference": 4338
+        "cumulative_reference": 6979
       },
       {
         "date": "2026-02-27",
         "cumulative_current": 9267,
-        "cumulative_reference": 4366
+        "cumulative_reference": 7054
       },
       {
         "date": "2026-02-28",
         "cumulative_current": 9347,
-        "cumulative_reference": 4407
+        "cumulative_reference": 7135
       },
       {
         "date": "2026-03-01",
         "cumulative_current": 9411,
-        "cumulative_reference": 4446
+        "cumulative_reference": 7203
       },
       {
         "date": "2026-03-02",
         "cumulative_current": 9467,
-        "cumulative_reference": 4491
+        "cumulative_reference": 7306
       },
       {
         "date": "2026-03-03",
         "cumulative_current": 9542,
-        "cumulative_reference": 4538
+        "cumulative_reference": 7382
       },
       {
         "date": "2026-03-04",
         "cumulative_current": 9642,
-        "cumulative_reference": 4582
+        "cumulative_reference": 7477
       },
       {
         "date": "2026-03-05",
         "cumulative_current": 9732,
-        "cumulative_reference": 4630
+        "cumulative_reference": 7564
       },
       {
         "date": "2026-03-06",
         "cumulative_current": 9807,
-        "cumulative_reference": 4675
+        "cumulative_reference": 7652
       },
       {
         "date": "2026-03-07",
         "cumulative_current": 9872,
-        "cumulative_reference": 4730
+        "cumulative_reference": 7747
       },
       {
         "date": "2026-03-08",
         "cumulative_current": 9940,
-        "cumulative_reference": 4790
+        "cumulative_reference": 7830
       },
       {
         "date": "2026-03-09",
         "cumulative_current": 10005,
-        "cumulative_reference": 4823
+        "cumulative_reference": 7900
       },
       {
         "date": "2026-03-10",
         "cumulative_current": 10075,
-        "cumulative_reference": 4863
+        "cumulative_reference": 7974
       },
       {
         "date": "2026-03-11",
         "cumulative_current": 10142,
-        "cumulative_reference": 4909
+        "cumulative_reference": 8067
       },
       {
         "date": "2026-03-12",
         "cumulative_current": 10199,
-        "cumulative_reference": 4953
+        "cumulative_reference": 8133
       },
       {
         "date": "2026-03-13",
         "cumulative_current": 10240,
-        "cumulative_reference": 4983
+        "cumulative_reference": 8188
       },
       {
         "date": "2026-03-14",
         "cumulative_current": 10312,
-        "cumulative_reference": 5039
+        "cumulative_reference": 8278
       },
       {
         "date": "2026-03-15",
         "cumulative_current": 10376,
-        "cumulative_reference": 5073
+        "cumulative_reference": 8343
       },
       {
         "date": "2026-03-16",
         "cumulative_current": 10439,
-        "cumulative_reference": 5119
+        "cumulative_reference": 8425
       },
       {
         "date": "2026-03-17",
         "cumulative_current": 10501,
-        "cumulative_reference": 5154
+        "cumulative_reference": 8478
       },
       {
         "date": "2026-03-18",
         "cumulative_current": 10573,
-        "cumulative_reference": 5188
+        "cumulative_reference": 8547
       },
       {
         "date": "2026-03-19",
         "cumulative_current": 10628,
-        "cumulative_reference": 5222
+        "cumulative_reference": 8614
       },
       {
         "date": "2026-03-20",
         "cumulative_current": 10731,
-        "cumulative_reference": 5267
+        "cumulative_reference": 8686
       },
       {
         "date": "2026-03-21",
         "cumulative_current": 10811,
-        "cumulative_reference": 5299
+        "cumulative_reference": 8755
       },
       {
         "date": "2026-03-22",
         "cumulative_current": 10861,
-        "cumulative_reference": 5339
+        "cumulative_reference": 8814
       },
       {
         "date": "2026-03-23",
         "cumulative_current": 10925,
-        "cumulative_reference": 5368
+        "cumulative_reference": 8888
       },
       {
         "date": "2026-03-24",
         "cumulative_current": 10993,
-        "cumulative_reference": 5404
+        "cumulative_reference": 8958
       },
       {
         "date": "2026-03-25",
         "cumulative_current": 11061,
-        "cumulative_reference": 5447
+        "cumulative_reference": 9042
       },
       {
         "date": "2026-03-26",
         "cumulative_current": 11114,
-        "cumulative_reference": 5501
+        "cumulative_reference": 9135
       },
       {
         "date": "2026-03-27",
         "cumulative_current": 11201,
-        "cumulative_reference": 5573
+        "cumulative_reference": 9242
       },
       {
         "date": "2026-03-28",
         "cumulative_current": 11304,
-        "cumulative_reference": 5623
+        "cumulative_reference": 9336
       },
       {
         "date": "2026-03-29",
         "cumulative_current": 11389,
-        "cumulative_reference": 5694
+        "cumulative_reference": 9450
       },
       {
         "date": "2026-03-30",
         "cumulative_current": 11529,
-        "cumulative_reference": 5746
+        "cumulative_reference": 9556
       },
       {
         "date": "2026-03-31",
         "cumulative_current": 11684,
-        "cumulative_reference": 5821
+        "cumulative_reference": 9717
       },
       {
         "date": "2026-04-01",
         "cumulative_current": 11851,
-        "cumulative_reference": 5904
+        "cumulative_reference": 9856
       },
       {
         "date": "2026-04-02",
         "cumulative_current": 12028,
-        "cumulative_reference": 6003
+        "cumulative_reference": 10027
       },
       {
         "date": "2026-04-03",
         "cumulative_current": 12204,
-        "cumulative_reference": 6110
+        "cumulative_reference": 10220
       },
       {
         "date": "2026-04-04",
         "cumulative_current": 12351,
-        "cumulative_reference": 6191
+        "cumulative_reference": 10373
       },
       {
         "date": "2026-04-05",
         "cumulative_current": 12447,
-        "cumulative_reference": 6242
+        "cumulative_reference": 10488
       },
       {
         "date": "2026-04-06",
         "cumulative_current": 12542,
-        "cumulative_reference": 6340
+        "cumulative_reference": 10667
       },
       {
         "date": "2026-04-07",
         "cumulative_current": 12643,
-        "cumulative_reference": 6414
+        "cumulative_reference": 10810
       },
       {
         "date": "2026-04-08",
         "cumulative_current": 12765,
-        "cumulative_reference": 6482
+        "cumulative_reference": 10937
       },
       {
         "date": "2026-04-09",
         "cumulative_current": 12913,
-        "cumulative_reference": 6571
+        "cumulative_reference": 11089
       },
       {
         "date": "2026-04-10",
         "cumulative_current": 13050,
-        "cumulative_reference": 6634
+        "cumulative_reference": 11206
       },
       {
         "date": "2026-04-11",
         "cumulative_current": 13151,
-        "cumulative_reference": 6711
+        "cumulative_reference": 11324
       },
       {
         "date": "2026-04-12",
         "cumulative_current": 13268,
-        "cumulative_reference": 6767
+        "cumulative_reference": 11420
       },
       {
         "date": "2026-04-13",
         "cumulative_current": 13376,
-        "cumulative_reference": 6825
+        "cumulative_reference": 11528
       },
       {
         "date": "2026-04-14",
         "cumulative_current": 13506,
-        "cumulative_reference": 6879
+        "cumulative_reference": 11607
       },
       {
         "date": "2026-04-15",
         "cumulative_current": 13608,
-        "cumulative_reference": 6930
+        "cumulative_reference": 11699
       },
       {
         "date": "2026-04-16",
         "cumulative_current": 13709,
-        "cumulative_reference": 6986
+        "cumulative_reference": 11802
       },
       {
         "date": "2026-04-17",
         "cumulative_current": 13803,
-        "cumulative_reference": 7046
+        "cumulative_reference": 11920
       },
       {
         "date": "2026-04-18",
         "cumulative_current": 13895,
-        "cumulative_reference": 7107
+        "cumulative_reference": 12023
       },
       {
         "date": "2026-04-19",
         "cumulative_current": 13969,
-        "cumulative_reference": 7156
+        "cumulative_reference": 12108
       },
       {
         "date": "2026-04-20",
         "cumulative_current": 14037,
-        "cumulative_reference": 7246
+        "cumulative_reference": 12237
       },
       {
         "date": "2026-04-21",
         "cumulative_current": 14116,
-        "cumulative_reference": 7320
+        "cumulative_reference": 12359
       },
       {
         "date": "2026-04-22",
         "cumulative_current": 14201,
-        "cumulative_reference": 7367
+        "cumulative_reference": 12472
       },
       {
         "date": "2026-04-23",
         "cumulative_current": 14278,
-        "cumulative_reference": 7431
+        "cumulative_reference": 12576
       },
       {
         "date": "2026-04-24",
         "cumulative_current": 14379,
-        "cumulative_reference": 7496
+        "cumulative_reference": 12678
       },
       {
         "date": "2026-04-25",
         "cumulative_current": 14443,
-        "cumulative_reference": 7553
+        "cumulative_reference": 12777
       },
       {
         "date": "2026-04-26",
         "cumulative_current": 14529,
-        "cumulative_reference": 7602
+        "cumulative_reference": 12867
       },
       {
         "date": "2026-04-27",
         "cumulative_current": 14603,
-        "cumulative_reference": 7658
+        "cumulative_reference": 12982
       },
       {
         "date": "2026-04-28",
         "cumulative_current": 14727,
-        "cumulative_reference": 7758
+        "cumulative_reference": 13162
       },
       {
         "date": "2026-04-29",
         "cumulative_current": 14856,
-        "cumulative_reference": 7857
+        "cumulative_reference": 13320
       },
       {
         "date": "2026-04-30",
         "cumulative_current": 15011,
-        "cumulative_reference": 7973
+        "cumulative_reference": 13512
       },
       {
         "date": "2026-05-01",
         "cumulative_current": 15130,
-        "cumulative_reference": 8090
+        "cumulative_reference": 13718
       },
       {
         "date": "2026-05-02",
         "cumulative_current": 15245,
-        "cumulative_reference": 8251
+        "cumulative_reference": 13956
       },
       {
         "date": "2026-05-03",
         "cumulative_current": 15348,
-        "cumulative_reference": 8363
+        "cumulative_reference": 14142
       },
       {
         "date": "2026-05-04",
         "cumulative_current": 15480,
-        "cumulative_reference": 8487
+        "cumulative_reference": 14362
       },
       {
         "date": "2026-05-05",
         "cumulative_current": 15685,
-        "cumulative_reference": 8608
+        "cumulative_reference": 14568
       },
       {
         "date": "2026-05-06",
         "cumulative_current": 15863,
-        "cumulative_reference": 8740
+        "cumulative_reference": 14782
       },
       {
         "date": "2026-05-07",
         "cumulative_current": 16041,
-        "cumulative_reference": 8874
+        "cumulative_reference": 15010
       },
       {
         "date": "2026-05-08",
         "cumulative_current": 16225,
-        "cumulative_reference": 9006
+        "cumulative_reference": 15226
       },
       {
         "date": "2026-05-09",
         "cumulative_current": 16365,
-        "cumulative_reference": 9094
+        "cumulative_reference": 15385
       },
       {
         "date": "2026-05-10",
         "cumulative_current": 16529,
-        "cumulative_reference": 9213
+        "cumulative_reference": 15589
       },
       {
         "date": "2026-05-11",
         "cumulative_current": 16683,
-        "cumulative_reference": 9340
+        "cumulative_reference": 15797
       },
       {
         "date": "2026-05-12",
         "cumulative_current": 16855,
-        "cumulative_reference": 9495
+        "cumulative_reference": 16015
       },
       {
         "date": "2026-05-13",
         "cumulative_current": 17029,
-        "cumulative_reference": 9623
+        "cumulative_reference": 16219
       },
       {
         "date": "2026-05-14",
         "cumulative_current": 17218,
-        "cumulative_reference": 9775
+        "cumulative_reference": 16457
       },
       {
         "date": "2026-05-15",
         "cumulative_current": 17354,
-        "cumulative_reference": 9936
+        "cumulative_reference": 16713
       },
       {
         "date": "2026-05-16",
         "cumulative_current": 17479,
-        "cumulative_reference": 10053
+        "cumulative_reference": 16906
       },
       {
         "date": "2026-05-17",
         "cumulative_current": 17609,
-        "cumulative_reference": 10169
+        "cumulative_reference": 17073
       },
       {
         "date": "2026-05-18",
         "cumulative_current": 17729,
-        "cumulative_reference": 10262
+        "cumulative_reference": 17225
       },
       {
         "date": "2026-05-19",
         "cumulative_current": 17897,
-        "cumulative_reference": 10399
+        "cumulative_reference": 17425
       },
       {
         "date": "2026-05-20",
         "cumulative_current": 18044,
-        "cumulative_reference": 10520
+        "cumulative_reference": 17603
       },
       {
         "date": "2026-05-21",
         "cumulative_current": 18199,
-        "cumulative_reference": 10651
+        "cumulative_reference": 17805
       },
       {
         "date": "2026-05-22",
         "cumulative_current": 18378,
-        "cumulative_reference": 10754
+        "cumulative_reference": 17971
       },
       {
         "date": "2026-05-23",
         "cumulative_current": 18539,
-        "cumulative_reference": 10843
+        "cumulative_reference": 18096
       },
       {
         "date": "2026-05-24",
         "cumulative_current": 18676,
-        "cumulative_reference": 10938
+        "cumulative_reference": 18246
       },
       {
         "date": "2026-05-25",
         "cumulative_current": 18851,
-        "cumulative_reference": 11059
+        "cumulative_reference": 18453
       },
       {
         "date": "2026-05-26",
         "cumulative_current": 19017,
-        "cumulative_reference": 11195
+        "cumulative_reference": 18669
       },
       {
         "date": "2026-05-27",
         "cumulative_current": 19266,
-        "cumulative_reference": 11338
+        "cumulative_reference": 18907
       },
       {
         "date": "2026-05-28",
         "cumulative_current": 19560,
-        "cumulative_reference": 11476
+        "cumulative_reference": 19138
       },
       {
         "date": "2026-05-29",
         "cumulative_current": 19926,
-        "cumulative_reference": 11626
+        "cumulative_reference": 19366
       },
       {
         "date": "2026-05-30",
         "cumulative_current": 20186,
-        "cumulative_reference": 11742
+        "cumulative_reference": 19547
       },
       {
         "date": "2026-05-31",
         "cumulative_current": 20431,
-        "cumulative_reference": 21348
+        "cumulative_reference": 19745
       },
       {
         "date": "2026-06-01",
         "cumulative_current": 20875,
-        "cumulative_reference": 21566
+        "cumulative_reference": 20087
       },
       {
         "date": "2026-06-02",
         "cumulative_current": 21357,
-        "cumulative_reference": 21992
+        "cumulative_reference": 20800
       },
       {
         "date": "2026-06-03",
         "cumulative_current": 21837,
-        "cumulative_reference": 22261
+        "cumulative_reference": 21245
       },
       {
         "date": "2026-06-04",
         "cumulative_current": 22284,
-        "cumulative_reference": 22502
+        "cumulative_reference": 21598
       },
       {
         "date": "2026-06-05",
         "cumulative_current": 22719,
-        "cumulative_reference": 22723
+        "cumulative_reference": 21923
       },
       {
         "date": "2026-06-06",
         "cumulative_current": 23039,
-        "cumulative_reference": 22886
+        "cumulative_reference": 22140
       },
       {
         "date": "2026-06-07",
         "cumulative_current": 23417,
-        "cumulative_reference": 23024
+        "cumulative_reference": 22361
       },
       {
         "date": "2026-06-08",
         "cumulative_current": 23941,
-        "cumulative_reference": 23211
+        "cumulative_reference": 22641
       },
       {
         "date": "2026-06-09",
         "cumulative_current": 24568,
-        "cumulative_reference": 23453
+        "cumulative_reference": 23044
       },
       {
         "date": "2026-06-10",
         "cumulative_current": 25198,
-        "cumulative_reference": 23677
+        "cumulative_reference": 23392
       },
       {
         "date": "2026-06-11",
         "cumulative_current": 25913,
-        "cumulative_reference": 23927
+        "cumulative_reference": 23827
       },
       {
         "date": "2026-06-12",
@@ -1020,8 +1020,8 @@
         "cumulative": 4091,
         "shotgun": 2639,
         "dice": 1452,
-        "prev_sales": 23,
-        "prev_cumulative": 2761
+        "prev_sales": 55,
+        "prev_cumulative": 4123
       },
       {
         "date": "2026-01-07",
@@ -1029,8 +1029,8 @@
         "cumulative": 4602,
         "shotgun": 311,
         "dice": 200,
-        "prev_sales": 31,
-        "prev_cumulative": 2792
+        "prev_sales": 53,
+        "prev_cumulative": 4176
       },
       {
         "date": "2026-01-08",
@@ -1038,8 +1038,8 @@
         "cumulative": 5082,
         "shotgun": 357,
         "dice": 123,
-        "prev_sales": 36,
-        "prev_cumulative": 2828
+        "prev_sales": 58,
+        "prev_cumulative": 4234
       },
       {
         "date": "2026-01-09",
@@ -1047,8 +1047,8 @@
         "cumulative": 5387,
         "shotgun": 207,
         "dice": 98,
-        "prev_sales": 29,
-        "prev_cumulative": 2857
+        "prev_sales": 54,
+        "prev_cumulative": 4288
       },
       {
         "date": "2026-01-10",
@@ -1056,8 +1056,8 @@
         "cumulative": 5617,
         "shotgun": 142,
         "dice": 88,
-        "prev_sales": 45,
-        "prev_cumulative": 2902
+        "prev_sales": 74,
+        "prev_cumulative": 4362
       },
       {
         "date": "2026-01-11",
@@ -1065,8 +1065,8 @@
         "cumulative": 5786,
         "shotgun": 87,
         "dice": 82,
-        "prev_sales": 27,
-        "prev_cumulative": 2929
+        "prev_sales": 47,
+        "prev_cumulative": 4409
       },
       {
         "date": "2026-01-12",
@@ -1074,8 +1074,8 @@
         "cumulative": 5918,
         "shotgun": 73,
         "dice": 59,
-        "prev_sales": 28,
-        "prev_cumulative": 2957
+        "prev_sales": 45,
+        "prev_cumulative": 4454
       },
       {
         "date": "2026-01-13",
@@ -1083,8 +1083,8 @@
         "cumulative": 6022,
         "shotgun": 60,
         "dice": 44,
-        "prev_sales": 17,
-        "prev_cumulative": 2974
+        "prev_sales": 27,
+        "prev_cumulative": 4481
       },
       {
         "date": "2026-01-14",
@@ -1092,8 +1092,8 @@
         "cumulative": 6189,
         "shotgun": 109,
         "dice": 58,
-        "prev_sales": 21,
-        "prev_cumulative": 2995
+        "prev_sales": 36,
+        "prev_cumulative": 4517
       },
       {
         "date": "2026-01-15",
@@ -1101,8 +1101,8 @@
         "cumulative": 6327,
         "shotgun": 91,
         "dice": 47,
-        "prev_sales": 52,
-        "prev_cumulative": 3047
+        "prev_sales": 68,
+        "prev_cumulative": 4585
       },
       {
         "date": "2026-01-16",
@@ -1110,8 +1110,8 @@
         "cumulative": 6439,
         "shotgun": 58,
         "dice": 54,
-        "prev_sales": 25,
-        "prev_cumulative": 3072
+        "prev_sales": 37,
+        "prev_cumulative": 4622
       },
       {
         "date": "2026-01-17",
@@ -1119,8 +1119,8 @@
         "cumulative": 6561,
         "shotgun": 68,
         "dice": 54,
-        "prev_sales": 33,
-        "prev_cumulative": 3105
+        "prev_sales": 57,
+        "prev_cumulative": 4679
       },
       {
         "date": "2026-01-18",
@@ -1128,8 +1128,8 @@
         "cumulative": 6668,
         "shotgun": 63,
         "dice": 44,
-        "prev_sales": 28,
-        "prev_cumulative": 3133
+        "prev_sales": 40,
+        "prev_cumulative": 4719
       },
       {
         "date": "2026-01-19",
@@ -1137,8 +1137,8 @@
         "cumulative": 6761,
         "shotgun": 51,
         "dice": 42,
-        "prev_sales": 15,
-        "prev_cumulative": 3148
+        "prev_sales": 21,
+        "prev_cumulative": 4740
       },
       {
         "date": "2026-01-20",
@@ -1146,8 +1146,8 @@
         "cumulative": 6816,
         "shotgun": 37,
         "dice": 18,
-        "prev_sales": 21,
-        "prev_cumulative": 3169
+        "prev_sales": 40,
+        "prev_cumulative": 4780
       },
       {
         "date": "2026-01-21",
@@ -1155,8 +1155,8 @@
         "cumulative": 6894,
         "shotgun": 52,
         "dice": 26,
-        "prev_sales": 21,
-        "prev_cumulative": 3190
+        "prev_sales": 42,
+        "prev_cumulative": 4822
       },
       {
         "date": "2026-01-22",
@@ -1164,8 +1164,8 @@
         "cumulative": 6942,
         "shotgun": 21,
         "dice": 27,
-        "prev_sales": 19,
-        "prev_cumulative": 3209
+        "prev_sales": 35,
+        "prev_cumulative": 4857
       },
       {
         "date": "2026-01-23",
@@ -1173,8 +1173,8 @@
         "cumulative": 7011,
         "shotgun": 50,
         "dice": 19,
-        "prev_sales": 15,
-        "prev_cumulative": 3224
+        "prev_sales": 43,
+        "prev_cumulative": 4900
       },
       {
         "date": "2026-01-24",
@@ -1182,8 +1182,8 @@
         "cumulative": 7091,
         "shotgun": 40,
         "dice": 40,
-        "prev_sales": 27,
-        "prev_cumulative": 3251
+        "prev_sales": 51,
+        "prev_cumulative": 4951
       },
       {
         "date": "2026-01-25",
@@ -1191,8 +1191,8 @@
         "cumulative": 7152,
         "shotgun": 37,
         "dice": 24,
-        "prev_sales": 25,
-        "prev_cumulative": 3276
+        "prev_sales": 34,
+        "prev_cumulative": 4985
       },
       {
         "date": "2026-01-26",
@@ -1200,8 +1200,8 @@
         "cumulative": 7205,
         "shotgun": 36,
         "dice": 17,
-        "prev_sales": 24,
-        "prev_cumulative": 3300
+        "prev_sales": 43,
+        "prev_cumulative": 5028
       },
       {
         "date": "2026-01-27",
@@ -1209,8 +1209,8 @@
         "cumulative": 7238,
         "shotgun": 26,
         "dice": 7,
-        "prev_sales": 17,
-        "prev_cumulative": 3317
+        "prev_sales": 37,
+        "prev_cumulative": 5065
       },
       {
         "date": "2026-01-28",
@@ -1218,8 +1218,8 @@
         "cumulative": 7328,
         "shotgun": 46,
         "dice": 44,
-        "prev_sales": 31,
-        "prev_cumulative": 3348
+        "prev_sales": 71,
+        "prev_cumulative": 5136
       },
       {
         "date": "2026-01-29",
@@ -1227,8 +1227,8 @@
         "cumulative": 7411,
         "shotgun": 54,
         "dice": 29,
-        "prev_sales": 48,
-        "prev_cumulative": 3396
+        "prev_sales": 115,
+        "prev_cumulative": 5251
       },
       {
         "date": "2026-01-30",
@@ -1236,8 +1236,8 @@
         "cumulative": 7489,
         "shotgun": 53,
         "dice": 25,
-        "prev_sales": 43,
-        "prev_cumulative": 3439
+        "prev_sales": 90,
+        "prev_cumulative": 5341
       },
       {
         "date": "2026-01-31",
@@ -1245,8 +1245,8 @@
         "cumulative": 7573,
         "shotgun": 47,
         "dice": 37,
-        "prev_sales": 42,
-        "prev_cumulative": 3481
+        "prev_sales": 86,
+        "prev_cumulative": 5427
       },
       {
         "date": "2026-02-01",
@@ -1254,8 +1254,8 @@
         "cumulative": 7661,
         "shotgun": 52,
         "dice": 36,
-        "prev_sales": 60,
-        "prev_cumulative": 3541
+        "prev_sales": 114,
+        "prev_cumulative": 5541
       },
       {
         "date": "2026-02-02",
@@ -1263,8 +1263,8 @@
         "cumulative": 7738,
         "shotgun": 47,
         "dice": 30,
-        "prev_sales": 44,
-        "prev_cumulative": 3585
+        "prev_sales": 81,
+        "prev_cumulative": 5622
       },
       {
         "date": "2026-02-03",
@@ -1272,8 +1272,8 @@
         "cumulative": 7799,
         "shotgun": 42,
         "dice": 19,
-        "prev_sales": 34,
-        "prev_cumulative": 3619
+        "prev_sales": 79,
+        "prev_cumulative": 5701
       },
       {
         "date": "2026-02-04",
@@ -1281,8 +1281,8 @@
         "cumulative": 7871,
         "shotgun": 40,
         "dice": 32,
-        "prev_sales": 35,
-        "prev_cumulative": 3654
+        "prev_sales": 63,
+        "prev_cumulative": 5764
       },
       {
         "date": "2026-02-05",
@@ -1290,8 +1290,8 @@
         "cumulative": 7957,
         "shotgun": 53,
         "dice": 33,
-        "prev_sales": 42,
-        "prev_cumulative": 3696
+        "prev_sales": 84,
+        "prev_cumulative": 5848
       },
       {
         "date": "2026-02-06",
@@ -1299,8 +1299,8 @@
         "cumulative": 8069,
         "shotgun": 73,
         "dice": 39,
-        "prev_sales": 50,
-        "prev_cumulative": 3746
+        "prev_sales": 78,
+        "prev_cumulative": 5926
       },
       {
         "date": "2026-02-07",
@@ -1308,8 +1308,8 @@
         "cumulative": 8168,
         "shotgun": 67,
         "dice": 32,
-        "prev_sales": 41,
-        "prev_cumulative": 3787
+        "prev_sales": 60,
+        "prev_cumulative": 5986
       },
       {
         "date": "2026-02-08",
@@ -1317,8 +1317,8 @@
         "cumulative": 8250,
         "shotgun": 42,
         "dice": 40,
-        "prev_sales": 48,
-        "prev_cumulative": 3835
+        "prev_sales": 75,
+        "prev_cumulative": 6061
       },
       {
         "date": "2026-02-09",
@@ -1326,8 +1326,8 @@
         "cumulative": 8315,
         "shotgun": 35,
         "dice": 30,
-        "prev_sales": 28,
-        "prev_cumulative": 3863
+        "prev_sales": 59,
+        "prev_cumulative": 6120
       },
       {
         "date": "2026-02-10",
@@ -1335,8 +1335,8 @@
         "cumulative": 8384,
         "shotgun": 51,
         "dice": 18,
-        "prev_sales": 38,
-        "prev_cumulative": 3901
+        "prev_sales": 79,
+        "prev_cumulative": 6199
       },
       {
         "date": "2026-02-11",
@@ -1344,8 +1344,8 @@
         "cumulative": 8444,
         "shotgun": 45,
         "dice": 15,
-        "prev_sales": 35,
-        "prev_cumulative": 3936
+        "prev_sales": 61,
+        "prev_cumulative": 6260
       },
       {
         "date": "2026-02-12",
@@ -1353,8 +1353,8 @@
         "cumulative": 8508,
         "shotgun": 49,
         "dice": 15,
-        "prev_sales": 26,
-        "prev_cumulative": 3962
+        "prev_sales": 41,
+        "prev_cumulative": 6301
       },
       {
         "date": "2026-02-13",
@@ -1362,8 +1362,8 @@
         "cumulative": 8561,
         "shotgun": 28,
         "dice": 25,
-        "prev_sales": 22,
-        "prev_cumulative": 3984
+        "prev_sales": 41,
+        "prev_cumulative": 6342
       },
       {
         "date": "2026-02-14",
@@ -1371,8 +1371,8 @@
         "cumulative": 8624,
         "shotgun": 38,
         "dice": 25,
-        "prev_sales": 41,
-        "prev_cumulative": 4025
+        "prev_sales": 66,
+        "prev_cumulative": 6408
       },
       {
         "date": "2026-02-15",
@@ -1380,8 +1380,8 @@
         "cumulative": 8680,
         "shotgun": 40,
         "dice": 16,
-        "prev_sales": 16,
-        "prev_cumulative": 4041
+        "prev_sales": 42,
+        "prev_cumulative": 6450
       },
       {
         "date": "2026-02-16",
@@ -1389,8 +1389,8 @@
         "cumulative": 8732,
         "shotgun": 26,
         "dice": 26,
-        "prev_sales": 27,
-        "prev_cumulative": 4068
+        "prev_sales": 48,
+        "prev_cumulative": 6498
       },
       {
         "date": "2026-02-17",
@@ -1398,8 +1398,8 @@
         "cumulative": 8781,
         "shotgun": 26,
         "dice": 23,
-        "prev_sales": 22,
-        "prev_cumulative": 4090
+        "prev_sales": 34,
+        "prev_cumulative": 6532
       },
       {
         "date": "2026-02-18",
@@ -1407,8 +1407,8 @@
         "cumulative": 8823,
         "shotgun": 19,
         "dice": 23,
-        "prev_sales": 25,
-        "prev_cumulative": 4115
+        "prev_sales": 45,
+        "prev_cumulative": 6577
       },
       {
         "date": "2026-02-19",
@@ -1416,8 +1416,8 @@
         "cumulative": 8859,
         "shotgun": 21,
         "dice": 15,
-        "prev_sales": 16,
-        "prev_cumulative": 4131
+        "prev_sales": 33,
+        "prev_cumulative": 6610
       },
       {
         "date": "2026-02-20",
@@ -1425,8 +1425,8 @@
         "cumulative": 8917,
         "shotgun": 42,
         "dice": 16,
-        "prev_sales": 18,
-        "prev_cumulative": 4149
+        "prev_sales": 32,
+        "prev_cumulative": 6642
       },
       {
         "date": "2026-02-21",
@@ -1434,8 +1434,8 @@
         "cumulative": 8961,
         "shotgun": 21,
         "dice": 23,
-        "prev_sales": 28,
-        "prev_cumulative": 4177
+        "prev_sales": 44,
+        "prev_cumulative": 6686
       },
       {
         "date": "2026-02-22",
@@ -1443,8 +1443,8 @@
         "cumulative": 9009,
         "shotgun": 32,
         "dice": 16,
-        "prev_sales": 22,
-        "prev_cumulative": 4199
+        "prev_sales": 42,
+        "prev_cumulative": 6728
       },
       {
         "date": "2026-02-23",
@@ -1452,8 +1452,8 @@
         "cumulative": 9044,
         "shotgun": 20,
         "dice": 15,
-        "prev_sales": 19,
-        "prev_cumulative": 4218
+        "prev_sales": 41,
+        "prev_cumulative": 6769
       },
       {
         "date": "2026-02-24",
@@ -1461,8 +1461,8 @@
         "cumulative": 9069,
         "shotgun": 15,
         "dice": 10,
-        "prev_sales": 37,
-        "prev_cumulative": 4255
+        "prev_sales": 55,
+        "prev_cumulative": 6824
       },
       {
         "date": "2026-02-25",
@@ -1470,8 +1470,8 @@
         "cumulative": 9123,
         "shotgun": 43,
         "dice": 11,
-        "prev_sales": 38,
-        "prev_cumulative": 4293
+        "prev_sales": 67,
+        "prev_cumulative": 6891
       },
       {
         "date": "2026-02-26",
@@ -1479,8 +1479,8 @@
         "cumulative": 9178,
         "shotgun": 42,
         "dice": 13,
-        "prev_sales": 45,
-        "prev_cumulative": 4338
+        "prev_sales": 88,
+        "prev_cumulative": 6979
       },
       {
         "date": "2026-02-27",
@@ -1488,8 +1488,8 @@
         "cumulative": 9267,
         "shotgun": 51,
         "dice": 38,
-        "prev_sales": 28,
-        "prev_cumulative": 4366
+        "prev_sales": 75,
+        "prev_cumulative": 7054
       },
       {
         "date": "2026-02-28",
@@ -1497,8 +1497,8 @@
         "cumulative": 9347,
         "shotgun": 45,
         "dice": 35,
-        "prev_sales": 41,
-        "prev_cumulative": 4407
+        "prev_sales": 81,
+        "prev_cumulative": 7135
       },
       {
         "date": "2026-03-01",
@@ -1506,8 +1506,8 @@
         "cumulative": 9411,
         "shotgun": 40,
         "dice": 24,
-        "prev_sales": 39,
-        "prev_cumulative": 4446
+        "prev_sales": 68,
+        "prev_cumulative": 7203
       },
       {
         "date": "2026-03-02",
@@ -1515,8 +1515,8 @@
         "cumulative": 9467,
         "shotgun": 33,
         "dice": 23,
-        "prev_sales": 45,
-        "prev_cumulative": 4491
+        "prev_sales": 103,
+        "prev_cumulative": 7306
       },
       {
         "date": "2026-03-03",
@@ -1524,8 +1524,8 @@
         "cumulative": 9542,
         "shotgun": 51,
         "dice": 24,
-        "prev_sales": 47,
-        "prev_cumulative": 4538
+        "prev_sales": 76,
+        "prev_cumulative": 7382
       },
       {
         "date": "2026-03-04",
@@ -1533,8 +1533,8 @@
         "cumulative": 9642,
         "shotgun": 54,
         "dice": 46,
-        "prev_sales": 44,
-        "prev_cumulative": 4582
+        "prev_sales": 95,
+        "prev_cumulative": 7477
       },
       {
         "date": "2026-03-05",
@@ -1542,8 +1542,8 @@
         "cumulative": 9732,
         "shotgun": 67,
         "dice": 23,
-        "prev_sales": 48,
-        "prev_cumulative": 4630
+        "prev_sales": 87,
+        "prev_cumulative": 7564
       },
       {
         "date": "2026-03-06",
@@ -1551,8 +1551,8 @@
         "cumulative": 9807,
         "shotgun": 58,
         "dice": 17,
-        "prev_sales": 45,
-        "prev_cumulative": 4675
+        "prev_sales": 88,
+        "prev_cumulative": 7652
       },
       {
         "date": "2026-03-07",
@@ -1560,8 +1560,8 @@
         "cumulative": 9872,
         "shotgun": 24,
         "dice": 41,
-        "prev_sales": 55,
-        "prev_cumulative": 4730
+        "prev_sales": 95,
+        "prev_cumulative": 7747
       },
       {
         "date": "2026-03-08",
@@ -1569,8 +1569,8 @@
         "cumulative": 9940,
         "shotgun": 47,
         "dice": 21,
-        "prev_sales": 60,
-        "prev_cumulative": 4790
+        "prev_sales": 83,
+        "prev_cumulative": 7830
       },
       {
         "date": "2026-03-09",
@@ -1578,8 +1578,8 @@
         "cumulative": 10005,
         "shotgun": 40,
         "dice": 25,
-        "prev_sales": 33,
-        "prev_cumulative": 4823
+        "prev_sales": 70,
+        "prev_cumulative": 7900
       },
       {
         "date": "2026-03-10",
@@ -1587,8 +1587,8 @@
         "cumulative": 10075,
         "shotgun": 38,
         "dice": 32,
-        "prev_sales": 40,
-        "prev_cumulative": 4863
+        "prev_sales": 74,
+        "prev_cumulative": 7974
       },
       {
         "date": "2026-03-11",
@@ -1596,8 +1596,8 @@
         "cumulative": 10142,
         "shotgun": 38,
         "dice": 29,
-        "prev_sales": 46,
-        "prev_cumulative": 4909
+        "prev_sales": 93,
+        "prev_cumulative": 8067
       },
       {
         "date": "2026-03-12",
@@ -1605,8 +1605,8 @@
         "cumulative": 10199,
         "shotgun": 35,
         "dice": 22,
-        "prev_sales": 44,
-        "prev_cumulative": 4953
+        "prev_sales": 66,
+        "prev_cumulative": 8133
       },
       {
         "date": "2026-03-13",
@@ -1614,8 +1614,8 @@
         "cumulative": 10240,
         "shotgun": 20,
         "dice": 21,
-        "prev_sales": 30,
-        "prev_cumulative": 4983
+        "prev_sales": 55,
+        "prev_cumulative": 8188
       },
       {
         "date": "2026-03-14",
@@ -1623,8 +1623,8 @@
         "cumulative": 10312,
         "shotgun": 49,
         "dice": 23,
-        "prev_sales": 56,
-        "prev_cumulative": 5039
+        "prev_sales": 90,
+        "prev_cumulative": 8278
       },
       {
         "date": "2026-03-15",
@@ -1632,8 +1632,8 @@
         "cumulative": 10376,
         "shotgun": 45,
         "dice": 19,
-        "prev_sales": 34,
-        "prev_cumulative": 5073
+        "prev_sales": 65,
+        "prev_cumulative": 8343
       },
       {
         "date": "2026-03-16",
@@ -1641,8 +1641,8 @@
         "cumulative": 10439,
         "shotgun": 44,
         "dice": 19,
-        "prev_sales": 46,
-        "prev_cumulative": 5119
+        "prev_sales": 82,
+        "prev_cumulative": 8425
       },
       {
         "date": "2026-03-17",
@@ -1650,8 +1650,8 @@
         "cumulative": 10501,
         "shotgun": 37,
         "dice": 25,
-        "prev_sales": 35,
-        "prev_cumulative": 5154
+        "prev_sales": 53,
+        "prev_cumulative": 8478
       },
       {
         "date": "2026-03-18",
@@ -1659,8 +1659,8 @@
         "cumulative": 10573,
         "shotgun": 34,
         "dice": 38,
-        "prev_sales": 34,
-        "prev_cumulative": 5188
+        "prev_sales": 69,
+        "prev_cumulative": 8547
       },
       {
         "date": "2026-03-19",
@@ -1668,8 +1668,8 @@
         "cumulative": 10628,
         "shotgun": 39,
         "dice": 16,
-        "prev_sales": 34,
-        "prev_cumulative": 5222
+        "prev_sales": 67,
+        "prev_cumulative": 8614
       },
       {
         "date": "2026-03-20",
@@ -1677,8 +1677,8 @@
         "cumulative": 10731,
         "shotgun": 52,
         "dice": 51,
-        "prev_sales": 45,
-        "prev_cumulative": 5267
+        "prev_sales": 72,
+        "prev_cumulative": 8686
       },
       {
         "date": "2026-03-21",
@@ -1686,8 +1686,8 @@
         "cumulative": 10811,
         "shotgun": 52,
         "dice": 28,
-        "prev_sales": 32,
-        "prev_cumulative": 5299
+        "prev_sales": 69,
+        "prev_cumulative": 8755
       },
       {
         "date": "2026-03-22",
@@ -1695,8 +1695,8 @@
         "cumulative": 10861,
         "shotgun": 29,
         "dice": 21,
-        "prev_sales": 40,
-        "prev_cumulative": 5339
+        "prev_sales": 59,
+        "prev_cumulative": 8814
       },
       {
         "date": "2026-03-23",
@@ -1704,8 +1704,8 @@
         "cumulative": 10925,
         "shotgun": 44,
         "dice": 20,
-        "prev_sales": 29,
-        "prev_cumulative": 5368
+        "prev_sales": 74,
+        "prev_cumulative": 8888
       },
       {
         "date": "2026-03-24",
@@ -1713,8 +1713,8 @@
         "cumulative": 10993,
         "shotgun": 34,
         "dice": 34,
-        "prev_sales": 36,
-        "prev_cumulative": 5404
+        "prev_sales": 70,
+        "prev_cumulative": 8958
       },
       {
         "date": "2026-03-25",
@@ -1722,8 +1722,8 @@
         "cumulative": 11061,
         "shotgun": 30,
         "dice": 38,
-        "prev_sales": 43,
-        "prev_cumulative": 5447
+        "prev_sales": 84,
+        "prev_cumulative": 9042
       },
       {
         "date": "2026-03-26",
@@ -1731,8 +1731,8 @@
         "cumulative": 11114,
         "shotgun": 35,
         "dice": 18,
-        "prev_sales": 54,
-        "prev_cumulative": 5501
+        "prev_sales": 93,
+        "prev_cumulative": 9135
       },
       {
         "date": "2026-03-27",
@@ -1740,8 +1740,8 @@
         "cumulative": 11201,
         "shotgun": 52,
         "dice": 35,
-        "prev_sales": 72,
-        "prev_cumulative": 5573
+        "prev_sales": 107,
+        "prev_cumulative": 9242
       },
       {
         "date": "2026-03-28",
@@ -1749,8 +1749,8 @@
         "cumulative": 11304,
         "shotgun": 60,
         "dice": 43,
-        "prev_sales": 50,
-        "prev_cumulative": 5623
+        "prev_sales": 94,
+        "prev_cumulative": 9336
       },
       {
         "date": "2026-03-29",
@@ -1758,8 +1758,8 @@
         "cumulative": 11389,
         "shotgun": 47,
         "dice": 38,
-        "prev_sales": 71,
-        "prev_cumulative": 5694
+        "prev_sales": 114,
+        "prev_cumulative": 9450
       },
       {
         "date": "2026-03-30",
@@ -1767,8 +1767,8 @@
         "cumulative": 11529,
         "shotgun": 89,
         "dice": 51,
-        "prev_sales": 52,
-        "prev_cumulative": 5746
+        "prev_sales": 106,
+        "prev_cumulative": 9556
       },
       {
         "date": "2026-03-31",
@@ -1776,8 +1776,8 @@
         "cumulative": 11684,
         "shotgun": 85,
         "dice": 70,
-        "prev_sales": 75,
-        "prev_cumulative": 5821
+        "prev_sales": 161,
+        "prev_cumulative": 9717
       },
       {
         "date": "2026-04-01",
@@ -1785,8 +1785,8 @@
         "cumulative": 11851,
         "shotgun": 107,
         "dice": 60,
-        "prev_sales": 83,
-        "prev_cumulative": 5904
+        "prev_sales": 139,
+        "prev_cumulative": 9856
       },
       {
         "date": "2026-04-02",
@@ -1794,8 +1794,8 @@
         "cumulative": 12028,
         "shotgun": 105,
         "dice": 72,
-        "prev_sales": 99,
-        "prev_cumulative": 6003
+        "prev_sales": 171,
+        "prev_cumulative": 10027
       },
       {
         "date": "2026-04-03",
@@ -1803,8 +1803,8 @@
         "cumulative": 12204,
         "shotgun": 102,
         "dice": 74,
-        "prev_sales": 107,
-        "prev_cumulative": 6110
+        "prev_sales": 193,
+        "prev_cumulative": 10220
       },
       {
         "date": "2026-04-04",
@@ -1812,8 +1812,8 @@
         "cumulative": 12351,
         "shotgun": 71,
         "dice": 76,
-        "prev_sales": 81,
-        "prev_cumulative": 6191
+        "prev_sales": 153,
+        "prev_cumulative": 10373
       },
       {
         "date": "2026-04-05",
@@ -1821,8 +1821,8 @@
         "cumulative": 12447,
         "shotgun": 59,
         "dice": 37,
-        "prev_sales": 51,
-        "prev_cumulative": 6242
+        "prev_sales": 115,
+        "prev_cumulative": 10488
       },
       {
         "date": "2026-04-06",
@@ -1830,8 +1830,8 @@
         "cumulative": 12542,
         "shotgun": 54,
         "dice": 41,
-        "prev_sales": 98,
-        "prev_cumulative": 6340
+        "prev_sales": 179,
+        "prev_cumulative": 10667
       },
       {
         "date": "2026-04-07",
@@ -1839,8 +1839,8 @@
         "cumulative": 12643,
         "shotgun": 60,
         "dice": 41,
-        "prev_sales": 74,
-        "prev_cumulative": 6414
+        "prev_sales": 143,
+        "prev_cumulative": 10810
       },
       {
         "date": "2026-04-08",
@@ -1848,8 +1848,8 @@
         "cumulative": 12765,
         "shotgun": 74,
         "dice": 48,
-        "prev_sales": 68,
-        "prev_cumulative": 6482
+        "prev_sales": 127,
+        "prev_cumulative": 10937
       },
       {
         "date": "2026-04-09",
@@ -1857,8 +1857,8 @@
         "cumulative": 12913,
         "shotgun": 85,
         "dice": 63,
-        "prev_sales": 89,
-        "prev_cumulative": 6571
+        "prev_sales": 152,
+        "prev_cumulative": 11089
       },
       {
         "date": "2026-04-10",
@@ -1866,8 +1866,8 @@
         "cumulative": 13050,
         "shotgun": 81,
         "dice": 56,
-        "prev_sales": 63,
-        "prev_cumulative": 6634
+        "prev_sales": 117,
+        "prev_cumulative": 11206
       },
       {
         "date": "2026-04-11",
@@ -1875,8 +1875,8 @@
         "cumulative": 13151,
         "shotgun": 60,
         "dice": 41,
-        "prev_sales": 77,
-        "prev_cumulative": 6711
+        "prev_sales": 118,
+        "prev_cumulative": 11324
       },
       {
         "date": "2026-04-12",
@@ -1884,8 +1884,8 @@
         "cumulative": 13268,
         "shotgun": 74,
         "dice": 43,
-        "prev_sales": 56,
-        "prev_cumulative": 6767
+        "prev_sales": 96,
+        "prev_cumulative": 11420
       },
       {
         "date": "2026-04-13",
@@ -1893,8 +1893,8 @@
         "cumulative": 13376,
         "shotgun": 56,
         "dice": 52,
-        "prev_sales": 58,
-        "prev_cumulative": 6825
+        "prev_sales": 108,
+        "prev_cumulative": 11528
       },
       {
         "date": "2026-04-14",
@@ -1902,8 +1902,8 @@
         "cumulative": 13506,
         "shotgun": 73,
         "dice": 57,
-        "prev_sales": 54,
-        "prev_cumulative": 6879
+        "prev_sales": 79,
+        "prev_cumulative": 11607
       },
       {
         "date": "2026-04-15",
@@ -1911,8 +1911,8 @@
         "cumulative": 13608,
         "shotgun": 60,
         "dice": 42,
-        "prev_sales": 51,
-        "prev_cumulative": 6930
+        "prev_sales": 92,
+        "prev_cumulative": 11699
       },
       {
         "date": "2026-04-16",
@@ -1920,8 +1920,8 @@
         "cumulative": 13709,
         "shotgun": 47,
         "dice": 54,
-        "prev_sales": 56,
-        "prev_cumulative": 6986
+        "prev_sales": 103,
+        "prev_cumulative": 11802
       },
       {
         "date": "2026-04-17",
@@ -1929,8 +1929,8 @@
         "cumulative": 13803,
         "shotgun": 56,
         "dice": 38,
-        "prev_sales": 60,
-        "prev_cumulative": 7046
+        "prev_sales": 118,
+        "prev_cumulative": 11920
       },
       {
         "date": "2026-04-18",
@@ -1938,8 +1938,8 @@
         "cumulative": 13895,
         "shotgun": 44,
         "dice": 48,
-        "prev_sales": 61,
-        "prev_cumulative": 7107
+        "prev_sales": 103,
+        "prev_cumulative": 12023
       },
       {
         "date": "2026-04-19",
@@ -1947,8 +1947,8 @@
         "cumulative": 13969,
         "shotgun": 39,
         "dice": 35,
-        "prev_sales": 49,
-        "prev_cumulative": 7156
+        "prev_sales": 85,
+        "prev_cumulative": 12108
       },
       {
         "date": "2026-04-20",
@@ -1956,8 +1956,8 @@
         "cumulative": 14037,
         "shotgun": 32,
         "dice": 36,
-        "prev_sales": 90,
-        "prev_cumulative": 7246
+        "prev_sales": 129,
+        "prev_cumulative": 12237
       },
       {
         "date": "2026-04-21",
@@ -1965,8 +1965,8 @@
         "cumulative": 14116,
         "shotgun": 30,
         "dice": 49,
-        "prev_sales": 74,
-        "prev_cumulative": 7320
+        "prev_sales": 122,
+        "prev_cumulative": 12359
       },
       {
         "date": "2026-04-22",
@@ -1974,8 +1974,8 @@
         "cumulative": 14201,
         "shotgun": 49,
         "dice": 36,
-        "prev_sales": 47,
-        "prev_cumulative": 7367
+        "prev_sales": 113,
+        "prev_cumulative": 12472
       },
       {
         "date": "2026-04-23",
@@ -1983,8 +1983,8 @@
         "cumulative": 14278,
         "shotgun": 47,
         "dice": 30,
-        "prev_sales": 64,
-        "prev_cumulative": 7431
+        "prev_sales": 104,
+        "prev_cumulative": 12576
       },
       {
         "date": "2026-04-24",
@@ -1992,8 +1992,8 @@
         "cumulative": 14379,
         "shotgun": 70,
         "dice": 31,
-        "prev_sales": 65,
-        "prev_cumulative": 7496
+        "prev_sales": 102,
+        "prev_cumulative": 12678
       },
       {
         "date": "2026-04-25",
@@ -2001,8 +2001,8 @@
         "cumulative": 14443,
         "shotgun": 27,
         "dice": 37,
-        "prev_sales": 57,
-        "prev_cumulative": 7553
+        "prev_sales": 99,
+        "prev_cumulative": 12777
       },
       {
         "date": "2026-04-26",
@@ -2010,8 +2010,8 @@
         "cumulative": 14529,
         "shotgun": 58,
         "dice": 28,
-        "prev_sales": 49,
-        "prev_cumulative": 7602
+        "prev_sales": 90,
+        "prev_cumulative": 12867
       },
       {
         "date": "2026-04-27",
@@ -2019,8 +2019,8 @@
         "cumulative": 14603,
         "shotgun": 44,
         "dice": 30,
-        "prev_sales": 56,
-        "prev_cumulative": 7658
+        "prev_sales": 115,
+        "prev_cumulative": 12982
       },
       {
         "date": "2026-04-28",
@@ -2028,8 +2028,8 @@
         "cumulative": 14727,
         "shotgun": 80,
         "dice": 44,
-        "prev_sales": 100,
-        "prev_cumulative": 7758
+        "prev_sales": 180,
+        "prev_cumulative": 13162
       },
       {
         "date": "2026-04-29",
@@ -2037,8 +2037,8 @@
         "cumulative": 14856,
         "shotgun": 84,
         "dice": 45,
-        "prev_sales": 99,
-        "prev_cumulative": 7857
+        "prev_sales": 158,
+        "prev_cumulative": 13320
       },
       {
         "date": "2026-04-30",
@@ -2046,8 +2046,8 @@
         "cumulative": 15011,
         "shotgun": 106,
         "dice": 49,
-        "prev_sales": 116,
-        "prev_cumulative": 7973
+        "prev_sales": 192,
+        "prev_cumulative": 13512
       },
       {
         "date": "2026-05-01",
@@ -2055,8 +2055,8 @@
         "cumulative": 15130,
         "shotgun": 70,
         "dice": 49,
-        "prev_sales": 117,
-        "prev_cumulative": 8090
+        "prev_sales": 206,
+        "prev_cumulative": 13718
       },
       {
         "date": "2026-05-02",
@@ -2064,8 +2064,8 @@
         "cumulative": 15245,
         "shotgun": 72,
         "dice": 43,
-        "prev_sales": 161,
-        "prev_cumulative": 8251
+        "prev_sales": 238,
+        "prev_cumulative": 13956
       },
       {
         "date": "2026-05-03",
@@ -2073,8 +2073,8 @@
         "cumulative": 15348,
         "shotgun": 70,
         "dice": 33,
-        "prev_sales": 112,
-        "prev_cumulative": 8363
+        "prev_sales": 186,
+        "prev_cumulative": 14142
       },
       {
         "date": "2026-05-04",
@@ -2082,8 +2082,8 @@
         "cumulative": 15480,
         "shotgun": 85,
         "dice": 47,
-        "prev_sales": 124,
-        "prev_cumulative": 8487
+        "prev_sales": 220,
+        "prev_cumulative": 14362
       },
       {
         "date": "2026-05-05",
@@ -2091,8 +2091,8 @@
         "cumulative": 15685,
         "shotgun": 138,
         "dice": 67,
-        "prev_sales": 121,
-        "prev_cumulative": 8608
+        "prev_sales": 206,
+        "prev_cumulative": 14568
       },
       {
         "date": "2026-05-06",
@@ -2100,8 +2100,8 @@
         "cumulative": 15863,
         "shotgun": 112,
         "dice": 66,
-        "prev_sales": 132,
-        "prev_cumulative": 8740
+        "prev_sales": 214,
+        "prev_cumulative": 14782
       },
       {
         "date": "2026-05-07",
@@ -2109,8 +2109,8 @@
         "cumulative": 16041,
         "shotgun": 105,
         "dice": 73,
-        "prev_sales": 134,
-        "prev_cumulative": 8874
+        "prev_sales": 228,
+        "prev_cumulative": 15010
       },
       {
         "date": "2026-05-08",
@@ -2118,8 +2118,8 @@
         "cumulative": 16225,
         "shotgun": 111,
         "dice": 73,
-        "prev_sales": 132,
-        "prev_cumulative": 9006
+        "prev_sales": 216,
+        "prev_cumulative": 15226
       },
       {
         "date": "2026-05-09",
@@ -2127,8 +2127,8 @@
         "cumulative": 16365,
         "shotgun": 87,
         "dice": 53,
-        "prev_sales": 88,
-        "prev_cumulative": 9094
+        "prev_sales": 159,
+        "prev_cumulative": 15385
       },
       {
         "date": "2026-05-10",
@@ -2136,8 +2136,8 @@
         "cumulative": 16529,
         "shotgun": 81,
         "dice": 83,
-        "prev_sales": 119,
-        "prev_cumulative": 9213
+        "prev_sales": 204,
+        "prev_cumulative": 15589
       },
       {
         "date": "2026-05-11",
@@ -2145,8 +2145,8 @@
         "cumulative": 16683,
         "shotgun": 109,
         "dice": 45,
-        "prev_sales": 127,
-        "prev_cumulative": 9340
+        "prev_sales": 208,
+        "prev_cumulative": 15797
       },
       {
         "date": "2026-05-12",
@@ -2154,8 +2154,8 @@
         "cumulative": 16855,
         "shotgun": 98,
         "dice": 74,
-        "prev_sales": 155,
-        "prev_cumulative": 9495
+        "prev_sales": 218,
+        "prev_cumulative": 16015
       },
       {
         "date": "2026-05-13",
@@ -2163,8 +2163,8 @@
         "cumulative": 17029,
         "shotgun": 101,
         "dice": 73,
-        "prev_sales": 128,
-        "prev_cumulative": 9623
+        "prev_sales": 204,
+        "prev_cumulative": 16219
       },
       {
         "date": "2026-05-14",
@@ -2172,8 +2172,8 @@
         "cumulative": 17218,
         "shotgun": 100,
         "dice": 89,
-        "prev_sales": 152,
-        "prev_cumulative": 9775
+        "prev_sales": 238,
+        "prev_cumulative": 16457
       },
       {
         "date": "2026-05-15",
@@ -2181,8 +2181,8 @@
         "cumulative": 17354,
         "shotgun": 94,
         "dice": 42,
-        "prev_sales": 161,
-        "prev_cumulative": 9936
+        "prev_sales": 256,
+        "prev_cumulative": 16713
       },
       {
         "date": "2026-05-16",
@@ -2190,8 +2190,8 @@
         "cumulative": 17479,
         "shotgun": 86,
         "dice": 39,
-        "prev_sales": 117,
-        "prev_cumulative": 10053
+        "prev_sales": 193,
+        "prev_cumulative": 16906
       },
       {
         "date": "2026-05-17",
@@ -2199,8 +2199,8 @@
         "cumulative": 17609,
         "shotgun": 79,
         "dice": 51,
-        "prev_sales": 116,
-        "prev_cumulative": 10169
+        "prev_sales": 167,
+        "prev_cumulative": 17073
       },
       {
         "date": "2026-05-18",
@@ -2208,8 +2208,8 @@
         "cumulative": 17729,
         "shotgun": 81,
         "dice": 39,
-        "prev_sales": 93,
-        "prev_cumulative": 10262
+        "prev_sales": 152,
+        "prev_cumulative": 17225
       },
       {
         "date": "2026-05-19",
@@ -2217,8 +2217,8 @@
         "cumulative": 17897,
         "shotgun": 101,
         "dice": 67,
-        "prev_sales": 137,
-        "prev_cumulative": 10399
+        "prev_sales": 200,
+        "prev_cumulative": 17425
       },
       {
         "date": "2026-05-20",
@@ -2226,8 +2226,8 @@
         "cumulative": 18044,
         "shotgun": 89,
         "dice": 58,
-        "prev_sales": 121,
-        "prev_cumulative": 10520
+        "prev_sales": 178,
+        "prev_cumulative": 17603
       },
       {
         "date": "2026-05-21",
@@ -2235,8 +2235,8 @@
         "cumulative": 18199,
         "shotgun": 102,
         "dice": 53,
-        "prev_sales": 131,
-        "prev_cumulative": 10651
+        "prev_sales": 202,
+        "prev_cumulative": 17805
       },
       {
         "date": "2026-05-22",
@@ -2244,8 +2244,8 @@
         "cumulative": 18378,
         "shotgun": 102,
         "dice": 77,
-        "prev_sales": 103,
-        "prev_cumulative": 10754
+        "prev_sales": 166,
+        "prev_cumulative": 17971
       },
       {
         "date": "2026-05-23",
@@ -2253,8 +2253,8 @@
         "cumulative": 18539,
         "shotgun": 102,
         "dice": 59,
-        "prev_sales": 89,
-        "prev_cumulative": 10843
+        "prev_sales": 125,
+        "prev_cumulative": 18096
       },
       {
         "date": "2026-05-24",
@@ -2262,8 +2262,8 @@
         "cumulative": 18676,
         "shotgun": 91,
         "dice": 46,
-        "prev_sales": 95,
-        "prev_cumulative": 10938
+        "prev_sales": 150,
+        "prev_cumulative": 18246
       },
       {
         "date": "2026-05-25",
@@ -2271,8 +2271,8 @@
         "cumulative": 18851,
         "shotgun": 96,
         "dice": 79,
-        "prev_sales": 121,
-        "prev_cumulative": 11059
+        "prev_sales": 207,
+        "prev_cumulative": 18453
       },
       {
         "date": "2026-05-26",
@@ -2280,8 +2280,8 @@
         "cumulative": 19017,
         "shotgun": 103,
         "dice": 63,
-        "prev_sales": 136,
-        "prev_cumulative": 11195
+        "prev_sales": 216,
+        "prev_cumulative": 18669
       },
       {
         "date": "2026-05-27",
@@ -2289,8 +2289,8 @@
         "cumulative": 19266,
         "shotgun": 160,
         "dice": 89,
-        "prev_sales": 143,
-        "prev_cumulative": 11338
+        "prev_sales": 238,
+        "prev_cumulative": 18907
       },
       {
         "date": "2026-05-28",
@@ -2298,8 +2298,8 @@
         "cumulative": 19560,
         "shotgun": 209,
         "dice": 85,
-        "prev_sales": 138,
-        "prev_cumulative": 11476
+        "prev_sales": 231,
+        "prev_cumulative": 19138
       },
       {
         "date": "2026-05-29",
@@ -2307,8 +2307,8 @@
         "cumulative": 19926,
         "shotgun": 277,
         "dice": 89,
-        "prev_sales": 150,
-        "prev_cumulative": 11626
+        "prev_sales": 228,
+        "prev_cumulative": 19366
       },
       {
         "date": "2026-05-30",
@@ -2316,8 +2316,8 @@
         "cumulative": 20186,
         "shotgun": 189,
         "dice": 71,
-        "prev_sales": 116,
-        "prev_cumulative": 11742
+        "prev_sales": 181,
+        "prev_cumulative": 19547
       },
       {
         "date": "2026-05-31",
@@ -2325,8 +2325,8 @@
         "cumulative": 20431,
         "shotgun": 177,
         "dice": 68,
-        "prev_sales": 9606,
-        "prev_cumulative": 21348
+        "prev_sales": 198,
+        "prev_cumulative": 19745
       },
       {
         "date": "2026-06-01",
@@ -2334,8 +2334,8 @@
         "cumulative": 20875,
         "shotgun": 322,
         "dice": 122,
-        "prev_sales": 218,
-        "prev_cumulative": 21566
+        "prev_sales": 342,
+        "prev_cumulative": 20087
       },
       {
         "date": "2026-06-02",
@@ -2343,8 +2343,8 @@
         "cumulative": 21357,
         "shotgun": 355,
         "dice": 127,
-        "prev_sales": 426,
-        "prev_cumulative": 21992
+        "prev_sales": 713,
+        "prev_cumulative": 20800
       },
       {
         "date": "2026-06-03",
@@ -2352,8 +2352,8 @@
         "cumulative": 21837,
         "shotgun": 379,
         "dice": 101,
-        "prev_sales": 269,
-        "prev_cumulative": 22261
+        "prev_sales": 445,
+        "prev_cumulative": 21245
       },
       {
         "date": "2026-06-04",
@@ -2361,8 +2361,8 @@
         "cumulative": 22284,
         "shotgun": 343,
         "dice": 104,
-        "prev_sales": 241,
-        "prev_cumulative": 22502
+        "prev_sales": 353,
+        "prev_cumulative": 21598
       },
       {
         "date": "2026-06-05",
@@ -2370,8 +2370,8 @@
         "cumulative": 22719,
         "shotgun": 313,
         "dice": 122,
-        "prev_sales": 221,
-        "prev_cumulative": 22723
+        "prev_sales": 325,
+        "prev_cumulative": 21923
       },
       {
         "date": "2026-06-06",
@@ -2379,8 +2379,8 @@
         "cumulative": 23039,
         "shotgun": 223,
         "dice": 97,
-        "prev_sales": 163,
-        "prev_cumulative": 22886
+        "prev_sales": 217,
+        "prev_cumulative": 22140
       },
       {
         "date": "2026-06-07",
@@ -2388,8 +2388,8 @@
         "cumulative": 23417,
         "shotgun": 276,
         "dice": 102,
-        "prev_sales": 138,
-        "prev_cumulative": 23024
+        "prev_sales": 221,
+        "prev_cumulative": 22361
       },
       {
         "date": "2026-06-08",
@@ -2397,8 +2397,8 @@
         "cumulative": 23941,
         "shotgun": 362,
         "dice": 162,
-        "prev_sales": 187,
-        "prev_cumulative": 23211
+        "prev_sales": 280,
+        "prev_cumulative": 22641
       },
       {
         "date": "2026-06-09",
@@ -2406,8 +2406,8 @@
         "cumulative": 24568,
         "shotgun": 438,
         "dice": 189,
-        "prev_sales": 242,
-        "prev_cumulative": 23453
+        "prev_sales": 403,
+        "prev_cumulative": 23044
       },
       {
         "date": "2026-06-10",
@@ -2415,8 +2415,8 @@
         "cumulative": 25198,
         "shotgun": 475,
         "dice": 155,
-        "prev_sales": 224,
-        "prev_cumulative": 23677
+        "prev_sales": 348,
+        "prev_cumulative": 23392
       },
       {
         "date": "2026-06-11",
@@ -2424,8 +2424,8 @@
         "cumulative": 25913,
         "shotgun": 553,
         "dice": 162,
-        "prev_sales": 250,
-        "prev_cumulative": 23927
+        "prev_sales": 435,
+        "prev_cumulative": 23827
       },
       {
         "date": "2026-06-12",
@@ -2433,7 +2433,7 @@
         "cumulative": 26697,
         "shotgun": 620,
         "dice": 164,
-        "prev_sales": 408,
+        "prev_sales": 508,
         "prev_cumulative": 24335
       },
       {
@@ -2452,161 +2452,161 @@
         "start": "2026-06-07",
         "end": "2026-06-13",
         "sales": 3696,
-        "prev_sales": 1496
+        "prev_sales": 2242
       },
       {
         "weeks_before_cutoff": 1,
         "start": "2026-05-31",
         "end": "2026-06-06",
         "sales": 2853,
-        "prev_sales": 11144
+        "prev_sales": 2593
       },
       {
         "weeks_before_cutoff": 2,
         "start": "2026-05-24",
         "end": "2026-05-30",
         "sales": 1647,
-        "prev_sales": 899
+        "prev_sales": 1451
       },
       {
         "weeks_before_cutoff": 3,
         "start": "2026-05-17",
         "end": "2026-05-23",
         "sales": 1060,
-        "prev_sales": 790
+        "prev_sales": 1190
       },
       {
         "weeks_before_cutoff": 4,
         "start": "2026-05-10",
         "end": "2026-05-16",
         "sales": 1114,
-        "prev_sales": 959
+        "prev_sales": 1521
       },
       {
         "weeks_before_cutoff": 5,
         "start": "2026-05-03",
         "end": "2026-05-09",
         "sales": 1120,
-        "prev_sales": 843
+        "prev_sales": 1429
       },
       {
         "weeks_before_cutoff": 6,
         "start": "2026-04-26",
         "end": "2026-05-02",
         "sales": 802,
-        "prev_sales": 698
+        "prev_sales": 1179
       },
       {
         "weeks_before_cutoff": 7,
         "start": "2026-04-19",
         "end": "2026-04-25",
         "sales": 548,
-        "prev_sales": 446
+        "prev_sales": 754
       },
       {
         "weeks_before_cutoff": 8,
         "start": "2026-04-12",
         "end": "2026-04-18",
         "sales": 744,
-        "prev_sales": 396
+        "prev_sales": 699
       },
       {
         "weeks_before_cutoff": 9,
         "start": "2026-04-05",
         "end": "2026-04-11",
         "sales": 800,
-        "prev_sales": 520
+        "prev_sales": 951
       },
       {
         "weeks_before_cutoff": 10,
         "start": "2026-03-29",
         "end": "2026-04-04",
         "sales": 1047,
-        "prev_sales": 568
+        "prev_sales": 1037
       },
       {
         "weeks_before_cutoff": 11,
         "start": "2026-03-22",
         "end": "2026-03-28",
         "sales": 493,
-        "prev_sales": 324
+        "prev_sales": 581
       },
       {
         "weeks_before_cutoff": 12,
         "start": "2026-03-15",
         "end": "2026-03-21",
         "sales": 499,
-        "prev_sales": 260
+        "prev_sales": 477
       },
       {
         "weeks_before_cutoff": 13,
         "start": "2026-03-08",
         "end": "2026-03-14",
         "sales": 440,
-        "prev_sales": 309
+        "prev_sales": 531
       },
       {
         "weeks_before_cutoff": 14,
         "start": "2026-03-01",
         "end": "2026-03-07",
         "sales": 525,
-        "prev_sales": 323
+        "prev_sales": 612
       },
       {
         "weeks_before_cutoff": 15,
         "start": "2026-02-22",
         "end": "2026-02-28",
         "sales": 386,
-        "prev_sales": 230
+        "prev_sales": 449
       },
       {
         "weeks_before_cutoff": 16,
         "start": "2026-02-15",
         "end": "2026-02-21",
         "sales": 337,
-        "prev_sales": 152
+        "prev_sales": 278
       },
       {
         "weeks_before_cutoff": 17,
         "start": "2026-02-08",
         "end": "2026-02-14",
         "sales": 456,
-        "prev_sales": 238
+        "prev_sales": 422
       },
       {
         "weeks_before_cutoff": 18,
         "start": "2026-02-01",
         "end": "2026-02-07",
         "sales": 595,
-        "prev_sales": 306
+        "prev_sales": 559
       },
       {
         "weeks_before_cutoff": 19,
         "start": "2026-01-25",
         "end": "2026-01-31",
         "sales": 482,
-        "prev_sales": 230
+        "prev_sales": 476
       },
       {
         "weeks_before_cutoff": 20,
         "start": "2026-01-18",
         "end": "2026-01-24",
         "sales": 530,
-        "prev_sales": 146
+        "prev_sales": 272
       },
       {
         "weeks_before_cutoff": 21,
         "start": "2026-01-11",
         "end": "2026-01-17",
         "sales": 944,
-        "prev_sales": 203
+        "prev_sales": 317
       },
       {
         "weeks_before_cutoff": 22,
         "start": "2026-01-06",
         "end": "2026-01-10",
         "sales": 5617,
-        "prev_sales": 164
+        "prev_sales": 294
       }
     ]
   },
@@ -2615,13 +2615,13 @@
     "mode": "j_minus",
     "reference_tickets_sold": 24382,
     "reference_revenue_ht": 1709081.71,
-    "reference_presence_total": 38520,
+    "reference_presence_total": 34446,
     "yoy_deltas": {
       "tickets_sold_pct": 9.7,
       "tickets_sold_diff": 2353,
       "revenue_ht_pct": 3.2,
       "revenue_ht_diff": 55149.04,
-      "presence_pct": 5.9,
+      "presence_pct": 18.4,
       "avg_price_ht_pct": -5.9,
       "avg_price_ht_diff": -4.11
     }

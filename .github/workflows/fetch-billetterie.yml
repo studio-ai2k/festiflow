@@ -1,0 +1,85 @@
+name: Fetch Billetterie Data
+
+# Pulls live ticketing data from Shotgun + DICE and commits the JSON the
+# Module Dates drawer / BudgetFlow recettes consume. Secrets are injected at
+# runtime from GitHub Actions secrets — never stored in the repo.
+
+on:
+  schedule:
+    # 06:00 UTC daily (08:00 Europe/Paris). Scheduled runs use the default branch.
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      event_id:
+        description: 'Event ID to fetch (must exist in billetterie/event_config.csv)'
+        required: false
+        default: 'bordeaux_2026'
+
+# Allow the workflow to commit the generated JSON back to the repo.
+permissions:
+  contents: write
+
+# Never let two fetches race on the same output file.
+concurrency:
+  group: fetch-billetterie
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Fetch ticketing data
+        env:
+          SHOTGUN_TOKEN: ${{ secrets.SHOTGUN_TOKEN }}
+          DICE_TOKEN: ${{ secrets.DICE_TOKEN }}
+          SHOTGUN_ORGANIZER_ID: ${{ secrets.SHOTGUN_ORGANIZER_ID }}
+        run: |
+          set -euo pipefail
+          cd billetterie
+          mkdir -p output
+          EVENT_ID="${{ github.event.inputs.event_id }}"
+          EVENT_ID="${EVENT_ID:-bordeaux_2026}"
+          echo "Fetching event: $EVENT_ID"
+          python festiflow_fetch.py "$EVENT_ID" --pretty -o "output/${EVENT_ID}.json"
+
+      - name: Summarize result
+        run: |
+          set -euo pipefail
+          cd billetterie
+          EVENT_ID="${{ github.event.inputs.event_id }}"
+          EVENT_ID="${EVENT_ID:-bordeaux_2026}"
+          python - "$EVENT_ID" <<'PY'
+          import json, sys
+          eid = sys.argv[1]
+          with open(f"output/{eid}.json", encoding="utf-8") as f:
+              d = json.load(f)
+          m = d["meta"]
+          s = m["sources"]
+          print(f"status={m['status']}")
+          print(f"shotgun: {s['shotgun'].get('status')} ({s['shotgun'].get('tickets_fetched')} tickets)")
+          print(f"dice:    {s['dice'].get('status')} ({s['dice'].get('tickets_fetched')} tickets)")
+          print(f"totals.tickets_sold={d['totals']['tickets_sold']} gross={d['totals']['gross_revenue']} vat={d['totals']['vat']}")
+          if m.get("errors"):
+              print("errors:", m["errors"])
+          PY
+
+      - name: Commit & push JSON
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add billetterie/output/
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "data: refresh billetterie JSON [skip ci]"
+            git push
+          fi

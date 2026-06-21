@@ -1,0 +1,12 @@
+# Secrets — never commit tokens (Actions/Codespaces secrets only)
+.env
+*.env
+*.token
+secrets.*
+
+# Python
+__pycache__/
+*.pyc
+
+# NOTE: billetterie/output/*.json IS committed intentionally by the
+# fetch-billetterie workflow (Option A). Do not ignore it.

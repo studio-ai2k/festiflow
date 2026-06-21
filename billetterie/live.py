@@ -47,10 +47,14 @@ import billetterie_datalayer as dl
 SHOTGUN_TICKETS_URL = "https://api.shotgun.live/tickets"
 DICE_GRAPHQL_ENDPOINT = "https://partners-endpoint.dice.fm/graphql"
 
-# Live Shotgun ticket_status vocabulary kept (non-cancelled, real tickets).
-# Superset of the CSV export vocab; recon dumps the live distribution so this
-# can be tightened if the paid count overshoots the settlement floor.
-SHOTGUN_KEEP_STATUS = ('valid', 'scanned', 'resold')
+# Live Shotgun ticket_status allow-list. Per /tickets doc p4 the enum is
+# valid, resold, refunded, canceled, payment_plan_pending, pending_app… —
+# there is NO 'scanned' status (scanning is the ticket_scanned_at timestamp).
+# Keep only 'valid' AND require ticket_canceled_at is null: this excludes
+# refunded/pending/canceled and avoids double-counting 'resold' (seller's
+# original + buyer's new row → the live admission is the 'valid' row, counted
+# once). Offline CSV is all-'valid', so validate.py 17/17 is unaffected.
+SHOTGUN_KEEP_STATUS = ('valid',)
 
 
 # ============================================================================
@@ -238,90 +242,131 @@ class LiveShotgunAdapter:
 # LIVE DICE ADAPTER  (event-node tickets connection, claimedAt dating)
 # ============================================================================
 
-_EVENT_TICKETS_GQL = """
-query Ev($eventId: ID!, $first: Int!, $after: String) {
-  node(id: $eventId) {
-    ... on Event {
-      name
-      totalTicketAllocationQty
-      ticketPools { name allocation }
-      tickets(first: $first, after: $after) {
-        totalCount
-        pageInfo { hasNextPage endCursor }
-        edges { node {
-          id code fullPrice total claimedAt
-          ticketType { name }
-          fees { category dice promoter }
-        } }
+# Event-node query — capacity/allocation reconciliation only (DICE inventory).
+_DICE_ALLOC_GQL = """
+query Alloc($eventId: ID!) {
+  node(id: $eventId) { ... on Event {
+    name totalTicketAllocationQty
+    ticketPools { name allocation }
+    tickets { totalCount }
+  } }
+}
+"""
+
+# Event-scoped orders — the production dating path (DICE doc p33/p35):
+#   viewer.orders(where: {eventId: {eq: ...}})  -> no full-promoter scan
+#   Order.purchasedAt = true sale time;  Order.tickets is a LIST;
+#   Order.returns[].ticketId flags returned tickets to exclude;
+#   Order.salesChannel = INTERNET|DOOR|FREE (structured comp flag).
+_DICE_ORDERS_GQL = """
+query Orders($where: OrderWhereInput, $first: Int, $after: String) {
+  viewer { orders(where: $where, first: $first, after: $after) {
+    pageInfo { hasNextPage endCursor }
+    edges { node {
+      purchasedAt salesChannel
+      returns { ticketId }
+      tickets {
+        id fullPrice total
+        ticketType { name }
+        fees { category dice promoter }
       }
-    }
-  }
+    } }
+  } }
 }
 """
 
 
 class LiveDiceAdapter:
-    """Live DICE GraphQL -> List[dl.Ticket] via the event-node tickets connection
-    (proven path). Reuses dl.normalize_dice_type + dl.dice_money. Dates by
-    claimedAt (event-scoped; Order.purchasedAt is not reachable per-event without
-    the full-promoter order scan). Captures allocation for capacity reconciliation
-    and the live fee categories for VAT-enum completeness."""
+    """Live DICE via event-scoped viewer.orders(where:{eventId:{eq:...}}).
+    Dates each ticket by Order.purchasedAt (true sale time), excludes returned
+    tickets (Order.returns[].ticketId), and reuses dl.normalize_dice_type +
+    dl.dice_money (engine untouched). Also fetches Event allocation for capacity
+    reconciliation, and tracks token-scope health (null purchasedAt/face)."""
 
-    def __init__(self, client, dice_event_id, event_days, page_size=100):
+    def __init__(self, client, dice_event_id, event_days, page_size=100, where_id_mode='numeric'):
+        # where_id_mode default 'numeric': OrderWhereInput.eventId is a filter
+        # field scoped by the numeric event id (what event_config.csv holds);
+        # the base64 relay id is only for top-level node(id:). Falls back to
+        # 'relay' only if numeric is proven wrong by recon.
         self.client = client
-        self.relay = dice_relay_id(dice_event_id)
         self.raw_id = str(dice_event_id).strip()
+        self.relay = dice_relay_id(dice_event_id)
         self.event_days = event_days
         self.page_size = page_size
-        # populated during fetch() for the recon/capacity reports:
+        self.where_id_mode = where_id_mode  # 'numeric' | 'relay'
+        # capacity / observability (populated during fetch):
         self.total_allocation = None
         self.ticket_pools = []
         self.declared_total_count = None
         self.fee_categories = set()
-        self.undated = 0
+        self.sales_channels = set()
+        self.orders_seen = 0
+        self.returned_excluded = 0
+        self.null_purchased_at = 0
+        self.null_face = 0
+
+    def _where_id(self):
+        return self.relay if self.where_id_mode == 'relay' else self.raw_id
+
+    def _load_allocation(self):
+        try:
+            data = self.client.query(_DICE_ALLOC_GQL, {'eventId': self.relay})
+            node = data.get('node') or {}
+            self.total_allocation = node.get('totalTicketAllocationQty')
+            self.ticket_pools = node.get('ticketPools') or []
+            self.declared_total_count = (node.get('tickets') or {}).get('totalCount')
+        except Exception:
+            pass
 
     def fetch(self):
+        self._load_allocation()
+        day_dates = [d['day_date'] for d in self.event_days if d.get('day_date')]
+        fallback = min(day_dates) if day_dates else date.today()
         out = []
         cursor = None
-        day_dates = [d['day_date'] for d in self.event_days if d.get('day_date')]
-        fallback = (min(day_dates).isoformat() if day_dates else date.today().isoformat())
-        first_page = True
+        where = {'eventId': {'eq': self._where_id()}}
         while True:
-            data = self.client.query(_EVENT_TICKETS_GQL,
-                                     {'eventId': self.relay, 'first': self.page_size, 'after': cursor})
-            node = data.get('node') or {}
-            if first_page:
-                self.total_allocation = node.get('totalTicketAllocationQty')
-                self.ticket_pools = node.get('ticketPools') or []
-                first_page = False
-            conn = node.get('tickets') or {}
-            if self.declared_total_count is None:
-                self.declared_total_count = conn.get('totalCount')
+            data = self.client.query(_DICE_ORDERS_GQL,
+                                     {'where': where, 'first': self.page_size, 'after': cursor})
+            conn = ((data.get('viewer') or {}).get('orders') or {})
             for e in (conn.get('edges') or []):
-                n = e.get('node') or {}
-                face_cents = n.get('fullPrice')
-                if face_cents is None:
-                    face_cents = n.get('total') or 0
-                face = (face_cents or 0) / 100.0
-                for fee in (n.get('fees') or []):
-                    if fee.get('category'):
-                        self.fee_categories.add(fee['category'])
-                structured = (n.get('ticketType') or {}).get('name') or ''
-                tt, access, att_days, product_name, _src = dl.normalize_dice_type(
-                    structured, face, self.event_days)
-                claimed = n.get('claimedAt') or ''
-                od = claimed[:10] if claimed else fallback
-                if not claimed:
-                    self.undated += 1
-                odt = _parse_dt(claimed)
-                is_paid = 0 if access in ('invitation', 'jeu_concours') or face == 0 else 1
-                gross_ttc, net_ht, vat = dl.dice_money(face)
-                out.append(dl.Ticket(
-                    order_date=date.fromisoformat(od), order_datetime=odt, platform='DICE',
-                    ticket_type=tt, access_level=access, attendance_days=att_days,
-                    product_name=product_name,
-                    gross_ttc=gross_ttc, net_ht=net_ht, vat=vat, is_paid=is_paid,
-                ))
+                order = e.get('node') or {}
+                self.orders_seen += 1
+                purchased = _parse_dt(order.get('purchasedAt'))
+                if order.get('purchasedAt') is None:
+                    self.null_purchased_at += 1
+                channel = order.get('salesChannel') or ''
+                if channel:
+                    self.sales_channels.add(channel)
+                returned = {r.get('ticketId') for r in (order.get('returns') or [])}
+                for n in (order.get('tickets') or []):
+                    if n.get('id') in returned:
+                        self.returned_excluded += 1
+                        continue
+                    face_cents = n.get('fullPrice')
+                    if face_cents is None:
+                        face_cents = n.get('total')
+                    if face_cents is None:
+                        self.null_face += 1
+                        face_cents = 0
+                    face = face_cents / 100.0
+                    for fee in (n.get('fees') or []):
+                        if fee.get('category'):
+                            self.fee_categories.add(fee['category'])
+                    structured = (n.get('ticketType') or {}).get('name') or ''
+                    tt, access, att_days, product_name, _src = dl.normalize_dice_type(
+                        structured, face, self.event_days)
+                    # salesChannel FREE is the clean structured comp flag (doc p33)
+                    is_paid = 0 if (channel == 'FREE' or access in ('invitation', 'jeu_concours')
+                                    or face == 0) else 1
+                    gross_ttc, net_ht, vat = dl.dice_money(face)
+                    out.append(dl.Ticket(
+                        order_date=(purchased.date() if purchased else fallback),
+                        order_datetime=purchased, platform='DICE',
+                        ticket_type=tt, access_level=access, attendance_days=att_days,
+                        product_name=product_name,
+                        gross_ttc=gross_ttc, net_ht=net_ht, vat=vat, is_paid=is_paid,
+                    ))
             pi = conn.get('pageInfo') or {}
             if pi.get('hasNextPage'):
                 cursor = pi.get('endCursor')
@@ -371,65 +416,74 @@ def recon_shotgun(client, organizer_id, event_id, max_pages=3):
 def recon_dice(client, dice_event_id):
     print("\n--- DICE live recon ---")
     relay = dice_relay_id(dice_event_id)
+    numeric = str(dice_event_id).strip()
     print(f"  event {dice_event_id} -> relay {relay}")
 
-    # 1) introspection: Viewer.orders args, Order.tickets type kind, VAT enum
+    # 1) introspection: OrderWhereInput (eventId filter), Order.purchasedAt, VAT enum
     introspection = """
     query {
-      viewer: __type(name:"Viewer"){ fields { name args { name } } }
-      order:  __type(name:"Order"){ fields { name type { kind name ofType { kind name } } } }
-      vat:    __type(name:"TicketFeeCategory"){ kind enumValues(includeDeprecated:true){ name } }
+      owi: __type(name:"OrderWhereInput"){ inputFields { name type { kind name ofType { kind name } } } }
+      vat: __type(name:"TicketFeeCategory"){ enumValues(includeDeprecated:true){ name } }
     }"""
     try:
         env = client.raw(introspection)
         data = env.get('data') or {}
-        v = data.get('viewer') or {}
-        orders_field = next((f for f in (v.get('fields') or []) if f['name'] == 'orders'), None)
-        print("  Viewer.orders args:", [a['name'] for a in (orders_field.get('args') or [])]
-              if orders_field else "<no orders field>")
-        o = data.get('order') or {}
-        tickets_field = next((f for f in (o.get('fields') or []) if f['name'] == 'tickets'), None)
-        if tickets_field:
-            ty = tickets_field['type']
-            print("  Order.tickets type:", ty.get('kind'), ty.get('name'),
-                  "ofType:", (ty.get('ofType') or {}).get('kind'), (ty.get('ofType') or {}).get('name'))
+        owi = data.get('owi') or {}
+        names = [f['name'] for f in (owi.get('inputFields') or [])]
+        print("  OrderWhereInput fields:", names)
+        evf = next((f for f in (owi.get('inputFields') or []) if f['name'] == 'eventId'), None)
+        if evf:
+            ty = evf['type']
+            print("  OrderWhereInput.eventId type:", ty.get('kind'), ty.get('name'),
+                  "ofType:", (ty.get('ofType') or {}).get('name'))
         vat = data.get('vat') or {}
-        print("  TicketFeeCategory enumValues:", [e['name'] for e in (vat.get('enumValues') or [])])
+        print("  TicketFeeCategory has SALES_TAX:",
+              'SALES_TAX' in [e['name'] for e in (vat.get('enumValues') or [])])
         if env.get('errors'):
-            print("  [introspection errors]", env['errors'])
+            print("  [introspection errors]", env['errors'][:2])
     except Exception as e:
         print("  introspection failed:", e)
 
-    # 2) prove the NEW adapter's path (viewer.orders(eventId:)) FAILS
-    bad = """query($eventId: ID!){ viewer { orders(eventId:$eventId){ edges { node { purchasedAt } } } } }"""
-    env = client.raw(bad, {"eventId": relay})
-    if env.get('errors'):
-        print("  [PROVEN] viewer.orders(eventId:) REJECTED ->",
-              env['errors'][0].get('message', env['errors'][0])[:160])
-    else:
-        print("  [UNEXPECTED] viewer.orders(eventId:) accepted; keys:",
-              list(((env.get('data') or {}).get('viewer') or {}).keys()))
-
-    # 3) prove the event-node tickets path WORKS (totalCount + allocation + sample)
+    # 2) probe event-scoped orders with relay vs numeric eventId; verify token scope
     probe = """
-    query($eventId: ID!){ node(id:$eventId){ ... on Event {
-      name totalTicketAllocationQty
-      ticketPools { name allocation }
-      tickets(first: 3){ totalCount edges { node {
-        fullPrice total claimedAt ticketType { name } fees { category dice promoter } } } }
-    } } }"""
+    query($where: OrderWhereInput, $first: Int){
+      viewer { orders(where:$where, first:$first){
+        pageInfo { hasNextPage }
+        edges { node { purchasedAt salesChannel total
+          returns { ticketId }
+          tickets { id fullPrice total ticketType { name } fees { category } } } }
+      } }
+    }"""
+    # numeric first (high-probability per the where-filter type system), relay fallback
+    for mode, idval in (('numeric', numeric), ('relay', relay)):
+        try:
+            env = client.raw(probe, {"where": {"eventId": {"eq": idval}}, "first": 3})
+            if env.get('errors'):
+                print(f"  [where eventId={mode}] REJECTED -> {str(env['errors'][0].get('message'))[:140]}")
+                continue
+            conn = (((env.get('data') or {}).get('viewer') or {}).get('orders') or {})
+            edges = conn.get('edges') or []
+            print(f"  [where eventId={mode}] OK: {len(edges)} order(s) on first page; "
+                  f"hasNextPage={(conn.get('pageInfo') or {}).get('hasNextPage')}")
+            if edges:
+                o = edges[0].get('node') or {}
+                tks = o.get('tickets') or []
+                t0 = tks[0] if tks else {}
+                print(f"    TOKEN-SCOPE check: purchasedAt={o.get('purchasedAt')!r} "
+                      f"salesChannel={o.get('salesChannel')!r} order.total={o.get('total')!r} "
+                      f"ticket.fullPrice={t0.get('fullPrice')!r} ticket.total={t0.get('total')!r}")
+                tt_name = (t0.get('ticketType') or {}).get('name')
+                print(f"    sample type={tt_name!r} fees={t0.get('fees')}")
+        except Exception as e:
+            print(f"  [where eventId={mode}] probe error: {e}")
+
+    # 3) event-node allocation (capacity reconciliation input)
+    alloc = """query($eventId: ID!){ node(id:$eventId){ ... on Event {
+      totalTicketAllocationQty ticketPools { name allocation } tickets { totalCount } } } }"""
     try:
-        data = client.query(probe, {"eventId": relay})
+        data = client.query(alloc, {"eventId": relay})
         node = data.get('node') or {}
-        conn = node.get('tickets') or {}
-        print(f"  [PROVEN] event-node tickets totalCount = {conn.get('totalCount')}")
         print(f"  Event.totalTicketAllocationQty = {node.get('totalTicketAllocationQty')}")
-        print(f"  Event.ticketPools = {node.get('ticketPools')}")
-        edges = conn.get('edges') or []
-        if edges:
-            n = edges[0].get('node') or {}
-            print("  sample ticket: fullPrice(cents)=%s total(cents)=%s type=%r fees=%s claimedAt=%s" % (
-                n.get('fullPrice'), n.get('total'),
-                (n.get('ticketType') or {}).get('name'), n.get('fees'), n.get('claimedAt')))
+        print(f"  Event.tickets.totalCount = {(node.get('tickets') or {}).get('totalCount')}")
     except Exception as e:
-        print("  event-node probe failed:", e)
+        print("  allocation probe failed:", e)

@@ -1,7 +1,7 @@
 {
   "event_id": "bordeaux_2026",
   "event_name": "Sonora Bordeaux 2026",
-  "generated_at": "2026-06-21T11:57:51.068920+00:00",
+  "generated_at": "2026-06-21T12:41:11.769669+00:00",
   "last_ticket_sold": "2026-06-13T19:23:16",
   "cutoffs": {
     "cumulative": "2026-06-13",
@@ -942,72 +942,72 @@
       {
         "date": "2026-05-31",
         "cumulative_current": 20431,
-        "cumulative_reference": 11866
+        "cumulative_reference": 21348
       },
       {
         "date": "2026-06-01",
         "cumulative_current": 20875,
-        "cumulative_reference": 12084
+        "cumulative_reference": 21566
       },
       {
         "date": "2026-06-02",
         "cumulative_current": 21357,
-        "cumulative_reference": 12510
+        "cumulative_reference": 21992
       },
       {
         "date": "2026-06-03",
         "cumulative_current": 21837,
-        "cumulative_reference": 12779
+        "cumulative_reference": 22261
       },
       {
         "date": "2026-06-04",
         "cumulative_current": 22284,
-        "cumulative_reference": 13020
+        "cumulative_reference": 22502
       },
       {
         "date": "2026-06-05",
         "cumulative_current": 22719,
-        "cumulative_reference": 13241
+        "cumulative_reference": 22723
       },
       {
         "date": "2026-06-06",
         "cumulative_current": 23039,
-        "cumulative_reference": 13404
+        "cumulative_reference": 22886
       },
       {
         "date": "2026-06-07",
         "cumulative_current": 23417,
-        "cumulative_reference": 13542
+        "cumulative_reference": 23024
       },
       {
         "date": "2026-06-08",
         "cumulative_current": 23941,
-        "cumulative_reference": 13729
+        "cumulative_reference": 23211
       },
       {
         "date": "2026-06-09",
         "cumulative_current": 24568,
-        "cumulative_reference": 13971
+        "cumulative_reference": 23453
       },
       {
         "date": "2026-06-10",
         "cumulative_current": 25198,
-        "cumulative_reference": 14195
+        "cumulative_reference": 23677
       },
       {
         "date": "2026-06-11",
         "cumulative_current": 25913,
-        "cumulative_reference": 14445
+        "cumulative_reference": 23927
       },
       {
         "date": "2026-06-12",
         "cumulative_current": 26697,
-        "cumulative_reference": 14853
+        "cumulative_reference": 24335
       },
       {
         "date": "2026-06-13",
         "cumulative_current": 26735,
-        "cumulative_reference": 14900
+        "cumulative_reference": 24382
       }
     ]
   },
@@ -2325,8 +2325,8 @@
         "cumulative": 20431,
         "shotgun": 177,
         "dice": 68,
-        "prev_sales": 124,
-        "prev_cumulative": 11866
+        "prev_sales": 9606,
+        "prev_cumulative": 21348
       },
       {
         "date": "2026-06-01",
@@ -2335,7 +2335,7 @@
         "shotgun": 322,
         "dice": 122,
         "prev_sales": 218,
-        "prev_cumulative": 12084
+        "prev_cumulative": 21566
       },
       {
         "date": "2026-06-02",
@@ -2344,7 +2344,7 @@
         "shotgun": 355,
         "dice": 127,
         "prev_sales": 426,
-        "prev_cumulative": 12510
+        "prev_cumulative": 21992
       },
       {
         "date": "2026-06-03",
@@ -2353,7 +2353,7 @@
         "shotgun": 379,
         "dice": 101,
         "prev_sales": 269,
-        "prev_cumulative": 12779
+        "prev_cumulative": 22261
       },
       {
         "date": "2026-06-04",
@@ -2362,7 +2362,7 @@
         "shotgun": 343,
         "dice": 104,
         "prev_sales": 241,
-        "prev_cumulative": 13020
+        "prev_cumulative": 22502
       },
       {
         "date": "2026-06-05",
@@ -2371,7 +2371,7 @@
         "shotgun": 313,
         "dice": 122,
         "prev_sales": 221,
-        "prev_cumulative": 13241
+        "prev_cumulative": 22723
       },
       {
         "date": "2026-06-06",
@@ -2380,7 +2380,7 @@
         "shotgun": 223,
         "dice": 97,
         "prev_sales": 163,
-        "prev_cumulative": 13404
+        "prev_cumulative": 22886
       },
       {
         "date": "2026-06-07",
@@ -2389,7 +2389,7 @@
         "shotgun": 276,
         "dice": 102,
         "prev_sales": 138,
-        "prev_cumulative": 13542
+        "prev_cumulative": 23024
       },
       {
         "date": "2026-06-08",
@@ -2398,7 +2398,7 @@
         "shotgun": 362,
         "dice": 162,
         "prev_sales": 187,
-        "prev_cumulative": 13729
+        "prev_cumulative": 23211
       },
       {
         "date": "2026-06-09",
@@ -2407,7 +2407,7 @@
         "shotgun": 438,
         "dice": 189,
         "prev_sales": 242,
-        "prev_cumulative": 13971
+        "prev_cumulative": 23453
       },
       {
         "date": "2026-06-10",
@@ -2416,7 +2416,7 @@
         "shotgun": 475,
         "dice": 155,
         "prev_sales": 224,
-        "prev_cumulative": 14195
+        "prev_cumulative": 23677
       },
       {
         "date": "2026-06-11",
@@ -2425,7 +2425,7 @@
         "shotgun": 553,
         "dice": 162,
         "prev_sales": 250,
-        "prev_cumulative": 14445
+        "prev_cumulative": 23927
       },
       {
         "date": "2026-06-12",
@@ -2434,7 +2434,7 @@
         "shotgun": 620,
         "dice": 164,
         "prev_sales": 408,
-        "prev_cumulative": 14853
+        "prev_cumulative": 24335
       },
       {
         "date": "2026-06-13",
@@ -2443,7 +2443,7 @@
         "shotgun": 17,
         "dice": 21,
         "prev_sales": 47,
-        "prev_cumulative": 14900
+        "prev_cumulative": 24382
       }
     ],
     "weekly": [
@@ -2459,7 +2459,7 @@
         "start": "2026-05-31",
         "end": "2026-06-06",
         "sales": 2853,
-        "prev_sales": 1662
+        "prev_sales": 11144
       },
       {
         "weeks_before_cutoff": 2,
@@ -2613,17 +2613,17 @@
   "comparison": {
     "reference_event_id": "bordeaux_2025",
     "mode": "j_minus",
-    "reference_tickets_sold": 14900,
-    "reference_revenue_ht": 997501.23,
-    "reference_presence_total": 19556,
+    "reference_tickets_sold": 24382,
+    "reference_revenue_ht": 1709081.71,
+    "reference_presence_total": 38520,
     "yoy_deltas": {
-      "tickets_sold_pct": 79.4,
-      "tickets_sold_diff": 11835,
-      "revenue_ht_pct": 76.9,
-      "revenue_ht_diff": 766729.52,
-      "presence_pct": 108.5,
-      "avg_price_ht_pct": -1.4,
-      "avg_price_ht_diff": -0.96
+      "tickets_sold_pct": 9.7,
+      "tickets_sold_diff": 2353,
+      "revenue_ht_pct": 3.2,
+      "revenue_ht_diff": 55149.04,
+      "presence_pct": 5.9,
+      "avg_price_ht_pct": -5.9,
+      "avg_price_ht_diff": -4.11
     }
   }
 }

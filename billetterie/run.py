@@ -268,7 +268,9 @@ def main():
     sg_map = build_shotgun_clients()
     dice_token = os.environ.get('DICE_TOKEN', '')
     dc = live.DiceGraphQLClient(dice_token) if dice_token else None
-    log(f"[run] mode={args.mode} event={args.event} shotgun_orgs={sorted(sg_map.keys())} "
+    log(f"[run] mode={args.mode} event={args.event} shotgun_orgs_wired={len(sg_map)} "
+        f"token2_present={'yes' if os.environ.get('SHOTGUN_TOKEN2') else 'NO'} "
+        f"org2_present={'yes' if os.environ.get('SHOTGUN_ORGANIZER2_ID') else 'NO'} "
         f"dice_token={'yes' if dc else 'NO'}")
 
     if args.mode == 'recon':

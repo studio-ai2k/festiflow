@@ -42,8 +42,10 @@ jobs:
       - name: Run billetterie pipeline
         env:
           SHOTGUN_TOKEN: ${{ secrets.SHOTGUN_TOKEN }}
-          DICE_TOKEN: ${{ secrets.DICE_TOKEN }}
           SHOTGUN_ORGANIZER_ID: ${{ secrets.SHOTGUN_ORGANIZER_ID }}
+          SHOTGUN_TOKEN2: ${{ secrets.SHOTGUN_TOKEN2 }}
+          SHOTGUN_ORGANIZER2_ID: ${{ secrets.SHOTGUN_ORGANIZER2_ID }}
+          DICE_TOKEN: ${{ secrets.DICE_TOKEN }}
         run: |
           set -euo pipefail
           cd billetterie

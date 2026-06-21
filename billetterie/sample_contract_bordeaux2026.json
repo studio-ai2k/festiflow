@@ -1,0 +1,2569 @@
+{
+  "event_id": "bordeaux_2026",
+  "event_name": "Sonora Bordeaux 2026",
+  "generated_at": "2026-06-21T10:37:57.142653+00:00",
+  "last_ticket_sold": "2026-06-13T17:20:40",
+  "cutoffs": {
+    "cumulative": "2026-06-13",
+    "velocity": "2026-06-12"
+  },
+  "money_model": {
+    "dice": "gross=TTC(face); HT=TTC/1.055; VAT=TTC-HT; commission buyer-paid (not in gross)",
+    "shotgun": "deal_price=HT(promoter net); service/user fees buyer-paid (TTC) not in net",
+    "vat_rate": 0.055
+  },
+  "count_model": {
+    "tickets_sold": "valid/scanned & paid, counted ONCE (headline + recette + settlement)",
+    "presence": "each ticket expanded across granted days \u2014 per-day fill-rate ONLY"
+  },
+  "capacity_source": {
+    "source": "event_config.csv (hand-entered)",
+    "reconcile_on_live": "On first live pull, compare DICE PriceTier.allocation / TicketPool.allocation / Event.totalTicketAllocationQty against config capacities. If they match, adopt API allocation; if not, it is a finding (API allocation may be gross inventory vs the marketing capacity the fill-rate cards intend) \u2014 keep config.",
+    "config_total_capacity": 44500
+  },
+  "totals": {
+    "tickets_sold": 17409,
+    "tickets_all": 22767,
+    "tickets_free": 5358,
+    "revenue_ht": 1171873.94,
+    "revenue_ttc": 1324478.85,
+    "revenue_vat": 61093.03,
+    "avg_price_ht": 67.31,
+    "by_platform": {
+      "Shotgun": {
+        "tickets_sold": 17409,
+        "net_ht": 1171873.94,
+        "gross_ttc": 1324478.85,
+        "vat": 61093.03
+      }
+    },
+    "by_type": {
+      "samedi": {
+        "tickets_sold": 6284,
+        "net_ht": 372635.63
+      },
+      "vendredi": {
+        "tickets_sold": 5644,
+        "net_ht": 290978.16
+      },
+      "2-jours": {
+        "tickets_sold": 4273,
+        "net_ht": 441149.87
+      },
+      "3-jours": {
+        "tickets_sold": 565,
+        "net_ht": 58915.28
+      },
+      "jeudi": {
+        "tickets_sold": 643,
+        "net_ht": 8195.0
+      }
+    },
+    "by_access": {
+      "regular": 14978,
+      "invitation": 5358,
+      "vip": 336,
+      "early_entry": 2079,
+      "backstage": 16
+    },
+    "presence_by_day": {
+      "jeudi": 5143,
+      "vendredi": 11548,
+      "samedi": 12121
+    },
+    "cutoff_cumulative": "2026-06-13",
+    "cutoff_velocity": "2026-06-12"
+  },
+  "fill_rates": {
+    "sell_through_pct": 64.7,
+    "total_presence": 28812,
+    "total_capacity": 44500,
+    "per_day": {
+      "jeudi": {
+        "presence": 5143,
+        "capacity": 8500,
+        "fill_pct": 60.5,
+        "remaining": 3357
+      },
+      "vendredi": {
+        "presence": 11548,
+        "capacity": 18000,
+        "fill_pct": 64.2,
+        "remaining": 6452
+      },
+      "samedi": {
+        "presence": 12121,
+        "capacity": 18000,
+        "fill_pct": 67.3,
+        "remaining": 5879
+      }
+    },
+    "_note": "sell_through uses PRESENCE/capacity (standalone definition); presence != tickets_sold (see count_model)"
+  },
+  "velocity": {
+    "velocity_7d": 405.429,
+    "velocity_14d": 341.786,
+    "velocity_30d": 220.133
+  },
+  "day_velocity": {
+    "jeudi": {
+      "velocity_14d": 35.929,
+      "velocity_total_7d": 55.571,
+      "trend_pct": 241.2
+    },
+    "vendredi": {
+      "velocity_14d": 221.214,
+      "velocity_total_7d": 267.714,
+      "trend_pct": 53.2
+    },
+    "samedi": {
+      "velocity_14d": 117.643,
+      "velocity_total_7d": 104.429,
+      "trend_pct": -20.2
+    }
+  },
+  "projection": {
+    "days_remaining": 0,
+    "current_tickets": 17377,
+    "inputs": {
+      "base_velocity_14d": 341.786,
+      "best_7d_window": 550.143,
+      "worst_7d_window": 25.857,
+      "avg_presence_per_ticket": 1.655
+    },
+    "scenarios": {
+      "pessimiste": {
+        "velocity": 25.857,
+        "projected": 17377,
+        "pct_capacity": 39.0
+      },
+      "base": {
+        "velocity": 341.786,
+        "projected": 17377,
+        "pct_capacity": 39.0
+      },
+      "optimiste": {
+        "velocity": 550.143,
+        "projected": 17377,
+        "pct_capacity": 39.0
+      }
+    },
+    "revenue_projection_ht": 1169645.87,
+    "revenue_if_soldout_ht": 1809839.33
+  },
+  "timeseries": {
+    "mode": "j_minus",
+    "rows": [
+      {
+        "date": "2026-01-06",
+        "cumulative_current": 2618,
+        "cumulative_reference": 1348
+      },
+      {
+        "date": "2026-01-07",
+        "cumulative_current": 2955,
+        "cumulative_reference": 1368
+      },
+      {
+        "date": "2026-01-08",
+        "cumulative_current": 3317,
+        "cumulative_reference": 1389
+      },
+      {
+        "date": "2026-01-09",
+        "cumulative_current": 3529,
+        "cumulative_reference": 1416
+      },
+      {
+        "date": "2026-01-10",
+        "cumulative_current": 3671,
+        "cumulative_reference": 1440
+      },
+      {
+        "date": "2026-01-11",
+        "cumulative_current": 3770,
+        "cumulative_reference": 1465
+      },
+      {
+        "date": "2026-01-12",
+        "cumulative_current": 3851,
+        "cumulative_reference": 1482
+      },
+      {
+        "date": "2026-01-13",
+        "cumulative_current": 3915,
+        "cumulative_reference": 1490
+      },
+      {
+        "date": "2026-01-14",
+        "cumulative_current": 4024,
+        "cumulative_reference": 1507
+      },
+      {
+        "date": "2026-01-15",
+        "cumulative_current": 4119,
+        "cumulative_reference": 1523
+      },
+      {
+        "date": "2026-01-16",
+        "cumulative_current": 4177,
+        "cumulative_reference": 1533
+      },
+      {
+        "date": "2026-01-17",
+        "cumulative_current": 4248,
+        "cumulative_reference": 1558
+      },
+      {
+        "date": "2026-01-18",
+        "cumulative_current": 4318,
+        "cumulative_reference": 1571
+      },
+      {
+        "date": "2026-01-19",
+        "cumulative_current": 4371,
+        "cumulative_reference": 1577
+      },
+      {
+        "date": "2026-01-20",
+        "cumulative_current": 4412,
+        "cumulative_reference": 1595
+      },
+      {
+        "date": "2026-01-21",
+        "cumulative_current": 4468,
+        "cumulative_reference": 1618
+      },
+      {
+        "date": "2026-01-22",
+        "cumulative_current": 4491,
+        "cumulative_reference": 1634
+      },
+      {
+        "date": "2026-01-23",
+        "cumulative_current": 4544,
+        "cumulative_reference": 1662
+      },
+      {
+        "date": "2026-01-24",
+        "cumulative_current": 4579,
+        "cumulative_reference": 1684
+      },
+      {
+        "date": "2026-01-25",
+        "cumulative_current": 4620,
+        "cumulative_reference": 1694
+      },
+      {
+        "date": "2026-01-26",
+        "cumulative_current": 4661,
+        "cumulative_reference": 1713
+      },
+      {
+        "date": "2026-01-27",
+        "cumulative_current": 4689,
+        "cumulative_reference": 1731
+      },
+      {
+        "date": "2026-01-28",
+        "cumulative_current": 4735,
+        "cumulative_reference": 1771
+      },
+      {
+        "date": "2026-01-29",
+        "cumulative_current": 4790,
+        "cumulative_reference": 1836
+      },
+      {
+        "date": "2026-01-30",
+        "cumulative_current": 4845,
+        "cumulative_reference": 1881
+      },
+      {
+        "date": "2026-01-31",
+        "cumulative_current": 4901,
+        "cumulative_reference": 1919
+      },
+      {
+        "date": "2026-02-01",
+        "cumulative_current": 4961,
+        "cumulative_reference": 1975
+      },
+      {
+        "date": "2026-02-02",
+        "cumulative_current": 5010,
+        "cumulative_reference": 2016
+      },
+      {
+        "date": "2026-02-03",
+        "cumulative_current": 5057,
+        "cumulative_reference": 2061
+      },
+      {
+        "date": "2026-02-04",
+        "cumulative_current": 5099,
+        "cumulative_reference": 2089
+      },
+      {
+        "date": "2026-02-05",
+        "cumulative_current": 5154,
+        "cumulative_reference": 2130
+      },
+      {
+        "date": "2026-02-06",
+        "cumulative_current": 5227,
+        "cumulative_reference": 2158
+      },
+      {
+        "date": "2026-02-07",
+        "cumulative_current": 5293,
+        "cumulative_reference": 2177
+      },
+      {
+        "date": "2026-02-08",
+        "cumulative_current": 5334,
+        "cumulative_reference": 2202
+      },
+      {
+        "date": "2026-02-09",
+        "cumulative_current": 5373,
+        "cumulative_reference": 2233
+      },
+      {
+        "date": "2026-02-10",
+        "cumulative_current": 5425,
+        "cumulative_reference": 2275
+      },
+      {
+        "date": "2026-02-11",
+        "cumulative_current": 5470,
+        "cumulative_reference": 2302
+      },
+      {
+        "date": "2026-02-12",
+        "cumulative_current": 5520,
+        "cumulative_reference": 2317
+      },
+      {
+        "date": "2026-02-13",
+        "cumulative_current": 5552,
+        "cumulative_reference": 2335
+      },
+      {
+        "date": "2026-02-14",
+        "cumulative_current": 5593,
+        "cumulative_reference": 2360
+      },
+      {
+        "date": "2026-02-15",
+        "cumulative_current": 5635,
+        "cumulative_reference": 2385
+      },
+      {
+        "date": "2026-02-16",
+        "cumulative_current": 5664,
+        "cumulative_reference": 2405
+      },
+      {
+        "date": "2026-02-17",
+        "cumulative_current": 5690,
+        "cumulative_reference": 2417
+      },
+      {
+        "date": "2026-02-18",
+        "cumulative_current": 5711,
+        "cumulative_reference": 2437
+      },
+      {
+        "date": "2026-02-19",
+        "cumulative_current": 5735,
+        "cumulative_reference": 2454
+      },
+      {
+        "date": "2026-02-20",
+        "cumulative_current": 5773,
+        "cumulative_reference": 2469
+      },
+      {
+        "date": "2026-02-21",
+        "cumulative_current": 5796,
+        "cumulative_reference": 2483
+      },
+      {
+        "date": "2026-02-22",
+        "cumulative_current": 5833,
+        "cumulative_reference": 2504
+      },
+      {
+        "date": "2026-02-23",
+        "cumulative_current": 5853,
+        "cumulative_reference": 2525
+      },
+      {
+        "date": "2026-02-24",
+        "cumulative_current": 5871,
+        "cumulative_reference": 2543
+      },
+      {
+        "date": "2026-02-25",
+        "cumulative_current": 5914,
+        "cumulative_reference": 2572
+      },
+      {
+        "date": "2026-02-26",
+        "cumulative_current": 5954,
+        "cumulative_reference": 2613
+      },
+      {
+        "date": "2026-02-27",
+        "cumulative_current": 6004,
+        "cumulative_reference": 2658
+      },
+      {
+        "date": "2026-02-28",
+        "cumulative_current": 6049,
+        "cumulative_reference": 2700
+      },
+      {
+        "date": "2026-03-01",
+        "cumulative_current": 6094,
+        "cumulative_reference": 2725
+      },
+      {
+        "date": "2026-03-02",
+        "cumulative_current": 6131,
+        "cumulative_reference": 2781
+      },
+      {
+        "date": "2026-03-03",
+        "cumulative_current": 6184,
+        "cumulative_reference": 2813
+      },
+      {
+        "date": "2026-03-04",
+        "cumulative_current": 6242,
+        "cumulative_reference": 2860
+      },
+      {
+        "date": "2026-03-05",
+        "cumulative_current": 6311,
+        "cumulative_reference": 2900
+      },
+      {
+        "date": "2026-03-06",
+        "cumulative_current": 6370,
+        "cumulative_reference": 2944
+      },
+      {
+        "date": "2026-03-07",
+        "cumulative_current": 6401,
+        "cumulative_reference": 2979
+      },
+      {
+        "date": "2026-03-08",
+        "cumulative_current": 6448,
+        "cumulative_reference": 3006
+      },
+      {
+        "date": "2026-03-09",
+        "cumulative_current": 6494,
+        "cumulative_reference": 3041
+      },
+      {
+        "date": "2026-03-10",
+        "cumulative_current": 6532,
+        "cumulative_reference": 3075
+      },
+      {
+        "date": "2026-03-11",
+        "cumulative_current": 6570,
+        "cumulative_reference": 3122
+      },
+      {
+        "date": "2026-03-12",
+        "cumulative_current": 6607,
+        "cumulative_reference": 3144
+      },
+      {
+        "date": "2026-03-13",
+        "cumulative_current": 6630,
+        "cumulative_reference": 3169
+      },
+      {
+        "date": "2026-03-14",
+        "cumulative_current": 6677,
+        "cumulative_reference": 3203
+      },
+      {
+        "date": "2026-03-15",
+        "cumulative_current": 6727,
+        "cumulative_reference": 3235
+      },
+      {
+        "date": "2026-03-16",
+        "cumulative_current": 6771,
+        "cumulative_reference": 3271
+      },
+      {
+        "date": "2026-03-17",
+        "cumulative_current": 6806,
+        "cumulative_reference": 3289
+      },
+      {
+        "date": "2026-03-18",
+        "cumulative_current": 6838,
+        "cumulative_reference": 3325
+      },
+      {
+        "date": "2026-03-19",
+        "cumulative_current": 6878,
+        "cumulative_reference": 3357
+      },
+      {
+        "date": "2026-03-20",
+        "cumulative_current": 6937,
+        "cumulative_reference": 3383
+      },
+      {
+        "date": "2026-03-21",
+        "cumulative_current": 6988,
+        "cumulative_reference": 3422
+      },
+      {
+        "date": "2026-03-22",
+        "cumulative_current": 7020,
+        "cumulative_reference": 3442
+      },
+      {
+        "date": "2026-03-23",
+        "cumulative_current": 7065,
+        "cumulative_reference": 3486
+      },
+      {
+        "date": "2026-03-24",
+        "cumulative_current": 7098,
+        "cumulative_reference": 3521
+      },
+      {
+        "date": "2026-03-25",
+        "cumulative_current": 7128,
+        "cumulative_reference": 3559
+      },
+      {
+        "date": "2026-03-26",
+        "cumulative_current": 7163,
+        "cumulative_reference": 3599
+      },
+      {
+        "date": "2026-03-27",
+        "cumulative_current": 7215,
+        "cumulative_reference": 3634
+      },
+      {
+        "date": "2026-03-28",
+        "cumulative_current": 7277,
+        "cumulative_reference": 3679
+      },
+      {
+        "date": "2026-03-29",
+        "cumulative_current": 7328,
+        "cumulative_reference": 3722
+      },
+      {
+        "date": "2026-03-30",
+        "cumulative_current": 7424,
+        "cumulative_reference": 3776
+      },
+      {
+        "date": "2026-03-31",
+        "cumulative_current": 7514,
+        "cumulative_reference": 3859
+      },
+      {
+        "date": "2026-04-01",
+        "cumulative_current": 7626,
+        "cumulative_reference": 3910
+      },
+      {
+        "date": "2026-04-02",
+        "cumulative_current": 7739,
+        "cumulative_reference": 3987
+      },
+      {
+        "date": "2026-04-03",
+        "cumulative_current": 7834,
+        "cumulative_reference": 4070
+      },
+      {
+        "date": "2026-04-04",
+        "cumulative_current": 7923,
+        "cumulative_reference": 4147
+      },
+      {
+        "date": "2026-04-05",
+        "cumulative_current": 7982,
+        "cumulative_reference": 4211
+      },
+      {
+        "date": "2026-04-06",
+        "cumulative_current": 8042,
+        "cumulative_reference": 4286
+      },
+      {
+        "date": "2026-04-07",
+        "cumulative_current": 8105,
+        "cumulative_reference": 4361
+      },
+      {
+        "date": "2026-04-08",
+        "cumulative_current": 8174,
+        "cumulative_reference": 4421
+      },
+      {
+        "date": "2026-04-09",
+        "cumulative_current": 8267,
+        "cumulative_reference": 4483
+      },
+      {
+        "date": "2026-04-10",
+        "cumulative_current": 8350,
+        "cumulative_reference": 4534
+      },
+      {
+        "date": "2026-04-11",
+        "cumulative_current": 8416,
+        "cumulative_reference": 4576
+      },
+      {
+        "date": "2026-04-12",
+        "cumulative_current": 8488,
+        "cumulative_reference": 4618
+      },
+      {
+        "date": "2026-04-13",
+        "cumulative_current": 8547,
+        "cumulative_reference": 4668
+      },
+      {
+        "date": "2026-04-14",
+        "cumulative_current": 8620,
+        "cumulative_reference": 4694
+      },
+      {
+        "date": "2026-04-15",
+        "cumulative_current": 8688,
+        "cumulative_reference": 4734
+      },
+      {
+        "date": "2026-04-16",
+        "cumulative_current": 8733,
+        "cumulative_reference": 4782
+      },
+      {
+        "date": "2026-04-17",
+        "cumulative_current": 8791,
+        "cumulative_reference": 4839
+      },
+      {
+        "date": "2026-04-18",
+        "cumulative_current": 8828,
+        "cumulative_reference": 4883
+      },
+      {
+        "date": "2026-04-19",
+        "cumulative_current": 8873,
+        "cumulative_reference": 4920
+      },
+      {
+        "date": "2026-04-20",
+        "cumulative_current": 8908,
+        "cumulative_reference": 4960
+      },
+      {
+        "date": "2026-04-21",
+        "cumulative_current": 8941,
+        "cumulative_reference": 5008
+      },
+      {
+        "date": "2026-04-22",
+        "cumulative_current": 8992,
+        "cumulative_reference": 5074
+      },
+      {
+        "date": "2026-04-23",
+        "cumulative_current": 9041,
+        "cumulative_reference": 5115
+      },
+      {
+        "date": "2026-04-24",
+        "cumulative_current": 9109,
+        "cumulative_reference": 5149
+      },
+      {
+        "date": "2026-04-25",
+        "cumulative_current": 9135,
+        "cumulative_reference": 5192
+      },
+      {
+        "date": "2026-04-26",
+        "cumulative_current": 9202,
+        "cumulative_reference": 5234
+      },
+      {
+        "date": "2026-04-27",
+        "cumulative_current": 9247,
+        "cumulative_reference": 5294
+      },
+      {
+        "date": "2026-04-28",
+        "cumulative_current": 9331,
+        "cumulative_reference": 5375
+      },
+      {
+        "date": "2026-04-29",
+        "cumulative_current": 9418,
+        "cumulative_reference": 5436
+      },
+      {
+        "date": "2026-04-30",
+        "cumulative_current": 9517,
+        "cumulative_reference": 5510
+      },
+      {
+        "date": "2026-05-01",
+        "cumulative_current": 9597,
+        "cumulative_reference": 5592
+      },
+      {
+        "date": "2026-05-02",
+        "cumulative_current": 9664,
+        "cumulative_reference": 5675
+      },
+      {
+        "date": "2026-05-03",
+        "cumulative_current": 9740,
+        "cumulative_reference": 5748
+      },
+      {
+        "date": "2026-05-04",
+        "cumulative_current": 9830,
+        "cumulative_reference": 5846
+      },
+      {
+        "date": "2026-05-05",
+        "cumulative_current": 9981,
+        "cumulative_reference": 5926
+      },
+      {
+        "date": "2026-05-06",
+        "cumulative_current": 10092,
+        "cumulative_reference": 6006
+      },
+      {
+        "date": "2026-05-07",
+        "cumulative_current": 10195,
+        "cumulative_reference": 6107
+      },
+      {
+        "date": "2026-05-08",
+        "cumulative_current": 10298,
+        "cumulative_reference": 6183
+      },
+      {
+        "date": "2026-05-09",
+        "cumulative_current": 10394,
+        "cumulative_reference": 6254
+      },
+      {
+        "date": "2026-05-10",
+        "cumulative_current": 10476,
+        "cumulative_reference": 6346
+      },
+      {
+        "date": "2026-05-11",
+        "cumulative_current": 10578,
+        "cumulative_reference": 6427
+      },
+      {
+        "date": "2026-05-12",
+        "cumulative_current": 10682,
+        "cumulative_reference": 6491
+      },
+      {
+        "date": "2026-05-13",
+        "cumulative_current": 10773,
+        "cumulative_reference": 6570
+      },
+      {
+        "date": "2026-05-14",
+        "cumulative_current": 10873,
+        "cumulative_reference": 6651
+      },
+      {
+        "date": "2026-05-15",
+        "cumulative_current": 10965,
+        "cumulative_reference": 6748
+      },
+      {
+        "date": "2026-05-16",
+        "cumulative_current": 11041,
+        "cumulative_reference": 6824
+      },
+      {
+        "date": "2026-05-17",
+        "cumulative_current": 11121,
+        "cumulative_reference": 6878
+      },
+      {
+        "date": "2026-05-18",
+        "cumulative_current": 11200,
+        "cumulative_reference": 6936
+      },
+      {
+        "date": "2026-05-19",
+        "cumulative_current": 11299,
+        "cumulative_reference": 7000
+      },
+      {
+        "date": "2026-05-20",
+        "cumulative_current": 11391,
+        "cumulative_reference": 7060
+      },
+      {
+        "date": "2026-05-21",
+        "cumulative_current": 11484,
+        "cumulative_reference": 7132
+      },
+      {
+        "date": "2026-05-22",
+        "cumulative_current": 11578,
+        "cumulative_reference": 7197
+      },
+      {
+        "date": "2026-05-23",
+        "cumulative_current": 11680,
+        "cumulative_reference": 7231
+      },
+      {
+        "date": "2026-05-24",
+        "cumulative_current": 11763,
+        "cumulative_reference": 7286
+      },
+      {
+        "date": "2026-05-25",
+        "cumulative_current": 11864,
+        "cumulative_reference": 7369
+      },
+      {
+        "date": "2026-05-26",
+        "cumulative_current": 11973,
+        "cumulative_reference": 7457
+      },
+      {
+        "date": "2026-05-27",
+        "cumulative_current": 12133,
+        "cumulative_reference": 7551
+      },
+      {
+        "date": "2026-05-28",
+        "cumulative_current": 12336,
+        "cumulative_reference": 7646
+      },
+      {
+        "date": "2026-05-29",
+        "cumulative_current": 12592,
+        "cumulative_reference": 7719
+      },
+      {
+        "date": "2026-05-30",
+        "cumulative_current": 12765,
+        "cumulative_reference": 7789
+      },
+      {
+        "date": "2026-05-31",
+        "cumulative_current": 12939,
+        "cumulative_reference": 7864
+      },
+      {
+        "date": "2026-06-01",
+        "cumulative_current": 13235,
+        "cumulative_reference": 7993
+      },
+      {
+        "date": "2026-06-02",
+        "cumulative_current": 13570,
+        "cumulative_reference": 8277
+      },
+      {
+        "date": "2026-06-03",
+        "cumulative_current": 13915,
+        "cumulative_reference": 8454
+      },
+      {
+        "date": "2026-06-04",
+        "cumulative_current": 14237,
+        "cumulative_reference": 8567
+      },
+      {
+        "date": "2026-06-05",
+        "cumulative_current": 14539,
+        "cumulative_reference": 8670
+      },
+      {
+        "date": "2026-06-06",
+        "cumulative_current": 14746,
+        "cumulative_reference": 8722
+      },
+      {
+        "date": "2026-06-07",
+        "cumulative_current": 15022,
+        "cumulative_reference": 8808
+      },
+      {
+        "date": "2026-06-08",
+        "cumulative_current": 15357,
+        "cumulative_reference": 8902
+      },
+      {
+        "date": "2026-06-09",
+        "cumulative_current": 15775,
+        "cumulative_reference": 9060
+      },
+      {
+        "date": "2026-06-10",
+        "cumulative_current": 16223,
+        "cumulative_reference": 9188
+      },
+      {
+        "date": "2026-06-11",
+        "cumulative_current": 16761,
+        "cumulative_reference": 9318
+      },
+      {
+        "date": "2026-06-12",
+        "cumulative_current": 17377,
+        "cumulative_reference": 9482
+      },
+      {
+        "date": "2026-06-13",
+        "cumulative_current": 17409,
+        "cumulative_reference": 9482
+      }
+    ]
+  },
+  "suivi": {
+    "mode": "j_minus",
+    "daily": [
+      {
+        "date": "2026-01-06",
+        "sales": 2618,
+        "cumulative": 2618,
+        "shotgun": 2618,
+        "dice": 0,
+        "prev_sales": 32,
+        "prev_cumulative": 1348
+      },
+      {
+        "date": "2026-01-07",
+        "sales": 337,
+        "cumulative": 2955,
+        "shotgun": 337,
+        "dice": 0,
+        "prev_sales": 20,
+        "prev_cumulative": 1368
+      },
+      {
+        "date": "2026-01-08",
+        "sales": 362,
+        "cumulative": 3317,
+        "shotgun": 362,
+        "dice": 0,
+        "prev_sales": 21,
+        "prev_cumulative": 1389
+      },
+      {
+        "date": "2026-01-09",
+        "sales": 212,
+        "cumulative": 3529,
+        "shotgun": 212,
+        "dice": 0,
+        "prev_sales": 27,
+        "prev_cumulative": 1416
+      },
+      {
+        "date": "2026-01-10",
+        "sales": 142,
+        "cumulative": 3671,
+        "shotgun": 142,
+        "dice": 0,
+        "prev_sales": 24,
+        "prev_cumulative": 1440
+      },
+      {
+        "date": "2026-01-11",
+        "sales": 99,
+        "cumulative": 3770,
+        "shotgun": 99,
+        "dice": 0,
+        "prev_sales": 25,
+        "prev_cumulative": 1465
+      },
+      {
+        "date": "2026-01-12",
+        "sales": 81,
+        "cumulative": 3851,
+        "shotgun": 81,
+        "dice": 0,
+        "prev_sales": 17,
+        "prev_cumulative": 1482
+      },
+      {
+        "date": "2026-01-13",
+        "sales": 64,
+        "cumulative": 3915,
+        "shotgun": 64,
+        "dice": 0,
+        "prev_sales": 8,
+        "prev_cumulative": 1490
+      },
+      {
+        "date": "2026-01-14",
+        "sales": 109,
+        "cumulative": 4024,
+        "shotgun": 109,
+        "dice": 0,
+        "prev_sales": 17,
+        "prev_cumulative": 1507
+      },
+      {
+        "date": "2026-01-15",
+        "sales": 95,
+        "cumulative": 4119,
+        "shotgun": 95,
+        "dice": 0,
+        "prev_sales": 16,
+        "prev_cumulative": 1523
+      },
+      {
+        "date": "2026-01-16",
+        "sales": 58,
+        "cumulative": 4177,
+        "shotgun": 58,
+        "dice": 0,
+        "prev_sales": 10,
+        "prev_cumulative": 1533
+      },
+      {
+        "date": "2026-01-17",
+        "sales": 71,
+        "cumulative": 4248,
+        "shotgun": 71,
+        "dice": 0,
+        "prev_sales": 25,
+        "prev_cumulative": 1558
+      },
+      {
+        "date": "2026-01-18",
+        "sales": 70,
+        "cumulative": 4318,
+        "shotgun": 70,
+        "dice": 0,
+        "prev_sales": 13,
+        "prev_cumulative": 1571
+      },
+      {
+        "date": "2026-01-19",
+        "sales": 53,
+        "cumulative": 4371,
+        "shotgun": 53,
+        "dice": 0,
+        "prev_sales": 6,
+        "prev_cumulative": 1577
+      },
+      {
+        "date": "2026-01-20",
+        "sales": 41,
+        "cumulative": 4412,
+        "shotgun": 41,
+        "dice": 0,
+        "prev_sales": 18,
+        "prev_cumulative": 1595
+      },
+      {
+        "date": "2026-01-21",
+        "sales": 56,
+        "cumulative": 4468,
+        "shotgun": 56,
+        "dice": 0,
+        "prev_sales": 23,
+        "prev_cumulative": 1618
+      },
+      {
+        "date": "2026-01-22",
+        "sales": 23,
+        "cumulative": 4491,
+        "shotgun": 23,
+        "dice": 0,
+        "prev_sales": 16,
+        "prev_cumulative": 1634
+      },
+      {
+        "date": "2026-01-23",
+        "sales": 53,
+        "cumulative": 4544,
+        "shotgun": 53,
+        "dice": 0,
+        "prev_sales": 28,
+        "prev_cumulative": 1662
+      },
+      {
+        "date": "2026-01-24",
+        "sales": 35,
+        "cumulative": 4579,
+        "shotgun": 35,
+        "dice": 0,
+        "prev_sales": 22,
+        "prev_cumulative": 1684
+      },
+      {
+        "date": "2026-01-25",
+        "sales": 41,
+        "cumulative": 4620,
+        "shotgun": 41,
+        "dice": 0,
+        "prev_sales": 10,
+        "prev_cumulative": 1694
+      },
+      {
+        "date": "2026-01-26",
+        "sales": 41,
+        "cumulative": 4661,
+        "shotgun": 41,
+        "dice": 0,
+        "prev_sales": 19,
+        "prev_cumulative": 1713
+      },
+      {
+        "date": "2026-01-27",
+        "sales": 28,
+        "cumulative": 4689,
+        "shotgun": 28,
+        "dice": 0,
+        "prev_sales": 18,
+        "prev_cumulative": 1731
+      },
+      {
+        "date": "2026-01-28",
+        "sales": 46,
+        "cumulative": 4735,
+        "shotgun": 46,
+        "dice": 0,
+        "prev_sales": 40,
+        "prev_cumulative": 1771
+      },
+      {
+        "date": "2026-01-29",
+        "sales": 55,
+        "cumulative": 4790,
+        "shotgun": 55,
+        "dice": 0,
+        "prev_sales": 65,
+        "prev_cumulative": 1836
+      },
+      {
+        "date": "2026-01-30",
+        "sales": 55,
+        "cumulative": 4845,
+        "shotgun": 55,
+        "dice": 0,
+        "prev_sales": 45,
+        "prev_cumulative": 1881
+      },
+      {
+        "date": "2026-01-31",
+        "sales": 56,
+        "cumulative": 4901,
+        "shotgun": 56,
+        "dice": 0,
+        "prev_sales": 38,
+        "prev_cumulative": 1919
+      },
+      {
+        "date": "2026-02-01",
+        "sales": 60,
+        "cumulative": 4961,
+        "shotgun": 60,
+        "dice": 0,
+        "prev_sales": 56,
+        "prev_cumulative": 1975
+      },
+      {
+        "date": "2026-02-02",
+        "sales": 49,
+        "cumulative": 5010,
+        "shotgun": 49,
+        "dice": 0,
+        "prev_sales": 41,
+        "prev_cumulative": 2016
+      },
+      {
+        "date": "2026-02-03",
+        "sales": 47,
+        "cumulative": 5057,
+        "shotgun": 47,
+        "dice": 0,
+        "prev_sales": 45,
+        "prev_cumulative": 2061
+      },
+      {
+        "date": "2026-02-04",
+        "sales": 42,
+        "cumulative": 5099,
+        "shotgun": 42,
+        "dice": 0,
+        "prev_sales": 28,
+        "prev_cumulative": 2089
+      },
+      {
+        "date": "2026-02-05",
+        "sales": 55,
+        "cumulative": 5154,
+        "shotgun": 55,
+        "dice": 0,
+        "prev_sales": 41,
+        "prev_cumulative": 2130
+      },
+      {
+        "date": "2026-02-06",
+        "sales": 73,
+        "cumulative": 5227,
+        "shotgun": 73,
+        "dice": 0,
+        "prev_sales": 28,
+        "prev_cumulative": 2158
+      },
+      {
+        "date": "2026-02-07",
+        "sales": 66,
+        "cumulative": 5293,
+        "shotgun": 66,
+        "dice": 0,
+        "prev_sales": 19,
+        "prev_cumulative": 2177
+      },
+      {
+        "date": "2026-02-08",
+        "sales": 41,
+        "cumulative": 5334,
+        "shotgun": 41,
+        "dice": 0,
+        "prev_sales": 25,
+        "prev_cumulative": 2202
+      },
+      {
+        "date": "2026-02-09",
+        "sales": 39,
+        "cumulative": 5373,
+        "shotgun": 39,
+        "dice": 0,
+        "prev_sales": 31,
+        "prev_cumulative": 2233
+      },
+      {
+        "date": "2026-02-10",
+        "sales": 52,
+        "cumulative": 5425,
+        "shotgun": 52,
+        "dice": 0,
+        "prev_sales": 42,
+        "prev_cumulative": 2275
+      },
+      {
+        "date": "2026-02-11",
+        "sales": 45,
+        "cumulative": 5470,
+        "shotgun": 45,
+        "dice": 0,
+        "prev_sales": 27,
+        "prev_cumulative": 2302
+      },
+      {
+        "date": "2026-02-12",
+        "sales": 50,
+        "cumulative": 5520,
+        "shotgun": 50,
+        "dice": 0,
+        "prev_sales": 15,
+        "prev_cumulative": 2317
+      },
+      {
+        "date": "2026-02-13",
+        "sales": 32,
+        "cumulative": 5552,
+        "shotgun": 32,
+        "dice": 0,
+        "prev_sales": 18,
+        "prev_cumulative": 2335
+      },
+      {
+        "date": "2026-02-14",
+        "sales": 41,
+        "cumulative": 5593,
+        "shotgun": 41,
+        "dice": 0,
+        "prev_sales": 25,
+        "prev_cumulative": 2360
+      },
+      {
+        "date": "2026-02-15",
+        "sales": 42,
+        "cumulative": 5635,
+        "shotgun": 42,
+        "dice": 0,
+        "prev_sales": 25,
+        "prev_cumulative": 2385
+      },
+      {
+        "date": "2026-02-16",
+        "sales": 29,
+        "cumulative": 5664,
+        "shotgun": 29,
+        "dice": 0,
+        "prev_sales": 20,
+        "prev_cumulative": 2405
+      },
+      {
+        "date": "2026-02-17",
+        "sales": 26,
+        "cumulative": 5690,
+        "shotgun": 26,
+        "dice": 0,
+        "prev_sales": 12,
+        "prev_cumulative": 2417
+      },
+      {
+        "date": "2026-02-18",
+        "sales": 21,
+        "cumulative": 5711,
+        "shotgun": 21,
+        "dice": 0,
+        "prev_sales": 20,
+        "prev_cumulative": 2437
+      },
+      {
+        "date": "2026-02-19",
+        "sales": 24,
+        "cumulative": 5735,
+        "shotgun": 24,
+        "dice": 0,
+        "prev_sales": 17,
+        "prev_cumulative": 2454
+      },
+      {
+        "date": "2026-02-20",
+        "sales": 38,
+        "cumulative": 5773,
+        "shotgun": 38,
+        "dice": 0,
+        "prev_sales": 15,
+        "prev_cumulative": 2469
+      },
+      {
+        "date": "2026-02-21",
+        "sales": 23,
+        "cumulative": 5796,
+        "shotgun": 23,
+        "dice": 0,
+        "prev_sales": 14,
+        "prev_cumulative": 2483
+      },
+      {
+        "date": "2026-02-22",
+        "sales": 37,
+        "cumulative": 5833,
+        "shotgun": 37,
+        "dice": 0,
+        "prev_sales": 21,
+        "prev_cumulative": 2504
+      },
+      {
+        "date": "2026-02-23",
+        "sales": 20,
+        "cumulative": 5853,
+        "shotgun": 20,
+        "dice": 0,
+        "prev_sales": 21,
+        "prev_cumulative": 2525
+      },
+      {
+        "date": "2026-02-24",
+        "sales": 18,
+        "cumulative": 5871,
+        "shotgun": 18,
+        "dice": 0,
+        "prev_sales": 18,
+        "prev_cumulative": 2543
+      },
+      {
+        "date": "2026-02-25",
+        "sales": 43,
+        "cumulative": 5914,
+        "shotgun": 43,
+        "dice": 0,
+        "prev_sales": 29,
+        "prev_cumulative": 2572
+      },
+      {
+        "date": "2026-02-26",
+        "sales": 40,
+        "cumulative": 5954,
+        "shotgun": 40,
+        "dice": 0,
+        "prev_sales": 41,
+        "prev_cumulative": 2613
+      },
+      {
+        "date": "2026-02-27",
+        "sales": 50,
+        "cumulative": 6004,
+        "shotgun": 50,
+        "dice": 0,
+        "prev_sales": 45,
+        "prev_cumulative": 2658
+      },
+      {
+        "date": "2026-02-28",
+        "sales": 45,
+        "cumulative": 6049,
+        "shotgun": 45,
+        "dice": 0,
+        "prev_sales": 42,
+        "prev_cumulative": 2700
+      },
+      {
+        "date": "2026-03-01",
+        "sales": 45,
+        "cumulative": 6094,
+        "shotgun": 45,
+        "dice": 0,
+        "prev_sales": 25,
+        "prev_cumulative": 2725
+      },
+      {
+        "date": "2026-03-02",
+        "sales": 37,
+        "cumulative": 6131,
+        "shotgun": 37,
+        "dice": 0,
+        "prev_sales": 56,
+        "prev_cumulative": 2781
+      },
+      {
+        "date": "2026-03-03",
+        "sales": 53,
+        "cumulative": 6184,
+        "shotgun": 53,
+        "dice": 0,
+        "prev_sales": 32,
+        "prev_cumulative": 2813
+      },
+      {
+        "date": "2026-03-04",
+        "sales": 58,
+        "cumulative": 6242,
+        "shotgun": 58,
+        "dice": 0,
+        "prev_sales": 47,
+        "prev_cumulative": 2860
+      },
+      {
+        "date": "2026-03-05",
+        "sales": 69,
+        "cumulative": 6311,
+        "shotgun": 69,
+        "dice": 0,
+        "prev_sales": 40,
+        "prev_cumulative": 2900
+      },
+      {
+        "date": "2026-03-06",
+        "sales": 59,
+        "cumulative": 6370,
+        "shotgun": 59,
+        "dice": 0,
+        "prev_sales": 44,
+        "prev_cumulative": 2944
+      },
+      {
+        "date": "2026-03-07",
+        "sales": 31,
+        "cumulative": 6401,
+        "shotgun": 31,
+        "dice": 0,
+        "prev_sales": 35,
+        "prev_cumulative": 2979
+      },
+      {
+        "date": "2026-03-08",
+        "sales": 47,
+        "cumulative": 6448,
+        "shotgun": 47,
+        "dice": 0,
+        "prev_sales": 27,
+        "prev_cumulative": 3006
+      },
+      {
+        "date": "2026-03-09",
+        "sales": 46,
+        "cumulative": 6494,
+        "shotgun": 46,
+        "dice": 0,
+        "prev_sales": 35,
+        "prev_cumulative": 3041
+      },
+      {
+        "date": "2026-03-10",
+        "sales": 38,
+        "cumulative": 6532,
+        "shotgun": 38,
+        "dice": 0,
+        "prev_sales": 34,
+        "prev_cumulative": 3075
+      },
+      {
+        "date": "2026-03-11",
+        "sales": 38,
+        "cumulative": 6570,
+        "shotgun": 38,
+        "dice": 0,
+        "prev_sales": 47,
+        "prev_cumulative": 3122
+      },
+      {
+        "date": "2026-03-12",
+        "sales": 37,
+        "cumulative": 6607,
+        "shotgun": 37,
+        "dice": 0,
+        "prev_sales": 22,
+        "prev_cumulative": 3144
+      },
+      {
+        "date": "2026-03-13",
+        "sales": 23,
+        "cumulative": 6630,
+        "shotgun": 23,
+        "dice": 0,
+        "prev_sales": 25,
+        "prev_cumulative": 3169
+      },
+      {
+        "date": "2026-03-14",
+        "sales": 47,
+        "cumulative": 6677,
+        "shotgun": 47,
+        "dice": 0,
+        "prev_sales": 34,
+        "prev_cumulative": 3203
+      },
+      {
+        "date": "2026-03-15",
+        "sales": 50,
+        "cumulative": 6727,
+        "shotgun": 50,
+        "dice": 0,
+        "prev_sales": 32,
+        "prev_cumulative": 3235
+      },
+      {
+        "date": "2026-03-16",
+        "sales": 44,
+        "cumulative": 6771,
+        "shotgun": 44,
+        "dice": 0,
+        "prev_sales": 36,
+        "prev_cumulative": 3271
+      },
+      {
+        "date": "2026-03-17",
+        "sales": 35,
+        "cumulative": 6806,
+        "shotgun": 35,
+        "dice": 0,
+        "prev_sales": 18,
+        "prev_cumulative": 3289
+      },
+      {
+        "date": "2026-03-18",
+        "sales": 32,
+        "cumulative": 6838,
+        "shotgun": 32,
+        "dice": 0,
+        "prev_sales": 36,
+        "prev_cumulative": 3325
+      },
+      {
+        "date": "2026-03-19",
+        "sales": 40,
+        "cumulative": 6878,
+        "shotgun": 40,
+        "dice": 0,
+        "prev_sales": 32,
+        "prev_cumulative": 3357
+      },
+      {
+        "date": "2026-03-20",
+        "sales": 59,
+        "cumulative": 6937,
+        "shotgun": 59,
+        "dice": 0,
+        "prev_sales": 26,
+        "prev_cumulative": 3383
+      },
+      {
+        "date": "2026-03-21",
+        "sales": 51,
+        "cumulative": 6988,
+        "shotgun": 51,
+        "dice": 0,
+        "prev_sales": 39,
+        "prev_cumulative": 3422
+      },
+      {
+        "date": "2026-03-22",
+        "sales": 32,
+        "cumulative": 7020,
+        "shotgun": 32,
+        "dice": 0,
+        "prev_sales": 20,
+        "prev_cumulative": 3442
+      },
+      {
+        "date": "2026-03-23",
+        "sales": 45,
+        "cumulative": 7065,
+        "shotgun": 45,
+        "dice": 0,
+        "prev_sales": 44,
+        "prev_cumulative": 3486
+      },
+      {
+        "date": "2026-03-24",
+        "sales": 33,
+        "cumulative": 7098,
+        "shotgun": 33,
+        "dice": 0,
+        "prev_sales": 35,
+        "prev_cumulative": 3521
+      },
+      {
+        "date": "2026-03-25",
+        "sales": 30,
+        "cumulative": 7128,
+        "shotgun": 30,
+        "dice": 0,
+        "prev_sales": 38,
+        "prev_cumulative": 3559
+      },
+      {
+        "date": "2026-03-26",
+        "sales": 35,
+        "cumulative": 7163,
+        "shotgun": 35,
+        "dice": 0,
+        "prev_sales": 40,
+        "prev_cumulative": 3599
+      },
+      {
+        "date": "2026-03-27",
+        "sales": 52,
+        "cumulative": 7215,
+        "shotgun": 52,
+        "dice": 0,
+        "prev_sales": 35,
+        "prev_cumulative": 3634
+      },
+      {
+        "date": "2026-03-28",
+        "sales": 62,
+        "cumulative": 7277,
+        "shotgun": 62,
+        "dice": 0,
+        "prev_sales": 45,
+        "prev_cumulative": 3679
+      },
+      {
+        "date": "2026-03-29",
+        "sales": 51,
+        "cumulative": 7328,
+        "shotgun": 51,
+        "dice": 0,
+        "prev_sales": 43,
+        "prev_cumulative": 3722
+      },
+      {
+        "date": "2026-03-30",
+        "sales": 96,
+        "cumulative": 7424,
+        "shotgun": 96,
+        "dice": 0,
+        "prev_sales": 54,
+        "prev_cumulative": 3776
+      },
+      {
+        "date": "2026-03-31",
+        "sales": 90,
+        "cumulative": 7514,
+        "shotgun": 90,
+        "dice": 0,
+        "prev_sales": 83,
+        "prev_cumulative": 3859
+      },
+      {
+        "date": "2026-04-01",
+        "sales": 112,
+        "cumulative": 7626,
+        "shotgun": 112,
+        "dice": 0,
+        "prev_sales": 51,
+        "prev_cumulative": 3910
+      },
+      {
+        "date": "2026-04-02",
+        "sales": 113,
+        "cumulative": 7739,
+        "shotgun": 113,
+        "dice": 0,
+        "prev_sales": 77,
+        "prev_cumulative": 3987
+      },
+      {
+        "date": "2026-04-03",
+        "sales": 95,
+        "cumulative": 7834,
+        "shotgun": 95,
+        "dice": 0,
+        "prev_sales": 83,
+        "prev_cumulative": 4070
+      },
+      {
+        "date": "2026-04-04",
+        "sales": 89,
+        "cumulative": 7923,
+        "shotgun": 89,
+        "dice": 0,
+        "prev_sales": 77,
+        "prev_cumulative": 4147
+      },
+      {
+        "date": "2026-04-05",
+        "sales": 59,
+        "cumulative": 7982,
+        "shotgun": 59,
+        "dice": 0,
+        "prev_sales": 64,
+        "prev_cumulative": 4211
+      },
+      {
+        "date": "2026-04-06",
+        "sales": 60,
+        "cumulative": 8042,
+        "shotgun": 60,
+        "dice": 0,
+        "prev_sales": 75,
+        "prev_cumulative": 4286
+      },
+      {
+        "date": "2026-04-07",
+        "sales": 63,
+        "cumulative": 8105,
+        "shotgun": 63,
+        "dice": 0,
+        "prev_sales": 75,
+        "prev_cumulative": 4361
+      },
+      {
+        "date": "2026-04-08",
+        "sales": 69,
+        "cumulative": 8174,
+        "shotgun": 69,
+        "dice": 0,
+        "prev_sales": 60,
+        "prev_cumulative": 4421
+      },
+      {
+        "date": "2026-04-09",
+        "sales": 93,
+        "cumulative": 8267,
+        "shotgun": 93,
+        "dice": 0,
+        "prev_sales": 62,
+        "prev_cumulative": 4483
+      },
+      {
+        "date": "2026-04-10",
+        "sales": 83,
+        "cumulative": 8350,
+        "shotgun": 83,
+        "dice": 0,
+        "prev_sales": 51,
+        "prev_cumulative": 4534
+      },
+      {
+        "date": "2026-04-11",
+        "sales": 66,
+        "cumulative": 8416,
+        "shotgun": 66,
+        "dice": 0,
+        "prev_sales": 42,
+        "prev_cumulative": 4576
+      },
+      {
+        "date": "2026-04-12",
+        "sales": 72,
+        "cumulative": 8488,
+        "shotgun": 72,
+        "dice": 0,
+        "prev_sales": 42,
+        "prev_cumulative": 4618
+      },
+      {
+        "date": "2026-04-13",
+        "sales": 59,
+        "cumulative": 8547,
+        "shotgun": 59,
+        "dice": 0,
+        "prev_sales": 50,
+        "prev_cumulative": 4668
+      },
+      {
+        "date": "2026-04-14",
+        "sales": 73,
+        "cumulative": 8620,
+        "shotgun": 73,
+        "dice": 0,
+        "prev_sales": 26,
+        "prev_cumulative": 4694
+      },
+      {
+        "date": "2026-04-15",
+        "sales": 68,
+        "cumulative": 8688,
+        "shotgun": 68,
+        "dice": 0,
+        "prev_sales": 40,
+        "prev_cumulative": 4734
+      },
+      {
+        "date": "2026-04-16",
+        "sales": 45,
+        "cumulative": 8733,
+        "shotgun": 45,
+        "dice": 0,
+        "prev_sales": 48,
+        "prev_cumulative": 4782
+      },
+      {
+        "date": "2026-04-17",
+        "sales": 58,
+        "cumulative": 8791,
+        "shotgun": 58,
+        "dice": 0,
+        "prev_sales": 57,
+        "prev_cumulative": 4839
+      },
+      {
+        "date": "2026-04-18",
+        "sales": 37,
+        "cumulative": 8828,
+        "shotgun": 37,
+        "dice": 0,
+        "prev_sales": 44,
+        "prev_cumulative": 4883
+      },
+      {
+        "date": "2026-04-19",
+        "sales": 45,
+        "cumulative": 8873,
+        "shotgun": 45,
+        "dice": 0,
+        "prev_sales": 37,
+        "prev_cumulative": 4920
+      },
+      {
+        "date": "2026-04-20",
+        "sales": 35,
+        "cumulative": 8908,
+        "shotgun": 35,
+        "dice": 0,
+        "prev_sales": 40,
+        "prev_cumulative": 4960
+      },
+      {
+        "date": "2026-04-21",
+        "sales": 33,
+        "cumulative": 8941,
+        "shotgun": 33,
+        "dice": 0,
+        "prev_sales": 48,
+        "prev_cumulative": 5008
+      },
+      {
+        "date": "2026-04-22",
+        "sales": 51,
+        "cumulative": 8992,
+        "shotgun": 51,
+        "dice": 0,
+        "prev_sales": 66,
+        "prev_cumulative": 5074
+      },
+      {
+        "date": "2026-04-23",
+        "sales": 49,
+        "cumulative": 9041,
+        "shotgun": 49,
+        "dice": 0,
+        "prev_sales": 41,
+        "prev_cumulative": 5115
+      },
+      {
+        "date": "2026-04-24",
+        "sales": 68,
+        "cumulative": 9109,
+        "shotgun": 68,
+        "dice": 0,
+        "prev_sales": 34,
+        "prev_cumulative": 5149
+      },
+      {
+        "date": "2026-04-25",
+        "sales": 26,
+        "cumulative": 9135,
+        "shotgun": 26,
+        "dice": 0,
+        "prev_sales": 43,
+        "prev_cumulative": 5192
+      },
+      {
+        "date": "2026-04-26",
+        "sales": 67,
+        "cumulative": 9202,
+        "shotgun": 67,
+        "dice": 0,
+        "prev_sales": 42,
+        "prev_cumulative": 5234
+      },
+      {
+        "date": "2026-04-27",
+        "sales": 45,
+        "cumulative": 9247,
+        "shotgun": 45,
+        "dice": 0,
+        "prev_sales": 60,
+        "prev_cumulative": 5294
+      },
+      {
+        "date": "2026-04-28",
+        "sales": 84,
+        "cumulative": 9331,
+        "shotgun": 84,
+        "dice": 0,
+        "prev_sales": 81,
+        "prev_cumulative": 5375
+      },
+      {
+        "date": "2026-04-29",
+        "sales": 87,
+        "cumulative": 9418,
+        "shotgun": 87,
+        "dice": 0,
+        "prev_sales": 61,
+        "prev_cumulative": 5436
+      },
+      {
+        "date": "2026-04-30",
+        "sales": 99,
+        "cumulative": 9517,
+        "shotgun": 99,
+        "dice": 0,
+        "prev_sales": 74,
+        "prev_cumulative": 5510
+      },
+      {
+        "date": "2026-05-01",
+        "sales": 80,
+        "cumulative": 9597,
+        "shotgun": 80,
+        "dice": 0,
+        "prev_sales": 82,
+        "prev_cumulative": 5592
+      },
+      {
+        "date": "2026-05-02",
+        "sales": 67,
+        "cumulative": 9664,
+        "shotgun": 67,
+        "dice": 0,
+        "prev_sales": 83,
+        "prev_cumulative": 5675
+      },
+      {
+        "date": "2026-05-03",
+        "sales": 76,
+        "cumulative": 9740,
+        "shotgun": 76,
+        "dice": 0,
+        "prev_sales": 73,
+        "prev_cumulative": 5748
+      },
+      {
+        "date": "2026-05-04",
+        "sales": 90,
+        "cumulative": 9830,
+        "shotgun": 90,
+        "dice": 0,
+        "prev_sales": 98,
+        "prev_cumulative": 5846
+      },
+      {
+        "date": "2026-05-05",
+        "sales": 151,
+        "cumulative": 9981,
+        "shotgun": 151,
+        "dice": 0,
+        "prev_sales": 80,
+        "prev_cumulative": 5926
+      },
+      {
+        "date": "2026-05-06",
+        "sales": 111,
+        "cumulative": 10092,
+        "shotgun": 111,
+        "dice": 0,
+        "prev_sales": 80,
+        "prev_cumulative": 6006
+      },
+      {
+        "date": "2026-05-07",
+        "sales": 103,
+        "cumulative": 10195,
+        "shotgun": 103,
+        "dice": 0,
+        "prev_sales": 101,
+        "prev_cumulative": 6107
+      },
+      {
+        "date": "2026-05-08",
+        "sales": 103,
+        "cumulative": 10298,
+        "shotgun": 103,
+        "dice": 0,
+        "prev_sales": 76,
+        "prev_cumulative": 6183
+      },
+      {
+        "date": "2026-05-09",
+        "sales": 96,
+        "cumulative": 10394,
+        "shotgun": 96,
+        "dice": 0,
+        "prev_sales": 71,
+        "prev_cumulative": 6254
+      },
+      {
+        "date": "2026-05-10",
+        "sales": 82,
+        "cumulative": 10476,
+        "shotgun": 82,
+        "dice": 0,
+        "prev_sales": 92,
+        "prev_cumulative": 6346
+      },
+      {
+        "date": "2026-05-11",
+        "sales": 102,
+        "cumulative": 10578,
+        "shotgun": 102,
+        "dice": 0,
+        "prev_sales": 81,
+        "prev_cumulative": 6427
+      },
+      {
+        "date": "2026-05-12",
+        "sales": 104,
+        "cumulative": 10682,
+        "shotgun": 104,
+        "dice": 0,
+        "prev_sales": 64,
+        "prev_cumulative": 6491
+      },
+      {
+        "date": "2026-05-13",
+        "sales": 91,
+        "cumulative": 10773,
+        "shotgun": 91,
+        "dice": 0,
+        "prev_sales": 79,
+        "prev_cumulative": 6570
+      },
+      {
+        "date": "2026-05-14",
+        "sales": 100,
+        "cumulative": 10873,
+        "shotgun": 100,
+        "dice": 0,
+        "prev_sales": 81,
+        "prev_cumulative": 6651
+      },
+      {
+        "date": "2026-05-15",
+        "sales": 92,
+        "cumulative": 10965,
+        "shotgun": 92,
+        "dice": 0,
+        "prev_sales": 97,
+        "prev_cumulative": 6748
+      },
+      {
+        "date": "2026-05-16",
+        "sales": 76,
+        "cumulative": 11041,
+        "shotgun": 76,
+        "dice": 0,
+        "prev_sales": 76,
+        "prev_cumulative": 6824
+      },
+      {
+        "date": "2026-05-17",
+        "sales": 80,
+        "cumulative": 11121,
+        "shotgun": 80,
+        "dice": 0,
+        "prev_sales": 54,
+        "prev_cumulative": 6878
+      },
+      {
+        "date": "2026-05-18",
+        "sales": 79,
+        "cumulative": 11200,
+        "shotgun": 79,
+        "dice": 0,
+        "prev_sales": 58,
+        "prev_cumulative": 6936
+      },
+      {
+        "date": "2026-05-19",
+        "sales": 99,
+        "cumulative": 11299,
+        "shotgun": 99,
+        "dice": 0,
+        "prev_sales": 64,
+        "prev_cumulative": 7000
+      },
+      {
+        "date": "2026-05-20",
+        "sales": 92,
+        "cumulative": 11391,
+        "shotgun": 92,
+        "dice": 0,
+        "prev_sales": 60,
+        "prev_cumulative": 7060
+      },
+      {
+        "date": "2026-05-21",
+        "sales": 93,
+        "cumulative": 11484,
+        "shotgun": 93,
+        "dice": 0,
+        "prev_sales": 72,
+        "prev_cumulative": 7132
+      },
+      {
+        "date": "2026-05-22",
+        "sales": 94,
+        "cumulative": 11578,
+        "shotgun": 94,
+        "dice": 0,
+        "prev_sales": 65,
+        "prev_cumulative": 7197
+      },
+      {
+        "date": "2026-05-23",
+        "sales": 102,
+        "cumulative": 11680,
+        "shotgun": 102,
+        "dice": 0,
+        "prev_sales": 34,
+        "prev_cumulative": 7231
+      },
+      {
+        "date": "2026-05-24",
+        "sales": 83,
+        "cumulative": 11763,
+        "shotgun": 83,
+        "dice": 0,
+        "prev_sales": 55,
+        "prev_cumulative": 7286
+      },
+      {
+        "date": "2026-05-25",
+        "sales": 101,
+        "cumulative": 11864,
+        "shotgun": 101,
+        "dice": 0,
+        "prev_sales": 83,
+        "prev_cumulative": 7369
+      },
+      {
+        "date": "2026-05-26",
+        "sales": 109,
+        "cumulative": 11973,
+        "shotgun": 109,
+        "dice": 0,
+        "prev_sales": 88,
+        "prev_cumulative": 7457
+      },
+      {
+        "date": "2026-05-27",
+        "sales": 160,
+        "cumulative": 12133,
+        "shotgun": 160,
+        "dice": 0,
+        "prev_sales": 94,
+        "prev_cumulative": 7551
+      },
+      {
+        "date": "2026-05-28",
+        "sales": 203,
+        "cumulative": 12336,
+        "shotgun": 203,
+        "dice": 0,
+        "prev_sales": 95,
+        "prev_cumulative": 7646
+      },
+      {
+        "date": "2026-05-29",
+        "sales": 256,
+        "cumulative": 12592,
+        "shotgun": 256,
+        "dice": 0,
+        "prev_sales": 73,
+        "prev_cumulative": 7719
+      },
+      {
+        "date": "2026-05-30",
+        "sales": 173,
+        "cumulative": 12765,
+        "shotgun": 173,
+        "dice": 0,
+        "prev_sales": 70,
+        "prev_cumulative": 7789
+      },
+      {
+        "date": "2026-05-31",
+        "sales": 174,
+        "cumulative": 12939,
+        "shotgun": 174,
+        "dice": 0,
+        "prev_sales": 75,
+        "prev_cumulative": 7864
+      },
+      {
+        "date": "2026-06-01",
+        "sales": 296,
+        "cumulative": 13235,
+        "shotgun": 296,
+        "dice": 0,
+        "prev_sales": 129,
+        "prev_cumulative": 7993
+      },
+      {
+        "date": "2026-06-02",
+        "sales": 335,
+        "cumulative": 13570,
+        "shotgun": 335,
+        "dice": 0,
+        "prev_sales": 284,
+        "prev_cumulative": 8277
+      },
+      {
+        "date": "2026-06-03",
+        "sales": 345,
+        "cumulative": 13915,
+        "shotgun": 345,
+        "dice": 0,
+        "prev_sales": 177,
+        "prev_cumulative": 8454
+      },
+      {
+        "date": "2026-06-04",
+        "sales": 322,
+        "cumulative": 14237,
+        "shotgun": 322,
+        "dice": 0,
+        "prev_sales": 113,
+        "prev_cumulative": 8567
+      },
+      {
+        "date": "2026-06-05",
+        "sales": 302,
+        "cumulative": 14539,
+        "shotgun": 302,
+        "dice": 0,
+        "prev_sales": 103,
+        "prev_cumulative": 8670
+      },
+      {
+        "date": "2026-06-06",
+        "sales": 207,
+        "cumulative": 14746,
+        "shotgun": 207,
+        "dice": 0,
+        "prev_sales": 52,
+        "prev_cumulative": 8722
+      },
+      {
+        "date": "2026-06-07",
+        "sales": 276,
+        "cumulative": 15022,
+        "shotgun": 276,
+        "dice": 0,
+        "prev_sales": 86,
+        "prev_cumulative": 8808
+      },
+      {
+        "date": "2026-06-08",
+        "sales": 335,
+        "cumulative": 15357,
+        "shotgun": 335,
+        "dice": 0,
+        "prev_sales": 94,
+        "prev_cumulative": 8902
+      },
+      {
+        "date": "2026-06-09",
+        "sales": 418,
+        "cumulative": 15775,
+        "shotgun": 418,
+        "dice": 0,
+        "prev_sales": 158,
+        "prev_cumulative": 9060
+      },
+      {
+        "date": "2026-06-10",
+        "sales": 448,
+        "cumulative": 16223,
+        "shotgun": 448,
+        "dice": 0,
+        "prev_sales": 128,
+        "prev_cumulative": 9188
+      },
+      {
+        "date": "2026-06-11",
+        "sales": 538,
+        "cumulative": 16761,
+        "shotgun": 538,
+        "dice": 0,
+        "prev_sales": 130,
+        "prev_cumulative": 9318
+      },
+      {
+        "date": "2026-06-12",
+        "sales": 616,
+        "cumulative": 17377,
+        "shotgun": 616,
+        "dice": 0,
+        "prev_sales": 164,
+        "prev_cumulative": 9482
+      },
+      {
+        "date": "2026-06-13",
+        "sales": 32,
+        "cumulative": 17409,
+        "shotgun": 32,
+        "dice": 0,
+        "prev_sales": 0,
+        "prev_cumulative": 9482
+      }
+    ],
+    "weekly": [
+      {
+        "weeks_before_cutoff": 0,
+        "start": "2026-06-07",
+        "end": "2026-06-13",
+        "sales": 2663,
+        "prev_sales": 760
+      },
+      {
+        "weeks_before_cutoff": 1,
+        "start": "2026-05-31",
+        "end": "2026-06-06",
+        "sales": 1981,
+        "prev_sales": 933
+      },
+      {
+        "weeks_before_cutoff": 2,
+        "start": "2026-05-24",
+        "end": "2026-05-30",
+        "sales": 1085,
+        "prev_sales": 558
+      },
+      {
+        "weeks_before_cutoff": 3,
+        "start": "2026-05-17",
+        "end": "2026-05-23",
+        "sales": 639,
+        "prev_sales": 407
+      },
+      {
+        "weeks_before_cutoff": 4,
+        "start": "2026-05-10",
+        "end": "2026-05-16",
+        "sales": 647,
+        "prev_sales": 570
+      },
+      {
+        "weeks_before_cutoff": 5,
+        "start": "2026-05-03",
+        "end": "2026-05-09",
+        "sales": 730,
+        "prev_sales": 579
+      },
+      {
+        "weeks_before_cutoff": 6,
+        "start": "2026-04-26",
+        "end": "2026-05-02",
+        "sales": 529,
+        "prev_sales": 483
+      },
+      {
+        "weeks_before_cutoff": 7,
+        "start": "2026-04-19",
+        "end": "2026-04-25",
+        "sales": 307,
+        "prev_sales": 309
+      },
+      {
+        "weeks_before_cutoff": 8,
+        "start": "2026-04-12",
+        "end": "2026-04-18",
+        "sales": 412,
+        "prev_sales": 307
+      },
+      {
+        "weeks_before_cutoff": 9,
+        "start": "2026-04-05",
+        "end": "2026-04-11",
+        "sales": 493,
+        "prev_sales": 429
+      },
+      {
+        "weeks_before_cutoff": 10,
+        "start": "2026-03-29",
+        "end": "2026-04-04",
+        "sales": 646,
+        "prev_sales": 468
+      },
+      {
+        "weeks_before_cutoff": 11,
+        "start": "2026-03-22",
+        "end": "2026-03-28",
+        "sales": 289,
+        "prev_sales": 257
+      },
+      {
+        "weeks_before_cutoff": 12,
+        "start": "2026-03-15",
+        "end": "2026-03-21",
+        "sales": 311,
+        "prev_sales": 219
+      },
+      {
+        "weeks_before_cutoff": 13,
+        "start": "2026-03-08",
+        "end": "2026-03-14",
+        "sales": 276,
+        "prev_sales": 224
+      },
+      {
+        "weeks_before_cutoff": 14,
+        "start": "2026-03-01",
+        "end": "2026-03-07",
+        "sales": 352,
+        "prev_sales": 279
+      },
+      {
+        "weeks_before_cutoff": 15,
+        "start": "2026-02-22",
+        "end": "2026-02-28",
+        "sales": 253,
+        "prev_sales": 217
+      },
+      {
+        "weeks_before_cutoff": 16,
+        "start": "2026-02-15",
+        "end": "2026-02-21",
+        "sales": 203,
+        "prev_sales": 123
+      },
+      {
+        "weeks_before_cutoff": 17,
+        "start": "2026-02-08",
+        "end": "2026-02-14",
+        "sales": 300,
+        "prev_sales": 183
+      },
+      {
+        "weeks_before_cutoff": 18,
+        "start": "2026-02-01",
+        "end": "2026-02-07",
+        "sales": 392,
+        "prev_sales": 258
+      },
+      {
+        "weeks_before_cutoff": 19,
+        "start": "2026-01-25",
+        "end": "2026-01-31",
+        "sales": 322,
+        "prev_sales": 235
+      },
+      {
+        "weeks_before_cutoff": 20,
+        "start": "2026-01-18",
+        "end": "2026-01-24",
+        "sales": 331,
+        "prev_sales": 126
+      },
+      {
+        "weeks_before_cutoff": 21,
+        "start": "2026-01-11",
+        "end": "2026-01-17",
+        "sales": 577,
+        "prev_sales": 118
+      },
+      {
+        "weeks_before_cutoff": 22,
+        "start": "2026-01-06",
+        "end": "2026-01-10",
+        "sales": 3671,
+        "prev_sales": 124
+      }
+    ]
+  },
+  "comparison": {
+    "reference_event_id": "bordeaux_2025",
+    "mode": "j_minus",
+    "reference_tickets_sold": 9482,
+    "reference_revenue_ht": 711580.48,
+    "reference_presence_total": 14848,
+    "yoy_deltas": {
+      "tickets_sold_pct": 83.6,
+      "tickets_sold_diff": 7927,
+      "revenue_ht_pct": 64.7,
+      "revenue_ht_diff": 460293.46,
+      "presence_pct": 94.0,
+      "avg_price_ht_pct": -10.3,
+      "avg_price_ht_diff": -7.74
+    }
+  }
+}

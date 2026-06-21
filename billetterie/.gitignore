@@ -4,9 +4,16 @@
 *.token
 secrets.*
 
+# Buyer PII — Shotgun/DICE export CSVs contain FIRSTNAME/LASTNAME/EMAIL.
+# This repo is PUBLIC. Never commit raw order exports. They are used only as
+# LOCAL fixtures for validate.py (the offline regression gate).
+*.csv
+!event_config.csv
+_fixtures_local/
+
 # Python
 __pycache__/
 *.pyc
 
-# NOTE: billetterie/output/*.json IS committed intentionally by the
-# fetch-billetterie workflow (Option A). Do not ignore it.
+# NOTE: billetterie/output/*.json IS committed intentionally by the fetch
+# workflow (aggregate contract, no PII). Do not ignore it.

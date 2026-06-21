@@ -5,9 +5,7 @@ name: Fetch Billetterie Data
 # runtime from GitHub Actions secrets — never stored in the repo.
 
 on:
-  schedule:
-    # 06:00 UTC daily (08:00 Europe/Paris). Scheduled runs use the default branch.
-    - cron: '0 6 * * *'
+  # Manual only — no scheduled runs. Trigger from the Actions tab when needed.
   workflow_dispatch:
     inputs:
       event_id:

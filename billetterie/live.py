@@ -263,7 +263,7 @@ query Orders($where: OrderWhereInput, $first: Int, $after: String) {
   viewer { orders(where: $where, first: $first, after: $after) {
     pageInfo { hasNextPage endCursor }
     edges { node {
-      purchasedAt salesChannel
+      purchasedAt salesChannel fullPrice total
       returns { ticketId }
       tickets {
         id fullPrice total
@@ -338,16 +338,22 @@ class LiveDiceAdapter:
                 if channel:
                     self.sales_channels.add(channel)
                 returned = {r.get('ticketId') for r in (order.get('returns') or [])}
-                for n in (order.get('tickets') or []):
-                    if n.get('id') in returned:
-                        self.returned_excluded += 1
-                        continue
+                all_nodes = order.get('tickets') or []
+                valid_nodes = [n for n in all_nodes if n.get('id') not in returned]
+                self.returned_excluded += (len(all_nodes) - len(valid_nodes))
+                # order-level money fallback (older events null per-ticket money)
+                order_face_cents = order.get('fullPrice')
+                if order_face_cents is None:
+                    order_face_cents = order.get('total')
+                n_valid = len(valid_nodes) or 1
+                for n in valid_nodes:
                     face_cents = n.get('fullPrice')
                     if face_cents is None:
                         face_cents = n.get('total')
                     if face_cents is None:
+                        # distribute the order-level face across its valid tickets
+                        face_cents = (order_face_cents or 0) / n_valid
                         self.null_face += 1
-                        face_cents = 0
                     face = face_cents / 100.0
                     for fee in (n.get('fees') or []):
                         if fee.get('category'):

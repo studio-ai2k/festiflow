@@ -41,6 +41,36 @@ SHOTGUN_SNAPSHOT = {'tickets_sold': 17409, 'revenue_ht': 1171873.94}
 DICE_FOLDED_BUG = 663209.91
 # Historical-fetch proof target: stored bordeaux_2025 Shotgun CSV (final export).
 HISTORICAL_2025_SHOTGUN = {'tickets_sold': 9482, 'revenue_ht': 711580.48}
+# Stored reference aggregate (Shotgun side) injected into the YoY comparison only
+# when the live reference fetch returns no Shotgun data (coproducer token gap).
+# Aggregate only (no PII). Live fetch supersedes it the moment it returns data.
+STORED_REF_SHOTGUN = {
+    'bordeaux_2025': {'tickets_sold': 9482, 'revenue_ht': 711580.48, 'date': date(2025, 6, 1)},
+}
+
+
+def inject_stored_reference(compare_to, ref_tickets):
+    """If the live reference has NO Shotgun tickets, synthesize the stored
+    aggregate as minimal Shotgun Ticket rows so the comparison totals are
+    correct. No-op when live Shotgun reference data is present."""
+    ref_tickets = ref_tickets or []
+    if any(t.platform == 'Shotgun' for t in ref_tickets):
+        return ref_tickets
+    spec = STORED_REF_SHOTGUN.get(compare_to)
+    if not spec:
+        return ref_tickets
+    n, total_ht = spec['tickets_sold'], spec['revenue_ht']
+    ht_each = round(total_ht / n, 4)
+    _, net_ht, vat = dl.shotgun_money(ht_each)
+    log(f"[run] reference '{compare_to}': live Shotgun empty -> injecting stored aggregate "
+        f"({n:,} tickets / EUR {total_ht:,.2f}) for YoY comparison (interim until org token returns data)")
+    for _ in range(n):
+        ref_tickets.append(dl.Ticket(
+            order_date=spec['date'], order_datetime=None, platform='Shotgun',
+            ticket_type='single_day', access_level='regular', attendance_days=None,
+            product_name='Stored 2025 aggregate', gross_ttc=ht_each, net_ht=net_ht,
+            vat=vat, is_paid=1))
+    return ref_tickets
 
 
 def log(msg):
@@ -66,6 +96,7 @@ def load_config(path):
                     'status': (row.get('status') or '').strip(),
                     'dice_event_id': (row.get('dice_mio_id') or '').strip(),
                     'shotgun_event_id': (row.get('shotgun_event_id') or '').strip(),
+                    'shotgun_organizer_id': (row.get('shotgun_organizer_id') or '').strip(),
                     'output_filename': (row.get('output_filename') or '').strip(),
                     'days': [],
                 }
@@ -91,21 +122,33 @@ def load_config(path):
 # CLIENTS
 # ----------------------------------------------------------------------------
 
-def build_clients():
-    sg_token = os.environ.get('SHOTGUN_TOKEN', '')
-    dice_token = os.environ.get('DICE_TOKEN', '')
-    org_id = os.environ.get('SHOTGUN_ORGANIZER_ID', DEFAULT_ORGANIZER_ID)
-    sg = live.ShotgunHTTPClient(sg_token) if sg_token else None
-    dc = live.DiceGraphQLClient(dice_token) if dice_token else None
-    return sg, dc, org_id, bool(sg_token), bool(dice_token)
+def build_shotgun_clients():
+    """Map organizer_id -> ShotgunHTTPClient from env secrets.
+      171835 (Madame Loyal, primary) -> SHOTGUN_TOKEN / SHOTGUN_ORGANIZER_ID
+      207784 (SONORA, coproducer)    -> SHOTGUN_TOKEN2 / SHOTGUN_ORGANIZER2_ID
+    Per-event organizer_id (event_config.csv) selects which token to use."""
+    m = {}
+    t1, o1 = os.environ.get('SHOTGUN_TOKEN', ''), os.environ.get('SHOTGUN_ORGANIZER_ID', DEFAULT_ORGANIZER_ID)
+    t2, o2 = os.environ.get('SHOTGUN_TOKEN2', ''), os.environ.get('SHOTGUN_ORGANIZER2_ID', '')
+    if t1 and o1:
+        m[str(o1).strip()] = live.ShotgunHTTPClient(t1)
+    if t2 and o2:
+        m[str(o2).strip()] = live.ShotgunHTTPClient(t2)
+    return m
 
 
-def fetch_event_tickets(ev, sg_client, dc_client, org_id):
-    """Returns (tickets, dice_adapter_or_None) for one configured event."""
+def fetch_event_tickets(ev, sg_map, dc_client):
+    """Returns (tickets, dice_adapter_or_None) for one configured event.
+    Shotgun client is resolved from the event's organizer_id."""
     tickets = []
     dice_adapter = None
-    if sg_client and ev.get('shotgun_event_id'):
-        tickets += live.LiveShotgunAdapter(sg_client, org_id, ev['shotgun_event_id'], ev['days']).fetch()
+    org = (ev.get('shotgun_organizer_id') or DEFAULT_ORGANIZER_ID).strip()
+    sg_client = sg_map.get(org)
+    if ev.get('shotgun_event_id'):
+        if sg_client:
+            tickets += live.LiveShotgunAdapter(sg_client, org, ev['shotgun_event_id'], ev['days']).fetch()
+        else:
+            log(f"[warn] no Shotgun token for organizer {org} (event {ev['event_id']}) -> Shotgun skipped")
     if dc_client and ev.get('dice_event_id'):
         dice_adapter = live.LiveDiceAdapter(dc_client, ev['dice_event_id'], ev['days'])
         tickets += dice_adapter.fetch()
@@ -222,40 +265,52 @@ def main():
     if not ev:
         log(f"event {args.event} not in config"); sys.exit(2)
 
-    sg, dc, org_id, has_sg, has_dice = build_clients()
-    log(f"[run] mode={args.mode} event={args.event} shotgun_token={'yes' if has_sg else 'NO'} "
-        f"dice_token={'yes' if has_dice else 'NO'} organizer_id={org_id}")
+    sg_map = build_shotgun_clients()
+    dice_token = os.environ.get('DICE_TOKEN', '')
+    dc = live.DiceGraphQLClient(dice_token) if dice_token else None
+    log(f"[run] mode={args.mode} event={args.event} shotgun_orgs={sorted(sg_map.keys())} "
+        f"dice_token={'yes' if dc else 'NO'}")
 
     if args.mode == 'recon':
-        if not (has_sg or has_dice):
+        if not (sg_map or dc):
             log("recon needs at least one token in env"); sys.exit(2)
-        if has_sg and ev.get('shotgun_event_id'):
-            live.recon_shotgun(sg, org_id, ev['shotgun_event_id'])
-        if has_dice and ev.get('dice_event_id'):
+        org = (ev.get('shotgun_organizer_id') or DEFAULT_ORGANIZER_ID).strip()
+        sg_client = sg_map.get(org)
+        if sg_client and ev.get('shotgun_event_id'):
+            live.recon_shotgun(sg_client, org, ev['shotgun_event_id'])
+        elif ev.get('shotgun_event_id'):
+            log(f"[recon] no Shotgun token for organizer {org}")
+        if dc and ev.get('dice_event_id'):
             live.recon_dice(dc, ev['dice_event_id'])
         log("[run] recon complete")
         return
 
     # ---- fetch ----
-    if not (has_sg and has_dice):
-        log("fetch needs BOTH SHOTGUN_TOKEN and DICE_TOKEN"); sys.exit(2)
+    if not (sg_map and dc):
+        log("fetch needs SHOTGUN_TOKEN (primary) and DICE_TOKEN"); sys.exit(2)
 
-    cur_tickets, dice_adapter = fetch_event_tickets(ev, sg, dc, org_id)
+    cur_tickets, dice_adapter = fetch_event_tickets(ev, sg_map, dc)
     log(f"[run] current '{args.event}': {len(cur_tickets)} tickets")
 
-    ref_tickets, ref_cfg = None, None
+    ref_tickets, ref_cfg, hist_ok = None, None, None
     if ev.get('compare_to'):
         ref_cfg = cfg_all.get(ev['compare_to'])
         if ref_cfg:
-            ref_tickets, _ = fetch_event_tickets(ref_cfg, sg, dc, org_id)
+            ref_tickets, _ = fetch_event_tickets(ref_cfg, sg_map, dc)
             log(f"[run] reference '{ev['compare_to']}': {len(ref_tickets)} tickets")
+            # Proof runs on the LIVE reference, BEFORE any injection.
+            hist_ok = historical_proof(ref_tickets)
+            # Interim YoY safety net: if the reference's Shotgun side came back
+            # empty (e.g. coproducer token not wired), inject the stored 2025
+            # Shotgun aggregate so the comparison isn't understated. Live
+            # supersedes automatically once the org token returns data.
+            ref_tickets = inject_stored_reference(ev['compare_to'], ref_tickets)
 
     contract = dl.emit_contract(cur_tickets, ev, ref_tickets, ref_cfg)
 
     # reports
     dice_ok = dice_gate_report(cur_tickets, dice_adapter, ev)   # model proven -> ship live-final
     sg_ok = shotgun_report(contract)
-    hist_ok = historical_proof(ref_tickets)                     # V1 milestone (informational)
 
     # annotate contract with the live capacity finding (non-destructive)
     if dice_adapter is not None:

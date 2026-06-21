@@ -248,7 +248,7 @@ query Alloc($eventId: ID!) {
   node(id: $eventId) { ... on Event {
     name totalTicketAllocationQty
     ticketPools { name allocation }
-    tickets { totalCount }
+    tickets(first: 1) { totalCount }
   } }
 }
 """
@@ -283,11 +283,10 @@ class LiveDiceAdapter:
     dl.dice_money (engine untouched). Also fetches Event allocation for capacity
     reconciliation, and tracks token-scope health (null purchasedAt/face)."""
 
-    def __init__(self, client, dice_event_id, event_days, page_size=100, where_id_mode='numeric'):
-        # where_id_mode default 'numeric': OrderWhereInput.eventId is a filter
-        # field scoped by the numeric event id (what event_config.csv holds);
-        # the base64 relay id is only for top-level node(id:). Falls back to
-        # 'relay' only if numeric is proven wrong by recon.
+    def __init__(self, client, dice_event_id, event_days, page_size=100, where_id_mode='relay'):
+        # where_id_mode default 'relay': recon PROVED OrderWhereInput.eventId.eq
+        # wants the base64 relay global id — numeric was rejected ("Could not
+        # decode ID value '540197'"). eventId type is OperatorsIdInput.
         self.client = client
         self.raw_id = str(dice_event_id).strip()
         self.relay = dice_relay_id(dice_event_id)

@@ -1,7 +1,7 @@
 {
   "event_id": "bordeaux_2026",
   "event_name": "Sonora Bordeaux 2026",
-  "generated_at": "2026-06-29T10:38:26.206685+00:00",
+  "generated_at": "2026-06-30T09:10:00.535883+00:00",
   "last_ticket_sold": "2026-06-13T19:23:16",
   "cutoffs": {
     "cumulative": "2026-06-13",
@@ -73,8 +73,8 @@
   },
   "totals": {
     "tickets_sold": 26735,
-    "tickets_all": 32095,
-    "tickets_free": 5360,
+    "tickets_all": 32096,
+    "tickets_free": 5361,
     "revenue_ht": 1764230.75,
     "revenue_ttc": 1949415.24,
     "revenue_vat": 93672.61,
@@ -123,11 +123,11 @@
       "regular": 24133,
       "vip": 507,
       "early_entry": 2079,
-      "invitation": 5360,
+      "invitation": 5361,
       "backstage": 16
     },
     "presence_by_day": {
-      "jeudi": 5979,
+      "jeudi": 5980,
       "vendredi": 15415,
       "samedi": 19388
     },
@@ -136,14 +136,14 @@
   },
   "fill_rates": {
     "sell_through_pct": 91.6,
-    "total_presence": 40782,
+    "total_presence": 40783,
     "total_capacity": 44500,
     "per_day": {
       "jeudi": {
-        "presence": 5979,
+        "presence": 5980,
         "capacity": 8500,
-        "fill_pct": 70.3,
-        "remaining": 2521
+        "fill_pct": 70.4,
+        "remaining": 2520
       },
       "vendredi": {
         "presence": 15415,
@@ -189,7 +189,7 @@
       "base_velocity_14d": 483.643,
       "best_7d_window": 845.429,
       "worst_7d_window": 41.143,
-      "avg_presence_per_ticket": 1.5254
+      "avg_presence_per_ticket": 1.5255
     },
     "scenarios": {
       "pessimiste": {
@@ -209,7 +209,7 @@
       }
     },
     "revenue_projection_ht": 1761735.03,
-    "revenue_if_soldout_ht": 1925084.55
+    "revenue_if_soldout_ht": 1925037.34
   },
   "timeseries": {
     "mode": "j_minus",

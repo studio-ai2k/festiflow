@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MD Drawer — Ticketing tabs (proto 2.0)</title>
+<!--
+  ════════════════════════════════════════════════════════════════════════
+  PROTOTYPING SURFACE 2.0 — rebuilt to MATCH the event-drawer system.
+  (v21a shared-drawer-components.js vocabulary + V1 EVENT drawer chrome)
+
+  WHAT CHANGED FROM 1.0 (copy preserved as _v1.0):
+  - Card chrome re-skinned from bespoke .tk-card → the canonical drawer
+    vocabulary: .rail / .tabs+.tab / .rail-body / .dsec+.dsec-t, the
+    railHdr / railKpis / detPie components, DM Mono figures, --rb teal.
+  - Every KPI now rides the shared .rail-kpis strip; rings are real
+    conic-gradient .det-pie donuts (same contract as the budget drawer),
+    computed from JSON — never baked.
+
+  WHAT DID NOT CHANGE (disciplines held from v2 SPEC):
+  - Cards render FROM the JSON contract only. Standalone internals/CSVs are
+    realism reference, never a render source.
+  - Time-series features the contract does NOT emit (cumulative curve,
+    rolling velocity, projection scenarios) stay FLAGGED gaps, never faked.
+  - Recette-recognition/booking = DECISION-BLOCKED at budget STEP 3. Display
+    only, no booking logic.
+  - Extract-not-paste: each tab is a clean JSON→card unit.
+
+  Components lifted byte-faithful from v21a-isolation-harness.html /
+  shared-drawer-components.js (class names + token vars unchanged).
+  ════════════════════════════════════════════════════════════════════════
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Grotesk:wght@500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── tokens — VERBATIM from _x / v21a harness ──────────────────────────── */
+:root{
+  --bg:#08080d; --surface:#101017; --surface-2:#16161f;
+  --border:rgba(255,255,255,0.05); --border-h:rgba(255,255,255,0.08);
+  --text:#f0f0f5; --text-muted:#a0a0b0; --text-dim:#5a5a6a;
+  --green:#34d399; --red:#f87171; --amber:#fbbf24;
+  --purple:#a855f7; --indigo:#6366f1;
+  --rb:#5eead4;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;font-size:15px;line-height:1.55;overflow-x:clip}
+.mono{font-family:'DM Mono',monospace;font-feature-settings:"tnum"}
+
+/* ════ DEAD BACKDROP ═════════════════════════════════════════════════════ */
+.bd{pointer-events:none;user-select:none;filter:saturate(.92)}
+.nav{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav-top{max-width:1020px;margin:0 auto;display:flex;align-items:center;padding:0 20px}
+.nav-sw{display:flex;align-items:center;gap:8px;padding:8px 14px 8px 0;margin-right:8px;border-right:1px solid rgba(255,255,255,.05);flex-shrink:0}
+.nav-sw-av{width:34px;height:34px;border-radius:50%;background:var(--surface-2);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:.5px}
+.nav-sw-name{font-size:12.5px;font-weight:600;color:#fff;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.nav-sw-name .dot{width:5px;height:5px;border-radius:50%;background:var(--green)}
+.nav-sw-sub{font-size:10px;color:var(--text-dim);margin-top:3px;white-space:nowrap}
+.nm{font-size:12px;font-weight:500;padding:8px 12px;color:var(--text-dim);white-space:nowrap;border:none;background:none;font-family:inherit}
+.nm.on{color:#fff;font-weight:600}
+.nav-user{margin-left:auto;width:34px;height:34px;border-radius:50%;background:var(--surface-2);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:var(--text-muted)}
+.dept-tabs-bg{background:rgba(0,0,0,.15);border-top:1px solid rgba(255,255,255,.03)}
+.dept-tabs{max-width:1020px;margin:0 auto;padding:2px 20px;display:flex;overflow-x:auto;scrollbar-width:none}
+.dept-tabs::-webkit-scrollbar{display:none}
+.dt{padding:8px 12px;font-size:12px;font-weight:500;color:var(--text-dim);white-space:nowrap;border:none;border-bottom:2px solid transparent;background:none;font-family:inherit}
+.dt.on{color:#fff;font-weight:600;border-bottom:2px solid #fff;background:rgba(255,255,255,.06)}
+.wrap{max-width:1020px;margin:0 auto;padding:12px 20px 80px}
+#dash-grid{display:flex;flex-direction:column;gap:18px;margin-top:18px}
+.card-bd{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 26px;display:flex;gap:18px;align-items:center}
+.card-bd.sel{border-color:rgba(255,255,255,.14);box-shadow:0 0 0 1px rgba(255,255,255,.04)}
+.card-bd .poster{width:50px;height:66px;border-radius:8px;background:linear-gradient(135deg,var(--purple),var(--indigo));flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-weight:700;color:#fff;font-size:14px;letter-spacing:1px}
+.card-bd .ev-name{font-family:'Space Grotesk';font-size:17px;font-weight:700;color:#fff}
+.card-bd .ev-meta{font-size:12.5px;color:var(--text-muted);margin-top:4px}
+.card-bd .ev-status{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--text-muted);flex-shrink:0}
+.card-bd .ev-status .sdot{width:7px;height:7px;border-radius:50%;background:var(--amber)}
+
+/* ════ DRAWER SHELL — canonical .rail (v21a) PINNED OPEN ═════════════════ */
+#drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.15);z-index:400;opacity:1}
+.rail{position:fixed;top:0;right:0;bottom:0;width:min(420px,100vw);background:var(--surface);border-left:1px solid var(--border);z-index:401;display:flex;flex-direction:column;overflow:hidden;box-shadow:-22px 0 60px -26px rgba(0,0,0,.8)}
+
+/* #1 railHdr + #4 railX — byte-faithful */
+.rail-hdr{padding:20px 22px 15px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.rail-title{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:#fff;line-height:1.25;letter-spacing:-.01em;display:flex;align-items:center;gap:9px}
+.rail-title svg{width:16px;height:16px;color:var(--text-muted)}
+.rail-sub{font-size:12px;color:var(--text-muted);margin-top:4px}
+.rail-sub b{color:#fff}
+.rail-x{background:none;border:1px solid var(--border);border-radius:7px;color:var(--text-dim);cursor:default;padding:6px 11px;font-size:11px;flex-shrink:0;font-family:inherit;transition:.15s}
+.rail-x:hover{border-color:var(--text-muted);color:#fff}
+
+/* #2 railKpis — byte-faithful */
+.rail-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);flex-shrink:0}
+.rail-kpi{background:var(--surface);padding:11px 14px}
+.rail-kpi .k{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);font-weight:700}
+.rail-kpi .v{font-family:'DM Mono',monospace;font-size:14px;font-weight:600;color:#fff;margin-top:4px;white-space:nowrap}
+.rail-kpi .v.g{color:var(--green)} .rail-kpi .v.a{color:var(--amber)} .rail-kpi .v.r{color:var(--red)}
+.rail-kpi .v.rb{color:var(--rb)}
+.rail-kpis.k3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:560px){.rail-kpis{grid-template-columns:repeat(2,1fr)}}
+
+/* tabs */
+.tabs{display:flex;gap:2px;padding:0 12px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--surface);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{position:relative;border:none;background:none;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--text-dim);padding:13px 13px 12px;cursor:pointer;white-space:nowrap;transition:color .15s;display:flex;align-items:center;gap:7px}
+.tab.on{color:#fff}
+.tab.on::after{content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:2px;border-radius:2px;background:#fff}
+
+.rail-body{flex:1;overflow-y:auto;padding:18px 20px}
+.rail-body::-webkit-scrollbar{width:4px}
+.rail-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.tabpane{display:none}
+.tabpane.on{display:block}
+
+/* section */
+.dsec{margin-bottom:22px}
+.dsec-t{font-size:10.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--text-dim);font-weight:700;margin-bottom:11px;padding-bottom:7px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dsec-t .pill{font-size:.85em;padding:2px 7px;border-radius:4px;background:rgba(94,234,212,.1);color:var(--rb);font-weight:700;letter-spacing:.04em}
+.dsec-t .pill.amber{background:rgba(251,191,36,.1);color:var(--amber)}
+.dsec-t .pill.dim{background:rgba(255,255,255,.04);color:var(--text-dim)}
+
+/* #3 detPie — byte-faithful */
+.det-pie{display:flex;align-items:center;gap:18px;margin-bottom:18px}
+.det-pie-ring{width:100px;height:100px;border-radius:50%;flex-shrink:0;position:relative}
+.det-pie-hole{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.det-pie-hole .ph-amt{font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:#fff;line-height:1}
+.det-pie-hole .ph-lbl{font-size:8px;text-transform:uppercase;letter-spacing:.12em;color:var(--text-dim);margin-top:2px}
+.det-pie-side{flex:1;display:flex;flex-direction:column;gap:9px;min-width:0}
+.det-pie-side .ps-head{font-size:11.5px;color:var(--text-muted)}
+.det-pie-side .ps-head b{color:#fff;font-size:13px}
+.det-pie-legend{display:flex;flex-direction:column;gap:6px;min-width:0}
+.dpl-row{display:flex;align-items:center;gap:8px;font-size:11.5px}
+.dpl-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.dpl-nm{color:var(--text-muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dpl-amt{font-family:'DM Mono',monospace;color:var(--text);font-size:11px;flex-shrink:0;font-weight:600}
+
+/* détails rows (tab 1) — match sibling drawer .det-row idiom */
+.det-row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:6px 0}
+.det-row .k{font-size:12px;color:var(--text-muted)}
+.det-row .v{font-size:12.5px;font-weight:600;color:#fff;text-align:right;font-family:'DM Mono',monospace}
+.status-select{width:100%;padding:10px 12px;border-radius:7px;border:1px solid var(--border);background:var(--surface-2);color:#fff;font-family:'DM Sans';font-size:12.5px;font-weight:500}
+
+/* split bar (platform/day share) */
+.split-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;margin:4px 0 12px;background:var(--surface-2)}
+.split-bar .seg{height:100%}
+
+/* generic mono meta row */
+.mrow{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:4px 0}
+.mrow .mk{color:var(--text-muted);display:flex;align-items:center;gap:7px}
+.mrow .mv{color:#fff;font-weight:600;font-family:'DM Mono',monospace;font-size:11.5px}
+.mrow .mv.rb{color:var(--rb)} .mrow .mv.amber{color:var(--amber)} .mrow .mv.dim{color:var(--text-dim)}
+.dot{width:8px;height:8px;border-radius:3px;flex-shrink:0;display:inline-block}
+.subnote{font-size:10.5px;color:var(--text-dim);line-height:1.5;margin-top:9px;padding:8px 10px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:8px}
+
+/* répartition table */
+.pr-head{display:grid;grid-template-columns:1fr auto auto auto;gap:10px;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);font-weight:700;padding:0 0 7px;border-bottom:1px solid var(--border);margin-bottom:2px}
+.pr-head span:not(:first-child){text-align:right;min-width:42px}
+.pr-grp{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;padding:10px 0 3px}
+.pr-row{display:grid;grid-template-columns:1fr auto auto auto;gap:10px;align-items:center;padding:7px 0;font-size:11.5px;border-top:1px solid rgba(255,255,255,.03)}
+.pr-name{color:var(--text);line-height:1.3}
+.pr-name .sub{font-size:.82em;color:var(--text-dim);font-family:'DM Mono',monospace}
+.pr-v{text-align:right;color:#fff;font-weight:600;font-family:'DM Mono',monospace;min-width:42px}
+.pr-v.dim{color:var(--text-dim);font-weight:500}
+.pr-v.amber{color:var(--amber)}
+
+/* mini breakdown bar */
+.mini-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0 4px;font-size:11.5px}
+.mini-name{color:var(--text);display:flex;align-items:center;gap:8px}
+.mini-v{font-family:'DM Mono',monospace;color:#fff;font-weight:600;font-size:11px}
+.mini-track{height:5px;background:var(--surface-2);border-radius:3px;overflow:hidden;margin-bottom:6px}
+.mini-fill{height:100%;border-radius:3px}
+
+/* presence stacked bar */
+.stacked{display:flex;height:28px;border-radius:7px;overflow:hidden;margin:8px 0;background:var(--surface-2)}
+.stseg{height:100%;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;color:rgba(255,255,255,.9);font-family:'DM Mono',monospace}
+
+/* per-day pacing rows */
+.day-blk{margin-bottom:13px}
+.day-hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+.day-hd .nm{font-size:12px;font-weight:600;color:#fff;display:flex;align-items:center;gap:7px}
+.day-hd .st{font-size:11px;color:var(--text-muted);font-family:'DM Mono',monospace}
+
+/* déplier toggle */
+.dtog{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:var(--text-muted);cursor:pointer;padding:9px 0 2px;user-select:none;transition:color .2s;width:100%;border-top:1px solid var(--border);margin-top:6px}
+.dtog:hover{color:#fff}
+.dtog .arr{font-size:.8em;transition:transform .25s ease}
+.dtog.open .arr{transform:rotate(180deg)}
+.dpanel{max-height:0;overflow:hidden;transition:max-height .45s ease,opacity .3s ease;opacity:0}
+.dpanel.open{max-height:2200px;opacity:1}
+.dinner{padding-top:12px}
+
+/* flagged gap — drawer idiom */
+.gap{margin-top:10px;padding:13px;background:repeating-linear-gradient(135deg,rgba(251,191,36,.03),rgba(251,191,36,.03) 10px,rgba(251,191,36,.06) 10px,rgba(251,191,36,.06) 20px);border:1px dashed rgba(251,191,36,.3);border-radius:10px}
+.gap-t{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);margin-bottom:7px}
+.gap-t::before{content:'⚠';font-size:1.15em}
+.gap-b{font-size:11px;color:var(--text-muted);line-height:1.55}
+.gap-b code{background:rgba(255,255,255,.06);padding:1px 5px;border-radius:4px;font-size:.9em;color:var(--text);font-family:'DM Mono',monospace}
+.gap-n{font-size:10px;color:var(--text-dim);margin-top:8px;padding-top:8px;border-top:1px solid rgba(251,191,36,.15);font-family:'DM Mono',monospace}
+
+/* projection quadrant */
+.pq-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:8px}
+.pq{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px}
+.pq-l{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);font-weight:700;margin-bottom:5px}
+.pq-v{font-family:'DM Mono',monospace;font-size:16px;font-weight:600;color:#fff}
+.pq-s{font-size:10px;color:var(--text-muted);margin-top:3px}
+
+/* info tip */
+.info-tip{display:inline-flex;align-items:center;justify-content:center;width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.08);color:var(--text-muted);font-size:7.5px;font-style:italic;font-weight:700;margin-left:5px;cursor:help;position:relative;vertical-align:middle}
+.info-tip .bub{display:none;position:absolute;bottom:140%;left:50%;transform:translateX(-50%);width:200px;background:#000;border:1px solid var(--border-h);border-radius:8px;padding:9px 11px;font-size:10px;font-weight:400;font-style:normal;line-height:1.5;color:var(--text);letter-spacing:0;text-transform:none;z-index:10;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.info-tip:hover .bub{display:block}
+
+@media(max-width:860px){
+  .rail{top:auto;left:0;right:0;bottom:0;width:100%;height:88vh;border-left:none;border-top:1px solid var(--border);border-radius:18px 18px 0 0}
+  .rail-hdr{padding-top:24px}
+  .rail-hdr::before{content:'';display:block;width:36px;height:4px;background:var(--border);border-radius:2px;position:absolute;top:10px;left:50%;transform:translateX(-50%)}
+}
+@media(max-width:480px){.nav-top{overflow-x:auto;scrollbar-width:none}.nav-top::-webkit-scrollbar{display:none}}
+</style>
+</head>
+<body>
+
+<!-- ══ DEAD BACKDROP ════════════════════════════════════════════════════ -->
+<div class="bd" aria-hidden="true">
+  <div class="nav">
+    <div class="nav-top">
+      <div class="nav-sw">
+        <div class="nav-sw-av">GEN</div>
+        <div>
+          <div class="nav-sw-name">Générale<span class="dot" style="background:var(--green)"></span></div>
+          <div class="nav-sw-sub">Générale 2026 · Madame Loyal</div>
+        </div>
+      </div>
+      <button class="nm on">Événements</button>
+      <button class="nm">Budgetflow</button>
+      <button class="nm">Billetterie</button>
+      <button class="nm">Partenaires</button>
+      <div class="nav-user"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+    </div>
+    <div class="dept-tabs-bg"><div class="dept-tabs">
+      <button class="dt on">Dashboard</button><button class="dt">Liste</button><button class="dt">Admin</button>
+    </div></div>
+  </div>
+  <div class="wrap"><div id="dash-grid">
+    <div class="card-bd sel"><div class="poster">SB</div><div><div class="ev-name">Sonora Bordeaux 2026</div><div class="ev-meta">Bordeaux · 11–13 juin 2026 · EPISODE / Sonora</div></div><div class="ev-status"><span class="sdot"></span>En vente</div></div>
+    <div class="card-bd"><div class="poster" style="background:linear-gradient(135deg,var(--indigo),var(--purple))">CC</div><div><div class="ev-name">Cabaret 4 Juillet</div><div class="ev-meta">Paris · 4 juillet 2026 · EPISODE / Madame Loyal</div></div><div class="ev-status"><span class="sdot" style="background:var(--text-dim)"></span>En préparation</div></div>
+  </div></div>
+</div>
+
+<!-- ══ DRAWER (.rail PINNED OPEN) ═══════════════════════════════════════ -->
+<div id="drawer-overlay"></div>
+<div class="rail" role="dialog" aria-label="Sonora Bordeaux 2026">
+  <div id="rail-hdr-slot"></div>
+  <div id="rail-kpis-slot"></div>
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-tab="details"     onclick="showTab('details',this)">Détails</button>
+    <button class="tab"    data-tab="ventes"      onclick="showTab('ventes',this)">Ventes</button>
+    <button class="tab"    data-tab="repartition" onclick="showTab('repartition',this)">Répartition</button>
+    <button class="tab"    data-tab="projections" onclick="showTab('projections',this)">Projections</button>
+  </div>
+  <div class="rail-body">
+    <div class="tabpane on" id="pane-details"></div>
+    <div class="tabpane"    id="pane-ventes"></div>
+    <div class="tabpane"    id="pane-repartition"></div>
+    <div class="tabpane"    id="pane-projections"></div>
+  </div>
+</div>
+
+<script>
+/* ════════ HARDCODED RENDER SOURCE — proven Bordeaux fetch (one-line swap) ══ */
+const TICKETING = {"meta":{"event_id":"bordeaux_2026","event_name":"Sonora Bordeaux 2026","generated_at":"2026-06-21T00:59:39.011744Z","status":"ok","errors":["5358 tickets with null price on shotgun"],"version":"1.0.0","sources":{"shotgun":{"status":"ok","tickets_fetched":26984,"event_id":505434,"fetched_at":"2026-06-21T00:54:40.279337Z"},"dice":{"status":"ok","tickets_fetched":9329,"event_id":"540197","fetched_at":"2026-06-21T00:56:22.718280Z"}}},"event":{"days":[{"name":"Jeudi","date":"2026-06-11","capacity":8500},{"name":"Vendredi","date":"2026-06-12","capacity":18000},{"name":"Samedi","date":"2026-06-13","capacity":18000}],"currency":"EUR","compare_to":"bordeaux_2025","comparison_mode":"j_minus"},"totals":{"tickets_sold":36313,"tickets_paid":30953,"tickets_unpaid":5360,"gross_revenue":2162289.16,"fees_organizer":145476.34,"fees_platform":38218.24,"fees_user":44009.09,"vat":80037.46,"net_revenue":2124070.92,"capacity_total":44500,"fill_rate":0.816},"by_ticket_type":[{"label":"General Access - Pass Samedi","ticket_type":"samedi","access_level":"regular","count":12658,"count_paid":12658,"count_unpaid":0,"gross_revenue":779640.63,"fees_organizer":44227.24,"fees_platform":19774.29,"fees_user":13393.33,"vat":24333.81,"avg_price":61.59},{"label":"General Access - Pass Vendredi","ticket_type":"vendredi","access_level":"regular","count":6696,"count_paid":6696,"count_unpaid":0,"gross_revenue":369323.0,"fees_organizer":25821.5,"fees_platform":6573.69,"fees_user":7807.0,"vat":14211.56,"avg_price":55.16},{"label":"General Access - Pass 2 Jours (Vendredi + Samedi)","ticket_type":"2-jours","access_level":"regular","count":6577,"count_paid":6577,"count_unpaid":0,"gross_revenue":691017.71,"fees_organizer":50152.62,"fees_platform":8255.51,"fees_user":15165.33,"vat":27584.15,"avg_price":105.07},{"label":"BACKSTAGE VIP (Sc\u00e8ne Sonora + Backstage)","ticket_type":"jeudi","access_level":"invitation","count":3834,"count_paid":0,"count_unpaid":3834,"gross_revenue":0.0,"fees_organizer":0.0,"fees_platform":0.0,"fees_user":0.0,"vat":0.0,"avg_price":0.0},{"label":"General Access - Pass Vendredi","ticket_type":"vendredi","access_level":"early_entry","count":1815,"count_paid":1815,"count_unpaid":0,"gross_revenue":84143.4,"fees_organizer":8167.5,"fees_platform":0.0,"fees_user":2468.4,"vat":4501.2,"avg_price":46.36},{"label":"GENERAL ACCESS - Pass 3 jours (Jeudi + Vendredi + Samedi)","ticket_type":"3-jours","access_level":"regular","count":988,"count_paid":988,"count_unpaid":0,"gross_revenue":107666.3,"fees_organizer":7496.16,"fees_platform":1415.29,"fees_user":2268.09,"vat":4122.77,"avg_price":108.97},{"label":"GENERAL ACCESS - Pass Jeudi (Ed Banger Party)","ticket_type":"jeudi","access_level":"regular","count":855,"count_paid":855,"count_unpaid":0,"gross_revenue":13040.91,"fees_organizer":619.5,"fees_platform":1083.36,"fees_user":185.91,"vat":338.7,"avg_price":15.25},{"label":"General Access - Pass Samedi","ticket_type":"samedi","access_level":"invitation","count":542,"count_paid":0,"count_unpaid":542,"gross_revenue":0.0,"fees_organizer":0.0,"fees_platform":0.0,"fees_user":0.0,"vat":0.0,"avg_price":0.0},{"label":"F&F - Pass Vendredi","ticket_type":"vendredi","access_level":"invitation","count":536,"count_paid":0,"count_unpaid":536,"gross_revenue":0.0,"fees_organizer":0.0,"fees_platform":0.0,"fees_user":0.0,"vat":0.0,"avg_price":0.0},{"label":"General Access - Pass Jeudi - Ed Banger Party","ticket_type":"jeudi","access_level":"early_entry","count":401,"count_paid":401,"count_unpaid":0,"gross_revenue":4130.3,"fees_organizer":401.0,"fees_platform":0.0,"fees_user":120.3,"vat":220.55,"avg_price":10.3},{"label":"General Access - Pass 2 Jours (Vendredi + Samedi)","ticket_type":"2-jours","access_level":"invitation","count":250,"count_paid":0,"count_unpaid":250,"gross_revenue":0.0,"fees_organizer":0.0,"fees_platform":0.0,"fees_user":0.0,"vat":0.0,"avg_price":0.0},{"label":"BACKSTAGE VIP (Sc\u00e8ne Sonora + Backstage)","ticket_type":"samedi","access_level":"vip","count":245,"count_paid":245,"count_unpaid":0,"gross_revenue":26527.53,"fees_organizer":1510.0,"fees_platform":508.22,"fees_user":457.53,"vat":830.5,"avg_price":108.28},{"label":"General Access - Pass 2 Jours (Vendredi + Samedi)","ticket_type":"2-jours","access_level":"early_entry","count":220,"count_paid":220,"count_unpaid":0,"gross_revenue":22459.8,"fees_organizer":2180.2,"fees_platform":0.0,"fees_user":660.0,"vat":1199.0,"avg_price":102.09},{"label":"BACKSTAGE VIP (Sc\u00e8ne Sonora + Backstage)","ticket_type":"2-jours","access_level":"vip","count":197,"count_paid":197,"count_unpaid":0,"gross_revenue":39119.25,"fees_organizer":2945.0,"fees_platform":339.78,"fees_user":891.25,"vat":1619.75,"avg_price":198.57},{"label":"General Access - Pass 3 Jours (Jeudi + Vendredi + Samedi)","ticket_type":"3-jours","access_level":"invitation","count":196,"count_paid":0,"count_unpaid":196,"gross_revenue":0.0,"fees_organizer":0.0,"fees_platform":0.0,"fees_user":0.0,"vat":0.0,"avg_price":0.0},{"label":"BACKSTAGE VIP (Sc\u00e8ne Sonora + Backstage)","ticket_type":"vendredi","access_level":"vip","count":163,"count_paid":163,"count_unpaid":0,"gross_revenue":17037.84,"fees_organizer":1280.0,"fees_platform":182.35,"fees_user":387.84,"vat":704.0,"avg_price":104.53},{"label":"General Access - Pass Samedi","ticket_type":"samedi","access_level":"early_entry","count":94,"count_paid":94,"count_unpaid":0,"gross_revenue":5546.0,"fees_organizer":538.62,"fees_platform":0.0,"fees_user":162.62,"vat":296.1,"avg_price":59.0},{"label":"Pass 1 Jour","ticket_type":"single_day","access_level":"regular","count":25,"count_paid":25,"count_unpaid":0,"gross_revenue":1225.0,"fees_organizer":0.0,"fees_platform":85.75,"fees_user":0.0,"vat":0.0,"avg_price":49.0},{"label":"Pass Backstage - Vendredi","ticket_type":"2-jours","access_level":"backstage","count":14,"count_paid":14,"count_unpaid":0,"gross_revenue":1076.64,"fees_organizer":104.5,"fees_platform":0.0,"fees_user":31.64,"vat":57.47,"avg_price":76.9},{"label":"Pass Backstage - Vendredi","ticket_type":"vendredi","access_level":"backstage","count":5,"count_paid":5,"count_unpaid":0,"gross_revenue":334.85,"fees_organizer":32.5,"fees_platform":0.0,"fees_user":9.85,"vat":17.9,"avg_price":66.97},{"label":"Test cashless","ticket_type":"single_day","access_level":"invitation","count":2,"count_paid":0,"count_unpaid":2,"gross_revenue":0.0,"fees_organizer":0.0,"fees_platform":0.0,"fees_user":0.0,"vat":0.0,"avg_price":0.0}],"by_platform":[{"platform":"shotgun","count":26984,"gross_revenue":1499079.25,"fees_organizer":145476.34,"fees_platform":0.0,"fees_user":44009.09,"vat":80037.46},{"platform":"dice","count":9329,"gross_revenue":663209.91,"fees_organizer":0.0,"fees_platform":38218.24,"fees_user":0.0,"vat":0.0}],"by_day":[{"day":"Jeudi","date":"2026-06-11","count":6307,"count_paid":2269,"count_unpaid":4038,"capacity":8500,"fill_rate":0.742,"gross_revenue":53467.54,"fees_organizer":3520.9,"fees_platform":1583.48,"fees_user":1063.99,"vat":1933.26},{"day":"Vendredi","date":"2026-06-12","count":17684,"count_paid":16700,"count_unpaid":984,"capacity":18000,"fill_rate":0.9824,"gross_revenue":883982.75,"fees_organizer":65499.55,"fees_platform":11548.55,"fees_user":19809.12,"vat":36064.21},{"day":"Samedi","date":"2026-06-13","count":22002,"count_paid":21018,"count_unpaid":984,"capacity":18000,"fill_rate":1.2223,"gross_revenue":1224857.82,"fees_organizer":76473.91,"fees_platform":25075.02,"fees_user":23149.51,"vat":42089.96}],"by_access_level":[{"level":"regular","count":27799,"count_paid":27799,"count_unpaid":0,"gross_revenue":1961913.55,"fees_organizer":128317.02,"fees_platform":37187.89,"fees_user":38819.66,"vat":70590.99},{"level":"invitation","count":5360,"count_paid":0,"count_unpaid":5360,"gross_revenue":0.0,"fees_organizer":0.0,"fees_platform":0.0,"fees_user":0.0,"vat":0.0},{"level":"early_entry","count":2530,"count_paid":2530,"count_unpaid":0,"gross_revenue":116279.5,"fees_organizer":11287.32,"fees_platform":0.0,"fees_user":3411.32,"vat":6216.85},{"level":"vip","count":605,"count_paid":605,"count_unpaid":0,"gross_revenue":82684.62,"fees_organizer":5735.0,"fees_platform":1030.35,"fees_user":1736.62,"vat":3154.25},{"level":"backstage","count":19,"count_paid":19,"count_unpaid":0,"gross_revenue":1411.49,"fees_organizer":137.0,"fees_platform":0.0,"fees_user":41.49,"vat":75.37}],"by_ticket_type_and_day":[{"day":"Jeudi","label":"BACKSTAGE VIP (Sc\u00e8ne Sonora + Backstage)","ticket_type":"jeudi","access_level":"invitation","count":3834,"count_paid":0,"count_unpaid":3834,"gross_revenue":0.0,"fees_organizer":0.0,"fees_platform":0.0,"fees_user":0.0,"vat":0.0},{"day":"Jeudi","label":"GENERAL ACCESS - Pass 3 jours (Jeudi + Vendredi + Samedi)","ticket_type":"3-jours","access_level":"regular","count":988,"count_paid":988,"count_unpaid":0,"gross_revenue":35888.08,"fees_organizer":2500.4,"fees_platform":471.62,"fees_user":757.78,"vat":1374.01},{"day":"Jeudi","label":"GENERAL ACCESS - Pass Jeudi (Ed Banger Party)","ticket_type":"jeudi","access_level":"regular","count":855,"count_paid":855,"count_unpaid":0,"gross_revenue":13040.91,"fees_organizer":619.5,"fees_platform":1083.36,"fees_user":185.91,"vat":338.7},{"day":"Jeudi","label":"General Access - Pass Jeudi - Ed Banger Party","ticket_type":"jeudi","access_level":"early_entry","count":401,"count_paid":401,"count_unpaid":0,"gross_revenue":4130.3,"fees_organizer":401.0,"fees_platform":0.0,"fees_user":120.3,"vat":220.55},{"day":"Jeudi","label":"General Access - Pass 3 Jours (Jeudi + Vendredi + Samedi)","ticket_type":"3-jours","access_level":"invitation","count":196,"count_paid":0,"count_unpaid":196,"gross_revenue":0.0,"fees_organizer":0.0,"fees_platform":0.0,"fees_user":0.0,"vat":0.0},{"day":"Jeudi","label":"Pass 1 Jour","ticket_type":"single_day","access_level":"regular","count":25,"count_paid":25,"count_unpaid":0,"gross_revenue":408.25,"fees_organizer":0.0,"fees_platform":28.5,"fees_user":0.0,"vat":0.0},{"day":"Jeudi","label":"Pass Jeudi + Vendredi","ticket_type":"2-jours","access_level":"invitation","count":6,"count_paid":0,"count_unpaid":6,"gross_revenue":0.0,"fees_organizer":0.0,"fees_platform":0.0,"fees_user":0.0,"vat":0.0},{"day":"Jeudi","label":"Test cashless","ticket_type":"single_day","access_level":"invitation","count":2,"count_paid":0,"count_unpaid":2,"gross_revenue":0.0,"fees_organizer":0.0,"fees_platform":0.0,"fees_user":0.0,"vat":0.0},{"day":"Samedi","label":"General Access - Pass Samedi","ticket_type":"samedi","access_level":"regular","count":12658,"count_paid":12658,"count_unpaid":0,"gross_revenue":779640.63,"fees_organizer":44227.24,"fees_platform":19774.29,"fees_user":13393.33,"vat":24333.81},{"day":"Samedi","label":"General Access - Pass 2 Jours (Vendredi + Samedi)","ticket_type":"2-jours","access_level":"regular","count":6577,"count_paid":6577,"count_unpaid":0,"gross_revenue":345517.61,"fees_organizer":25081.7,"fees_platform":4122.71,"fees_user":7586.03,"vat":13817.04},{"day":"Samedi","label":"GENERAL ACCESS - Pass 3 jours (Jeudi + Vendredi + Samedi)","ticket_type":"3-jours","access_level":"regular","count":988,"count_paid":988,"count_unpaid":0,"gross_revenue":35888.08,"fees_organizer":2500.4,"fees_platform":471.62,"fees_user":757.78,"vat":1374.01},{"day":"Samedi","label":"General Access - Pass Samedi","ticket_type":"samedi","access_level":"invitation","count":542,"count_paid":0,"count_unpaid":542,"gross_revenue":0.0,"fees_organizer":0.0,"fees_platform":0.0,"fees_user":0.0,"vat":0.0},{"day":"Samedi","label":"BACKSTAGE VIP (Sc\u00e8ne Sonora + Backstage)","ticket_type":"samedi","access_level":"vip","count":245,"count_paid":245,"count_unpaid":0,"gross_revenue":26527.53,"fees_organizer":1510.0,"fees_platform":508.22,"fees_user":457.53,"vat":830.5},{"day":"Samedi","label":"General Access - Pass 2 Jours (Vendredi + Samedi)","ticket_type":"2-jours","access_level":"invitation","count":244,"count_paid":0,"count_unpaid":244,"gross_revenue":0.0,"fees_organizer":0.0,"fees_platform":0.0,"fees_user":0.0,"vat":0.0},{"day":"Samedi","label":"General Access - Pass 2 Jours (Vendredi + Samedi)","ticket_type":"2-jours","access_level":"early_entry","count":220,"count_paid":220,"count_unpaid":0,"gross_revenue":11231.0,"fees_organizer":1091.2,"fees_platform":0.0,"fees_user":330.0,"vat":600.6},{"day":"Samedi","label":"BACKSTAGE VIP (Sc\u00e8ne Sonora + Backstage)","ticket_type":"2-jours","access_level":"vip","count":197,"count_paid":197,"count_unpaid":0,"gross_revenue":19560.4,"fees_organizer":1472.5,"fees_platform":169.68,"fees_user":446.4,"vat":809.1},{"day":"Samedi","label":"General Access - Pass 3 Jours (Jeudi + Vendredi + Samedi)","ticket_type":"3-jours","access_level":"invitation","count":196,"count_paid":0,"count_unpaid":196,"gross_revenue":0.0,"fees_organizer":0.0,"fees_platform":0.0,"fees_user":0.0,"vat":0.0},{"day":"Samedi","label":"General Access - Pass Samedi","ticket_type":"samedi","access_level":"early_entry","count":94,"count_paid":94,"count_unpaid":0,"gross_revenue":5546.0,"fees_organizer":538.62,"fees_platform":0.0,"fees_user":162.62,"vat":296.1},{"day":"Samedi","label":"Pass 1 Jour","ticket_type":"single_day","access_level":"regular","count":25,"count_paid":25,"count_unpaid":0,"gross_revenue":408.25,"fees_organizer":0.0,"fees_platform":28.5,"fees_user":0.0,"vat":0.0},{"day":"Samedi","label":"Pass Backstage - Vendredi","ticket_type":"2-jours","access_level":"backstage","count":14,"count_paid":14,"count_unpaid":0,"gross_revenue":538.32,"fees_organizer":52.25,"fees_platform":0.0,"fees_user":15.82,"vat":28.8},{"day":"Samedi","label":"Test cashless","ticket_type":"single_day","access_level":"invitation","count":2,"count_paid":0,"count_unpaid":2,"gross_revenue":0.0,"fees_organizer":0.0,"fees_platform":0.0,"fees_user":0.0,"vat":0.0},{"day":"Vendredi","label":"General Access - Pass Vendredi","ticket_type":"vendredi","access_level":"regular","count":6696,"count_paid":6696,"count_unpaid":0,"gross_revenue":369323.0,"fees_organizer":25821.5,"fees_platform":6573.69,"fees_user":7807.0,"vat":14211.56},{"day":"Vendredi","label":"General Access - Pass 2 Jours (Vendredi + Samedi)","ticket_type":"2-jours","access_level":"regular","count":6577,"count_paid":6577,"count_unpaid":0,"gross_revenue":345517.61,"fees_organizer":25081.7,"fees_platform":4122.71,"fees_user":7586.03,"vat":13817.04},{"day":"Vendredi","label":"General Access - Pass Vendredi","ticket_type":"vendredi","access_level":"early_entry","count":1815,"count_paid":1815,"count_unpaid":0,"gross_revenue":84143.4,"fees_organizer":8167.5,"fees_platform":0.0,"fees_user":2468.4,"vat":4501.2},{"day":"Vendredi","label":"GENERAL ACCESS - Pass 3 jours (Jeudi + Vendredi + Samedi)","ticket_type":"3-jours","access_level":"regular","count":988,"count_paid":988,"count_unpaid":0,"gross_revenue":35888.08,"fees_organizer":2500.4,"fees_platform":471.62,"fees_user":757.78,"vat":1374.01},{"day":"Vendredi","label":"F&F - Pass Vendredi","ticket_type":"vendredi","access_level":"invitation","count":536,"count_paid":0,"count_unpaid":536,"gross_revenue":0.0,"fees_organizer":0.0,"fees_platform":0.0,"fees_user":0.0,"vat":0.0},{"day":"Vendredi","label":"General Access - Pass 2 Jours (Vendredi + Samedi)","ticket_type":"2-jours","access_level":"invitation","count":250,"count_paid":0,"count_unpaid":250,"gross_revenue":0.0,"fees_organizer":0.0,"fees_platform":0.0,"fees_user":0.0,"vat":0.0},{"day":"Vendredi","label":"General Access - Pass 2 Jours (Vendredi + Samedi)","ticket_type":"2-jours","access_level":"early_entry","count":220,"count_paid":220,"count_unpaid":0,"gross_revenue":11231.0,"fees_organizer":1091.2,"fees_platform":0.0,"fees_user":330.0,"vat":600.6},{"day":"Vendredi","label":"BACKSTAGE VIP (Sc\u00e8ne Sonora + Backstage)","ticket_type":"2-jours","access_level":"vip","count":197,"count_paid":197,"count_unpaid":0,"gross_revenue":19560.4,"fees_organizer":1472.5,"fees_platform":169.68,"fees_user":446.4,"vat":809.1},{"day":"Vendredi","label":"General Access - Pass 3 Jours (Jeudi + Vendredi + Samedi)","ticket_type":"3-jours","access_level":"invitation","count":196,"count_paid":0,"count_unpaid":196,"gross_revenue":0.0,"fees_organizer":0.0,"fees_platform":0.0,"fees_user":0.0,"vat":0.0},{"day":"Vendredi","label":"BACKSTAGE VIP (Sc\u00e8ne Sonora + Backstage)","ticket_type":"vendredi","access_level":"vip","count":163,"count_paid":163,"count_unpaid":0,"gross_revenue":17037.84,"fees_organizer":1280.0,"fees_platform":182.35,"fees_user":387.84,"vat":704.0},{"day":"Vendredi","label":"Pass 1 Jour","ticket_type":"single_day","access_level":"regular","count":25,"count_paid":25,"count_unpaid":0,"gross_revenue":408.25,"fees_organizer":0.0,"fees_platform":28.5,"fees_user":0.0,"vat":0.0},{"day":"Vendredi","label":"Pass Backstage - Vendredi","ticket_type":"2-jours","access_level":"backstage","count":14,"count_paid":14,"count_unpaid":0,"gross_revenue":538.32,"fees_organizer":52.25,"fees_platform":0.0,"fees_user":15.82,"vat":28.8},{"day":"Vendredi","label":"Pass Backstage - Vendredi","ticket_type":"vendredi","access_level":"backstage","count":5,"count_paid":5,"count_unpaid":0,"gross_revenue":334.85,"fees_organizer":32.5,"fees_platform":0.0,"fees_user":9.85,"vat":17.9},{"day":"Vendredi","label":"Test cashless","ticket_type":"single_day","access_level":"invitation","count":2,"count_paid":0,"count_unpaid":2,"gross_revenue":0.0,"fees_organizer":0.0,"fees_platform":0.0,"fees_user":0.0,"vat":0.0}],"velocity":{"current_week":{"week_number":2,"tickets":0,"gross_revenue":0.0},"previous_week":{"week_number":1,"tickets":14347,"gross_revenue":810376.43},"week_over_week_delta":-1.0},"comparison":{"reference_event":"bordeaux_2025","reference_source":"live","reference_snapshot_date":"2025-06-14","reference_at_same_point":{"tickets_sold":14900,"gross_revenue":1120658.48},"delta_tickets":1.4371,"delta_revenue":0.9295}};
+const EVENT_META = {
+  producteur:'EPISODE', marque:'Sonora', city:'Bordeaux', venue:'Parc des Expositions',
+  date_label:'11–13 juin 2026', edition:'4ᵉ édition', platform:'DICE + Shotgun',
+  capacity:44500, qonto:'Sonora — Compte courant', general:'EPISODE — Général'
+};
+
+/* ════════ SHARED DRAWER COMPONENTS (verbatim from shared-drawer-components.js) ══
+   fmtEur byte-faithful (ASCII-space thousands + " €"); _ring/_deg conic gradient;
+   railHdr / railKpis / railX as authored. detPie uses the same contract; here we
+   feed it a ticketing reading (paid vs comp / fill) computed from JSON. */
+function fmtEur(n){const v=Math.round(Number(n)||0);const sign=v<0?'-':'';const grp=String(Math.abs(v)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');return sign+grp+' \u20ac';}
+function fmtEurM(n){return n>=1e6?(n/1e6).toFixed(2)+' M\u20ac':fmtEur(n);}
+function fmtInt(n){return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');}
+function _deg(r){return Math.round(r);}
+function _ring(segs){let acc=0;const parts=segs.map((s,i)=>{const start=_deg(acc);acc+=s.deg;const end=(i===segs.length-1)?360:_deg(acc);return s.color+' '+start+'deg '+end+'deg';});return 'conic-gradient('+parts.join(', ')+')';}
+function railX(state){return state==='back'?'<button class="rail-x">\u2190 Retour</button>':'<button class="rail-x">Fermer \u2715</button>';}
+function railHdr({icon='',title='',subHTML='',railXState='close'}={}){
+  return '<div class="rail-hdr"><div><div class="rail-title">'+(icon||'')+'<span>'+title+'</span></div><div class="rail-sub">'+subHTML+'</div></div>'+railX(railXState)+'</div>';
+}
+function railKpis(items,{k3=false}={}){
+  const cells=(items||[]).map(it=>'<div class="rail-kpi"><div class="k">'+it.label+'</div><div class="v '+(it.colorClass||'')+'">'+it.value+'</div></div>').join('');
+  return '<div class="rail-kpis'+(k3?' k3':'')+'">'+cells+'</div>';
+}
+/* detPie reused in its ring/legend shell shape; ticketing feeds a 2-segment
+   "réalisé vs reste" reading. Colors per contract: --rb teal = realised. */
+function tkPie({basis,filled,fillLabel,restLabel,holeLabel,headHTML,legend}){
+  const RB='var(--rb)', FAINT='rgba(94,234,212,.14)', FAINT_DOT='rgba(94,234,212,.22)';
+  const rest=Math.max(0,basis-filled);
+  const ring=_ring([{deg:filled/basis*360,color:RB},{deg:rest/basis*360,color:FAINT}]);
+  const leg=legend.map(r=>'<div class="dpl-row"><span class="dpl-dot" style="background:'+r.dot+'"></span><span class="dpl-nm"'+(r.fg?' style="color:'+r.fg+'"':'')+'>'+r.nm+'</span><span class="dpl-amt"'+(r.fg?' style="color:'+r.fg+'"':'')+'>'+r.amt+'</span></div>').join('');
+  return '<div class="det-pie"><div class="det-pie-ring" style="background:'+ring+'"><div class="det-pie-hole"><span class="ph-amt">'+holeLabel.amt+'</span><span class="ph-lbl">'+holeLabel.lbl+'</span></div></div>'
+    +'<div class="det-pie-side"><div class="ps-head">'+headHTML+'</div><div class="det-pie-legend">'+leg+'</div></div></div>';
+}
+
+/* ── shared helpers ─────────────────────────────────────────────────────── */
+const PLAT={shotgun:{name:'Shotgun',color:'var(--indigo)'},dice:{name:'DICE',color:'var(--purple)'}};
+const DAYCOL=['var(--purple)','var(--indigo)','var(--rb)'];
+const ACCESS_LABEL={regular:'Billets payants',invitation:'Invitations',early_entry:'Early entry',vip:'VIP',backstage:'Backstage'};
+const ACCESS_COL={regular:'var(--green)',vip:'var(--amber)',backstage:'var(--purple)',early_entry:'var(--indigo)',invitation:'var(--red)'};
+function gapBlock(t,b,n){return '<div class="gap"><div class="gap-t">'+t+'</div><div class="gap-b">'+b+'</div><div class="gap-n">Contrat : '+n+'</div></div>';}
+function dtog(id){return '<div class="dtog" onclick="toggleDetails(this)"><span>Détails</span><span class="arr">▼</span></div>';}
+
+/* ════════ HEADER + TOP KPI STRIP (railHdr + railKpis) ═══════════════════ */
+function renderHeader(){
+  document.getElementById('rail-hdr-slot').innerHTML = railHdr({
+    title:'Sonora Bordeaux 2026',
+    subHTML:'<b>Bordeaux</b> · Parc des Expositions · 11–13 juin 2026',
+    railXState:'close'
+  });
+  const t=TICKETING.totals, c=TICKETING.comparison;
+  const yoy=(c.delta_revenue*100);
+  document.getElementById('rail-kpis-slot').innerHTML = railKpis([
+    {label:'Revenu',   value:fmtEurM(t.gross_revenue), colorClass:'rb'},
+    {label:'Remplissage', value:Math.round(t.fill_rate*100)+' %', colorClass:'g'},
+    {label:'vs 2025',  value:(yoy>=0?'+':'')+yoy.toFixed(0)+' %', colorClass:yoy>=0?'g':'r'},
+  ],{k3:true});
+}
+
+/* ════════ TAB 1 — DÉTAILS ═══════════════════════════════════════════════ */
+function renderDetailsTab(m){
+  const row=(k,v)=>'<div class="det-row"><span class="k">'+k+'</span><span class="v">'+v+'</span></div>';
+  const c=TICKETING.comparison, ev=TICKETING.event;
+  return ''
+   +'<div class="dsec"><div class="dsec-t">Événement</div>'
+   + row('Société',m.producteur)+row('Marque',m.marque)+row('Compte rattaché',m.qonto)
+   + row('Général de société',m.general)+row('Lieu',m.venue+', '+m.city)+row('Dates',m.date_label)
+   + row('Capacité',fmtInt(m.capacity))+row('Édition',m.edition)+row('Plateforme',m.platform)+'</div>'
+   +'<div class="dsec"><div class="dsec-t">Comparaison</div>'
+   + row('Référence',c.reference_event.replace('bordeaux_','Bordeaux '))+row('Source',c.reference_source)
+   + row('Mode',ev.comparison_mode==='j_minus'?'J-égal':ev.comparison_mode)
+   + row('Snapshot réf.',new Date(c.reference_snapshot_date).toLocaleDateString('fr-FR'))+'</div>'
+   +'<div class="dsec"><div class="dsec-t">Statut</div><select class="status-select" disabled><option>En vente</option></select></div>';
+}
+
+/* ════════ TAB 2 — VENTES ════════════════════════════════════════════════ */
+function secRevenus(d){
+  const t=d.totals, c=d.comparison;
+  const platTotal=d.by_platform.reduce((s,p)=>s+p.gross_revenue,0);
+  const splitSegs=d.by_platform.map(p=>'<div class="seg" style="width:'+(p.gross_revenue/platTotal*100).toFixed(1)+'%;background:'+PLAT[p.platform].color+'"></div>').join('');
+  const platRows=d.by_platform.map(p=>'<div class="mrow"><span class="mk"><span class="dot" style="background:'+PLAT[p.platform].color+'"></span>'+PLAT[p.platform].name+'</span><span class="mv">'+fmtEur(p.gross_revenue)+' · '+fmtInt(p.count)+'</span></div>').join('');
+  const avg=t.gross_revenue/t.tickets_paid;
+  const aheadRaw=t.gross_revenue-c.reference_at_same_point.gross_revenue;
+  // donut: realised revenue vs the "if-fill-to-100%" notional, all from contract values
+  const ceilingRev=t.capacity_total*avg;
+  const pie=tkPie({
+    basis:ceilingRev, filled:t.gross_revenue,
+    holeLabel:{amt:Math.round(t.fill_rate*100)+'%', lbl:'rempli'},
+    headHTML:'Sur <b>'+fmtEurM(ceilingRev)+'</b> au plafond · <b style="color:var(--rb)">'+fmtEurM(t.gross_revenue)+'</b> réalisés',
+    legend:[
+      {dot:'var(--rb)',nm:'Réalisé',amt:fmtEur(t.gross_revenue)},
+      {dot:'rgba(94,234,212,.22)',nm:'Marge au plafond',amt:fmtEur(Math.max(0,ceilingRev-t.gross_revenue)),fg:'var(--rb)'}
+    ]
+  });
+  return '<div class="dsec"><div class="dsec-t">Revenus<span class="pill">live</span></div>'
+   + pie
+   + '<div class="split-bar">'+splitSegs+'</div>'+platRows
+   + dtog()
+   + '<div class="dpanel"><div class="dinner">'
+   +   gapBlock('Revenus cumulés — série absente','Courbe de revenus cumulés (somme par semaine‑avant‑événement). Le contrat n’expose que le total + le point de référence 2025. Pas de courbe inventée.','<code>timeseries[]</code> (date, cum_revenue), événement + référence, aligné <code>comparison_mode</code>.')
+   +   '<div style="height:10px"></div>'
+   +   '<div class="mrow"><span class="mk">Prix moyen / billet</span><span class="mv">'+fmtEur(avg)+'</span></div>'
+   +   '<div class="mrow"><span class="mk">Billets payants</span><span class="mv">'+fmtInt(t.tickets_paid)+'</span></div>'
+   +   '<div class="mrow"><span class="mk">Revenu 2025 (J‑égal)</span><span class="mv">'+fmtEur(c.reference_at_same_point.gross_revenue)+'</span></div>'
+   +   '<div class="mrow"><span class="mk">Avance vs 2025</span><span class="mv rb">'+(aheadRaw>=0?'+':'')+fmtEur(aheadRaw)+'</span></div>'
+   +   gapBlock('Revenu projeté — entrées absentes','Projection = vélocité 14j × jours restants. Entrées non contractuelles.','<code>projection.velocity_14d</code>, <code>days_remaining</code>, <code>if_soldout_revenue</code>.')
+   + '</div></div></div>';
+}
+function secVelocite(d){
+  const v=d.velocity, evStart=new Date(d.event.days[0].date), now=new Date(d.meta.generated_at);
+  const daysRemaining=Math.max(0,Math.ceil((evStart-now)/86400000)), fini=daysRemaining<=0;
+  const wow=v.week_over_week_delta*100;
+  return '<div class="dsec"><div class="dsec-t">Vélocité<span class="pill '+(fini?'dim':'')+'">'+(fini?'terminé':'live')+'</span></div>'
+   + railKpis([
+       {label:'Restant', value:(fini?'0 j':daysRemaining+' j'), colorClass:'a'},
+       {label:'Sem. dern.', value:fmtInt(v.previous_week.tickets), colorClass:'rb'},
+       {label:'Sem/sem', value:(wow>=0?'+':'')+wow.toFixed(0)+'%', colorClass:wow>=0?'g':'r'},
+     ],{k3:true})
+   + '<div style="height:12px"></div>'
+   + '<div class="mrow"><span class="mk">Semaine '+v.previous_week.week_number+' (dernière pleine)</span><span class="mv">'+fmtInt(v.previous_week.tickets)+' · '+fmtEur(v.previous_week.gross_revenue)+'</span></div>'
+   + '<div class="mrow"><span class="mk">Semaine '+v.current_week.week_number+' (en cours)</span><span class="mv dim">'+(v.current_week.tickets>0?fmtInt(v.current_week.tickets):'0')+' · '+(v.current_week.gross_revenue>0?fmtEur(v.current_week.gross_revenue):'0 €')+'</span></div>'
+   + (fini?'<div class="subnote">Ventes clôturées — événement passé (snapshot du '+now.toLocaleDateString('fr-FR',{day:'numeric',month:'long'})+'). Semaine en cours à 0 : réel, pas une panne.</div>':'')
+   + dtog()
+   + '<div class="dpanel"><div class="dinner">'
+   +   gapBlock('Vélocité 7j / 14j glissante — séries absentes','Deux courbes glissantes + fenêtres 3/7/14/30j, depuis la date d’achat de chaque billet. Le contrat n’a que semaine courante / précédente.','<code>velocity.windows{3d,7d,14d,30d}</code> + <code>velocity.weekly_series[]</code>.')
+   + '</div></div></div>';
+}
+function secPresence(d){
+  const days=d.by_day, cap=d.totals.capacity_total;
+  const pres=days.reduce((s,x)=>s+x.count,0), pctTotal=Math.round(pres/cap*100);
+  const segs=days.map((x,i)=>{const w=x.count/pres*100;return '<div class="stseg" style="width:'+w+'%;background:'+DAYCOL[i%3]+'">'+(w>14?x.day.slice(0,3):'')+'</div>';}).join('');
+  const acc=d.by_access_level;
+  const accRow=lvl=>{const a=acc.find(x=>x.level===lvl);return a?'<div class="mrow"><span class="mk">'+(ACCESS_LABEL[lvl]||lvl)+'</span><span class="mv">'+fmtInt(a.count)+(a.count_paid===0&&a.count>0?' · 0 €':'')+'</span></div>':'';};
+  return '<div class="dsec"><div class="dsec-t">Présence totale<span class="info-tip">i<span class="bub">Entrées estimées. Pass multi-jours comptés une fois par jour. Invitations incluses.</span></span></div>'
+   + railKpis([
+       {label:'Présence', value:fmtInt(pres), colorClass:'rb'},
+       {label:'Capacité', value:fmtInt(cap), colorClass:''},
+       {label:'Taux', value:pctTotal+' %', colorClass:'g'},
+     ],{k3:true})
+   + '<div class="stacked">'+segs+'</div>'
+   + accRow('regular')+accRow('vip')+accRow('backstage')+accRow('early_entry')+accRow('invitation')
+   + '<div class="mrow" style="border-top:1px solid var(--border);margin-top:5px;padding-top:7px"><span class="mk" style="font-weight:600;color:#fff">Total billets</span><span class="mv">'+fmtInt(d.totals.tickets_sold)+'</span></div>'
+   + '<div class="subnote">Invitations comptées en présence à <b style="color:var(--text)">0 € de revenu</b> (comps émis, non vendus) — réel.</div>'
+   + dtog()
+   + '<div class="dpanel"><div class="dinner">'
+   +   days.map((x,i)=>'<div class="mrow"><span class="mk"><span class="dot" style="background:'+DAYCOL[i%3]+'"></span>'+x.day+'</span><span class="mv">'+fmtInt(x.count)+' · '+Math.round(x.count/x.capacity*100)+'% cap.</span></div>').join('')
+   +   gapBlock('Présence vs 2025 par jour — série absente','Comparaison présence au même J‑égal 2025, jour par jour. Le contrat porte le total de référence, pas la ventilation jour.','<code>comparison.reference_at_same_point.by_day[]</code>, aligné <code>comparison_mode</code>.')
+   + '</div></div></div>';
+}
+function secParJour(d){
+  const days=d.by_day;
+  const blocks=days.map((x,i)=>{const fill=Math.round(x.fill_rate*100);return ''
+    +'<div class="day-blk"><div class="day-hd"><span class="nm"><span class="dot" style="background:'+DAYCOL[i%3]+'"></span>'+x.day+'</span><span class="st">'+fmtInt(x.count)+' / '+fmtInt(x.capacity)+' · '+fmtEur(x.gross_revenue)+'</span></div>'
+    +'<div class="mini-track"><div class="mini-fill" style="width:'+Math.min(fill,100)+'%;background:'+DAYCOL[i%3]+'"></div></div>'
+    +'<div style="font-size:10px;color:var(--text-dim);font-family:\'DM Mono\',monospace">'+fill+'% rempli · '+fmtInt(x.count_paid)+' payants</div></div>';}).join('');
+  return '<div class="dsec"><div class="dsec-t">Par jour</div>'+blocks
+   + dtog()
+   + '<div class="dpanel"><div class="dinner">'
+   +   gapBlock('Courbes de pacing par jour — séries absentes','Pacing cumulé par jour (rythme d’achat menant à l’événement), depuis la date d’achat par billet.','<code>timeseries[]</code> ventilé par jour d’événement.')
+   + '</div></div></div>';
+}
+function renderVentesTab(d){return secRevenus(d)+secVelocite(d)+secPresence(d)+secParJour(d);}
+
+/* ════════ TAB 3 — RÉPARTITION ═══════════════════════════════════════════ */
+function renderRepartitionTab(d){
+  const types=[...d.by_ticket_type].sort((a,b)=>b.gross_revenue-a.gross_revenue);
+  const paid=types.filter(t=>t.count_paid>0), comps=types.filter(t=>t.count_paid===0);
+  const tot=d.totals.tickets_sold;
+  const tr=t=>'<div class="pr-row"><div class="pr-name">'+t.label+'<div class="sub">'+t.ticket_type+' · '+t.access_level+'</div></div>'
+    +'<div class="pr-v">'+fmtInt(t.count)+'</div><div class="pr-v dim">'+(t.count/tot*100).toFixed(1)+'%</div>'
+    +'<div class="pr-v '+(t.count_paid===0?'amber':'')+'">'+(t.count_paid===0?'comp':fmtEur(t.avg_price))+'</div></div>';
+  const accTot=d.by_access_level.reduce((s,a)=>s+a.count,0);
+  const accRows=[...d.by_access_level].sort((a,b)=>b.count-a.count).map(a=>
+    '<div class="mini-row"><span class="mini-name"><span class="dot" style="background:'+(ACCESS_COL[a.level]||'var(--text-dim)')+'"></span>'+(ACCESS_LABEL[a.level]||a.level)+'</span><span class="mini-v">'+fmtInt(a.count)+' · '+(a.gross_revenue>0?fmtEur(a.gross_revenue):'0 €')+'</span></div>'
+    +'<div class="mini-track"><div class="mini-fill" style="width:'+(a.count/accTot*100).toFixed(1)+'%;background:'+(ACCESS_COL[a.level]||'var(--text-dim)')+'"></div></div>').join('');
+  const platTot=d.by_platform.reduce((s,p)=>s+p.count,0);
+  const platRows=d.by_platform.map(p=>
+    '<div class="mini-row"><span class="mini-name"><span class="dot" style="background:'+PLAT[p.platform].color+'"></span>'+PLAT[p.platform].name+'</span><span class="mini-v">'+fmtInt(p.count)+' · '+fmtEur(p.gross_revenue)+'</span></div>'
+    +'<div class="mini-track"><div class="mini-fill" style="width:'+(p.count/platTot*100).toFixed(1)+'%;background:'+PLAT[p.platform].color+'"></div></div>').join('');
+  return '<div class="dsec"><div class="dsec-t">Répartition des billets<span class="pill dim">21 types</span></div>'
+   + '<div class="pr-head"><span>Type</span><span>Total</span><span>%</span><span>Prix Ø</span></div>'
+   + '<div class="pr-grp">Payants</div>'+paid.map(tr).join('')
+   + '<div class="pr-grp">Invitations / comps (0 €)</div>'+comps.map(tr).join('')
+   + '<div class="subnote">Grain autoritaire <code style="font-family:\'DM Mono\',monospace">by_ticket_type_and_day</code> (35 lignes). Comps : compte &gt; 0, prix 0 € — réel.</div></div>'
+   + '<div class="dsec"><div class="dsec-t">Par niveau d’accès</div>'+accRows+'</div>'
+   + '<div class="dsec"><div class="dsec-t">Par plateforme</div>'+platRows
+   + '<div class="subnote">DICE daté <code>claimedAt</code>, Shotgun <code>ordered_at</code> — horloges différentes. Sans effet sur les totaux ; à noter pour tout timing de vente cross‑plateforme.</div></div>';
+}
+
+/* ════════ TAB 4 — PROJECTIONS ═══════════════════════════════════════════ */
+function renderProjectionsTab(d){
+  const t=d.totals, cap=d.totals.capacity_total, avg=t.gross_revenue/t.tickets_paid;
+  const ceiling=cap*avg;
+  return '<div class="dsec"><div class="dsec-t">Projection finale<span class="pill dim">terminé</span></div>'
+   + '<div class="pq-grid">'
+   +   '<div class="pq"><div class="pq-l">Réalisé (final)</div><div class="pq-v">'+fmtEurM(t.gross_revenue)+'</div><div class="pq-s">'+fmtInt(t.tickets_paid)+' payants</div></div>'
+   +   '<div class="pq"><div class="pq-l">Remplissage</div><div class="pq-v">'+Math.round(t.fill_rate*100)+'%</div><div class="pq-s">'+fmtInt(t.tickets_sold)+' / '+fmtInt(cap)+'</div></div>'
+   +   '<div class="pq"><div class="pq-l">Plafond sold-out*</div><div class="pq-v">'+fmtEurM(ceiling)+'</div><div class="pq-s">prix Ø × capacité</div></div>'
+   +   '<div class="pq"><div class="pq-l">Scénarios</div><div class="pq-v" style="color:var(--text-dim)">—</div><div class="pq-s">voir gap</div></div>'
+   + '</div>'
+   + '<div class="subnote">* Borne (prix moyen × capacité) dérivée des seuls champs du contrat. Pas une projection : l’événement est terminé, « réalisé » est la vérité.</div>'
+   + gapBlock('Scénarios (pess. / base / opt.) — absents','Projection par fenêtre 7j glissante sur tout l’historique (meilleure/pire/14j‑base), global + par jour + méthodologie. Aucune entrée contractuelle.','<code>projection.scenarios{...}</code>, <code>days_remaining</code>, <code>velocity_14d</code>, série par jour.')
+   + '</div>'
+   + '<div class="dsec"><div class="dsec-t">Suivi des ventes<span class="info-tip">i<span class="bub">Bascule Jour/Semaine, compare chaque jour/semaine à 2025 au même point.</span></span></div>'
+   + '<div class="mrow"><span class="mk">Semaine '+d.velocity.previous_week.week_number+' (dernière pleine)</span><span class="mv">'+fmtInt(d.velocity.previous_week.tickets)+' · '+fmtEur(d.velocity.previous_week.gross_revenue)+'</span></div>'
+   + '<div class="mrow"><span class="mk">Semaine '+d.velocity.current_week.week_number+' (en cours)</span><span class="mv dim">0 · 0 €</span></div>'
+   + gapBlock('Suivi jour/semaine vs 2025 — séries absentes','Chaque jour/semaine avec 2025 au même point + diff + 2026 actuel, depuis la date d’achat. Le contrat n’a que semaine courante/précédente.','<code>timeseries[]</code> (courant + référence) + règle double‑cutoff explicite (revenus → aujourd’hui partiel ; vélocité → hier complet).')
+   + '</div>';
+}
+
+/* ── interactions (pure-UI; the fetch is the only real seam later) ──────── */
+function toggleDetails(el){el.classList.toggle('open');el.nextElementSibling.classList.toggle('open');}
+function showTab(name,btn){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  document.querySelectorAll('.tabpane').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pane-'+name).classList.add('on');
+}
+
+/* ── mount ───────────────────────────────────────────────────────────────── */
+renderHeader();
+document.getElementById('pane-details').innerHTML     = renderDetailsTab(EVENT_META);
+document.getElementById('pane-ventes').innerHTML      = renderVentesTab(TICKETING);
+document.getElementById('pane-repartition').innerHTML = renderRepartitionTab(TICKETING);
+document.getElementById('pane-projections').innerHTML = renderProjectionsTab(TICKETING);
+</script>
+</body>
+</html>

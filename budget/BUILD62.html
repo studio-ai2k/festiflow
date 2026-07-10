@@ -328,6 +328,10 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .dkpi-burn .tick{position:absolute;top:-2px;bottom:-2px;width:1.5px;background:rgba(255,255,255,.6);border-radius:1px}
 /* BUILD61 §1.4 — dépense-table burn bar. POSITIVE scoping on .cat-burn only. L1952/L1955/L1956 unaffected. */
 .dkpi-burn.cat-burn .reel{background:var(--green)}
+/* BUILD63 §2 — à-relier segment. Blue is free here: the design retired it from `devis`, which is
+   now dashed green. POSITIVE selector, scoped to .cat-burn → the section headers, which have no
+   à-relier (a section has no ligne), keep their 3-segment bar and never emit .arelier. */
+.dkpi-burn.cat-burn .arelier{background:var(--indigo)}
 .dkpi-burn.cat-burn .devis{background:repeating-linear-gradient(45deg,var(--green) 0 3px,rgba(52,211,153,.30) 3px 6px)}
 .dkpi-burn.cat-burn .libre{background:rgba(255,255,255,.20)}
 /* BUILD61 §1.7 — slim conso bar (single-segment 3px), shown under expanded header. */
@@ -365,6 +369,14 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .dkpi-meta .dot{width:5px;height:5px;border-radius:50%;background:var(--text-dim)}
 .dkpi-meta b{font-weight:600;color:#a5b4fc}
 .dkpi-trio{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+/* BUILD63 §3 — 4 columns when the À RELIER cell is present. `!important` + the compound selector
+   is required to beat the two seam-27dc media rules (L410 / L416) that pin the trio to 3-across;
+   without it the 4th cell wraps to a second row at <=860px. Absent aRelierT, the class is not
+   emitted and the trio is byte-for-byte the 3-column band. */
+.dkpi-trio.dkpi-trio--4{grid-template-columns:repeat(4,1fr)!important}
+/* à-relier value: blue, matching its burn segment. TTC unit tag: dim, beside the label. */
+.dkpi-v.arelier{color:var(--indigo)}
+.dkpi-cell .dkpi-k .unit{font-style:normal;font-size:var(--fs-micro);font-weight:700;letter-spacing:.06em;color:var(--text-dim);border:1px solid var(--border-h);border-radius:3px;padding:0 3px;line-height:1.4}
 .dkpi-cell{background:var(--surface);padding:13px 15px}
 .dkpi-v{font-family:var(--ff-num-table);font-size:var(--fs-strong);font-weight:600;color:#fff;margin-top:5px;white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}
 .dkpi-v.reel{color:var(--rb)}
@@ -2397,7 +2409,18 @@ function renderDept(id){
   const budgetT   = totT.est;
   const depenseT  = totT.reel;
   const engageT   = allLT.reduce((a,l) => a + computeEngage(l.devis), 0);
-  const soldeT    = budgetT - depenseT - engageT;                       // unclamped; label flips (§1.7)
+  // BUILD63 §1.2 — à-relier: dept-matched transactions with NO ligne, therefore NO tax rate
+  //   (the ligne carries it; Qonto supplies no VAT on a raw transaction). NEVER converted:
+  //   the figure is TTC, an UPPER bound on the HT it will become. Dépensé becomes an upper
+  //   bound, Restant a lower bound — the card can never overstate remaining budget.
+  //   `ttc < 0` (expenses) is the filter, NOT Math.abs: positive rows are remboursements /
+  //   credits, whose routing into à-relier is Phase-D (see the comment above isRembNote).
+  //   `r.ht` is deliberately ignored — nothing proves the API populates it, and if it did it
+  //   would be a server-side guess.
+  const aRelierRows = unmatchedForDept(id).filter(r => (r.ttc || 0) < 0);   // expenses only
+  const aRelierT    = aRelierRows.reduce((a, r) => a - (r.ttc || 0), 0);    // positive TTC
+  const aRelierN    = aRelierRows.length;
+  const soldeT    = budgetT - depenseT - aRelierT - engageT;            // §3: unclamped; label flips
   const consoPctT = budgetT>0 ? Math.round(depenseT/budgetT*100) : 0;
   const engPctT   = budgetT>0 ? Math.round(engageT /budgetT*100) : 0;
   const soldePctT = budgetT>0 ? Math.round(Math.abs(soldeT)/budgetT*100) : 0;
@@ -2405,17 +2428,37 @@ function renderDept(id){
   const aValiderDevis = allLT.flatMap(l => (l.devis||[]).filter(d => d.statut === 'à valider'));
   const aValiderN   = aValiderDevis.length;
   const aValiderAmt = aValiderDevis.reduce((a,d)=>a+(d.montant_ht||0), 0);
-  // BUILD61 §1.4 — additive burn-bar math (was overlap max()). Both clamps + zero-guard.
-  const B = budgetT, R = depenseT, E = engageT;
-  const peakT   = Math.max(B, R + E) || 1;
-  const overT   = Math.max(0, (R + E) - B);
-  const segReelT  = Math.min(R, B) / peakT * 100;                      // min(R,B): critical clamp §1.4
-  const segDevisT = overT > 0
-    ? Math.max(0, Math.min(E, B - R)) / peakT * 100
-    : E / peakT * 100;
-  const segOverT  = overT > 0 ? overT / peakT * 100 : 0;
-  const segLibreT = overT > 0 ? 0 : Math.max(0, B - R - E) / peakT * 100;
-  const tickPctT  = overT > 0 ? B / peakT * 100 : null;                // budget marker only when over
+  // BUILD63 §2 — four-segment burn bar, ONE general formula. Cumulative clamp: each segment is
+  // the part of `spent` that fits inside B, taken in order. Closes to exactly 100% in both
+  // regimes (under: spent + libre = B = peak; over: B + over = spent = peak) and subsumes
+  // BUILD62's min(R,B) clamp as c1. Render order: reel · arelier · devis · (over | libre).
+  const B = budgetT, R = depenseT, A = aRelierT, E = engageT;
+  const spent   = R + A + E;                       // spent-or-committed
+  const peakT   = Math.max(B, spent) || 1;         // zero-guard
+  const overT   = Math.max(0, spent - B);
+  const c1 = Math.min(R,     B);
+  const c2 = Math.min(R + A, B);
+  const c3 = Math.min(spent, B);
+  const segReelT  = c1              / peakT * 100;   // solid green  — réelle (HT, line-matched)
+  const segARelT  = (c2 - c1)       / peakT * 100;   // BLUE         — à relier (TTC)
+  const segDevisT = (c3 - c2)       / peakT * 100;   // dashed green — devis engagé (HT)
+  const segOverT  = overT           / peakT * 100;   // red          — dépassement
+  const segLibreT = Math.max(0, B - spent) / peakT * 100;   // flat grey — libre
+  const tickPctT  = overT > 0 ? B / peakT * 100 : null;     // budget marker only when over
+  // BUILD63 §4.2 — round the TOTAL once, then split by largest remainder. Rounding each part
+  // independently breaks the design's own identity pRe + pARel + pDev === pEng on 25.1% of
+  // inputs (invisible today only because E = 0 everywhere; a fifth item makes it worse).
+  const pctOf = v => B > 0 ? v / B * 100 : 0;
+  const pEng  = Math.round(pctOf(spent));                 // the ONE independent rounding
+  const raw  = [pctOf(R), pctOf(A), pctOf(E)];
+  const fl   = raw.map(Math.floor);
+  let   rem  = pEng - fl.reduce((a, b) => a + b, 0);      // 0 ≤ rem ≤ 3, by construction
+  raw.map((v, i) => [v - Math.floor(v), i])
+     .sort((a, b) => b[0] - a[0])
+     .slice(0, rem)
+     .forEach(([, i]) => fl[i]++);
+  const [pRe, pARel, pDev] = fl;
+  const pRest = soldeT >= 0 ? 100 - pEng : pEng - 100;    // both identities hold by construction
   // §1.7 slim conso bar colour (conso_color mapping).
   const consoColorT = consoPctT >= 100 ? 'var(--red)' : consoPctT >= 75 ? 'var(--amber)' : 'var(--green)';
   // §1.5 counts strip — count LIGNES with ≥1 pending, NOT Σ of array lengths.
@@ -2682,21 +2725,28 @@ function renderDept(id){
           <div class="cat-burn-slim"><i style="width:${Math.min(100,consoPctT)}%;background:${consoColorT}"></i></div>
           ` : `
           <div class="dkpi-burn cat-burn">
-            <i class="reel"  style="width:${segReelT}%"></i>
-            <i class="devis" style="width:${segDevisT}%"></i>
+            <i class="reel"    style="width:${segReelT}%"></i>
+            <i class="arelier" style="width:${segARelT}%"></i>
+            <i class="devis"   style="width:${segDevisT}%"></i>
             ${overT>0 ? `<i class="over" style="width:${segOverT}%"></i>`
                       : `<i class="libre" style="width:${segLibreT}%"></i>`}
             ${tickPctT!=null ? `<span class="tick" style="left:${tickPctT}%"></span>` : ``}
           </div>
           `}
+          <!-- BUILD63 §4.3 — five items; the "à relier" item is omitted when aRelierT === 0
+               (the other four still satisfy both identities). Bold white %, muted label, no colour.
+               NB: inside a template literal — no backticks, no dollar-braces, in this comment. -->
           <div class="dkpi-meta cat-meta">
-            <span class="m-pct"><b>${consoPctT + engPctT}%</b> total engagé</span>
+            <span class="m-pct"><b>${pEng}%</b> total engagé</span>
             <span class="dot"></span>
-            <span class="m-pct"><b>${consoPctT}%</b> réelle</span>
+            <span class="m-pct"><b>${pRe}%</b> réelle</span>
+            ${aRelierT > 0 ? `
             <span class="dot"></span>
-            <span class="m-pct"><b>${engPctT}%</b> devis validé</span>
+            <span class="m-pct"><b>${pARel}%</b> à relier</span>` : ``}
             <span class="dot"></span>
-            <span class="m-pct"><b>${soldePctT}%</b> ${soldeT >= 0 ? 'restant' : 'dépassement'}</span>
+            <span class="m-pct"><b>${pDev}%</b> devis validé</span>
+            <span class="dot"></span>
+            <span class="m-pct"><b>${pRest}%</b> ${soldeT >= 0 ? 'restant' : 'dépassement'}</span>
           </div>
           <!-- BUILD61 §1.5 — counts strip. Blank-when-0 for ALL THREE. 1:1 with row badges. -->
           <div class="dkpi-strip">
@@ -2705,10 +2755,15 @@ function renderDept(id){
             ${overN > 0 ? `<span class="ct"><i class="badge x">!</i>${overN} ligne${overN>1?'s':''} en dépassement</span>` : ''}
           </div>
         </div>
-        <div class="dkpi-trio">
+        <!-- BUILD63 §3 — cell order RÉEL · À RELIER · ENGAGÉ · RESTANT (money migrates left→right,
+             matching the section header's BUDGET · RÉEL · ENGAGÉ · RESTANT). The À RELIER cell is
+             absent — and the trio returns to 3 columns — when aRelierT is 0. No zero, no dash. -->
+        <div class="dkpi-trio${aRelierT > 0 ? ' dkpi-trio--4' : ''}">
           <div class="dkpi-cell"><div class="dkpi-k">${kSpent}</div><div class="dkpi-v">${depenseT?fe(depenseT):'—'}</div></div>
-          <div class="dkpi-cell"><div class="dkpi-k">${soldeLabel}</div><div class="dkpi-v ${soldeCls}">${fe(Math.abs(soldeT))}</div></div>
+          ${aRelierT > 0 ? `
+          <div class="dkpi-cell"><div class="dkpi-k">À RELIER<i class="unit">TTC</i></div><div class="dkpi-v arelier">${fe(aRelierT)}</div></div>` : ``}
           <div class="dkpi-cell"><div class="dkpi-k">ENGAGÉ</div><div class="dkpi-v">${engageT?fe(engageT):'—'}</div></div>
+          <div class="dkpi-cell"><div class="dkpi-k">${soldeLabel}</div><div class="dkpi-v ${soldeCls}">${fe(Math.abs(soldeT))}</div></div>
         </div>
       </div>
 
@@ -2785,36 +2840,48 @@ function renderDept(id){
 // Col 2: solid card (padding:20px)
 // Col 3: 3 stacked dashed cards (flex:1), last = Comparaison
 // ════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════
+// BUILD63 §1.1 — HOISTED from buildDeptG3Cards to module scope. renderDept needs
+// unmatchedForDept too, and there must be exactly ONE definition of "which transactions
+// belong to this department". Bodies are unchanged from BUILD62 (only the 2-space function
+// indentation is removed; the token stream is identical). Every dependency is module-scope
+// and initialised before any render: DEPT_META (L1823), POLE_MAP_CLIENT (L3239), normStr
+// (L3246), deptFromNote (L3281), _unmatchedRows (declared L3440, filled in initApp L3094,
+// which only runs after an `await` — so the whole script has evaluated). The arrow bodies
+// are not evaluated at declaration time, so the later `let _unmatchedRows` is no TDZ hazard.
+// ════════════════════════════════════════════════════
+// Build set of Qonto categories that map to this dept
+const deptQontoCats = (deptId) => {
+  // Find the tab name (uppercase) for this deptId
+  const tabName = Object.keys(DEPT_META).find(k => DEPT_META[k].id === deptId) || deptId.toUpperCase();
+  // Collect all Qonto categories that map to this tab name
+  const cats = new Set();
+  cats.add(tabName); // always include the tab name itself
+  Object.entries(POLE_MAP_CLIENT).forEach(([qontoCat, mappedTab]) => {
+    if (mappedTab === tabName) cats.add(qontoCat);
+  });
+  return cats;
+};
+const unmatchedForDept = (deptId) => {
+  const cats = deptQontoCats(deptId);
+  const tabName = Object.keys(DEPT_META).find(k => DEPT_META[k].id === deptId) || deptId.toUpperCase();
+  return _unmatchedRows.filter(r => {
+    const rCat = normStr(r.dept||'');
+    // 1. Match by Qonto category (existing)
+    if ([...cats].some(c => normStr(c) === rCat)) { r._matchSource = 'category'; return true; }
+    // 2. Fallback: if category is empty, scan note for dept name
+    if (!rCat || rCat === '—') {
+      const noteDept = deptFromNote(r.note);
+      if (noteDept && normStr(noteDept) === normStr(tabName)) { r._matchSource = 'note'; return true; }
+    }
+    return false;
+  });
+};
+
 function buildDeptG3Cards(id, dept, tot, allL, p) {
 
   // ── Transactions non reliées card — dashed, shows dept unmatched count ─────
-  // Build set of Qonto categories that map to this dept
-  const deptQontoCats = (deptId) => {
-    // Find the tab name (uppercase) for this deptId
-    const tabName = Object.keys(DEPT_META).find(k => DEPT_META[k].id === deptId) || deptId.toUpperCase();
-    // Collect all Qonto categories that map to this tab name
-    const cats = new Set();
-    cats.add(tabName); // always include the tab name itself
-    Object.entries(POLE_MAP_CLIENT).forEach(([qontoCat, mappedTab]) => {
-      if (mappedTab === tabName) cats.add(qontoCat);
-    });
-    return cats;
-  };
-  const unmatchedForDept = (deptId) => {
-    const cats = deptQontoCats(deptId);
-    const tabName = Object.keys(DEPT_META).find(k => DEPT_META[k].id === deptId) || deptId.toUpperCase();
-    return _unmatchedRows.filter(r => {
-      const rCat = normStr(r.dept||'');
-      // 1. Match by Qonto category (existing)
-      if ([...cats].some(c => normStr(c) === rCat)) { r._matchSource = 'category'; return true; }
-      // 2. Fallback: if category is empty, scan note for dept name
-      if (!rCat || rCat === '—') {
-        const noteDept = deptFromNote(r.note);
-        if (noteDept && normStr(noteDept) === normStr(tabName)) { r._matchSource = 'note'; return true; }
-      }
-      return false;
-    });
-  };
+  // §1.1: deptQontoCats / unmatchedForDept now live at module scope, immediately above.
 
   const unmatchedCard = (deptId) => {
     const deptRows = unmatchedForDept(deptId);

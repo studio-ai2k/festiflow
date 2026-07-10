@@ -2419,7 +2419,6 @@ function renderDept(id){
   //   would be a server-side guess.
   const aRelierRows = unmatchedForDept(id).filter(r => (r.ttc || 0) < 0);   // expenses only
   const aRelierT    = aRelierRows.reduce((a, r) => a - (r.ttc || 0), 0);    // positive TTC
-  const aRelierN    = aRelierRows.length;
   const soldeT    = budgetT - depenseT - aRelierT - engageT;            // §3: unclamped; label flips
   const consoPctT = budgetT>0 ? Math.round(depenseT/budgetT*100) : 0;
   const engPctT   = budgetT>0 ? Math.round(engageT /budgetT*100) : 0;
@@ -2458,7 +2457,12 @@ function renderDept(id){
      .slice(0, rem)
      .forEach(([, i]) => fl[i]++);
   const [pRe, pARel, pDev] = fl;
-  const pRest = soldeT >= 0 ? 100 - pEng : pEng - 100;    // both identities hold by construction
+  // BUILD64 §1.2 — zero-budget guard. With B === 0, pctOf (above) already returns 0 for every part,
+  // so pEng = pRe = pARel = pDev = 0; without this guard pRest would render a phantom `100% restant`
+  // beside a `RESTANT 0 €` value cell. The two identities are vacuous at B === 0 (0+0+0 === 0), so
+  // nothing is weakened. Matches the section header (BUILD62 sPct), which already reads 0%.
+  // ONE guard, one line: do NOT guard pEng / pRe / pARel / pDev.
+  const pRest = (B === 0) ? 0 : (soldeT >= 0 ? 100 - pEng : pEng - 100);
   // §1.7 slim conso bar colour (conso_color mapping).
   const consoColorT = consoPctT >= 100 ? 'var(--red)' : consoPctT >= 75 ? 'var(--amber)' : 'var(--green)';
   // §1.5 counts strip — count LIGNES with ≥1 pending, NOT Σ of array lengths.
@@ -2650,7 +2654,7 @@ function renderDept(id){
             </td>
           </tr>
           <tr id="hdr-${sid}" style="display:${_open?'':'none'}">
-            <th class="tl" style="min-width:180px">Ligne <span style="color:var(--text-dim);font-size:.72em;font-weight:600;letter-spacing:.3px">ᴴᵀ</span></th>
+            <th class="tl" style="min-width:180px">Ligne</th>
             <th class="ec-col" style="cursor:pointer" title="Cliquer pour voir la source">
               ${id==='technique'?'Signé':'Budget'}
             </th>
@@ -2803,6 +2807,7 @@ function renderDept(id){
       <div class="sdl"></div>
       <div class="sdt" style="white-space:nowrap">À relier</div>
       <div class="sdl"></div>
+      <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">TTC</span>
     </div>
     <div class="mb">
       ${buildDeptG3Cards(id, dept, tot, allL, p)}
@@ -2812,6 +2817,7 @@ function renderDept(id){
       <div class="sdl"></div>
       <div class="sdt" style="white-space:nowrap">Lignes budgétaires</div>
       <div class="sdl"></div>
+      <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
     </div>
 
     ${techniqueNote}

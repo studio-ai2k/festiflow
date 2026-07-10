@@ -84,6 +84,16 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .dept-hdr-body{background:var(--surface);padding:14px 18px}
 .dept-hdr-top{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
 .dept-hdr-name{font-size:var(--fs-heading);font-weight:700;color:#fff;letter-spacing:-.2px}
+/* BUILD65 §1.2 — segmented control. Ported from standalones/module-dates/index.html (ede31f35) L43-46,
+   renamed `.dash-view-toggle` → `.sec-view-toggle` (0 pre-existing consumers ⇒ cannot leak).
+   `margin-left:auto` DROPPED — .dept-hdr-top's spacer span already pushes this right.
+   `.on` DROPPED — these are ACTIONS, not state. :hover carries the affordance ("clickable", not "selected").
+   ⚠ Cross-file DUPLICATE, not a promotion. module-dates keeps its standing do-not-pre-promote note;
+   flag both for the F1 components.css fold. module-dates itself is untouched. */
+.sec-view-toggle{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.sec-view-toggle button{padding:5px 9px;background:transparent;border:none;color:var(--text-dim);cursor:pointer;display:flex;align-items:center}
+.sec-view-toggle button:hover{background:var(--surface-2);color:var(--text)}
+.sec-view-toggle button svg{display:block}
 
 
 /* ── PROGRESS ────────────────────────── */
@@ -454,6 +464,10 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .cat-head .dkpi-meta.cat-meta .dot{flex-shrink:0}
 /* expanded: the slim conso bar is the header's bottom edge (full-bleed), per `cat_expanded`. */
 .cat-head.expanded .cat-burn-slim{margin:13px -16px 0;border-radius:0}
+/* BUILD65 §3 — the meta row now renders in BOTH states, so on `expanded` it sits *below* the full-bleed
+   slim bar and needs the bottom breathing room that `.cat-head.expanded{padding-bottom:0}` removed.
+   Pure addition, scoped to `.expanded`; collapsed geometry is untouched. */
+.cat-head.expanded .dkpi-meta.cat-meta{margin-bottom:14px}
 /* §1.4b MOBILE @390px — counts wrap under the title · values 2×2 · burn bar full-bleed · meta wraps.
    Nothing is hidden; nothing truncates. */
 @media(max-width:390px){
@@ -508,6 +522,13 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .drawer-body::-webkit-scrollbar{width:4px}
 .drawer-body::-webkit-scrollbar-track{background:transparent}
 .drawer-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+/* BUILD65 §4 — à-relier scroll container. Copied verbatim from .drawer-body above; `.unm-scroll` is new
+   ⇒ 0 pre-existing consumers. Webkit-only, exactly like .drawer-body: the file's only standards-track
+   scrollbar sizing is `none` (hiding tab-strip bars), never `thin`. Firefox keeps its native bar on BOTH
+   surfaces — consistent. Deliberately no standards-track scrollbar properties added. */
+.unm-scroll::-webkit-scrollbar{width:4px}
+.unm-scroll::-webkit-scrollbar-track{background:transparent}
+.unm-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 
 .drawer-section{margin-bottom:20px}
 .drawer-section-title{font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim);font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
@@ -2339,10 +2360,11 @@ const consoColor = p => p>=100 ? 'var(--red)' : p>=75 ? 'var(--amber)' : 'var(--
 // Santé click → reveal the at-risk lines. Preferred: drive the existing status filter.
 // Fallback: expand all sections of the dept and scroll to its header.
 function focusAtRisque(id){
-  if (typeof toggleAllSections === 'function'){
-    const btn = document.getElementById('expbtn-'+id);
-    if (btn && /DÉPLIER/i.test(btn.textContent)) toggleAllSections(id, btn);
-  }
+  // BUILD65 §1.3 — was: look the expand button up by id, read its textContent, regex it for /DÉPLIER/.
+  // Under §1.1 the button has neither that text nor that id, so the lookup returns null, the regex never
+  // matches, and this action would silently stop expanding — no error, no gate. Explicit intent instead;
+  // idempotent, so sections already open are left alone.
+  setAllSections(id, true);
   const anchor = document.querySelector('#page-'+id+' .dept-hdr') || document.getElementById('page-'+id);
   if (anchor) anchor.scrollIntoView({behavior:'smooth', block:'start'});
 }
@@ -2640,6 +2662,11 @@ function renderDept(id){
                             : `<i class="libre" style="width:${sLibW}%"></i>`}
                   ${sTick!=null ? `<span class="tick" style="left:${sTick}%"></span>` : ``}
                 </div>
+                `}
+                <!-- BUILD65 §3 — the % row renders in BOTH states, hoisted out of the ternary.
+                     Expanding drops the four VALUES (they reappear in the table's TOTAL row directly
+                     beneath) but must not drop the four RATIOS — TOTAL shows money, not ratios.
+                     Deliberate divergence from build_mockup.py's cat_expanded, which drops the meta. -->
                 <div class="dkpi-meta cat-meta">
                   <span class="m-pct"><b>${pEng}%</b> total engagé</span>
                   <span class="dot"></span>
@@ -2649,7 +2676,6 @@ function renderDept(id){
                   <span class="dot"></span>
                   <span class="m-pct"><b>${pRest}%</b> ${sEc >= 0 ? 'restant' : 'dépassement'}</span>
                 </div>
-                `}
               </div>
             </td>
           </tr>
@@ -2677,7 +2703,7 @@ function renderDept(id){
             </td>
           </tr>
           <tr class="trow">
-            <!-- BUILD62 §2.2 — HT is declared ONCE, on the Ligne ᴴᵀ header. TOTAL HT duplicated the unit. -->
+            <!-- BUILD64 §3 — the unit is declared ONCE, on the \`Lignes budgétaires · HT\` divider. -->
             <td>TOTAL</td>
             <td>
               <span class="cro" style="font-weight:700;color:#fff">${fe(sE)}</span>
@@ -2700,12 +2726,11 @@ function renderDept(id){
     </div>`;
   }).join('');
 
-  // §ITEM29 / BUILD61 §2.2 — TOUT DÉPLIER/REPLIER mirror. Explicit decomposition per spec:
-  //   GUARD + ELEMENT from _vis (empty _vis → dept has no visible sections → null → open state absent).
-  //   INDEX from dept.sections (mirrors origIdx at L2326; preserves object identity).
-  //   Naive `_vis.indexOf(_vis[0])` would always be 0, emitting sX0 where rendered tbody is sX1 on Dept D.
-  const _firstSid = _vis.length ? `s${id}${dept.sections.indexOf(_vis[0])}` : null;
-  const _firstOpen = _firstSid ? _openSecs.has(_firstSid) : false;
+  // BUILD65 §2.3 — the two bindings that mirrored ONE arbitrary section's open-state are gone. They
+  // fed two places that had no business knowing it: the band's burn bar (§2.2) and the expand button's
+  // label (§1.1). Both now render unconditionally, so there is no derived state left to desync from
+  // _openSecs — ITEM29's hazard class stops existing rather than being guarded. setAllSections reads
+  // the rendered tbody ids straight from the DOM, as its predecessor already did.
 
   const VERDICT = { ok:'Sous contrôle', watch:'À surveiller', drift:'Dérive' };
   // BUILD61 §1.1/§4.4 — 'HT' hoisted to Ligne header. Technique keeps its two-word swap (Leo).
@@ -2725,9 +2750,12 @@ function renderDept(id){
         <div class="dkpi-hero">
           <div class="dkpi-k">${kBudget}</div>
           <div class="dkpi-hero-val">${fe(budgetT)}</div>
-          ${_firstOpen ? `
-          <div class="cat-burn-slim"><i style="width:${Math.min(100,consoPctT)}%;background:${consoColorT}"></i></div>
-          ` : `
+          <!-- BUILD65 §2.2 — the department is a SUMMARY; it has no expanded state. The old ternary
+               swapped four segments for a single conso bar whenever an unrelated action opened one
+               arbitrary section. The mock's rationale does not transfer: there, cat_expanded compensates
+               by migrating the category's values into its own TOTAL row. The department has no TOTAL row
+               — its values stay in the trio. Nothing migrated, so nothing needed compensating.
+               The four-segment bar now always renders. -->
           <div class="dkpi-burn cat-burn">
             <i class="reel"    style="width:${segReelT}%"></i>
             <i class="arelier" style="width:${segARelT}%"></i>
@@ -2736,7 +2764,6 @@ function renderDept(id){
                       : `<i class="libre" style="width:${segLibreT}%"></i>`}
             ${tickPctT!=null ? `<span class="tick" style="left:${tickPctT}%"></span>` : ``}
           </div>
-          `}
           <!-- BUILD63 §4.3 — five items; the "à relier" item is omitted when aRelierT === 0
                (the other four still satisfy both identities). Bold white %, muted label, no colour.
                NB: inside a template literal — no backticks, no dollar-braces, in this comment. -->
@@ -2828,7 +2855,13 @@ function renderDept(id){
         <div class="dept-hdr-top">
           <span class="dept-hdr-name">${dept.name}</span>
           <span style="margin-left:auto;display:flex;gap:6px">
-            <button id="expbtn-${id}" onclick="toggleAllSections('${id}',this)" class="${_firstOpen?'open':''}" style="padding:3px 10px;border-radius:5px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-dim);font-family:'DM Sans',sans-serif;font-size:.65em;font-weight:600;cursor:pointer;margin:0;width:auto;display:flex;align-items:center;gap:5px;text-transform:uppercase;letter-spacing:.5px"><span>${_firstOpen?'TOUT REPLIER':'TOUT DÉPLIER'}</span></button>
+            <!-- BUILD65 §1.1 — ACTIONS, not state. Neither button ever carries the selected modifier:
+                 there is no state to represent, therefore none to lie about. No id is emitted here —
+                 nothing may look this control up and read its label back. -->
+            <div class="sec-view-toggle">
+              <button type="button" data-act="expand" title="Tout déplier" aria-label="Tout déplier" onclick="setAllSections('${id}', true)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg></button>
+              <button type="button" data-act="collapse" title="Tout replier" aria-label="Tout replier" onclick="setAllSections('${id}', false)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></button>
+            </div>
           </span>
         </div>
       </div>
@@ -2897,7 +2930,7 @@ function buildDeptG3Cards(id, dept, tot, allL, p) {
       <div class="unm-grid" style="display:grid;grid-template-columns:64px 1.5fr 1fr 90px;gap:0 16px;font-size:12px;padding:8px 14px;color:var(--text-dim);font-weight:600;text-transform:uppercase;letter-spacing:1.2px;border-bottom:1px solid var(--border)">
         <span>Date</span><span style="padding-left:8px">Fournisseur</span><span class="unm-note">Note</span><span style="text-align:right">Montant</span>
       </div>
-      <div style="max-height:260px;overflow-y:auto">
+      <div class="unm-scroll" style="max-height:260px;overflow-y:auto">
         ${deptRows.map(r => {
           let dateRaw = r.date || '';
           if (!dateRaw && typeof _releveAllTx !== 'undefined' && _releveAllTx.length) {
@@ -3064,41 +3097,20 @@ function tog(sid){
   if(ar) ar.style.transform=vis?'rotate(0)':'rotate(90deg)';
   if(vis) _openSecs.delete(sid); else _openSecs.add(sid);   // §ITEM29 persist
 }
-function toggleAllSections(deptId, btn){
-  const dept=DEPTS.find(d=>d.id===deptId);
-  if(!dept) return;
-  // §ITEM29: drive each section through tog() using the EXACT rendered sids read
-  // from the DOM (the tbody ids), not a reconstructed 's'+deptId+si — that index
-  // diverges from render's origIdx whenever 'À TRIER' is sorted last. Reading the
-  // rendered ids fixes that latent mismatch AND keeps _openSecs perfectly in sync.
-  const page=document.getElementById('page-'+deptId);
-  if(!page) return;
-  const tbodies=Array.from(page.querySelectorAll('.sec-block tbody[id]'));
-  // BUILD61 §4.1 gate 4 — Dept E (only section = À TRIER, so _vis = []) has no rendered tbody.
-  // Without this guard: firstTb === undefined → anyCollapsed = true → label wrongly reads
-  // TOUT REPLIER with .open set, while nothing is expanded. §4.8 would pass (no throw).
-  if(tbodies.length === 0) return;
-  const firstTb=tbodies[0];
-  const anyCollapsed=!firstTb||firstTb.style.display==='none';
-  tbodies.forEach(tb=>{
-    const sid=tb.id;
-    const isVisible=tb.style.display!=='none';
-    // tog() flips state + persists; only call it when a flip is needed so the
-    // end state matches the expand/collapse intent for every section.
-    if(anyCollapsed && !isVisible) tog(sid);
-    else if(!anyCollapsed && isVisible) tog(sid);
+// BUILD65 §1.4 — explicit intent, no derived state. `open` is the caller's instruction, never a proxy.
+//   Reads the EXACT rendered sids from the DOM (the tbody ids), not a reconstructed 's'+deptId+si —
+//   that index diverges from render's origIdx whenever 'À TRIER' is sorted last. tog() flips + persists
+//   into _openSecs, so per-section memory keeps working exactly as it did (session-lived; cross-reload
+//   persistence is deliberately backend, per the standing note above tog — no browser storage added).
+function setAllSections(deptId, open){
+  const page = document.getElementById('page-' + deptId);
+  if (!page) return;
+  const tbodies = Array.from(page.querySelectorAll('.sec-block tbody[id]'));
+  if (tbodies.length === 0) return;                 // a dept with no rendered sections: both buttons no-op
+  tbodies.forEach(tb => {
+    const isVisible = tb.style.display !== 'none';
+    if (open !== isVisible) tog(tb.id);             // tog() flips + persists into _openSecs
   });
-  const chevron=btn.querySelector('.chevron');
-  const label=btn.querySelector('span:last-child');
-  if(anyCollapsed){
-    if(btn) btn.classList.add('open');
-    if(chevron) chevron.style.transform='rotate(90deg)';
-    if(label) label.textContent='TOUT REPLIER';
-  } else {
-    if(btn) btn.classList.remove('open');
-    if(chevron) chevron.style.transform='';
-    if(label) label.textContent='TOUT DÉPLIER';
-  }
 }
 function applyDeptTabColor(){
   document.querySelectorAll('.dt').forEach(d=>{

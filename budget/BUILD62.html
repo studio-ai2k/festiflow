@@ -341,13 +341,25 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .dkpi-strip .badge.a{background:rgba(129,140,248,.15);border-color:rgba(129,140,248,.38);color:#a5b4fc}
 .dkpi-strip .badge.d{background:rgba(251,191,36,.14);border-color:rgba(251,191,36,.36);color:var(--amber)}
 .dkpi-strip .badge.x{background:rgba(248,113,113,.15);border-color:rgba(248,113,113,.4);color:var(--red)}
+/* BUILD62 §1.4.1 — the counts TEXT is coloured to match its badge. BUILD61 left it inheriting
+   .dkpi-strip's --text-muted (defect). The section header emits the .att/.av/.ov modifiers; the
+   department band's markup is byte-frozen on a bare `.ct`, so a :has() sibling rule keys off the
+   badge child and corrects the band CSS-only — the ONLY change permitted to the band (§SCOPE). */
+.dkpi-strip .ct.att{color:#a5b4fc}
+.dkpi-strip .ct.av{color:var(--amber)}
+.dkpi-strip .ct.ov{color:var(--red)}
+.dkpi-strip .ct:has(.badge.a){color:#a5b4fc}
+.dkpi-strip .ct:has(.badge.d){color:var(--amber)}
+.dkpi-strip .ct:has(.badge.x){color:var(--red)}
 .dep-tbl .row-badge{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:none;border:none;border-style:none;font-family:var(--ff-display);font-weight:700;font-size:12px;line-height:1;font-style:normal;background-color:transparent}
 .dep-tbl .row-badge.a{color:#a5b4fc}
 .dep-tbl .row-badge.d{color:var(--amber)}
 .dep-tbl .row-badge.x{color:var(--red)}
-/* BUILD61 §1.7 — 4 white percentages, no colour. */
+/* BUILD62 §1.3 — 4 percentages, no colour in any state. The PERCENTAGE is bold white (<b>);
+   the LABEL is muted grey. BUILD61 painted the label #fff too (defect) — corrected here.
+   CSS-only; also corrects the department band's meta row (§SCOPE exception 2). */
 .dkpi-meta.cat-meta{color:#fff}
-.dkpi-meta.cat-meta .m-pct{color:#fff}
+.dkpi-meta.cat-meta .m-pct{color:var(--text-muted)}
 .dkpi-meta.cat-meta .m-pct b{color:#fff;font-weight:700}
 .dkpi-meta{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:var(--fs-caption);color:var(--text-muted)}
 .dkpi-meta .dot{width:5px;height:5px;border-radius:50%;background:var(--text-dim)}
@@ -407,6 +419,43 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   .dkpi-cell .dkpi-v{font-size:var(--fs-body)}
 }
 @media(prefers-reduced-motion:reduce){.dkpi-card,.dkpi-act{transition:none}}
+/* ════════ BUILD62 §1.4 — COMPACT SECTION HEADER (dépense `shead`) ════════
+   Ports the mock's `cat_head_collapsed` / `cat_expanded` treatment onto the SECTION header.
+   Every rule is scoped to `.cat-head` or to a class only the section header emits, so the
+   department KPI band — which shares .dkpi-strip, .dkpi-burn.cat-burn, .dkpi-meta.cat-meta and
+   .cat-burn-slim — is not reached. NO new burn-bar colour rules: BUILD61's .cat-burn scoping
+   (L330-332) is reused verbatim. The values reuse .dkpi-v so the solde flip rides the existing
+   compound .dkpi-v.pos / .dkpi-v.neg rules (L362-363). */
+.cat-head{padding:14px 16px}
+.cat-head.expanded{padding-bottom:0}
+.cat-title-row{display:flex;align-items:center;gap:11px;min-width:0}
+.cat-arr{font-size:12px;color:var(--text-dim);transition:transform .25s;display:inline-block;flex-shrink:0}
+.cat-name{font-weight:700;font-size:14px;letter-spacing:.3px;text-transform:uppercase;flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dkpi-strip.cat-strip{margin-top:0;flex:0 1 auto;min-width:0}
+/* values row — mock `vb-cell`: micro-label above the value, single left-aligned row. */
+.cat-vals{display:flex;align-items:flex-end;gap:34px;margin-top:13px}
+.cat-vals .vb-cell{display:flex;flex-direction:column;min-width:0}
+.cat-vals .vb-lab{font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);font-weight:700;line-height:1;white-space:nowrap}
+.cat-vals .dkpi-v{margin-top:6px;font-weight:700;line-height:1}
+.cat-head .dkpi-meta.cat-meta{flex-wrap:wrap;margin-top:9px}
+.cat-head .dkpi-meta.cat-meta .m-pct{white-space:nowrap}
+.cat-head .dkpi-meta.cat-meta .dot{flex-shrink:0}
+/* expanded: the slim conso bar is the header's bottom edge (full-bleed), per `cat_expanded`. */
+.cat-head.expanded .cat-burn-slim{margin:13px -16px 0;border-radius:0}
+/* §1.4b MOBILE @390px — counts wrap under the title · values 2×2 · burn bar full-bleed · meta wraps.
+   Nothing is hidden; nothing truncates. */
+@media(max-width:390px){
+  .cat-title-row{flex-wrap:wrap}
+  .dkpi-strip.cat-strip{flex:1 0 100%;margin-top:8px}
+  .cat-vals{display:grid;grid-template-columns:1fr 1fr;gap:11px 14px;align-items:start}
+  .cat-vals .dkpi-v{font-size:var(--fs-body)}
+  .cat-head .dkpi-burn.cat-burn{margin-left:-16px;margin-right:-16px;border-radius:0}
+}
+@media(prefers-reduced-motion:reduce){.cat-arr{transition:none}}
+/* BUILD62 §2.1 — TOTAL-row Observations cell: `Réelle + engagé` + value, right-aligned (mock `tr-extra`). */
+.dep-tbl .trow .tr-extra{display:grid;grid-template-columns:auto auto;gap:2px 12px;justify-content:end;align-items:baseline;text-align:right}
+.dep-tbl .trow .tr-extra .tx-lab{font-size:var(--fs-micro);text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:700;white-space:nowrap}
+.dep-tbl .trow .tr-extra .tx-v{font-family:var(--ff-num-table);font-variant-numeric:tabular-nums lining-nums;font-size:var(--fs-body);font-weight:700;color:#fff;white-space:nowrap}
 .import-btn{display:flex;align-items:center;gap:7px;padding:7px 14px;border-radius:8px;border:1px solid rgba(99,102,241,.35);background:rgba(99,102,241,.1);color:#818cf8;font-family:'DM Sans',sans-serif;font-size:var(--fs-body);font-weight:600;letter-spacing:.5px;cursor:pointer;transition:all .2s;white-space:nowrap}
 .import-btn:hover{background:rgba(99,102,241,.2);border-color:rgba(99,102,241,.6);color:#a5b4fc}
 .import-btn:active{transform:scale(.97)}
@@ -2432,10 +2481,12 @@ function renderDept(id){
       const hasA = Array.isArray(line.cas2Pending) && line.cas2Pending.length > 0;
       const hasD = (line.devis||[]).some(d => d.statut === 'à valider');
       const hasX = e < 0;
+      // BUILD62 §2.3 — mock order is `!` → `D` → `A`, then the edit pencil ({o_ind}{d_ind}{a_ind}).
+      // Glyphs, colours and ghost geometry unchanged.
       const badges = [
-        hasA ? '<span class="row-badge a" title="Intra Cas 2 — virement attendu">A</span>' : '',
-        hasD ? '<span class="row-badge d" title="Devis à valider">D</span>' : '',
         hasX ? '<span class="row-badge x" title="Ligne en dépassement — réelle + devis engagé > budget">!</span>' : '',
+        hasD ? '<span class="row-badge d" title="Devis à valider">D</span>' : '',
+        hasA ? '<span class="row-badge a" title="Intra Cas 2 — virement attendu">A</span>' : '',
       ].join('');
       return `<tr style="cursor:pointer" onclick="openReelDrawer('${id}',${origIdx},${li})">
         <td style="display:flex;align-items:center;gap:6px">
@@ -2463,13 +2514,50 @@ function renderDept(id){
 
     // Section stats for header — §1.3d: filtered to secReal; predicate unchanged (out of scope for retirement, drawer/santé pass).
     const nLines = secReal.length;
+    // BUILD62 §1.1 — per-SECTION counts (the dept band's are dept-level). 1:1 with the row badges:
+    //   A = cas2Pending ≥ 1 (drawer-owned array; may be absent → guard)
+    //   D = a devis object with statut 'à valider' (NOT l.st === 'DEVIS SIGNÉ')
+    //   ! = écart < 0, NEVER `réelle > budget` — a ligne with zero spend and a signed devis is over.
+    const sA = secReal.filter(l => Array.isArray(l.cas2Pending) && l.cas2Pending.length > 0).length;
+    const sD = secReal.filter(l => (l.devis || []).some(d => d.statut === 'à valider')).length;
+    const sX = secReal.filter(l => ((l.est||0) - (l.reel||0) - computeEngage(l.devis)) < 0).length;
     const nSigned = secReal.filter(l => ['DEVIS SIGNÉ','VALIDÉ','PAYÉ'].includes(l.st) && l.est>0).length;
     const nWarning = secReal.filter(l => (l.reel||0)>0 && !['DEVIS SIGNÉ','VALIDÉ','PAYÉ'].includes(l.st)).length;
     const nReel = secReal.filter(l => (l.reel||0)>0).length;
     const burnPct = sE>0 ? Math.min(Math.round(sR/sE*100),100) : 0;
-    const burnCol = burnPct>=100?'var(--red)':burnPct>=75?'var(--amber)':'var(--indigo)';
+    // BUILD62 §1.5 — `var(--indigo)` was the blue the design retired ("Blue is retired"): it drew a
+    // blue line under a burn bar that contains no blue. conso_color: ≥100 red · ≥75 amber · else green.
+    const burnCol = burnPct>=100?'var(--red)':burnPct>=75?'var(--amber)':'var(--green)';
     const allSigned = nLines>0 && nSigned===nLines;
     const hasUnsigned = secReal.filter(l=>l.est>0 && ['ESTIMATION','EN COURS'].includes(l.st)).length > 0;
+
+    // BUILD62 §1.2 — per-section burn bar. The SAME additive math as the dept band (L2361-2369):
+    // disjoint buckets reel | devis | (libre OR over+tick), both clamps, zero-guard.
+    const sPeak  = Math.max(sE, sR + sEng) || 1;              // zero-guard: an empty section must not render NaN%
+    const sOver  = Math.max(0, (sR + sEng) - sE);
+    const sReelW = Math.min(sR, sE) / sPeak * 100;            // min(): the clamp — without it segments exceed 100%
+    const sDevW  = sOver > 0 ? Math.max(0, Math.min(sEng, sE - sR)) / sPeak * 100 : sEng / sPeak * 100;
+    const sOverW = sOver > 0 ? sOver / sPeak * 100 : 0;
+    const sLibW  = sOver > 0 ? 0 : Math.max(0, sE - sR - sEng) / sPeak * 100;
+    const sTick  = sOver > 0 ? sE / sPeak * 100 : null;       // budget marker only when over
+
+    // BUILD62 §1.3 — the meta row. Percentage bold white, label muted; NO colour on any of the four.
+    const sPct = (r,e) => e>0 ? Math.round(r/e*100) : 0;
+    const pEng = sPct(sR + sEng, sE);   // total engagé
+    const pRe  = sPct(sR,  sE);         // réelle
+    const pDev = sPct(sEng, sE);        // devis validé
+    const pRest= sPct(Math.abs(sEc), sE);
+
+    // BUILD62 §1.4.1 — counts strip, reusing BUILD61's .dkpi-strip pills. Blank-when-0 for ALL THREE
+    // (the ruling; the design source emits the `A` pill unconditionally — do NOT follow it there).
+    const sStrip = [
+      sA > 0 ? `<span class="ct att"><i class="badge a">A</i>${sA} attendue${sA>1?'s':''}</span>` : '',
+      sD > 0 ? `<span class="ct av"><i class="badge d">D</i>${sD} devis à valider</span>` : '',
+      sX > 0 ? `<span class="ct ov"><i class="badge x">!</i>${sX} ligne${sX>1?'s':''} en dépassement</span>` : '',
+    ].join('');
+    // §1.4.2 solde flip — the label flips, the value is the positive magnitude, the label stays dim.
+    const sSoldeLab = sEc >= 0 ? 'RESTANT' : 'DÉPASSEMENT';
+    const sSoldeCls = sEc >= 0 ? 'pos' : 'neg';
 
     return `<div class="sec-block" style="${isAtrier?'margin-top:28px;border-top:1px dashed rgba(251,191,36,.15);padding-top:12px':''}">
       <div class="twrap">
@@ -2477,14 +2565,45 @@ function renderDept(id){
         <thead>
           <tr class="shead" onclick="tog('${sid}')">
             <td colspan="6" style="padding:0">
-              <div style="display:flex;align-items:center;padding:14px 16px;gap:0">
-                <span id="arr-${sid}" style="font-size:12px;color:var(--text-dim);transition:transform .25s;display:inline-block;transform:rotate(${_open?'90deg':'0deg'});flex-shrink:0;margin-right:10px">▶</span>
-                <span style="font-weight:700;font-size:14px;letter-spacing:.3px;text-transform:uppercase;color:${isAtrier?'var(--amber)':'#fff'};flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sec.s}${isAtrier?' ⚠':''}</span>
-                <span style="font-size:12px;color:var(--text-dim);margin-left:10px;flex-shrink:0;white-space:nowrap">${nLines} ligne${nLines>1?'s':''} <span style="color:var(--text-dim)">·</span> ${secTx>0?secTx:'—'}</span>
-                <span style="flex:1"></span>
-                <span style="display:flex;align-items:baseline;gap:7px;flex-shrink:0;white-space:nowrap;font-family:var(--ff-num);font-variant-numeric:tabular-nums"><span style="font-size:13px;font-weight:700;color:var(--text-muted)">${fe(sE)}</span><span style="color:var(--text-dim)">·</span>${sR>0?`<span style="font-size:13px;font-weight:600;color:${consoColor(burnPct)}">${fe(sR)}</span>`:`<span style="font-size:13px;color:var(--text-dim)">—</span>`}</span>
+              <!-- BUILD62 §1.4 — the compact section header. Collapsed = title row · values ·
+                   3-segment burn bar · meta. Expanded = title row · slim conso bar only (the four
+                   values migrate to the TOTAL row, §2.1). §1.6: the "N lignes · secTx" counter and
+                   the "sE · sR" right cluster are retired — bindings survive, unrendered.
+                   kBudget/kSpent are declared BELOW this map (TDZ) so the technique swap is inlined.
+                   NB: this comment sits inside a template literal — no backticks, no dollar-braces. -->
+              <div class="cat-head${_open?' expanded':''}">
+                <div class="cat-title-row">
+                  <span id="arr-${sid}" class="cat-arr" style="transform:rotate(${_open?'90deg':'0deg'})">▶</span>
+                  <span class="cat-name" style="color:${isAtrier?'var(--amber)':'#fff'}">${sec.s}${isAtrier?' ⚠':''}</span>
+                  <div class="dkpi-strip cat-strip">${sStrip}</div>
+                </div>
+                ${_open ? `
+                <div class="cat-burn-slim"><i style="width:${burnPct}%;background:${burnCol}"></i></div>
+                ` : `
+                <div class="cat-vals">
+                  <div class="vb-cell"><div class="vb-lab">${id==='technique'?'SIGNÉ':'BUDGET'}</div><div class="dkpi-v">${fe(sE)}</div></div>
+                  <div class="vb-cell"><div class="vb-lab">${id==='technique'?'PAYÉ':'RÉEL'}</div><div class="dkpi-v">${fe(sR)}</div></div>
+                  <div class="vb-cell"><div class="vb-lab">ENGAGÉ</div><div class="dkpi-v">${sEng?fe(sEng):'—'}</div></div>
+                  <div class="vb-cell"><div class="vb-lab">${sSoldeLab}</div><div class="dkpi-v ${sSoldeCls}">${fe(Math.abs(sEc))}</div></div>
+                </div>
+                <div class="dkpi-burn cat-burn">
+                  <i class="reel"  style="width:${sReelW}%"></i>
+                  <i class="devis" style="width:${sDevW}%"></i>
+                  ${sOver>0 ? `<i class="over" style="width:${sOverW}%"></i>`
+                            : `<i class="libre" style="width:${sLibW}%"></i>`}
+                  ${sTick!=null ? `<span class="tick" style="left:${sTick}%"></span>` : ``}
+                </div>
+                <div class="dkpi-meta cat-meta">
+                  <span class="m-pct"><b>${pEng}%</b> total engagé</span>
+                  <span class="dot"></span>
+                  <span class="m-pct"><b>${pRe}%</b> réelle</span>
+                  <span class="dot"></span>
+                  <span class="m-pct"><b>${pDev}%</b> devis validé</span>
+                  <span class="dot"></span>
+                  <span class="m-pct"><b>${pRest}%</b> ${sEc >= 0 ? 'restant' : 'dépassement'}</span>
+                </div>
+                `}
               </div>
-              <div style="height:3px;background:rgba(255,255,255,.05);display:flex"><div style="width:${burnPct}%;height:100%;background:${consoColor(burnPct)}"></div></div>
             </td>
           </tr>
           <tr id="hdr-${sid}" style="display:${_open?'':'none'}">
@@ -2511,7 +2630,8 @@ function renderDept(id){
             </td>
           </tr>
           <tr class="trow">
-            <td>TOTAL HT</td>
+            <!-- BUILD62 §2.2 — HT is declared ONCE, on the Ligne ᴴᵀ header. TOTAL HT duplicated the unit. -->
+            <td>TOTAL</td>
             <td>
               <span class="cro" style="font-weight:700;color:#fff">${fe(sE)}</span>
             </td>
@@ -2520,7 +2640,12 @@ function renderDept(id){
             </td>
             <td><span class="cro" style="font-weight:700;color:#fff">${sEng?fe(sEng):'—'}</span></td>
             <td>${ecTable(sEc)}</td>
-            <td></td>
+            <!-- BUILD62 §2.1 — the four values migrate here when the section is expanded. -->
+            <td class="obs">
+              <div class="tr-extra">
+                <span class="tx-lab">Réelle + engagé</span><span class="tx-v">${fe(sR + sEng)}</span>
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>

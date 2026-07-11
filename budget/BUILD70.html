@@ -1514,12 +1514,23 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
   <!-- ── ROW 1: unified résultat card (seam 27dk) ── -->
   <div id="bilan-chips" style="margin-bottom:14px;margin-top:18px;container-type:inline-size"></div>
 
-  <!-- P&L Recettes — summary + expandable detail -->
-  <div class="sdiv" style="align-items:center">
-    <div class="sdl"></div>
-    <div class="sdt" style="white-space:nowrap">Recettes</div>
-    <div class="sdl"></div>
-    <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
+  <!-- P&L Recettes — dept-hdr header (BUILD70): white rail + "Types de recettes" + expand toggle.
+       Ported from the dépense dept-hdr (L2912-2928) with two edits: rail white, name "Types de recettes".
+       The two toggle SVGs are copied VERBATIM from the dépense buttons; only the onclick differs
+       (setAllRecSections(true|false) vs setAllSections). The dépense dept-hdr stays byte-untouched. -->
+  <div class="dept-hdr">
+    <div class="dept-hdr-rail" style="background:#fff"></div>
+    <div class="dept-hdr-body">
+      <div class="dept-hdr-top">
+        <span class="dept-hdr-name">Types de recettes</span>
+        <span style="margin-left:auto;display:flex;gap:6px">
+          <div class="sec-view-toggle">
+            <button type="button" data-act="expand" title="Tout déplier" aria-label="Tout déplier" onclick="setAllRecSections(true)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg></button>
+            <button type="button" data-act="collapse" title="Tout replier" aria-label="Tout replier" onclick="setAllRecSections(false)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></button>
+          </div>
+        </span>
+      </div>
+    </div>
   </div>
   <div id="b-rec-expanded" class="mb"></div>
 
@@ -2336,7 +2347,7 @@ function renderBilan(){
         </tr>
       </table>`;
     el('b-rec-expanded').innerHTML = `
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden">${sections.join('')}${grandTotalHtml}</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:0 0 10px 10px;overflow:hidden">${sections.join('')}${grandTotalHtml}</div>
 `;
   }
 
@@ -3178,6 +3189,20 @@ function setAllSections(deptId, open){
   if (!page) return;
   const tbodies = Array.from(page.querySelectorAll('.sec-block tbody[id]'));
   if (tbodies.length === 0) return;                 // a dept with no rendered sections: both buttons no-op
+  tbodies.forEach(tb => {
+    const isVisible = tb.style.display !== 'none';
+    if (open !== isVisible) tog(tb.id);             // tog() flips + persists into _openSecs
+  });
+}
+// BUILD70 C3 — recette sibling of setAllSections. The recette table is not a dept page, so it needs its
+// own scope: `#b-rec-expanded` instead of `page-${deptId}`. Same body otherwise — reads the rendered tbody
+// ids straight from the DOM and drives each through tog(), which flips + persists into _openSecs, so
+// per-section memory works exactly as the dépense toggle does. setAllSections above stays byte-untouched.
+function setAllRecSections(open){
+  const wrap = document.getElementById('b-rec-expanded');
+  if (!wrap) return;
+  const tbodies = Array.from(wrap.querySelectorAll('.sec-block tbody[id]'));
+  if (tbodies.length === 0) return;
   tbodies.forEach(tb => {
     const isVisible = tb.style.display !== 'none';
     if (open !== isVisible) tog(tb.id);             // tog() flips + persists into _openSecs

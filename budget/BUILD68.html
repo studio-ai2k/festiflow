@@ -448,7 +448,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .dkpi-verdict.av .d{background:var(--amber)}
 /* BUILD68 B2 — Devis-CTA rows: clickable name, muted ligne, right-aligned HT. */
 .dkpi-devis-row{display:grid;grid-template-columns:1fr auto auto;align-items:baseline;gap:6px 12px;padding:8px 0;border-top:1px solid var(--border);cursor:pointer;transition:opacity .12s}
-.dkpi-devis-row:first-of-type{margin-top:10px}
+.dkpi-k-row + .dkpi-devis-row{margin-top:14px}   /* BUILD68 micro-fix — was `.dkpi-devis-row:first-of-type` (dead: the title-row div is the first div, so no devis row ever matched). Adjacent-sibling targets the actual first row, clearing the centered badge off its border-top. */
 .dkpi-devis-row:hover{opacity:.72}
 .dkpi-devis-row:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;border-radius:4px}
 .dkpi-devis-row .dv-name{font-size:var(--fs-caption);font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

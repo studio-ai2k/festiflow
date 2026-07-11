@@ -164,6 +164,15 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
    cell is a real table-cell again. Compound and POSITIVELY scoped to .dep-tbl: it cannot reach the recette
    table (which is .tbl with no .dep-tbl) or renderBilan. Do not widen it to the unscoped table class. */
 .dep-tbl td.tl{text-align:left;padding-left:16px}
+/* BUILD67 Fix 2a — the Observations DATA cell (.obs, L173, no text-align of its own) inherited `.tbl td`'s
+   right-align, while its header (th.tl obs) is forced left. Left-align the value under its header, closing
+   the dead space and un-jamming it from écart. Scoped to .dep-tbl; recette's obs is plain .tbl, out of scope. */
+.dep-tbl td.obs{text-align:left}
+/* BUILD67 Fix 2b — `.tbl th` declares no font-family, so dépense column headers inherited DM Sans (body)
+   while the number cells migrated to Space Grotesk in BUILD61. Complete the already-decided migration for
+   this component. --ff-display = 'Space Grotesk',sans-serif — the display face for uppercase text labels
+   (vs --ff-num-table for numerics). Scoped to .dep-tbl; recette + Bilan headers keep their own font. */
+.dep-tbl th{font-family:var(--ff-display)}
 .tbl tr:last-child td{border-bottom:none}
 .tbl tr:hover td{background:rgba(255,255,255,.015)}
 .trow td{font-weight:700!important;color:#fff!important;background:rgba(255,255,255,.02);border-top:1px solid var(--border)!important;border-bottom:none!important}
@@ -454,6 +463,11 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
    compound .dkpi-v.pos / .dkpi-v.neg rules (L362-363). */
 .cat-head{padding:14px 16px}
 .cat-head.expanded{padding-bottom:0}
+/* BUILD67 Fix 1a — when a section is expanded, its four header values migrate to the TOTAL row's
+   .tr-extra (design intent, comment at the total row). Hide the header copy so they don't show twice.
+   Pairs with Fix 1b (tog() syncs the `expanded` class); the rule alone does nothing on a toggled
+   section because the class was stale. Scoped to the section header, NOT .dep-tbl (it is not a table). */
+.cat-head.expanded .cat-vals{display:none}
 .cat-title-row{display:flex;align-items:center;gap:11px;min-width:0}
 .cat-arr{font-size:12px;color:var(--text-dim);transition:transform .25s;display:inline-block;flex-shrink:0}
 .cat-name{font-weight:700;font-size:14px;letter-spacing:.3px;text-transform:uppercase;flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -2834,6 +2848,7 @@ function renderDept(id){
     </div>
 
     <!-- ── ROW: Transactions non reliées ── -->
+    ${unmatchedForDept(id).length ? `
     <div class="sdiv" style="align-items:center">
       <div class="sdl"></div>
       <div class="sdt" style="white-space:nowrap">À relier</div>
@@ -2843,6 +2858,7 @@ function renderDept(id){
     <div class="mb">
       ${buildDeptG3Cards(id, dept, tot, allL, p)}
     </div>
+    ` : ''}
 
     <div class="sdiv" style="align-items:center">
       <div class="sdl"></div>
@@ -2951,7 +2967,8 @@ function buildDeptG3Cards(id, dept, tot, allL, p) {
           <span class="unm-note" style="font-size:13px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.note||'—'}</span>
           <span style="font-size:13px;font-weight:600;color:#fff;white-space:nowrap;text-align:right">${r.ttc?'−'+fmtAmt(Math.abs(r.ttc)):'—'}</span>
         </div>`}).join('')}
-      </div>` : `<div style="font-size:13px;color:var(--text-dim);padding:9px 14px">Aucune transaction à relier</div>`;
+      </div>` : `<div style="font-size:13px;color:var(--text-dim);padding:9px 14px">Aucune transaction à relier</div>`/* BUILD67 Fix 3 — DEAD after this build: renderDept now gates the whole à-relier block on
+        unmatchedForDept(id).length, so buildDeptG3Cards is never called with 0 rows. Retire-not-delete. */;
     return `
     <div class="card unm-card" style="padding:16px">
       ${rowsHtml}
@@ -3099,6 +3116,12 @@ function tog(sid){
   tb.style.display=vis?'none':'';
   hd.style.display=vis?'none':'';
   if(ar) ar.style.transform=vis?'rotate(0)':'rotate(90deg)';
+  // BUILD67 Fix 1b — keep the header's `expanded` class in sync with the live open-state so Fix 1a's
+  // `.cat-head.expanded .cat-vals{display:none}` applies on toggle (tog() does not re-render, so the
+  // render-time `_open?' expanded'` class goes stale). `!vis` is the NEW open state, mirroring the
+  // _openSecs add/delete on the next line: collapsing (vis true) removes it, expanding (vis false) adds it.
+  const ch = ar ? ar.closest('.cat-head') : null;
+  if (ch) ch.classList.toggle('expanded', !vis);
   if(vis) _openSecs.delete(sid); else _openSecs.add(sid);   // §ITEM29 persist
 }
 // BUILD65 §1.4 — explicit intent, no derived state. `open` is the caller's instruction, never a proxy.

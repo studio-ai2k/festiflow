@@ -2361,6 +2361,18 @@ function renderBilan(){
               </button>
             </td>
           </tr>
+          <!-- BUILD72 C1 — per-category TOTAL row. Adapted from the dépense .trow (L2824): recette is 5-col,
+               so NO engagé cell and NO .tr-extra (recette has no "Réelle + engagé"). Écart via ecH (same
+               renderer as the recette data rows + grand-total), NOT the dépense .trow's ecTable. Reuses the
+               global .trow td CSS (L181) — no new CSS. Lives inside the tbody, so it shows only when expanded
+               (tbody is display:none when collapsed); this restores the totals that the cat-vals hide on expand. -->
+          <tr class="trow">
+            <td>TOTAL</td>
+            <td><span class="cro" style="font-weight:700;color:#fff">${fe(catEst)}</span></td>
+            <td><span class="cro" style="font-weight:700;color:#fff">${catReel?fe(catReel):'—'}</span></td>
+            <td>${ecH(rEc, false, catReel>0)}</td>
+            <td class="obs"></td>
+          </tr>
           </tbody>
         </table>
       </div>`;
@@ -2371,20 +2383,18 @@ function renderBilan(){
     // unambiguous. Aligned label-left / money-right with the group rows, · middot separator. Values
     // unchanged (totalRecEst / totalRecReel).
     const grandTotalHtml = `<table class="tbl pl-tbl" style="margin-top:-1px">
+        <!-- BUILD72 C2 — the "TOTAL RECETTES" grand-total, now 5 column-aligned cells mirroring the per-
+             category total (C1), so its numbers sit under the columns instead of a right-floated cluster.
+             Reuses .rec-grandtot td (L197, bold white + top border) + .pl-tbl td.tl/.cro/.obs — no new CSS.
+             Écart via ecH (as the old grand-total already used), matching C1 + the data rows; polarity =
+             step 4. The <table> wrapper + totalRecEst/totalRecReel are unchanged; cross-table column
+             alignment with the per-section tables stays approximate (single-table merge = later step). -->
         <tr class="rec-grandtot">
-          <td colspan="5" style="padding:0">
-            <div style="display:flex;align-items:baseline;padding:14px 16px;gap:0;font-family:var(--ff-num);font-variant-numeric:tabular-nums">
-              <span style="font-size:13px;font-weight:700;color:#fff;letter-spacing:.3px;text-transform:uppercase;flex-shrink:0">TOTAL RECETTES</span>
-              <span style="flex:1"></span>
-              <span style="display:flex;align-items:baseline;gap:7px;flex-shrink:0;white-space:nowrap;font-size:13px">
-                <span style="color:var(--text-dim);font-weight:600">Estimé HT</span><span style="font-weight:700;color:#fff">${fe(totalRecEst)}</span>
-                <span style="color:var(--text-dim)">·</span>
-                <span style="color:var(--text-dim);font-weight:600">Encaissé HT</span><span style="font-weight:700;color:#fff">${totalRecReel?fe(totalRecReel):'—'}</span>
-                <span style="color:var(--text-dim)">·</span>
-                <span style="color:var(--text-dim);font-weight:600">Écart</span>${ecH(totalRecEst-totalRecReel,false,totalRecReel>0)}
-              </span>
-            </div>
-          </td>
+          <td class="tl">TOTAL RECETTES</td>
+          <td><span class="cro" style="font-weight:700;color:#fff">${fe(totalRecEst)}</span></td>
+          <td><span class="cro" style="font-weight:700;color:#fff">${totalRecReel?fe(totalRecReel):'—'}</span></td>
+          <td>${ecH(totalRecEst-totalRecReel, false, totalRecReel>0)}</td>
+          <td class="obs"></td>
         </tr>
       </table>`;
     el('b-rec-expanded').innerHTML = `

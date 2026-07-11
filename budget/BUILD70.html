@@ -1529,7 +1529,7 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
     <div class="dept-hdr-rail" style="background:#fff"></div>
     <div class="dept-hdr-body">
       <div class="dept-hdr-top">
-        <span class="dept-hdr-name">RECETTES</span>
+        <span class="dept-hdr-name">CATÉGORIES</span>
         <span style="margin-left:auto;display:flex;gap:6px">
           <div class="sec-view-toggle">
             <button type="button" data-act="expand" title="Tout déplier" aria-label="Tout déplier" onclick="setAllRecSections(true)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg></button>
@@ -2269,7 +2269,20 @@ function renderBilan(){
     const sections = REC.map((cat, ci) => {
       const catEst  = cat.rows.reduce((a,r)=>a+(r.ht||0),0);
       const catReel = cat.rows.reduce((a,r)=>a+(r.reel||0),0);
-      const nLines = cat.rows.length;
+      // BUILD71 step 3 — recette cat-head value math (from catEst/catReel), mirroring the dépense burn.
+      // ÉCART neutral this build; polarity + over-recolour = step 4. `sPct` is inlined here because the
+      // renderDept-scoped sPct (L2699) is out of scope in this recette map.
+      const rEc    = catEst - catReel;                                        // écart (estimé − encaissé)
+      const rPeak  = Math.max(catEst, catReel) || 1;
+      const rReelW = Math.min(catReel, catEst) / rPeak * 100;                 // encaissé segment (.reel green)
+      const rOverW = catReel > catEst ? (catReel - catEst) / rPeak * 100 : 0; // excédent (.over; recolour step 4)
+      const rLibW  = catReel > catEst ? 0 : Math.max(0, catEst - catReel) / rPeak * 100;  // reste (.libre grey)
+      const rBurnPct = catEst > 0 ? Math.min(Math.round(catReel / catEst * 100), 100) : 0;// slim bar (expanded)
+      const _rPct  = (n,d) => d>0 ? Math.round(n/d*100) : 0;
+      const rPRe   = _rPct(catReel, catEst);                                  // % réelle (encaissé)
+      const rPRest = _rPct(Math.abs(rEc), catEst);                            // % restant
+      const nLines = cat.rows.length;   // BUILD71 — orphaned after the cat-head swap (dépense cat-head has no
+                                        // line-count in its title; dropped for parity). Binding kept, unrendered.
       // Item 1 (B55): recette budget lines with real activity in this category (reel>0) — a LIVE
       // completeness signal available at Bilan render, distinct from nLines (all budget lines).
       // NOT a true transaction count: the per-tx match data (_releveMatchLog) is empty until a relevé
@@ -2301,14 +2314,35 @@ function renderBilan(){
         <table class="tbl pl-tbl">
           <tr class="shead" onclick="tog('${sid}')">
             <td colspan="5" style="padding:0">
-              <div style="display:flex;align-items:center;padding:14px 16px;gap:0">
-                <span id="arr-${sid}" style="font-size:12px;color:var(--text-dim);transition:transform .25s;display:inline-block;transform:rotate(${_open?'90deg':'0'});flex-shrink:0;margin-right:10px">▶</span>
-                <span style="font-weight:700;font-size:14px;letter-spacing:.3px;text-transform:uppercase;color:#fff;flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${cat.cat}</span>
-                <span style="font-size:12px;color:var(--text-dim);margin-left:10px;flex-shrink:0;white-space:nowrap">${nLines} ligne${nLines>1?'s':''} <span style="color:var(--text-dim)">·</span> ${catTx>0?catTx:'—'}</span>
-                <span style="flex:1"></span>
-                <span style="display:flex;align-items:baseline;gap:7px;flex-shrink:0;white-space:nowrap;font-family:var(--ff-num);font-variant-numeric:tabular-nums"><span style="font-size:13px;font-weight:700;color:var(--text-muted)">${fe(catEst)}</span><span style="color:var(--text-dim)">·</span>${catReel>0?`<span style="font-size:13px;font-weight:600;color:var(--rb)">${fe(catReel)}</span>`:`<span style="font-size:13px;color:var(--text-dim)">—</span>`}</span>
+              <!-- BUILD71 step 3 — recette compact category header: a TRIMMED COPY of the dépense .cat-head
+                   (L2725-2763), reusing the global .cat-* CSS. 5 trims vs dépense: no ENGAGÉ cell · no devis
+                   burn segment · meta = %réelle + %restant only · no .cat-strip · relabel ESTIMÉ/ENCAISSÉ +
+                   NEUTRAL écart (polarity/colour = step 4). Dépense .cat-head stays byte-untouched — this is
+                   a copy. NB: this comment is inside a template literal — no backticks, no dollar-braces. -->
+              <div class="cat-head${_open?' expanded':''}">
+                <div class="cat-title-row">
+                  <span id="arr-${sid}" class="cat-arr" style="transform:rotate(${_open?'90deg':'0deg'})">▶</span>
+                  <span class="cat-name">${cat.cat}</span>
+                </div>
+                ${_open ? `
+                <div class="cat-burn-slim"><i style="width:${rBurnPct}%;background:var(--green)"></i></div>
+                ` : `
+                <div class="cat-vals">
+                  <div class="vb-cell"><div class="vb-lab">ESTIMÉ</div><div class="dkpi-v">${fe(catEst)}</div></div>
+                  <div class="vb-cell"><div class="vb-lab">ENCAISSÉ</div><div class="dkpi-v">${catReel?fe(catReel):'—'}</div></div>
+                  <div class="vb-cell"><div class="vb-lab">ÉCART</div><div class="dkpi-v">${fe(Math.abs(rEc))}</div></div>
+                </div>
+                <div class="dkpi-burn cat-burn">
+                  <i class="reel"  style="width:${rReelW}%"></i>
+                  ${rOverW>0 ? `<i class="over" style="width:${rOverW}%"></i>` : `<i class="libre" style="width:${rLibW}%"></i>`}
+                </div>
+                `}
+                <div class="dkpi-meta cat-meta">
+                  <span class="m-pct"><b>${rPRe}%</b> réelle</span>
+                  <span class="dot"></span>
+                  <span class="m-pct"><b>${rPRest}%</b> restant</span>
+                </div>
               </div>
-              <div style="height:3px;background:rgba(255,255,255,.05);display:flex"><div style="width:${catEst>0?Math.min(Math.round(catReel/catEst*100),100):0}%;height:100%;background:var(--rb)"></div></div>
             </td>
           </tr>
           <tr id="hdr-${sid}" style="display:${_open?'':'none'}">

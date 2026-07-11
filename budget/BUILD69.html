@@ -135,7 +135,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .cneg{color:var(--red);font-weight:600;font-size:var(--fs-body);text-align:right;display:block;padding:3px 6px}
 .cdim{color:var(--text-dim);font-size:var(--fs-body);text-align:right;display:block;padding:3px 6px}
 /* BUILD61 §3.4 — scope Space Grotesk to the dépense table only. Bilan .cro stays DM Sans. */
-.dep-tbl .cro,.dep-tbl .cpos,.dep-tbl .cneg,.dep-tbl .cdim{font-family:var(--ff-num-table);font-variant-numeric:tabular-nums lining-nums}
+.pl-tbl .cro,.pl-tbl .cpos,.pl-tbl .cneg,.pl-tbl .cdim{font-family:var(--ff-num-table);font-variant-numeric:tabular-nums lining-nums}
 /* seam 27cs Item 41 — filter bar variation C (labels-above + visible chevron + indigo active rail).
    Ported from filter-bar-optionA-variations.html .vC (renamed .rf-*). SVG data-URIs verbatim from the mock. */
 .rf-bar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px}
@@ -161,18 +161,21 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .tbl td{padding:9px 14px;font-size:var(--fs-body);text-align:right;border-bottom:1px solid rgba(255,255,255,.02);vertical-align:middle;color:var(--text-muted)}
 .tbl td:first-child{text-align:left;color:#fff;font-weight:500;padding-left:16px}
 /* BUILD66 §2.2 — mirrors `.tbl th.tl` (L159) so the ligne label sits flush under its header now that the
-   cell is a real table-cell again. Compound and POSITIVELY scoped to .dep-tbl: it cannot reach the recette
-   table (which is .tbl with no .dep-tbl) or renderBilan. Do not widen it to the unscoped table class. */
-.dep-tbl td.tl{text-align:left;padding-left:16px}
+   cell is a real table-cell again. Compound and POSITIVELY scoped — BUILD69: shared by dépense + recette
+   via .pl-tbl (was .dep-tbl; recette now carries .pl-tbl too). Cannot reach renderBilan or the Résultat-net
+   table (neither carries .pl-tbl). Do not widen it to the unscoped table class. */
+.pl-tbl td.tl{text-align:left;padding-left:16px}
 /* BUILD67 Fix 2a — the Observations DATA cell (.obs, L173, no text-align of its own) inherited `.tbl td`'s
    right-align, while its header (th.tl obs) is forced left. Left-align the value under its header, closing
-   the dead space and un-jamming it from écart. Scoped to .dep-tbl; recette's obs is plain .tbl, out of scope. */
-.dep-tbl td.obs{text-align:left}
+   the dead space and un-jamming it from écart. BUILD69: shared by dépense + recette via .pl-tbl (recette
+   now has an obs cell to left-align too). renderBilan + Résultat-net keep their own. */
+.pl-tbl td.obs{text-align:left}
 /* BUILD67 Fix 2b — `.tbl th` declares no font-family, so dépense column headers inherited DM Sans (body)
    while the number cells migrated to Space Grotesk in BUILD61. Complete the already-decided migration for
    this component. --ff-display = 'Space Grotesk',sans-serif — the display face for uppercase text labels
-   (vs --ff-num-table for numerics). Scoped to .dep-tbl; recette + Bilan headers keep their own font. */
-.dep-tbl th{font-family:var(--ff-display)}
+   (vs --ff-num-table for numerics). BUILD69: shared by dépense + recette via .pl-tbl (recette headers
+   now render Space Grotesk too). renderBilan + Résultat-net headers keep their own font. */
+.pl-tbl th{font-family:var(--ff-display)}
 .tbl tr:last-child td{border-bottom:none}
 .tbl tr:hover td{background:rgba(255,255,255,.015)}
 .trow td{font-weight:700!important;color:#fff!important;background:rgba(255,255,255,.02);border-top:1px solid var(--border)!important;border-bottom:none!important}
@@ -2259,34 +2262,27 @@ function renderBilan(){
       const dataRows = cat.rows.map((r, ri) => {
         const reeH = r.reel||0;
         const e = (r.ht||0) - reeH;
-        // LOCK-12 R1: recette row matches dépense 6-col structure (Poste/Estimé/Encaissé/Écart/Statut/Obs).
-        // edit-ligne-btn always-visible (.rec-row scope); statut writes via upSt recette branch (data-rec);
-        // obs empty for parity (REC has no obs field — by design).
+        // BUILD69 R1: recette row is now a 5-col structure (Poste/Estimé/Encaissé/Écart/Obs) sharing the
+        // dépense skeleton via .pl-tbl — ligne is a real td.tl, headers Space Grotesk, money tabular. The
+        // Statut <select> column was dropped this build (status now edited in the openRecLigne drawer).
+        // edit-ligne-btn always-visible (.rec-row scope); obs empty for parity (REC has no obs field).
         return `<tr class="rec-row" style="cursor:pointer" onclick="openReelDrawer(null,null,null,{ci:${ci},ri:${ri}})">
-          <td style="display:flex;align-items:center;gap:6px">
+          <td class="tl"><div style="display:flex;align-items:center;gap:6px">
             <span class="ligne-label" style="flex:1">${r.l}</span>
             <button class="edit-ligne-btn" onclick="event.stopPropagation();openRecLigne(${ci},${ri},false)" title="Détails de la ligne">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </button>
-          </td>
+          </div></td>
           <td class="clickable-cell" title="Voir transactions"><span class="cro" style="color:#fff;font-weight:600">${r.ht?fe(r.ht):'<span style="color:var(--text-dim)">—</span>'}</span></td>
           <td class="clickable-cell" title="Voir transactions"><span class="cro">${reeH?fe(reeH):'<span style="color:var(--text-dim)">—</span>'}</span></td>
           <td><div style="display:flex;align-items:center;gap:4px;justify-content:flex-end">${ecH(e,false,reeH>0)}</div></td>
-          <td onclick="event.stopPropagation()"><select class="ss ${stcls(r.st)}"
-            data-rec data-ci="${ci}" data-ri="${ri}" onchange="upSt(this)" onclick="event.stopPropagation()">
-            <option value="ESTIMATION"  ${r.st==='ESTIMATION' ?'selected':''}>ESTIMATION</option>
-            <option value="EN COURS"    ${r.st==='EN COURS'   ?'selected':''}>EN COURS</option>
-            <option value="DEVIS SIGNÉ" ${r.st==='DEVIS SIGNÉ'?'selected':''}>DEVIS SIGNÉ</option>
-            <option value="VALIDÉ"      ${r.st==='VALIDÉ'     ?'selected':''}>VALIDÉ</option>
-            <option value="PAYÉ"        ${r.st==='PAYÉ'       ?'selected':''}>PAYÉ</option>
-          </select></td>
           <td class="obs"><span class="obs-label" style="color:var(--text-dim);font-size:.78em">${r.obs||''}</span></td>
         </tr>`;
       }).join('');
       return `<div class="sec-block">
-        <table class="tbl">
+        <table class="tbl pl-tbl">
           <tr class="shead" onclick="tog('${sid}')">
-            <td colspan="6" style="padding:0">
+            <td colspan="5" style="padding:0">
               <div style="display:flex;align-items:center;padding:14px 16px;gap:0">
                 <span id="arr-${sid}" style="font-size:12px;color:var(--text-dim);transition:transform .25s;display:inline-block;transform:rotate(${_open?'90deg':'0'});flex-shrink:0;margin-right:10px">▶</span>
                 <span style="font-weight:700;font-size:14px;letter-spacing:.3px;text-transform:uppercase;color:#fff;flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${cat.cat}</span>
@@ -2302,12 +2298,11 @@ function renderBilan(){
             <th>Estimé HT</th>
             <th>Encaissé HT</th>
             <th>Écart</th>
-            <th>Statut</th>
             <th class="obs">Observations</th>
           </tr>
           <tbody id="${sid}" style="display:${_open?'':'none'}">${dataRows}
           <tr class="add-ligne-row">
-            <td colspan="6" style="padding:4px 10px">
+            <td colspan="5" style="padding:4px 10px">
               <button class="add-ligne-btn" onclick="openRecLigne(null,null,true,'${_jsAttr(cat.cat)}')">
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Ajouter une ligne
@@ -2323,9 +2318,9 @@ function renderBilan(){
     // Intent preserved: inline "Estimé HT / Encaissé HT / Écart" labels keep estimé vs encaissé
     // unambiguous. Aligned label-left / money-right with the group rows, · middot separator. Values
     // unchanged (totalRecEst / totalRecReel).
-    const grandTotalHtml = `<table class="tbl" style="margin-top:-1px">
+    const grandTotalHtml = `<table class="tbl pl-tbl" style="margin-top:-1px">
         <tr class="rec-grandtot">
-          <td colspan="6" style="padding:0">
+          <td colspan="5" style="padding:0">
             <div style="display:flex;align-items:baseline;padding:14px 16px;gap:0;font-family:var(--ff-num);font-variant-numeric:tabular-nums">
               <span style="font-size:13px;font-weight:700;color:#fff;letter-spacing:.3px;text-transform:uppercase;flex-shrink:0">TOTAL RECETTES</span>
               <span style="flex:1"></span>
@@ -2702,7 +2697,7 @@ function renderDept(id){
 
     return `<div class="sec-block" style="${isAtrier?'margin-top:28px;border-top:1px dashed rgba(251,191,36,.15);padding-top:12px':''}">
       <div class="twrap">
-      <table class="tbl dep-tbl">
+      <table class="tbl dep-tbl pl-tbl">
         <thead>
           <tr class="shead" onclick="tog('${sid}')">
             <td colspan="6" style="padding:0">
@@ -3115,6 +3110,10 @@ async function deleteLigne(dept, row, ligneName, returnTo) {
 
 
 function upSt(sel){
+  // BUILD69 — DEAD after CHANGE 3 (retire-not-delete). Its ONLY caller was the recette Statut <select>
+  // (data-rec, onchange="upSt(this)") deleted this build. The dépense else-arm below has no caller either
+  // (dépense statut lives in the edit drawer, not an inline select). No dépense dependency. Recette line
+  // status stays editable via the openRecLigne drawer. Left in place; confirmed 0 live callers.
   // LOCK-12 R1 (CL-36): recette branch gated on data-rec (dépense rows never set it).
   // Dépense else-arm is the verbatim original. Recette resolves from REC[ci].rows[ri], writes dept:'RECETTES'.
   if(sel.dataset.rec !== undefined){

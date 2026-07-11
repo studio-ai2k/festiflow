@@ -1514,6 +1514,13 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
   <!-- ── ROW 1: unified résultat card (seam 27dk) ── -->
   <div id="bilan-chips" style="margin-bottom:14px;margin-top:18px;container-type:inline-size"></div>
 
+  <!-- P&L Recettes — section divider (kept above the "Types de recettes" table header) -->
+  <div class="sdiv" style="align-items:center">
+    <div class="sdl"></div>
+    <div class="sdt" style="white-space:nowrap">Recettes</div>
+    <div class="sdl"></div>
+    <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
+  </div>
   <!-- P&L Recettes — dept-hdr header (BUILD70): white rail + "Types de recettes" + expand toggle.
        Ported from the dépense dept-hdr (L2912-2928) with two edits: rail white, name "Types de recettes".
        The two toggle SVGs are copied VERBATIM from the dépense buttons; only the onclick differs
@@ -1522,7 +1529,7 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
     <div class="dept-hdr-rail" style="background:#fff"></div>
     <div class="dept-hdr-body">
       <div class="dept-hdr-top">
-        <span class="dept-hdr-name">Types de recettes</span>
+        <span class="dept-hdr-name">RECETTES</span>
         <span style="margin-left:auto;display:flex;gap:6px">
           <div class="sec-view-toggle">
             <button type="button" data-act="expand" title="Tout déplier" aria-label="Tout déplier" onclick="setAllRecSections(true)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg></button>

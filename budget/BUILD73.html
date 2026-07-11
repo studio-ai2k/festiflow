@@ -2026,10 +2026,13 @@ const pct = (r,e) => !e?0:Math.min(Math.round(r/e*100),999);
 const fc = p => p>=100?'danger':p>=75?'warn':'safe';
 const stcls = s => ({'ESTIMATION':'est','EN COURS':'ec','DEVIS SIGNÉ':'ds','VALIDÉ':'val','PAYÉ':'pay'}[s]||'est');
 const chipcls = s => ({'ESTIMATION':'chip-est','EN COURS':'chip-ec','DEVIS SIGNÉ':'chip-ds','VALIDÉ':'chip-val','PAYÉ':'chip-pay'}[s]||'chip-est');
-const ecH = (e, untracked=false, hasReel=true) => {
+const ecH = (e, untracked=false, hasReel=true, recette=false) => {
   if(!hasReel) return '<span class="cdim">—</span>'; // no réel yet — don't show écart
   if(Math.abs(e||0)<1) return '<span class="cdim">—</span>';
   const tag=untracked?'<span title="Dépensé sans statut signé — vérifier" style="color:var(--amber);margin-left:3px;font-size:.7em">⚠</span>':'';
+  if(recette) return e>0
+    ? `<span class="cdim">${fe(Math.abs(e))}</span>${tag}`      /* reste à encaisser — neutral */
+    : `<span class="cpos">+${fe(Math.abs(e))}</span>${tag}`;    /* excédent — green/good */
   return `<span class="${e>0?'cpos':'cneg'}">${e>0?'+':''}${fe(e)}</span>${tag}`;
 };
 const typchip = t => !t?'':t==='S'?'<span class="chip chip-s">S</span>':t==='G'?'<span class="chip chip-g">G</span>':'';
@@ -2306,7 +2309,7 @@ function renderBilan(){
           </div></td>
           <td class="clickable-cell" title="Voir transactions"><span class="cro" style="color:#fff;font-weight:600">${r.ht?fe(r.ht):'<span style="color:var(--text-dim)">—</span>'}</span></td>
           <td class="clickable-cell" title="Voir transactions"><span class="cro">${reeH?fe(reeH):'<span style="color:var(--text-dim)">—</span>'}</span></td>
-          <td><div style="display:flex;align-items:center;gap:4px;justify-content:flex-end">${ecH(e,false,reeH>0)}</div></td>
+          <td><div style="display:flex;align-items:center;gap:4px;justify-content:flex-end">${ecH(e,false,reeH>0,true)}</div></td>
           <td class="obs"><span class="obs-label" style="color:var(--text-dim);font-size:.78em">${r.obs||''}</span></td>
         </tr>`;
       }).join('');
@@ -2330,11 +2333,11 @@ function renderBilan(){
                 <div class="cat-vals">
                   <div class="vb-cell"><div class="vb-lab">ESTIMÉ</div><div class="dkpi-v">${fe(catEst)}</div></div>
                   <div class="vb-cell"><div class="vb-lab">ENCAISSÉ</div><div class="dkpi-v">${catReel?fe(catReel):'—'}</div></div>
-                  <div class="vb-cell"><div class="vb-lab">ÉCART</div><div class="dkpi-v">${fe(Math.abs(rEc))}</div></div>
+                  <div class="vb-cell"><div class="vb-lab">${rEc<0?'EXCÉDENT':'À ENCAISSER'}</div><div class="dkpi-v"${rEc<0?' style="color:var(--green)"':''}>${fe(Math.abs(rEc))}</div></div>
                 </div>
                 <div class="dkpi-burn cat-burn">
                   <i class="reel"  style="width:${rReelW}%"></i>
-                  ${rOverW>0 ? `<i class="over" style="width:${rOverW}%"></i>` : `<i class="libre" style="width:${rLibW}%"></i>`}
+                  ${rOverW>0 ? `<i class="over" style="width:${rOverW}%;background:var(--green)"></i>` : `<i class="libre" style="width:${rLibW}%"></i>`}
                 </div>
                 `}
                 <div class="dkpi-meta cat-meta">
@@ -2370,7 +2373,7 @@ function renderBilan(){
             <td>TOTAL</td>
             <td><span class="cro" style="font-weight:700;color:#fff">${fe(catEst)}</span></td>
             <td><span class="cro" style="font-weight:700;color:#fff">${catReel?fe(catReel):'—'}</span></td>
-            <td>${ecH(rEc, false, catReel>0)}</td>
+            <td>${ecH(rEc, false, catReel>0, true)}</td>
             <td class="obs"></td>
           </tr>
           </tbody>
@@ -2393,7 +2396,7 @@ function renderBilan(){
           <td class="tl">TOTAL RECETTES</td>
           <td><span class="cro" style="font-weight:700;color:#fff">${fe(totalRecEst)}</span></td>
           <td><span class="cro" style="font-weight:700;color:#fff">${totalRecReel?fe(totalRecReel):'—'}</span></td>
-          <td>${ecH(totalRecEst-totalRecReel, false, totalRecReel>0)}</td>
+          <td>${ecH(totalRecEst-totalRecReel, false, totalRecReel>0, true)}</td>
           <td class="obs"></td>
         </tr>
       </table>`;

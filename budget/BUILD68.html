@@ -337,8 +337,9 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   .v1cell{padding:10px 9px}.kbig{font-size:var(--fs-display)}.v1cell .kv{font-size:var(--fs-body)}
 }
 /* ════════ DEPARTMENT KPI BAND (V2 + Santé + À valider) · seam 27cu ════════ */
-.dkpi-band{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;align-items:stretch;margin:18px 0 14px}
-.dkpi-band.dkpi-band--noav{grid-template-columns:2fr 1fr}   /* seam 27dc — À-valider omitted: no empty 3rd col */
+.dkpi-band{display:grid;grid-template-columns:2fr 1fr;gap:10px;align-items:stretch;margin:18px 0 14px}
+/* BUILD68 FIX 3 — the band is now 2 cards (hero + Actions); À-valider folded into Actions. The template
+   is permanently `2fr 1fr` and the old aValiderN-gated `.dkpi-band--noav` variant (seam 27dc) is dead. */
 .dkpi-v2{display:flex;flex-direction:column;gap:10px}
 .dkpi-hero{background:linear-gradient(180deg,var(--surface),#0d0d15);border:1px solid var(--border-h);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;flex:1}
 .dkpi-hero-val{font-family:var(--ff-num-table);font-size:var(--fs-hero);font-weight:700;color:#fff;letter-spacing:-.4px;line-height:1.1;margin-top:6px;font-variant-numeric:tabular-nums lining-nums}
@@ -417,6 +418,10 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .dkpi-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column}
 .dkpi-card.v-watch{border-color:rgba(251,191,36,.30)}
 .dkpi-card.v-todo {border-color:rgba(99,102,241,.30)}
+/* BUILD68 FIX 3 — the à-valider action, folded into the Actions card below the risk line. A hairline
+   top border + margin separates it from the verdict block above so the two actions read distinctly. */
+.dkpi-av-fold{margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.dkpi-av-fold .dkpi-big{margin-top:0}
 .dkpi-card.v-drift{border-color:rgba(248,113,113,.34)}
 .dkpi-card[role=button]{cursor:pointer;transition:border-color .15s}
 .dkpi-card[role=button]:hover{border-color:var(--border-h)}
@@ -440,12 +445,12 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .dkpi-act:hover{background:rgba(99,102,241,.18);border-color:rgba(99,102,241,.45)}
 .dkpi-act:focus-visible{outline:2px solid var(--indigo);outline-offset:1px}
 .dkpi-act svg{width:11px;height:11px}
-@media(max-width:860px){ .dkpi-band{grid-template-columns:1fr 1fr} .dkpi-band.dkpi-band--noav{grid-template-columns:1fr 1fr} .dkpi-v2{grid-column:1/-1} .dkpi-trio{grid-template-columns:repeat(3,1fr)} }
+@media(max-width:860px){ .dkpi-band{grid-template-columns:1fr 1fr} .dkpi-v2{grid-column:1/-1} .dkpi-trio{grid-template-columns:repeat(3,1fr)} }/* BUILD68 FIX 3 — `.dkpi-band--noav` override dropped here; the class is retired (band is permanently 2-card). */
 @media(max-width:520px){
   /* seam 27dc — mobile compaction + FORCE trio 3-across at every width (Leo saw it stacked; make it robust
      regardless of cascade/deploy). The trio is always ONE row of 3 short-€ cells, never 3 stacked rows. */
   .dkpi-band{grid-template-columns:1fr;gap:8px}
-  .dkpi-band.dkpi-band--noav{grid-template-columns:1fr}
+  /* BUILD68 FIX 3 — `.dkpi-band.dkpi-band--noav{grid-template-columns:1fr}` dropped; class retired. */
   .dkpi-trio{grid-template-columns:repeat(3,1fr)!important}
   .dkpi-cell{padding:9px 7px}
   .dkpi-card{padding:12px 13px}
@@ -2431,8 +2436,10 @@ function renderDept(id){
     if (over > 0){ depassTotal += over; depassN++; }
   }
   const risque   = horsDevis + depassTotal;
-  const deptOver = Math.max(engage, depense) > budget || consoPct >= 100;
-  const verdict  = deptOver ? 'drift' : (risque > 0 ? 'watch' : 'ok');
+  // BUILD68 FIX 1/1b — DEAD after this build: the old dept-level `deptOver`/`verdict` (max→+ bug) and the
+  // risk inputs above (`horsDevis`/`depassTotal`/`depassN`/`risque`, and `engage`/`lineEngage` that fed
+  // `deptOver`) are superseded by the per-category pre-pass below (verdict + riskN/riskX). No other code
+  // reads them — the Actions card now reads verdict/riskN/riskX. Retire-not-delete; confirmed no consumer.
   // ══════════════════════════════════════════════════════════════════════════
   // BUILD61 §1.2/§1.3/§1.8 — TABLE-LOCAL bindings. Suffix `T` = table-local.
   // Doctrine A-out: computeEngage is defined INSIDE renderDept — cannot leak.
@@ -2445,6 +2452,45 @@ function renderDept(id){
           (d.statut === 'Payé' && !d.matched_transaction_id) ) ? (d.montant_ht || 0) : 0), 0);
   const _vis      = dept.sections.filter(s => s.s !== 'À TRIER');     // literal À (U+00C0). §1.8
   const allLT     = _vis.flatMap(s => s.lines).filter(isReal);         // à-trier AND placeholders excluded
+  // ══════════════════════════════════════════════════════════════════════════
+  // BUILD68 FIX 1 — additive, PER-CATEGORY badge verdict. Placed HERE (after computeEngage L2443,
+  // _vis L2446, allLT L2447) because a pre-pass before the old badge would hit those consts in their
+  // temporal dead zone. This verdict's only JS consumer is the Actions card below (L2820+); the
+  // L312/L431-438 hits are CSS `.v-${verdict}` classes, not this variable — so it may be computed
+  // anywhere in this window.
+  //
+  // WHY THIS SHAPE (do not re-fork): the badge derives engagé from the SAME computeEngage-based
+  // additive math as the table (`est − reel − computeEngage(devis) < 0`) and the section burn bars
+  // (`sOver = max(0,(sR+sEng)−sE)`). It doesn't merely agree with them today — it SHARES their formula,
+  // so the card and the section headers cannot disagree by construction. Killing the old max→+ bug and
+  // the Payé double-count are consequences of that, not the goal. Iterating `_vis` (the non-À-TRIER set
+  // the sections render from) makes the filter match the render by construction. `secReal` is the
+  // isReal-filtered set, EXACTLY as the section loop uses (never raw sec.lines — placeholders would
+  // leak in and the badge would diverge from the burn bars).
+  const _catScores = _vis.map(sec => {
+    const secReal = sec.lines.filter(isReal);
+    const sE   = secReal.reduce((a,l)=>a+(l.est ||0), 0);
+    const sR   = secReal.reduce((a,l)=>a+(l.reel||0), 0);
+    const sEng = secReal.reduce((a,l)=>a+computeEngage(l.devis), 0);   // match-aware engagé — SAME as the sections
+    const sOver = Math.max(0, (sR + sEng) - sE);                       // additive — SAME as the burn bars
+    const overPct = sE > 0 ? (sOver / sE) * 100 : 0;
+    return { sOver, overPct };
+  });
+  const _driftCats = _catScores.filter(c => c.overPct >= 10);
+  const _watchCats = _catScores.filter(c => c.overPct >= 5 && c.overPct < 10);
+  const verdict = _driftCats.length ? 'drift' : (_watchCats.length ? 'watch' : 'ok');
+  // FIX 1b — the risk figure/text TRACK the verdict band (Leo Q2): N = count of categories in the
+  // band that SET the verdict, X = Σ their sOver. The figure is X; the text names the band.
+  const _riskCats = verdict === 'drift' ? _driftCats : verdict === 'watch' ? _watchCats : [];
+  const riskN = _riskCats.length;
+  const riskX = _riskCats.reduce((a,c)=>a+c.sOver, 0);
+  // FIX 1d — badge hover tooltip: the derivation RULE, not a restatement of the label. Native title=,
+  // the file's established affordance (used 21× incl. the row-badge derivation tooltips). No new system.
+  const VERDICT_TIP = {
+    ok:    'Aucune catégorie ne dépasse son budget.',
+    watch: '≥1 catégorie entre 5 et 10 % au-dessus du budget.',
+    drift: '≥1 catégorie à 10 % ou plus au-dessus du budget.',
+  };
   const totT      = allLT.reduce((a,l) => ({ est:a.est+(l.est||0), reel:a.reel+(l.reel||0) }), {est:0,reel:0});
   const budgetT   = totT.est;
   const depenseT  = totT.reel;
@@ -2750,7 +2796,7 @@ function renderDept(id){
   // _openSecs — ITEM29's hazard class stops existing rather than being guarded. setAllSections reads
   // the rendered tbody ids straight from the DOM, as its predecessor already did.
 
-  const VERDICT = { ok:'Sous contrôle', watch:'À surveiller', drift:'Dérive' };
+  const VERDICT = { ok:'Sous contrôle', watch:'À surveiller', drift:'Dépassement' };  // FIX 1c — 'Dérive' → 'Dépassement' (Leo's word, matches burn-bar vocabulary)
   // BUILD61 §1.1/§4.4 — 'HT' hoisted to Ligne header. Technique keeps its two-word swap (Leo).
   //   `id === 'technique'` conditional survives (unique special-case in renderDept per §1.1).
   const kBudget = id==='technique' ? 'SIGNÉ' : 'BUDGET';
@@ -2761,7 +2807,7 @@ function renderDept(id){
 
   cont.innerHTML=`
     <!-- ── Department KPI band (V2 + Santé + À valider) · seam 27cu ── -->
-    <div class="dkpi-band${aValiderN > 0 ? '' : ' dkpi-band--noav'}">
+    <div class="dkpi-band"><!-- BUILD68 FIX 3 — permanently 2 cards (hero + Actions); à-valider folded into Actions, so the old aValiderN-gated noav conditional is retired. -->
 
       <!-- V2 — BUDGET + trio, stacked as one unit. BUILD61: T-bindings; cat-burn scoping; solde flip. -->
       <div class="dkpi-v2">
@@ -2816,34 +2862,28 @@ function renderDept(id){
         </div>
       </div>
 
-      <!-- Santé du département (glance) -->
+      <!-- BUILD68 FIX 2 — the Actions card (renamed from the old département-health title): the verdict
+           badge + its risk line + (folded in, FIX 3) the à-valider action. -->
       <div class="dkpi-card v-${verdict}"
            ${verdict!=='ok' ? `role="button" tabindex="0" onclick="focusAtRisque('${id}')" onkeydown="if(event.key==='Enter')focusAtRisque('${id}')"` : ``}>
-        <div class="dkpi-k dkpi-k-row">Santé du département
-          <span class="dkpi-verdict v-${verdict}"><span class="d"></span>${VERDICT[verdict]}</span>
+        <div class="dkpi-k dkpi-k-row">Actions
+          <span class="dkpi-verdict v-${verdict}" title="${VERDICT_TIP[verdict]}"><span class="d"></span>${VERDICT[verdict]}</span>
         </div>
-        <div class="dkpi-big v-${verdict}">${risque>0 ? fe(risque) : '0 €'}</div>
+        <div class="dkpi-big v-${verdict}">${riskX>0 ? fe(riskX) : '0 €'}</div>
         <div class="dkpi-sub">${
           verdict==='ok'
             ? 'aucun montant à risque'
-            : 'à risque · ' + [
-                horsDevis>0 ? `<span class="em">${fe(horsDevis)}</span> hors devis signé` : null,
-                depassN>0   ? `${depassN} poste${depassN>1?'s':''} en dépassement (<span class="em">−${fe(depassTotal)}</span>)` : null
-              ].filter(Boolean).join(' · ')
+            : `${riskN} catégorie${riskN>1?'s':''} ${verdict==='drift' ? 'en dépassement' : 'à surveiller'} · <span class="em">−${fe(riskX)}</span>`
         }</div>
-      </div>
-
-      <!-- À valider (action) — seam 27dc: omitted entirely when empty (no noise card) -->
-      <!-- BUILD61 §1.5/§4.5c — "signé" word retired (set is by definition NOT signed after §1.3b repoint). -->
-      ${aValiderN > 0 ? `
-      <div class="dkpi-card v-todo">
-        <div class="dkpi-k">À valider · votre feu vert</div>
+        ${aValiderN > 0 ? `
+        <div class="dkpi-av-fold">
           <div class="dkpi-big devis">${fe(aValiderAmt)}</div>
           <div class="dkpi-sub"><span class="em">${aValiderN} devis</span> en attente de validation</div>
           <button class="dkpi-act" onclick="openFirstAValider('${id}')">Examiner ${aValiderN} devis
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
-      </div>` : ''}
+        </div>` : ''}
+      </div>
 
     </div>
 

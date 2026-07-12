@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Festiflow — Paris XXL 2026</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Grotesk:wght@500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 /* ═══ FESTIFLOW DESIGN SYSTEM — exact token parity ═══
@@ -25,7 +25,7 @@
   --fs-micro:9px; --fs-caption:11px; --fs-small:12px; --fs-body:13px; --fs-strong:14px;
   --fs-heading:16px; --fs-title:18px; --fs-display:22px; --fs-hero:26px;
   --ff-ui:'DM Sans',-apple-system,sans-serif;
-  --ff-num:'DM Mono',ui-monospace,monospace;
+  --ff-num:var(--ff-num-table);
   --ff-display:'Space Grotesk',sans-serif;
   --ff-num-table:'Space Grotesk','DM Sans',sans-serif;   /* BUILD61 §3.1 — NEW token; L28 --ff-num UNCHANGED */
   --fw-body:400; --fw-medium:500; --fw-semibold:600; --fw-bold:700;
@@ -702,11 +702,11 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .ed-kv .row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:var(--fs-strong)}
 .ed-kv .row:last-child{border-bottom:none}
 .ed-kv .k{color:var(--text-muted)}
-.ed-kv .v{font-family:'DM Mono',ui-monospace,monospace;color:var(--text);font-weight:600}
+.ed-kv .v{font-family:var(--ff-num);color:var(--text);font-weight:600;font-variant-numeric:tabular-nums lining-nums}
 .ed-phase{display:flex;gap:8px;align-items:flex-start;margin-top:12px;padding:11px 12px;border:1px dashed var(--border-h);border-radius:9px;background:rgba(255,255,255,.015);font-size:var(--fs-body);line-height:1.5;color:var(--text-dim)}
 .ed-phase svg{width:14px;height:14px;flex-shrink:0;margin-top:1px;color:var(--text-dim)}
 .ed-ttc{font-size:var(--fs-small);color:var(--text-dim);margin-top:6px}
-.ed-ttc b{font-family:'DM Mono',ui-monospace,monospace;color:var(--text-muted)}
+.ed-ttc b{font-family:var(--ff-num);color:var(--text-muted);font-variant-numeric:tabular-nums lining-nums}
 .df-hint{font-size:var(--fs-small);color:var(--text-dim);margin-top:6px;line-height:1.5}
 .ed-lock{display:flex;gap:7px;align-items:flex-start;margin-top:7px;font-size:var(--fs-small);line-height:1.45;color:var(--amber)}
 .ed-lock svg{width:13px;height:13px;flex-shrink:0;margin-top:1px}
@@ -748,7 +748,7 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .rail-kpis.k3{grid-template-columns:repeat(3,1fr)}
 .rail-kpi{background:var(--surface);padding:11px 14px}
 .rail-kpi .k{font-size:var(--fs-micro);text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);font-weight:700}
-.rail-kpi .v{font-family:'DM Mono',monospace;font-size:var(--fs-strong);font-weight:600;color:#fff;margin-top:4px;white-space:nowrap}
+.rail-kpi .v{font-family:var(--ff-num);font-size:var(--fs-strong);font-weight:600;color:#fff;margin-top:4px;white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}
 .rail-kpi .v.prevu{color:#fff}
 .rail-kpi .v.engage{color:var(--amber)}
 .rail-kpi .v.reel{color:var(--rb)}
@@ -758,7 +758,7 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .det-pie{display:flex;align-items:center;gap:18px;margin-bottom:18px}
 .det-pie-ring{width:100px;height:100px;border-radius:50%;flex-shrink:0;position:relative}
 .det-pie-hole{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
-.det-pie-hole .ph-amt{font-family:'DM Mono',monospace;font-size:var(--fs-strong);font-weight:700;color:#fff;line-height:1}
+.det-pie-hole .ph-amt{font-family:var(--ff-num);font-size:var(--fs-strong);font-weight:700;color:#fff;line-height:1;font-variant-numeric:tabular-nums lining-nums}
 .det-pie-hole .ph-lbl{font-size:var(--fs-micro);text-transform:uppercase;letter-spacing:.12em;color:var(--text-dim);margin-top:2px}
 .det-pie-side{flex:1;display:flex;flex-direction:column;gap:9px;min-width:0}
 .det-pie-side .ps-head{font-size:var(--fs-caption);color:var(--text-muted)}
@@ -767,7 +767,7 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .dpl-row{display:flex;align-items:center;gap:8px;font-size:var(--fs-caption)}
 .dpl-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
 .dpl-nm{color:var(--text-muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dpl-amt{font-family:'DM Mono',monospace;color:var(--text);font-size:var(--fs-caption);flex-shrink:0;font-weight:600}
+.dpl-amt{font-family:var(--ff-num);color:var(--text);font-size:var(--fs-caption);flex-shrink:0;font-weight:600;font-variant-numeric:tabular-nums lining-nums}
 /* ════ end v21b rail chrome ════ */
 /* ════ (iv-b) DEVIS + INTÉGRATIONS — folded from 06_DRAWER_DESIGN_SUITE/edit/_CURRENT_edit-combined_v2.html
    Devis-tab CSS only (mock drawer-chrome .rail-*/.tabpane NOT folded — _x has its own).
@@ -802,13 +802,13 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .opt-hero .split-row > .rc-detail{order:2}
 .split-row .sr-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px}
 .split-row .sr-name{font-size:var(--fs-body);font-weight:600;display:flex;align-items:center;gap:8px}
-.split-row .sr-amt{font-family:'DM Mono',monospace;font-size:var(--fs-strong);font-weight:700}
+.split-row .sr-amt{font-family:var(--ff-num);font-size:var(--fs-strong);font-weight:700;font-variant-numeric:tabular-nums lining-nums}
 .split-row .sr-chev{width:14px;height:14px;color:var(--text-dim);transition:transform .18s;flex-shrink:0;margin-left:10px}
 .split-row.expanded .sr-chev{transform:rotate(180deg)}
 .split-row .rc-detail{max-height:0;overflow:hidden;opacity:0;transition:max-height .24s ease,opacity .18s ease}
 /* §v23a.2: ONE shared expanded rule — content-driven (non-px), equal across all roles (cross-context identity gate) */
 .split-row.expanded .rc-detail{max-height:var(--rc-exp,100vh);opacity:1;margin-top:11px}
-.split-row .sr-ht{display:none;font-family:'DM Mono',monospace;font-size:var(--fs-caption);color:var(--text-dim);text-align:right;margin-top:2px}
+.split-row .sr-ht{display:none;font-family:var(--ff-num);font-size:var(--fs-caption);color:var(--text-dim);text-align:right;margin-top:2px;font-variant-numeric:tabular-nums lining-nums}
 .split-row.expanded .sr-ht{display:block}
 .split-row.cls{border-left-width:2px;border-left-style:solid}
 .split-row.devis-annule{opacity:.6}
@@ -841,17 +841,17 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .devis-sum{background:linear-gradient(135deg,rgba(251,191,36,.06),rgba(255,255,255,0));border:1px solid var(--border-h);border-radius:13px;padding:16px 17px}
 .devis-sum .ds-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:13px}
 .devis-sum .ds-k{font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);font-weight:700}
-.devis-sum .ds-v{font-family:'DM Mono',monospace;font-size:var(--fs-display);font-weight:700;color:var(--amber);line-height:1;margin-top:5px}
+.devis-sum .ds-v{font-family:var(--ff-num);font-size:var(--fs-display);font-weight:700;color:var(--amber);line-height:1;margin-top:5px;font-variant-numeric:tabular-nums lining-nums}
 .devis-sum .ds-count{font-size:var(--fs-caption);color:var(--text-muted);text-align:right;line-height:1.5}
 .devis-sum .ds-count b{color:#fff}
 .devis-sum .ds-bar{height:7px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);overflow:hidden;position:relative}
 .devis-sum .ds-bar i{position:absolute;top:0;bottom:0;left:0;border-radius:4px;background:rgba(251,191,36,.6)}
 .devis-sum .ds-foot{display:flex;justify-content:space-between;margin-top:9px;font-size:var(--fs-caption)}
 .devis-sum .ds-foot .fl{color:var(--text-muted)}
-.devis-sum .ds-foot .fl b{font-family:'DM Mono',monospace;color:var(--text)}
-.devis-sum .ds-foot .fr{font-family:'DM Mono',monospace;color:var(--rb)}
+.devis-sum .ds-foot .fl b{font-family:var(--ff-num);color:var(--text);font-variant-numeric:tabular-nums lining-nums}
+.devis-sum .ds-foot .fr{font-family:var(--ff-num);color:var(--rb);font-variant-numeric:tabular-nums lining-nums}
 .devis-empty{padding:20px 14px;text-align:center;border:1px dashed var(--border-h);border-radius:11px;color:var(--text-dim);font-size:var(--fs-small);line-height:1.55}
-.df-ttc{font-family:'DM Mono',monospace;font-size:var(--fs-caption);color:var(--text-muted);margin-top:7px}
+.df-ttc{font-family:var(--ff-num);font-size:var(--fs-caption);color:var(--text-muted);margin-top:7px;font-variant-numeric:tabular-nums lining-nums}
 .df-ttc b{color:var(--text);font-weight:600}
 .add-card{display:flex;align-items:center;gap:11px;padding:11px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2);cursor:pointer;transition:.14s;margin-top:10px}
 .add-card:hover{border-color:var(--text-dim);background:var(--surface)}
@@ -882,7 +882,6 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .devis-line-group .lg-dot{width:5px;height:5px;border-radius:50%;background:var(--text-dim);flex-shrink:0}
 .devis-dept-head{align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}
 .dep-devis-deptview .dv-line-only{display:none}
-.dep-devis-deptview .devis-dept-head.dv-dept-only{display:flex !important}
 /* ════ seam 27da — recette encaissé SOURCE SELECTOR (.encsrc-*) · ported from mock_encaisse_source ════ */
 .rail-kpi.enc{box-shadow:inset 0 0 0 1px rgba(94,234,212,.22)}
 .rail-kpi.enc.flash{box-shadow:inset 0 0 0 1px rgba(94,234,212,.7);background:rgba(94,234,212,.06)}
@@ -897,21 +896,21 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .encsrc-tx .b{flex:1}
 .encsrc-tx .t{font-size:var(--fs-body);font-weight:600;color:#fff}
 .encsrc-tx .d{font-size:var(--fs-caption);color:var(--text-dim);margin-top:2px}
-.encsrc-tx .amt{font-family:var(--ff-num);font-size:var(--fs-heading);font-weight:600;color:var(--rb);white-space:nowrap}
+.encsrc-tx .amt{font-family:var(--ff-num);font-size:var(--fs-heading);font-weight:600;color:var(--rb);white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}
 .encsrc-tx.empty .ic,.encsrc-tx.empty .amt{color:var(--text-dim)}
 .encsrc-tx.empty .t{color:var(--text-muted)}
 .encsrc-api{border:1px solid var(--border-h);border-radius:11px;background:var(--surface-2);overflow:hidden}
 .encsrc-prow{display:flex;align-items:center;gap:11px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04)}
-.encsrc-prow .av{width:26px;height:26px;border-radius:7px;background:var(--surface);border:1px solid var(--border-h);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--ff-num);font-size:var(--fs-caption);font-weight:500;color:var(--text-muted)}
+.encsrc-prow .av{width:26px;height:26px;border-radius:7px;background:var(--surface);border:1px solid var(--border-h);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--ff-num);font-size:var(--fs-caption);font-weight:500;color:var(--text-muted);font-variant-numeric:tabular-nums lining-nums}
 .encsrc-prow .nm{flex:1;font-size:var(--fs-body);font-weight:600;color:var(--text)}
 .encsrc-prow .nm small{display:block;font-weight:400;font-size:var(--fs-micro);letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);margin-top:1px}
-.encsrc-prow .pv{font-family:var(--ff-num);font-size:var(--fs-body);font-weight:500;color:var(--text);white-space:nowrap}
+.encsrc-prow .pv{font-family:var(--ff-num);font-size:var(--fs-body);font-weight:500;color:var(--text);white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}
 .encsrc-total{display:flex;align-items:center;gap:11px;padding:12px 14px;background:rgba(94,234,212,.05);border-top:1px solid var(--border-h)}
 .encsrc-total .av{width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--rb)}
 .encsrc-total .av svg{width:15px;height:15px}
 .encsrc-total .nm{flex:1;font-size:var(--fs-body);font-weight:700;color:#fff}
 .encsrc-total .nm small{display:block;font-weight:400;font-size:var(--fs-micro);letter-spacing:.06em;text-transform:uppercase;color:var(--rb);opacity:.8;margin-top:2px}
-.encsrc-total .pv{font-family:var(--ff-num);font-size:var(--fs-title);font-weight:700;color:var(--rb);white-space:nowrap}
+.encsrc-total .pv{font-family:var(--ff-num);font-size:var(--fs-title);font-weight:700;color:var(--rb);white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}
 .encsrc-sync{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:10px;font-size:var(--fs-small);color:var(--text-dim)}
 .encsrc-sync .dot{width:6px;height:6px;border-radius:50%;background:var(--text-dim);flex-shrink:0}
 .encsrc-sync .grow{flex:1;min-width:120px}
@@ -919,13 +918,13 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .encsrc-refresh svg{width:12px;height:12px}
 .avenir{font-size:var(--fs-micro);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);background:var(--surface-2);border:1px solid var(--border-h);border-radius:5px;padding:2px 7px}
 .encsrc-manual{position:relative}
-.encsrc-manual .cur{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-family:var(--ff-num);font-size:var(--fs-body);color:var(--text-dim);pointer-events:none}
-.encsrc-manual input{font-family:var(--ff-num);text-align:right;padding-left:30px}
+.encsrc-manual .cur{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-family:var(--ff-num);font-size:var(--fs-body);color:var(--text-dim);pointer-events:none;font-variant-numeric:tabular-nums lining-nums}
+.encsrc-manual input{font-family:var(--ff-num);text-align:right;padding-left:30px;font-variant-numeric:tabular-nums lining-nums}
 .encsrc-out{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;padding:13px 15px;border:1px solid rgba(94,234,212,.24);border-radius:11px;background:rgba(94,234,212,.05)}
 .encsrc-out .l .lbl{font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:.9px;color:var(--rb);font-weight:700}
 .encsrc-out .l .cap{font-size:var(--fs-micro);color:var(--text-dim);margin-top:3px;display:flex;align-items:center;gap:5px}
 .encsrc-out .l .cap svg{width:11px;height:11px;color:var(--rb)}
-.encsrc-out .val{font-family:var(--ff-num);font-size:var(--fs-display);font-weight:700;color:var(--rb);white-space:nowrap;line-height:1}
+.encsrc-out .val{font-family:var(--ff-num);font-size:var(--fs-display);font-weight:700;color:var(--rb);white-space:nowrap;line-height:1;font-variant-numeric:tabular-nums lining-nums}
 /* ════ end (iv-b) devis + intégrations ════ */
 
 /* ── MOBILE bottom sheet ─── */
@@ -980,12 +979,12 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 
 /* .sr-amt BASE — font trio only (display:block / text-align:right is
    preview-divergent, see §3; réelles keeps the inline amt+ht+chev layout) */
-.split-row .sr-amt{font-family:'DM Mono',monospace;font-size:var(--fs-strong);font-weight:700}
+.split-row .sr-amt{font-family:var(--ff-num);font-size:var(--fs-strong);font-weight:700;font-variant-numeric:tabular-nums lining-nums}
 
 /* .sr-ht is SHARED (not divergent): default hidden, shown on expand. In the
    options mock the preview `display:block` (L285) is itself overridden back to
    `display:none` (L331) — so this stays in the base for all roles. */
-.split-row .sr-ht{display:none;font-family:'DM Mono',monospace;font-size:var(--fs-caption);color:var(--text-dim);text-align:right;margin-top:2px}
+.split-row .sr-ht{display:none;font-family:var(--ff-num);font-size:var(--fs-caption);color:var(--text-dim);text-align:right;margin-top:2px;font-variant-numeric:tabular-nums lining-nums}
 .split-row.expanded .sr-ht{display:block}
 
 .split-row .sr-chev{width:14px;height:14px;color:var(--text-dim);transition:transform .18s;flex-shrink:0;margin-left:10px}
@@ -1101,7 +1100,7 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .reliee-by{display:inline-flex;align-items:center;gap:6px;color:var(--text);white-space:nowrap}
 .reliee-by .avatar-ic{width:17px;height:17px}
 .reliee-by b{color:var(--text);font-weight:600}
-.reliee-by .rb-date{color:var(--text-dim);font-family:'DM Mono',monospace;font-size:var(--fs-caption)}
+.reliee-by .rb-date{color:var(--text-dim);font-family:var(--ff-num);font-size:var(--fs-caption)}
 
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -1113,7 +1112,7 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
   margin-bottom:11px;padding-bottom:7px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
 .dsec-t .pill{font-size:var(--fs-heading);padding:2px 7px;border-radius:4px;background:rgba(251,191,36,.1);color:var(--amber);font-weight:700;letter-spacing:0}
 
-.mono{font-family:'DM Mono',monospace;font-feature-settings:"tnum"}
+.mono{font-family:var(--ff-num);font-feature-settings:"tnum"}
 .dim{color:var(--text-muted)}
 
 /* classification tag chips */
@@ -1155,8 +1154,8 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .ilc-line2 .vcard-cat{color:var(--text-muted);margin-right:7px}
 /* §FIX7b — relocated INTRA/À TRIER chips now live inside .vcard-dept (FIX6); space them off the dept name. */
 .vcard-dept .vcard-cat{margin-left:8px}
-.vcard-cat{font-family:'DM Mono',monospace;font-size:var(--fs-micro);letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);background:rgba(255,255,255,.05);border-radius:4px;padding:2px 5px;margin-right:7px;vertical-align:middle}
-.lr-cat{font-family:'DM Mono',monospace;font-size:var(--fs-micro);letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);background:rgba(255,255,255,.04);border-radius:4px;padding:2px 5px;flex-shrink:0}
+.vcard-cat{font-family:var(--ff-num);font-size:var(--fs-micro);letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);background:rgba(255,255,255,.05);border-radius:4px;padding:2px 5px;margin-right:7px;vertical-align:middle}
+.lr-cat{font-family:var(--ff-num);font-size:var(--fs-micro);letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);background:rgba(255,255,255,.04);border-radius:4px;padding:2px 5px;flex-shrink:0}
 .vcard-r{display:flex;align-items:center;gap:5px;flex-shrink:0}
 .vcard-amt{font-size:var(--fs-body);font-weight:700;color:var(--red);font-variant-numeric:tabular-nums}
 .vcard-rm{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:var(--fs-small);padding:2px 4px;transition:.13s}
@@ -1194,7 +1193,7 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 /* cut-off status pill (held-cas, no instrument yet) — oracle L301-302 */
 /* type-breakdown mini chips for the count header (RE-10) — oracle L304-310 */
 .typesum{display:inline-flex;gap:9px;vertical-align:middle;margin-left:6px}
-.minichip{display:inline-flex;align-items:center;gap:4px;font-family:'DM Mono',monospace;font-size:var(--fs-caption);font-weight:600;color:var(--text-muted)}
+.minichip{display:inline-flex;align-items:center;gap:4px;font-family:var(--ff-num);font-size:var(--fs-caption);font-weight:600;color:var(--text-muted)}
 .minichip::before{content:"";width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .minichip.ext::before{background:var(--ext)}
 .minichip.inter::before{background:var(--amber)}
@@ -1226,7 +1225,7 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
       reuses _x's existing edFade keyframe (oracle's `fade` was dropped from _x). These
       class names are réelles-scoped (reel-*) and absent from _x → purely additive. */
 .reel-tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--border)}
-.reel-tab{appearance:none;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);font-family:inherit;font-size:var(--fs-small);font-weight:600;padding:8px 12px 9px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:color .14s,border-color .14s}
+.reel-tab{appearance:none;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);font-family:var(--ff-display);font-size:var(--fs-small);font-weight:600;padding:8px 12px 9px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:color .14s,border-color .14s}
 .reel-tab:hover{color:var(--text-muted)}
 .reel-tab.on{color:#fff;border-bottom-color:#fff}
 .reel-tab .cnt{font-size:var(--fs-heading);padding:1px 6px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--text-muted);font-weight:700}
@@ -1251,7 +1250,7 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .cx-cell{background:var(--surface);padding:9px 12px;min-width:0}
 .cx-cell.full{grid-column:1 / -1}
 .cx-cell .k{font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);font-weight:700;margin-bottom:3px}
-.cx-cell .v{font-family:var(--ff-num);font-size:var(--fs-small);color:var(--text);font-weight:500;line-height:1.32;overflow-wrap:anywhere}
+.cx-cell .v{font-family:var(--ff-num);font-size:var(--fs-small);color:var(--text);font-weight:500;line-height:1.32;overflow-wrap:anywhere;font-variant-numeric:tabular-nums lining-nums}
 .cx-cell .v .dt{color:var(--text-muted)}.cx-cell .v .sep{color:var(--text-dim);padding:0 3px}.cx-cell .v .sub{color:var(--text-dim)}
 @keyframes cxPulse{0%{r:5;opacity:.5}70%,100%{r:14;opacity:0}}
 .cx-pulse{animation:cxPulse 2.4s ease-out infinite}
@@ -1281,7 +1280,7 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
    ONLY (negative top margin = −body padding-top). .reel-tabs is NOT in this selector, so the réelles
    tab row / header is byte-unchanged. Tab padding (8px top) is left tighter-than-mock, untouched. */
 .opt-tabs{margin-top:-20px}
-.opt-tab{appearance:none;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);font-family:inherit;font-size:var(--fs-small);font-weight:600;padding:8px 12px 9px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;position:relative;transition:color .14s,border-color .14s}
+.opt-tab{appearance:none;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);font-family:var(--ff-display);font-size:var(--fs-small);font-weight:600;padding:8px 12px 9px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;position:relative;transition:color .14s,border-color .14s}
 .opt-tab:hover{color:var(--text-muted)}
 .opt-tab.on{color:#fff}
 .opt-tab.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:#fff}
@@ -1361,7 +1360,7 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .iflow-body{padding:6px 16px 14px}
 .iflow .rkv{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:5px 0}
 .iflow .rkv-k{font-size:var(--fs-caption);color:var(--text-muted)}
-.iflow .rkv-v{font-size:var(--fs-small);font-family:'DM Mono',monospace;font-weight:600;color:var(--text)}
+.iflow .rkv-v{font-size:var(--fs-small);font-family:var(--ff-num);font-weight:600;color:var(--text);font-variant-numeric:tabular-nums lining-nums}
 .iflow .rkv-div{border-top:1px dashed var(--border-h);margin:8px 0}
 .iflow .rkv.net .rkv-k{font-weight:700;color:#fff}
 .iflow .rkv.net .rkv-v{font-weight:700}
@@ -1443,18 +1442,18 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 /* seam 27ck — ventilation INPUT subview (mock options-combined_v16.7 parity). The committed-view
    .vcard family (L876) is FROZEN/shared; these are the input-only additions ventRender emits. */
 .vent-cards{display:flex;flex-direction:column;gap:9px;margin-bottom:11px}
-.vcard-auto{font-family:'DM Mono',monospace;font-size:var(--fs-micro);letter-spacing:.1em;text-transform:uppercase;color:var(--green);border:1px solid rgba(52,211,153,.4);border-radius:4px;padding:1px 4px;flex-shrink:0}
-.vamt-sign{color:var(--text-dim);font-family:'DM Mono',monospace;font-size:var(--fs-body)}
-.vamt{width:82px;text-align:right;background:var(--surface);border:1px solid var(--border-h);border-radius:6px;padding:6px 9px;color:var(--text);font-family:'DM Mono',monospace;font-size:var(--fs-body);outline:none;transition:.13s}
+.vcard-auto{font-family:var(--ff-num);font-size:var(--fs-micro);letter-spacing:.1em;text-transform:uppercase;color:var(--green);border:1px solid rgba(52,211,153,.4);border-radius:4px;padding:1px 4px;flex-shrink:0}
+.vamt-sign{color:var(--text-dim);font-family:var(--ff-num);font-size:var(--fs-body);font-variant-numeric:tabular-nums lining-nums}
+.vamt{width:82px;text-align:right;background:var(--surface);border:1px solid var(--border-h);border-radius:6px;padding:6px 9px;color:var(--text);font-family:var(--ff-num);font-size:var(--fs-body);outline:none;transition:.13s;font-variant-numeric:tabular-nums lining-nums}
 .vamt:focus{border-color:var(--indigo)}
 .vamt[readonly]{background:transparent;border-color:transparent;color:var(--green);pointer-events:none}
 .vcard.warn .vamt{color:var(--amber)}
-.vamt-cur{color:var(--text-dim);font-family:'DM Mono',monospace;font-size:var(--fs-small)}
-.vent-scope-chip{margin-left:auto;font-family:'DM Mono',monospace;font-size:var(--fs-micro);letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);background:rgba(255,255,255,.05);border-radius:5px;padding:3px 7px;flex-shrink:0}
+.vamt-cur{color:var(--text-dim);font-family:var(--ff-num);font-size:var(--fs-small);font-variant-numeric:tabular-nums lining-nums}
+.vent-scope-chip{margin-left:auto;font-family:var(--ff-num);font-size:var(--fs-micro);letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);background:rgba(255,255,255,.05);border-radius:5px;padding:3px 7px;flex-shrink:0}
 .vent-pie{display:flex;align-items:center;gap:18px;margin-bottom:16px}
 .vent-pie-ring{width:92px;height:92px;border-radius:50%;flex-shrink:0;position:relative;transition:.2s}
 .vent-pie-hole{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:60px;border-radius:50%;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
-.vph-amt{font-family:'DM Mono',monospace;font-size:var(--fs-small);font-weight:700;color:var(--text)}
+.vph-amt{font-family:var(--ff-num);font-size:var(--fs-small);font-weight:700;color:var(--text);font-variant-numeric:tabular-nums lining-nums}
 .vph-lbl{font-size:var(--fs-micro);text-transform:uppercase;letter-spacing:.12em;color:var(--text-dim)}
 .vent-pie-side{flex:1;display:flex;flex-direction:column;gap:8px;min-width:0}
 .vent-pie-dept{font-size:var(--fs-small);font-weight:700;color:var(--text);display:flex;align-items:center;gap:7px}
@@ -1462,8 +1461,8 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .vpl-row{display:flex;align-items:center;gap:8px;font-size:var(--fs-caption)}
 .vpl-empty .vpl-nm{color:var(--text-dim);font-style:italic}
 .vpl-nm{color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.vpl-pct{margin-left:auto;font-family:'DM Mono',monospace;color:var(--text);font-weight:600;flex-shrink:0}
-.vpl-amt{font-family:'DM Mono',monospace;color:var(--text-dim);font-size:var(--fs-caption);flex-shrink:0;width:54px;text-align:right}
+.vpl-pct{margin-left:auto;font-family:var(--ff-num);color:var(--text);font-weight:600;flex-shrink:0;font-variant-numeric:tabular-nums lining-nums}
+.vpl-amt{font-family:var(--ff-num);color:var(--text-dim);font-size:var(--fs-caption);flex-shrink:0;width:54px;text-align:right;font-variant-numeric:tabular-nums lining-nums}
 </style>
 </head>
 <body>
@@ -4603,7 +4602,7 @@ function _devisRowHTML(d, idx){
         <span class="sr-name"><span style="color:#fff">${_esc(d.fournisseur||'Fournisseur')}</span> <span class="ctag ${_s.code}">${_s.label}</span></span>
         <span style="display:flex;align-items:flex-start"><span><span class="sr-amt" style="color:var(--amber)">${fe(ttc)}</span><span class="sr-ht">${fe(d.montant_ht)} HT</span></span>${_DEVIS_SVG.chev}</span>
       </div>
-      <div class="metaline"><span style="font-size:11px;color:var(--text-dim);font-family:'DM Mono',monospace">${_s.statut} le ${dateFr}</span>${d.ref?`<span style="font-size:11px;color:var(--text-dim)">Devis #${_esc(d.ref)}</span>`:''}</div>
+      <div class="metaline"><span style="font-size:11px;color:var(--text-dim);font-family:var(--ff-num)">${_s.statut} le ${dateFr}</span>${d.ref?`<span style="font-size:11px;color:var(--text-dim)">Devis #${_esc(d.ref)}</span>`:''}</div>
       <div class="rc-detail">
         <div class="dt-kv">
           <div class="kv"><span class="k">Fournisseur</span><span class="v">${_esc(d.fournisseur||'—')}</span></div>
@@ -4646,7 +4645,7 @@ function _devisDeptHTML(tabName){
       return `<div class="split-row devis-row cls" style="border-left-color:${_s.border}">
         <div class="sr-top"><span class="sr-name"><span style="color:#fff">${_esc(d.fournisseur)}</span> <span class="ctag ${_s.code}">${_s.label}</span></span>
         <span><span class="sr-amt" style="color:var(--amber)">${fe(ttc)}</span></span></div>
-        <div class="metaline"><span style="font-size:11px;color:var(--text-dim);font-family:'DM Mono',monospace">${_esc(name)}${d.ref?' · #'+_esc(d.ref):''}</span></div></div>`;
+        <div class="metaline"><span style="font-size:11px;color:var(--text-dim);font-family:var(--ff-num)">${_esc(name)}${d.ref?' · #'+_esc(d.ref):''}</span></div></div>`;
     }).join('')).join('');
     return `<div class="devis-line-group"><span class="lg-dot"></span>${_esc(sec)}</div>${rows}`;
   }).join('');
@@ -5162,13 +5161,13 @@ function courbeB(opts){
   const _lblCollide = hasEng && ceiling>0 && Math.abs(cy-ey)<13;
   const ceilLayer = ceiling>0 ? '<line x1="0" y1="'+cy+'" x2="'+CH.W+'" y2="'+cy+'" stroke="rgba(251,191,36,.55)" stroke-width="1.3" stroke-dasharray="4 4"/>'
     +(_lblCollide
-      ? '<text x="'+(CH.W-4)+'" y="'+r1(cy-6)+'" text-anchor="end" fill="#fbbf24" font-size="9.5" font-family="DM Mono">'+P.ceilKey+' · '+groupFR(ceiling)+'</text>'
-      : '<text x="4" y="'+r1(cy-6)+'" fill="#fbbf24" font-size="9.5" font-family="DM Mono">'+P.ceilKey+' · '+groupFR(ceiling)+'</text>') : '';
+      ? '<text x="'+(CH.W-4)+'" y="'+r1(cy-6)+'" text-anchor="end" fill="#fbbf24" font-size="9.5" font-family="Space Grotesk, DM Sans, sans-serif">'+P.ceilKey+' · '+groupFR(ceiling)+'</text>'
+      : '<text x="4" y="'+r1(cy-6)+'" fill="#fbbf24" font-size="9.5" font-family="Space Grotesk, DM Sans, sans-serif">'+P.ceilKey+' · '+groupFR(ceiling)+'</text>') : '';
   let engLayer='';
   if(hasEng){ const tol=engage*0.018, eT=yOf(engage+tol), eB=yOf(engage-tol);
     engLayer='<rect x="0" y="'+eT+'" width="'+CH.W+'" height="'+r1(eB-eT)+'" fill="'+DEV+'" opacity="0.14"/>'
       +'<line x1="0" y1="'+ey+'" x2="'+CH.W+'" y2="'+ey+'" stroke="'+DEV+'" stroke-width="1.3"/>'
-      +'<text x="6" y="'+r1(eT-5)+'" fill="'+DEVT+'" font-size="9.5" font-family="DM Mono">engagé · '+groupFR(engage)+'</text>'; }
+      +'<text x="6" y="'+r1(eT-5)+'" fill="'+DEVT+'" font-size="9.5" font-family="Space Grotesk, DM Sans, sans-serif">engagé · '+groupFR(engage)+'</text>'; }
 
   /* ── n === 0 : designed empty state ── */
   if(n===0){
@@ -5205,15 +5204,15 @@ function courbeB(opts){
       const nvReste=engage-cumLast;
       if(nvReste>0) restBand='<g class="cx-band"><rect x="0" y="'+ey+'" width="'+CH.W+'" height="'+r1(rp.y-ey)+'" fill="'+DEV+'" opacity="0.13"/></g>';
       engRef='<line x1="0" y1="'+ey+'" x2="'+CH.W+'" y2="'+ey+'" stroke="'+DEV+'" stroke-width="1.3"/>'
-        +'<text x="6" y="'+r1(ey-6)+'" fill="'+DEVT+'" font-size="9.5" font-family="DM Mono">engagé · '+groupFR(engage)+'</text>';
+        +'<text x="6" y="'+r1(ey-6)+'" fill="'+DEVT+'" font-size="9.5" font-family="Space Grotesk, DM Sans, sans-serif">engagé · '+groupFR(engage)+'</text>';
     }
     // plafond line if ceiling>0 (3a convention: plafond RIGHT-anchored, engagé LEFT — de-collides by construction)
     const ceilRef = ceiling>0 ? '<line x1="0" y1="'+cy+'" x2="'+CH.W+'" y2="'+cy+'" stroke="rgba(251,191,36,.55)" stroke-width="1.3" stroke-dasharray="4 4"/>'
-      +'<text x="'+(CH.W-4)+'" y="'+r1(cy-6)+'" text-anchor="end" fill="#fbbf24" font-size="9.5" font-family="DM Mono">'+P.ceilKey+' · '+groupFR(ceiling)+'</text>' : '';
+      +'<text x="'+(CH.W-4)+'" y="'+r1(cy-6)+'" text-anchor="end" fill="#fbbf24" font-size="9.5" font-family="Space Grotesk, DM Sans, sans-serif">'+P.ceilKey+' · '+groupFR(ceiling)+'</text>' : '';
     // réel level label — pct-of-engagé when engagé exists, else just the amount (no fabricated ratio)
     const above=rp.y>40, ly=above?r1(rp.y-8):r1(rp.y+13);
     const pctTxt = hasEng ? ' · '+((cumLast/engage*100)<1?(cumLast/engage*100).toFixed(1):Math.round(cumLast/engage*100))+'%' : '';
-    const reelLbl='<text x="10" y="'+ly+'" fill="'+(over?'#f87171':P.label)+'" font-size="10" font-family="DM Mono">réel · '+groupFR(cumLast)+pctTxt+'</text>';
+    const reelLbl='<text x="10" y="'+ly+'" fill="'+(over?'#f87171':P.label)+'" font-size="10" font-family="Space Grotesk, DM Sans, sans-serif">réel · '+groupFR(cumLast)+pctTxt+'</text>';
     const dotN='<circle cx="'+xc+'" cy="'+ry+'" r="5" fill="none" stroke="'+lvlCol+'" stroke-width="1.4" class="cx-pulse"/>'
       +'<circle cx="'+xc+'" cy="'+ry+'" r="4" fill="#0c0c12" stroke="'+lvlCol+'" stroke-width="2.4"/>';
     nvSvg='<svg viewBox="0 0 '+CH.W+' '+CH.H+'" class="cx-svg"><defs>'+defs+'</defs>'
@@ -5245,7 +5244,7 @@ function courbeB(opts){
       bracket='<line x1="'+bx+'" y1="'+r1(last.y)+'" x2="'+bx+'" y2="'+ey+'" stroke="'+DEV+'" stroke-width="1.2"/>'
         +'<line x1="'+r1(bx-3)+'" y1="'+r1(last.y)+'" x2="'+r1(bx+3)+'" y2="'+r1(last.y)+'" stroke="'+DEV+'" stroke-width="1.2"/>'
         +'<line x1="'+r1(bx-3)+'" y1="'+ey+'" x2="'+r1(bx+3)+'" y2="'+ey+'" stroke="'+DEV+'" stroke-width="1.2"/>'
-        +'<text x="'+r1(bx-6)+'" y="'+r1((last.y+ey)/2+3)+'" text-anchor="end" fill="'+DEVT+'" font-size="9" font-family="DM Mono">'+groupFR(reste)+'</text>'; } }
+        +'<text x="'+r1(bx-6)+'" y="'+r1((last.y+ey)/2+3)+'" text-anchor="end" fill="'+DEVT+'" font-size="9" font-family="Space Grotesk, DM Sans, sans-serif">'+groupFR(reste)+'</text>'; } }
   /* ── pulse (last point) ── */
   const pulse='<circle cx="'+last.x+'" cy="'+r1(last.y)+'" r="5" fill="none" stroke="'+P.line+'" stroke-width="1.4" class="cx-pulse"/>'
     +'<circle cx="'+last.x+'" cy="'+r1(last.y)+'" r="4" fill="#0c0c12" stroke="'+P.line+'" stroke-width="2.4"/>';
@@ -5814,7 +5813,7 @@ async function openReelDrawer(deptId, sectionIdx, lineIdx, recRef) {
       ${cas2Pending.map((p, pi) => `<div style="background:var(--surface-2);border-radius:10px;margin-bottom:8px;border-left:2px solid #818cf8;overflow:hidden">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:11px 13px;gap:10px">
           <div><div style="font-family:'Space Grotesk',sans-serif;font-size:.82em;font-weight:700;color:#fff;display:flex;align-items:center;gap:7px;flex-wrap:wrap">${p.fourn||'—'} <span style="display:inline-flex;align-items:center;gap:4px;font-size:.56em;font-weight:700;text-transform:uppercase;letter-spacing:.7px;padding:2px 7px;border-radius:5px;background:rgba(129,140,248,.12);color:#818cf8;border:1px solid rgba(129,140,248,.25)">intra · avec virement</span></div></div>
-          <div style="text-align:right;flex-shrink:0"><div style="font-family:var(--ff-num);font-size:.85em;font-weight:700;color:#818cf8">+${fmtAmt(Math.abs(p.ttc||0))}</div><div style="font-size:.58em;color:var(--text-dim);margin-top:2px">virement attendu</div></div>
+          <div style="text-align:right;flex-shrink:0"><div style="font-family:var(--ff-num);font-variant-numeric:tabular-nums lining-nums;font-size:.85em;font-weight:700;color:#818cf8">+${fmtAmt(Math.abs(p.ttc||0))}</div><div style="font-size:.58em;color:var(--text-dim);margin-top:2px">virement attendu</div></div>
         </div>
         ${p.origin ? `<div style="font-size:.64em;color:var(--text-muted);padding:0 13px 8px;display:flex;align-items:center;gap:5px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg>Virement réel attendu depuis <b style="color:var(--text-muted)">${p.origin}</b></div>` : ''}
         <div style="display:flex;align-items:center;gap:6px;font-size:.6em;color:var(--text-dim);background:rgba(255,255,255,.02);padding:7px 13px;border-top:1px solid rgba(255,255,255,.04)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Non comptabilisé — n'entre dans aucun total tant qu'il n'est pas lié au virement réel.</div>
@@ -5943,7 +5942,7 @@ async function openReelDrawer(deptId, sectionIdx, lineIdx, recRef) {
       <div style="background:var(--surface-2);border:1px solid rgba(99,102,241,.2);border-radius:8px;overflow:hidden">
         <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border)">
           <span style="font-size:.65em;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#818cf8">Réel cumulé Qonto</span>
-          <span style="font-family:var(--ff-num);font-size:.78em;font-weight:600;color:#fff">−${fe(line.reel)}</span>
+          <span style="font-family:var(--ff-num);font-variant-numeric:tabular-nums lining-nums;font-size:.78em;font-weight:600;color:#fff">−${fe(line.reel)}</span>
         </div>
         <div style="padding:14px;text-align:center;color:var(--text-dim);font-size:.75em">
           Détail des transactions non disponible. Réimportez le relevé Qonto pour reconstruire l'historique.
@@ -6042,7 +6041,7 @@ async function openImprevuesDrawer(deptId) {
               </div>
               <div style="font-size:.6em;color:var(--text-dim);margin-top:1px">${d} · ${tx.note || ''}</div>
             </div>
-            <span style="font-family:var(--ff-num);font-size:.78em;font-weight:700;color:var(--red);flex-shrink:0;margin-left:8px">${amt}</span>
+            <span style="font-family:var(--ff-num);font-variant-numeric:tabular-nums lining-nums;font-size:.78em;font-weight:700;color:var(--red);flex-shrink:0;margin-left:8px">${amt}</span>
           </div>`;
         }).join('');
       } else {
@@ -8527,7 +8526,7 @@ function filterReleve() {
       <td style="padding:9px 14px;vertical-align:top"><div style="color:var(--text-dim);font-family:var(--ff-num);font-size:.82em;white-space:nowrap">${d}</div>${metaRow}</td>
       <td style="padding:9px 14px;font-size:.85em;vertical-align:top"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-weight:600;color:#fff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:100%">${tx.fourn || '\u2014'}</span>${fournChips}</div></td>
       <td style="padding:9px 14px;color:var(--text-muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:.82em;vertical-align:top" title="${(tx.note||'').replace(/"/g,'&quot;')}">${tx.note || ''}</td>
-      <td style="padding:9px 14px;text-align:right;font-family:var(--ff-num);font-weight:700;color:${amtColor};white-space:nowrap;font-size:.85em;vertical-align:top">${amtVal}</td>
+      <td style="padding:9px 14px;text-align:right;font-family:var(--ff-num);font-variant-numeric:tabular-nums lining-nums;font-weight:700;color:${amtColor};white-space:nowrap;font-size:.85em;vertical-align:top">${amtVal}</td>
       <td class="releve-dept" style="padding:9px 14px;overflow:hidden;vertical-align:top">${deptHtml}</td>
     </tr>`;
   }).join('') || `<tr><td colspan="5" style="padding:32px;text-align:center;color:var(--text-dim)">Aucun r\u00E9sultat</td></tr>`;

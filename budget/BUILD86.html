@@ -1271,7 +1271,7 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .opt-tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--border)}
 /* §v23a.2 (A4): break BOTH tab bars out of the 20px .drawer-body padding so the bottom separator is
    full-bleed wall-to-wall (negative margin −20px each side, re-pad 20px to keep the tabs aligned). */
-.opt-tabs,.reel-tabs{margin:0 -20px 16px;padding:0 20px}
+.opt-tabs,.reel-tabs{margin:0 -20px 16px;padding:0 20px;position:sticky;top:-20px;z-index:5;background:var(--surface)}
 /* §v23a.4 (DIFF2): the opt tab-row sits inside #drawer-body's 20px padding-top, so it floats ~20px
    below the rail header where the v16.7 mock's .tabs is FLUSH. Cancel that top gap for the OPT row
    ONLY (negative top margin = −body padding-top). .reel-tabs is NOT in this selector, so the réelles
@@ -4301,16 +4301,6 @@ function buildEditDrawer(deptId, sectionIdx, lineIdx, isNew, recRef) {
                 <option value="G" ${line.typ==='G'?'selected':''}>G — Prestataire</option>
               </select>
             </div>`}
-            <div class="df-group">
-              <label class="df-label">Statut</label>
-              <select id="ef-st" class="df-select">
-                <option value="ESTIMATION"  ${line.st==='ESTIMATION'?'selected':''}>ESTIMATION</option>
-                <option value="EN COURS"    ${line.st==='EN COURS'?'selected':''}>EN COURS</option>
-                <option value="DEVIS SIGNÉ" ${line.st==='DEVIS SIGNÉ'?'selected':''}>DEVIS SIGNÉ</option>
-                <option value="VALIDÉ"      ${line.st==='VALIDÉ'?'selected':''}>VALIDÉ</option>
-                <option value="PAYÉ"        ${line.st==='PAYÉ'?'selected':''}>PAYÉ</option>
-              </select>
-            </div>
           </div>
         </div>
       </div>
@@ -4870,7 +4860,7 @@ async function saveLigne(deptId, sectionIdx, lineIdx, isNew) {
   const tva     = document.getElementById('ef-tva')?.value;
   const typ     = document.getElementById('ef-typ')?.value;
   const est     = parseFloat(document.getElementById('ef-est')?.value) || 0;
-  const st      = document.getElementById('ef-st')?.value;
+  const st      = document.getElementById('ef-st')?.value || 'ESTIMATION';   // ef-st select retired (B86); mirrors L3201 default — new-line add path only (edit path preserves line.st at the write site)
   const obs        = document.getElementById('ef-obs')?.value.trim();
   const qonto_ref  = document.getElementById('ef-qonto-ref')?.value.trim();
   // Read dept from dropdown (user may have changed it)
@@ -4942,7 +4932,7 @@ async function saveLigne(deptId, sectionIdx, lineIdx, isNew) {
           {field:'tva',          value: tva},
           {field:'est_ht',       value: String(est)},
           {field:'est_ttc',      value: String(estTTC)},
-          {field:'statut',       value: st},
+          {field:'statut',       value: line.st},
           {field:'observations', value: obsWithRef},
         ].filter(u => !(renamed && u.field === 'ligne')); // rename stubs the `ligne` field only
         for (const u of updates) {

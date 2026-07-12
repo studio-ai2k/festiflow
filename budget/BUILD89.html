@@ -4617,10 +4617,11 @@ function _devisRowHTML(d, idx){
         </div>
         <div class="statut-changer">
           <div class="statut-changer-lbl">Statut du devis</div>
-          <div class="statut-pills">${pill('recu')}${pill('avalider')}${pill('valide')}${pill('signe')}${pill('paye')}${pill('annule')}</div>
+          <div class="statut-pills">${_DEVIS_STATES.filter(s => s.code !== 'annule').map(s => pill(s.code)).join('')}</div>
         </div>
         <div class="dt-actions">
           <button class="dt-act-btn" onclick="event.stopPropagation();edDevisModify(this)">${_DEVIS_SVG.edit}Modifier</button>
+          <button class="dt-act-btn danger" onclick="event.stopPropagation();edDevisCancel(this)">${_DEVIS_SVG.annule}Annuler</button>
           <button class="dt-act-btn danger" onclick="event.stopPropagation();edDevisRemove(this)">${_DEVIS_SVG.trash}Retirer</button>
         </div>
       </div>
@@ -4667,13 +4668,11 @@ function edDevisPaneHTML(key, est, tabName){
         <div class="ds-foot"><span class="fl">sur <b>${fe(est||0)}</b> prévu · ${pct}% engagé</span><span class="fr">${fe(libre)} libre</span></div>
       </div>
     </div>`;
-  const crumb = `<div class="devis-dept-head dv-dept-only" style="display:none;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px"><div class="devis-dept-title" style="font-family:'Space Grotesk',sans-serif;font-size:.95em;font-weight:700;color:#fff;line-height:1.3">Devis · Tous · ${_esc(tabName)}</div><button class="rail-x" onclick="hideDeptDevis(this)">← Retour</button></div>`;
   const lineRows = arr.length
     ? arr.map((d,i)=>_devisRowHTML(d,i)).join('')
     : `<div class="devis-empty dv-line-only">Aucun devis sur cette ligne.<br>Ajoutez un devis pour suivre l'engagé (montant signé / reçu).</div>`;
   const rowsBlock = `
     <div class="dsec">
-      ${crumb}
       <div class="dsec-t dv-line-only">Devis enregistrés</div>
       <div class="edit dv-line-only">${lineRows}</div>
       <div class="dv-dept-only" style="display:none">${_devisDeptHTML(tabName)}</div>
@@ -4731,34 +4730,51 @@ function edDevisSyncMetrics(root, key, est){
 
 /* ── FOLDED LIVE — pure DOM, no write (design-of-record bodies, selectors adapted to _x) ── */
 function toggleDevis(row){ row.classList.toggle('expanded'); }
+function _applyDevisState(row, code){
+  // Shared visual + client-state write (pills + the Annuler action). NO persistence.
+  const state = _stByCode(code);
+  const chip = row.querySelector('.sr-name .ctag');
+  if (chip){ chip.className = 'ctag '+state.code; chip.textContent = state.label; }
+  row.classList.toggle('devis-annule', code==='annule');
+  row.classList.add('cls'); row.style.borderLeftColor = state.border;
+  // keep the client (UI) state consistent so the change survives a re-render — but NO persistence.
+  const pane = row.closest('.ed-pane[data-edpane="devis"]');
+  const idx = row.dataset.devisIdx;
+  if (pane && idx != null) { const arr = _edDevisStore[pane.dataset.lineKey]; if (arr && arr[idx]) arr[idx].statut = state.statut; }
+  // PERSIST-STUBBED: amber Phase-D affordance, no write.
+  showToast('⏳ Bientôt', 'Statut du devis — enregistrement backend à venir (Phase-D).', 'amber');
+}
 function setDevisStatut(pill, key){
   // VISUAL-LIVE: render the pill toggle + chip + border exactly as the design-of-record.
   const changer = pill.closest('.statut-changer');
   changer.querySelectorAll('.statut-pill').forEach(p => p.classList.remove('on'));
   pill.classList.add('on');
-  const row = pill.closest('.split-row');
-  const chip = row.querySelector('.sr-name .ctag');
-  const state = _stByCode(key);
-  if (chip){ chip.className = 'ctag '+state.code; chip.textContent = state.label; }
-  row.classList.toggle('devis-annule', key==='annule');
-  row.classList.add('cls'); row.style.borderLeftColor = state.border;
-  // keep the client (UI) state consistent so the change survives a re-render — but NO persistence.
-  const pane = pill.closest('.ed-pane[data-edpane="devis"]');
-  const idx = row.dataset.devisIdx;
-  if (pane && idx != null) { const arr = _edDevisStore[pane.dataset.lineKey]; if (arr && arr[idx]) arr[idx].statut = state.statut; }
-  // PERSIST-STUBBED: amber Phase-D affordance, no write.
-  showToast('⏳ Bientôt', 'Statut du devis — enregistrement backend à venir (Phase-D).', 'amber');
+  _applyDevisState(pill.closest('.split-row'), key);
+}
+function edDevisCancel(btn){
+  // Annuler action — Annulé is no longer a pill; de-highlight the forward pills, then apply the annule state.
+  const row = btn.closest('.split-row');
+  const changer = row.querySelector('.statut-changer');
+  if (changer) changer.querySelectorAll('.statut-pill').forEach(p => p.classList.remove('on'));
+  _applyDevisState(row, 'annule');
 }
 function showDeptDevis(el){
   const pane = el.closest('.ed-pane[data-edpane="devis"]');
   pane.classList.add('dep-devis-deptview');
   pane.querySelectorAll('.dv-dept-only').forEach(n => n.style.display='');
   pane.querySelectorAll('.devis-row.expanded').forEach(r => r.classList.remove('expanded'));
+  // §Retour — the top-right SHELL control becomes Retour for the dept-devis view (mirrors openVentiler / .rail-x). hideDeptDevis restores it.
+  (function(){ const rx = document.getElementById('rail-hdr-host') && document.getElementById('rail-hdr-host').querySelector('.rail-x');
+    if (rx){ rx.innerHTML = '\u2190 Retour'; rx.onclick = () => hideDeptDevis(pane); } })();
 }
 function hideDeptDevis(el){
-  const pane = el.closest('.ed-pane[data-edpane="devis"]');
+  const pane = (el && el.closest && el.closest('.ed-pane[data-edpane="devis"]')) || document.querySelector('#drawer .ed-pane[data-edpane="devis"]');
+  if (!pane) return;
   pane.classList.remove('dep-devis-deptview');
   pane.querySelectorAll('.dv-dept-only').forEach(n => n.style.display='none');
+  // §Retour teardown — restore the edit-drawer's NORMAL rail-x (verified: buildEditDrawer sets railXState 'close' → Fermer ✕ / closeDrawer).
+  (function(){ const rx = document.getElementById('rail-hdr-host') && document.getElementById('rail-hdr-host').querySelector('.rail-x');
+    if (rx){ rx.innerHTML = 'Fermer \u2715'; rx.onclick = closeDrawer; } })();
 }
 function addDevis(el){
   const pane = el.closest('.ed-pane[data-edpane="devis"]');

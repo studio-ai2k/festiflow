@@ -6242,7 +6242,7 @@ function optFilterLignes(){
   const res = document.getElementById('opt-ligne-res');
   if (!inp || !res || !_optState) return;
   const q = _optNorm(inp.value).trim();
-  // Ruling 3 — à-trier DEPT-mode: the search lists DEPARTMENTS (dépense), not lines.
+  // à-relier DEPT-mode: the search lists DEPARTMENTS (dépense), not lines.
   if (_optState._atrierMode){
     let depts = (typeof DEPT_META !== 'undefined' ? Object.entries(DEPT_META) : [])
       .map(([tab, m]) => ({ tab: tab, name: m.name }));
@@ -6251,7 +6251,7 @@ function optFilterLignes(){
     res.innerHTML = depts.length
       ? depts.map(d => `<div class="lr-row" onclick="optAtrierPickDept('${_optJs(d.tab)}')">
           <div class="lr-dept">${_optEsc(d.name)}</div>
-          <div class="lr-line"><span class="lr-cat">\u00C0 TRIER</span> Cr\u00e9er la ligne ici</div></div>`).join('')
+          <div class="lr-line">Relier \u00e0 ce d\u00e9partement</div></div>`).join('')
       : '<div class="lr-empty">Aucun d\u00e9partement</div>';
     return;
   }
@@ -6266,7 +6266,7 @@ function optFilterLignes(){
     ? rows.map(r => `<div class="lr-row" onclick="optPickLigne('${_optJs(r.dept)}','${_optJs(r.line)}','${_optJs(r.cat)}')">
         <div class="lr-dept"><span class="dpl-dot" style="background:${(typeof deptColorFor==='function'?deptColorFor(r.deptLabel):null)||'#fbbf24'}"></span>${_optEsc(r.deptLabel)}</div>
         <div class="lr-line"><span class="lr-cat">${_optEsc(r.cat)}</span> ${_optEsc(r.line)}</div></div>`).join('')
-    : '<div class="lr-empty">Aucune ligne — ou utilisez « À trier » ci-dessous</div>';
+    : '<div class="lr-empty">Aucune ligne — ou utilisez « À relier » ci-dessous</div>';
 }
 
 // §SEARCH req4 — à-relier: focusing the search field opens the list with the known dept's lines as

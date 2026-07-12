@@ -2430,7 +2430,7 @@ function renderBilan(){
               <td style="font-weight:600;color:var(--text-muted)">Total Recettes</td>
               <td><span class="cro" style="color:var(--green);font-weight:600">${sign}${fe(totalRecEst)}</span></td>
               <td><span class="cro" style="color:var(--green);font-weight:600">${totalRecReel?sign+fe(totalRecReel):'—'}</span></td>
-              <td>${ecH(totalRecEst-totalRecReel,false,totalRecReel>0)}</td>
+              <td>${ecH(totalRecEst-totalRecReel,false,totalRecReel>0,true)}</td>
             </tr>
             <tr>
               <td style="font-weight:600;color:var(--text-muted)">Total Dépenses</td>

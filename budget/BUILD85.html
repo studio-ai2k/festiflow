@@ -7046,6 +7046,9 @@ function openVentiler(){
     + '</div>'
     + '</div>';
   pane.classList.add('vent-subview-active');
+  // §Retour — the top-right SHELL control becomes Retour for the vent subview (mirrors optOpenIntra / .rail-x). ventBack restores it.
+  (function(){ const rx = document.getElementById('rail-hdr-host') && document.getElementById('rail-hdr-host').querySelector('.rail-x');
+    if (rx){ rx.innerHTML = '\u2190 Retour'; rx.onclick = ventBack; } })();
   ventRender();
   const foot = document.getElementById('drawer-footer');
   if (foot){
@@ -7264,6 +7267,19 @@ function ventRenderFoot(){
     + '<button class="drawer-btn primary' + (balanced ? ' ready' : '') + '" onclick="ventConfirm()"'
     + (balanced ? '' : ' disabled style="opacity:.45;cursor:not-allowed"') + '>Confirmer</button>';
 }
+// back — clear the vent subview, restore the relié pane's normal content + hero + rail-x + foot (mirrors intraBack).
+function ventBack(){
+  const s = _optState;
+  const pane = document.querySelector('#drawer .opt-pane[data-pane="relie"]');
+  if (pane){ pane.classList.remove('vent-subview-active'); const host = document.getElementById('vent-subview'); if (host) host.remove(); }
+  if (s && s.cls === 'ventile'){ s.cls = (s._clsPrevVent || 'ext'); s._clsPrevVent = undefined; }
+  { const heroB = document.getElementById('opt-hero'); if (heroB && s) heroB.innerHTML = transactionCard(_optBuildTx(s), { role:'preview' }); }
+  (function(){ const rx = document.getElementById('rail-hdr-host') && document.getElementById('rail-hdr-host').querySelector('.rail-x');
+    if (rx){ rx.innerHTML = 'Fermer \u2715'; rx.onclick = closeDrawer; } })();
+  const foot = document.getElementById('drawer-footer');
+  if (foot && s) foot.innerHTML = _optRenderFoot(s);
+}
+
 // HUNK 4 — abandon path: restore the pre-ventilation cls (badge off) so 'ventile' never leaks into
 // a normal open, then close. Mirrors remb's rembBack cls-restore idiom. Confirm KEEPS the badge.
 function ventCancel(){

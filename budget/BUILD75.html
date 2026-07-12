@@ -312,33 +312,11 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 }
 
 /* ── BILAN STAT CHIPS ── */
-/* ── Q1 unified résultat card (seam 27dk) — reuses .dkpi-burn + .dkpi-verdict ── */
-.card-shell{background:linear-gradient(180deg,var(--surface),#0d0d15);border:1px solid var(--border-h);border-radius:16px;overflow:hidden}
-.v1grid{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:1px;background:var(--border)}
-.v1hero{background:linear-gradient(180deg,var(--surface),#0d0d15);padding:16px 18px;display:flex;flex-direction:column}
-.v1cell{background:var(--surface);padding:16px;display:flex;flex-direction:column;justify-content:flex-start}
-.v1hero .krow{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.v1hero .keyb{font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:.09em;color:var(--text-dim);font-weight:700}
-.kbig{font-family:'DM Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600;font-size:var(--fs-hero);letter-spacing:-.5px;line-height:1.05;margin-top:8px;color:#fff}
-.kbig.pos{color:#6ee7b7}.kbig.neg{color:#fca5a5}
-.v1hero .kbar{margin-top:12px}
-.kmeta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:9px;font-size:var(--fs-caption);color:var(--text-muted)}
-.kmeta .kdot{width:4px;height:4px;border-radius:50%;background:var(--text-dim)}
-.kmeta b{color:#a5b4fc;font-weight:600}
-.v1cell .kk{font-size:var(--fs-micro);text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);font-weight:700}
-.v1cell .kv{font-family:'DM Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600;font-size:var(--fs-title);color:#fff;margin-top:6px}
-.v1cell .ksub{font-size:var(--fs-caption);color:var(--text-muted);margin-top:5px}
-.card-shell .num-short{display:none}
-@container (max-width:400px){
-  .card-shell .num-full{display:none}.card-shell .num-short{display:inline}
-  .v1grid{grid-template-columns:repeat(3,1fr)}.v1hero{grid-column:1/-1}
-  .v1cell{padding:10px 9px}.kbig{font-size:var(--fs-display)}.v1cell .kv{font-size:var(--fs-body)}
-}
-@media(max-width:400px){
-  .card-shell .num-full{display:none}.card-shell .num-short{display:inline}
-  .v1grid{grid-template-columns:repeat(3,1fr)}.v1hero{grid-column:1/-1}
-  .v1cell{padding:10px 9px}.kbig{font-size:var(--fs-display)}.v1cell .kv{font-size:var(--fs-body)}
-}
+/* ── Q1 résultat card RETIRED in BUILD75 (seam 27ec): the Bilan hero now uses the department
+   .dkpi-* card grammar at global scope — see the #bilan-chips additions just after .dkpi-trio--4
+   below. The v1 .card-shell / .v1grid / .v1hero / .v1cell / .k* rules + the num-full/num-short
+   container queries are retired here (by scope). The LIVE devis-drawer .dt-kv .kv + kv emitters
+   are UNTOUCHED — no token find/replace on kv. ── */
 /* ════════ DEPARTMENT KPI BAND (V2 + Santé + À valider) · seam 27cu ════════ */
 .dkpi-band{display:grid;grid-template-columns:2fr 1fr;gap:10px;align-items:stretch;margin:18px 0 14px}
 /* BUILD68 B3 — Santé card deleted: the band is hero + Actions (Devis CTA). 2fr 1fr with devis; hero
@@ -402,6 +380,35 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
    without it the 4th cell wraps to a second row at <=860px. Absent aRelierT, the class is not
    emitted and the trio is byte-for-byte the 3-column band. */
 .dkpi-trio.dkpi-trio--4{grid-template-columns:repeat(4,1fr)!important}
+/* ── BUILD75 (seam 27ec) net-new CSS for the global Bilan KPI card. SCOPED to #bilan-chips so the
+   department cards render byte-identical: three of these selectors (.dkpi-trio .dkpi-cell .dkpi-k,
+   the ≤860 .dkpi-band .dkpi-actions rule, the ≤520 .dkpi-trio--4 rule) would otherwise reach the
+   dept trio/band. Placed after the base .dkpi-trio--4 (2-class !important) — the #id prefix also lets
+   the ≤520 collapse win by specificity, so it no longer relies on source order. à-relier value = INDIGO
+   (no white override, M1). No edits to any dept .dkpi-* / .cat-* rule. ── */
+#bilan-chips .dkpi-cell .csub{font-size:var(--fs-caption);color:var(--text-muted);margin-top:5px;line-height:1.4}
+#bilan-chips .dkpi-cell .cbar{margin-top:9px;height:5px}
+#bilan-chips .dkpi-hero-val.pos{color:#6ee7b7}
+#bilan-chips .dkpi-hero-val.neg{color:#fca5a5}
+#bilan-chips .cbar.income .reel{background:var(--green)}
+#bilan-chips .cbar.expense .reel{background:var(--red)}
+#bilan-chips .dkpi-cell .cpct{font-family:var(--ff-num-table);font-size:var(--fs-caption);font-weight:700;margin-top:7px;line-height:1;font-variant-numeric:tabular-nums lining-nums}
+#bilan-chips .dkpi-cell .cpct.income{color:var(--green)}
+#bilan-chips .dkpi-cell .cpct.expense{color:var(--red)}
+#bilan-chips .dkpi-cell .cpct + .cbar{margin-top:5px}
+#bilan-chips .dkpi-trio .dkpi-cell .dkpi-k{display:block;line-height:1.25;height:2.75em;overflow:hidden}
+#bilan-chips .csub.has-q .camt{white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}
+#bilan-chips .csub.has-q .cq{white-space:nowrap;display:inline-block;min-width:3.6em}
+#bilan-chips .dkpi-meta .m-pct .ttc{font-style:normal;font-size:var(--fs-micro);font-weight:700;letter-spacing:.06em;color:var(--text-dim);border:1px solid var(--border-h);border-radius:3px;padding:0 3px;line-height:1.4;margin-left:3px}
+#bilan-chips .dv-name .dv-dept{display:inline-flex;align-items:center;gap:5px;margin-right:8px;font-size:var(--fs-micro);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-muted)}
+#bilan-chips .dv-name .dv-dept .sw{width:7px;height:7px;border-radius:2px;display:inline-block}
+#bilan-chips .hero-note{font-size:var(--fs-caption);color:var(--text-muted);margin-top:7px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;line-height:1.4}
+#bilan-chips .hero-note .ttc{font-style:normal;font-size:var(--fs-micro);font-weight:700;letter-spacing:.06em;color:var(--text-dim);border:1px solid var(--border-h);border-radius:3px;padding:0 3px;line-height:1.4}
+@media(max-width:860px){ #bilan-chips .dkpi-band .dkpi-actions{grid-column:1/-1} }
+@media(max-width:520px){
+  #bilan-chips .dkpi-trio.dkpi-trio--4 .arelier-cell{display:none}
+  #bilan-chips .dkpi-trio.dkpi-trio--4{grid-template-columns:repeat(3,1fr)!important}
+}
 /* à-relier value: blue, matching its burn segment. TTC unit tag: dim, beside the label. */
 .dkpi-v.arelier{color:var(--indigo)}
 .dkpi-cell .dkpi-k .unit{font-style:normal;font-size:var(--fs-micro);font-weight:700;letter-spacing:.06em;color:var(--text-dim);border:1px solid var(--border-h);border-radius:3px;padding:0 3px;line-height:1.4}
@@ -2093,40 +2100,133 @@ function renderBilan(){
   const el = id => document.getElementById(id);
 
   if(el('bilan-chips')) {
-    const recReelJour = recReel - tR;                 // réel à ce jour (= resultatReel, L2267)
-    const marge = recHT ? res/recHT*100 : null;
+    // ── BUILD75 (seam 27ec) — Bilan (global) KPI card: the department .dkpi-* card grammar, at global scope. ──
+    // Doctrine A-out honoured: a Bilan-LOCAL copy of computeEngage (renderDept's original stays byte-untouched; nothing leaks).
+    const computeEngageB = devis => (devis || []).reduce((a, d) =>
+      a + (( d.statut === 'Validé' || d.statut === 'Signé' ||
+            (d.statut === 'Payé' && !d.matched_transaction_id) ) ? (d.montant_ht || 0) : 0), 0);
+    const engageT  = allL.reduce((a,l) => a + computeEngageB(l.devis), 0);                       // global engagé (HT · computeEngage basis, LEO#2)
+    const aRelierT = DEPTS.reduce((a,d) => a + unmatchedForDept(d.id).filter(u => (u.ttc||0) < 0)
+                       .reduce((s,u) => s + Math.abs(u.ttc||0), 0), 0);                          // global à-relier (TTC · ttc<0)
+    const resEstime = recHT - tE - aRelierT;                                                     // hero value — LEO#1 (net absorbs à-relier → estimé)
+    const overN   = allL.filter(l => ((l.est||0)-(l.reel||0)-computeEngageB(l.devis)) < 0).length;
+    const overN10 = allL.filter(l => { const b=l.est||0; return b>0 && ((l.est||0)-(l.reel||0)-computeEngageB(l.devis)) < -0.10*b; }).length;
+    // devis-row colour from a dept id. NOTE: deptColorFor() takes a NAME (not an id) → use the canonical DEPT_COLORS index.
+    const bColor = did => { const i = DEPTS.findIndex(d => d.id === did); return i >= 0 ? (DEPT_COLORS[i] || 'var(--indigo)') : 'var(--indigo)'; };
+    const aValiderList = DEPTS.flatMap(d => (d.sections||[]).flatMap((sec,si) =>
+                          (sec.lines||[]).flatMap((l,li) => (l.devis||[])
+                            .filter(dv => dv.statut === 'à valider')
+                            .map(dv => ({ deptId:d.id, pole:d.name, color:bColor(d.id), origIdx:si, li,
+                                          fournisseur:dv.fournisseur, ligne:l.l, ht:dv.montant_ht })))))
+                          .sort((a,b) => (b.ht||0) - (a.ht||0));                                 // LEO#6 — HT desc
+    const aValiderN = aValiderList.length;
+
+    // 4-seg burn — port the dept cumulative-clamp with B=tE R=tR A=aRelierT E=engageT (M4)
+    const _B = tE, _R = tR, _A = aRelierT, _E = engageT;
+    const _spent = _R + _A + _E;
+    const _peak  = Math.max(_B, _spent) || 1;
+    const _overT = Math.max(0, _spent - _B);
+    const _c1 = Math.min(_R, _B), _c2 = Math.min(_R + _A, _B), _c3 = Math.min(_spent, _B);
+    const segReelT  = _c1         / _peak * 100;
+    const segARelT  = (_c2 - _c1) / _peak * 100;
+    const segDevisT = (_c3 - _c2) / _peak * 100;
+    const segOverT  = _overT      / _peak * 100;
+    const segLibreT = Math.max(0, _B - _spent) / _peak * 100;
+    const tickPctT  = _overT > 0 ? _B / _peak * 100 : null;
+    // meta % — round the TOTAL once, then split by largest remainder (dept identity pRe+pARel+pDev===pEng)
+    const _pctOf = v => _B > 0 ? v / _B * 100 : 0;
+    const pEng = Math.round(_pctOf(_spent));
+    const _raw = [_pctOf(_R), _pctOf(_A), _pctOf(_E)];
+    const _fl  = _raw.map(Math.floor);
+    let   _rem = pEng - _fl.reduce((a,b)=>a+b,0);
+    _raw.map((v,i)=>[v-Math.floor(v),i]).sort((a,b)=>b[0]-a[0]).slice(0,_rem).forEach(([,i])=>_fl[i]++);
+    const [pRe, pARel, pDev] = _fl;
+    const soldeB = _B - _spent;
+    const pRest  = (_B === 0) ? 0 : (soldeB >= 0 ? 100 - pEng : pEng - 100);
+
+    // verdict from the adjusted net's marge (LEO#1) — reuse the existing thresholds
+    const marge = recHT ? resEstime/recHT*100 : null;
     let vCls, vLab;
-    if(res<0)            { vCls='v-drift'; vLab='Déficit'; }
-    else if(res===0)     { vCls='v-watch'; vLab='Équilibre'; }
-    else if(marge<5)     { vCls='v-watch'; vLab='À surveiller'; }
-    else                 { vCls='v-ok';    vLab='Bénéfice'; }
-    const consoCol = p>=100?'var(--red)':p>=75?'var(--amber)':'var(--green)';  // consoColor logic (defined later → inlined, no TDZ)
-    const engPct = pct(signedAmt, tE);
-    const over = tR>tE && tE>0;
-    const segReel  = tE>0 ? Math.min(tR/tE*100,100) : 0;
-    const segEng   = tE>0 ? Math.min(signedAmt/tE*100, Math.max(0,100-segReel)) : 0;
-    const segLibre = Math.max(0, 100-segReel-segEng);
-    const barSegs = over
-      ? `<i class="over" style="width:100%"></i>`
-      : `<i class="reel" style="width:${segReel.toFixed(2)}%"></i><i class="devis" style="width:${segEng.toFixed(2)}%"></i><i class="libre" style="width:${segLibre.toFixed(2)}%"></i>`;
-    const dual = n => `<span class="num-full">${fe(n)}</span><span class="num-short">${feShort(n)}</span>`;
-    const signed = (n,fn) => (n>0?'+':n<0?'\u2212':'') + fn(Math.abs(n));
-    const heroDual = `<span class="num-full">${signed(res,fe)}</span><span class="num-short">${signed(res,feShort)}</span>`;
-    const jourDual = `<span class="num-full">${signed(recReelJour,fe)}</span><span class="num-short">${signed(recReelJour,feShort)}</span>`;
-    const margeTxt = marge!=null ? `marge est. ${marge.toFixed(1)}%` : 'marge —';
-    el('bilan-chips').innerHTML = `
-      <div class="card-shell">
-        <div class="v1grid">
-          <div class="v1hero">
-            <div class="krow"><span class="keyb">Résultat net · estimé</span><span class="dkpi-verdict ${vCls}"><span class="d"></span>${vLab}</span></div>
-            <div class="kbig ${res>0?'pos':res<0?'neg':''}">${heroDual}</div>
-            <div class="dkpi-burn kbar">${barSegs}</div>
-            <div class="kmeta"><span style="color:${consoCol};font-weight:600">${p}% consommé</span><span class="kdot"></span><span><b>${engPct}%</b> engagé</span><span class="kdot"></span><span>${margeTxt}</span></div>
+    if(resEstime<0)        { vCls='v-drift'; vLab='Déficit'; }
+    else if(resEstime===0) { vCls='v-watch'; vLab='Équilibre'; }
+    else if(marge<5)       { vCls='v-watch'; vLab='À surveiller'; }
+    else                   { vCls='v-ok';    vLab='Bénéfice'; }
+
+    const signed = (n,fn) => (n>0?'+':n<0?'−':'') + fn(Math.abs(n));
+    const recPct = pct(recReel, recHT);
+    const depPct = pct(tR, tE);
+    const jour   = recReel - tR;
+
+    const burnSegs = `<i class="reel" style="width:${segReelT}%"></i><i class="arelier" style="width:${segARelT}%"></i><i class="devis" style="width:${segDevisT}%"></i>`
+      + (segOverT > 0 ? `<i class="over" style="width:${segOverT}%"></i>` : `<i class="libre" style="width:${segLibreT}%"></i>`)
+      + (tickPctT != null ? `<span class="tick" style="left:${tickPctT}%"></span>` : ``);
+
+    const actionsCard = aValiderN > 0 ? `
+        <div class="dkpi-card dkpi-actions">
+          <div class="dkpi-k dkpi-k-row">Actions — tous pôles
+            <span class="dkpi-verdict av"><span class="d"></span>Devis à valider</span>
           </div>
-          <div class="v1cell"><div class="kk">Recettes encaissées</div><div class="kv" style="color:#6ee7b7">${dual(recReel)}</div><div class="ksub">/ ${dual(recHT)} est. · ${pct(recReel,recHT)}%</div><div class="dkpi-burn" style="margin-top:8px"><i class="reel" style="width:${Math.min(pct(recReel,recHT),100)}%"></i><i class="libre" style="width:${Math.max(0,100-Math.min(pct(recReel,recHT),100))}%"></i></div></div>
-          <div class="v1cell"><div class="kk">Dépenses réelles</div><div class="kv">${dual(tR)}</div><div class="ksub">/ ${dual(tE)} budget · ${pct(tR,tE)}%</div><div class="dkpi-burn" style="margin-top:8px"><i class="reel" style="width:${Math.min(pct(tR,tE),100)}%"></i><i class="libre" style="width:${Math.max(0,100-Math.min(pct(tR,tE),100))}%"></i></div></div>
-          <div class="v1cell"><div class="kk">Réel à ce jour</div><div class="kv" style="color:var(--rb)">${jourDual}</div><div class="ksub">recettes − dépenses réelles</div></div>
-        </div>
+          ${aValiderList.map(r => `
+          <div class="dkpi-devis-row" role="button" tabindex="0" onclick="openLigneDevis('${r.deptId}',${r.origIdx},${r.li})" onkeydown="if(event.key==='Enter'){event.preventDefault();openLigneDevis('${r.deptId}',${r.origIdx},${r.li});}">
+            <span class="dv-name"><span class="dv-dept"><span class="sw" style="background:${r.color}"></span>${r.pole}</span>${r.fournisseur||'—'}</span>
+            <span class="dv-ligne">${r.ligne||'—'}</span>
+            <span class="dv-ht">${fe(r.ht||0)}</span>
+          </div>`).join('')}
+        </div>` : ``;
+
+    el('bilan-chips').innerHTML = `
+      <div class="dkpi-band${aValiderN>0?'':' dkpi-band--noav'}">
+        <div class="dkpi-v2">
+          <div class="dkpi-hero">
+            <div class="dkpi-k dkpi-k-row">RÉSULTAT NET · ESTIMÉ
+              <span class="dkpi-verdict ${vCls}"><span class="d"></span>${vLab}</span>
+            </div>
+            <div class="dkpi-hero-val ${resEstime<0?'neg':'pos'}">${signed(resEstime, fe)}</div>
+            <div class="hero-note">recettes − dépenses − à relier <span class="ttc">TTC</span></div>
+            <div class="dkpi-burn cat-burn">${burnSegs}</div>
+            <div class="dkpi-meta cat-meta">
+              <span class="m-pct"><b>${pEng}%</b> total engagé</span>
+              <span class="dot"></span>
+              <span class="m-pct"><b>${pRe}%</b> réelle</span>
+              <span class="dot"></span>
+              <span class="m-pct"><b>${pARel}%</b> à relier<i class="ttc">TTC</i></span>
+              <span class="dot"></span>
+              <span class="m-pct"><b>${pDev}%</b> devis validé</span>
+              <span class="dot"></span>
+              <span class="m-pct"><b>${pRest}%</b> ${soldeB>=0?'restant':'dépassement'}</span>
+            </div>
+            <div class="dkpi-strip">
+              ${overN > 0 ? `<span class="ct"><i class="badge x">!</i>${overN} ligne${overN>1?'s':''} en dépassement${overN10 > 0 ? `, dont ${overN10} >10%` : ``}</span>` : ``}
+              ${aValiderN > 0 ? `<span class="ct"><i class="badge d">D</i>${aValiderN} devis à valider</span>` : ``}
+            </div>
+          </div>
+          <div class="dkpi-trio dkpi-trio--4">
+            <div class="dkpi-cell">
+              <div class="dkpi-k">RECETTES<br>ENCAISSÉES</div>
+              <div class="dkpi-v">${fe(recReel)}</div>
+              <div class="csub has-q"><span class="camt">/ ${fe(recHT)}</span> <span class="cq">est.</span></div>
+              <div class="cpct income">${recPct}%</div>
+              <div class="dkpi-burn cbar income"><i class="reel" style="width:${Math.min(recPct,100)}%"></i><i class="libre" style="width:${Math.max(0,100-Math.min(recPct,100))}%"></i></div>
+            </div>
+            <div class="dkpi-cell">
+              <div class="dkpi-k">DÉPENSES<br>RÉELLES</div>
+              <div class="dkpi-v">${fe(tR)}</div>
+              <div class="csub has-q"><span class="camt">/ ${fe(tE)}</span> <span class="cq">budget</span></div>
+              <div class="cpct expense">${depPct}%</div>
+              <div class="dkpi-burn cbar expense"><i class="reel" style="width:${Math.min(depPct,100)}%"></i><i class="libre" style="width:${Math.max(0,100-Math.min(depPct,100))}%"></i></div>
+            </div>
+            <div class="dkpi-cell">
+              <div class="dkpi-k">RÉEL<br>À CE JOUR</div>
+              <div class="dkpi-v">${signed(jour, fe)}</div>
+              <div class="csub">recettes − dépenses réelles</div>
+            </div>
+            <div class="dkpi-cell arelier-cell">
+              <div class="dkpi-k">À RELIER<br><i class="unit">TTC</i></div>
+              <div class="dkpi-v arelier">${fe(aRelierT)}</div>
+              <div class="csub">transactions non rapprochées</div>
+            </div>
+          </div>
+        </div>${actionsCard}
       </div>`;
   }
 

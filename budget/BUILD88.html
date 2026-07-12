@@ -577,7 +577,7 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .unm-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 
 .drawer-section{margin-bottom:20px}
-.drawer-section-title{font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim);font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.drawer-section-title{font-family:var(--ff-display);font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim);font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
 /* ── EVENT DRAWER (C7 — separate from the budget engine #drawer; own IDs) ── */
 #evt-drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .3s;z-index:400}
 #evt-drawer-overlay.open{opacity:1;pointer-events:auto}
@@ -5761,7 +5761,6 @@ async function openReelDrawer(deptId, sectionIdx, lineIdx, recRef) {
       <button class="reel-tab on" data-pane="courbe" onclick="reelTab(this)">Courbe</button>
       <button class="reel-tab" data-pane="reliees" onclick="reelTab(this)">Reliées <span class="cnt" id="reel-cnt-reliees">0</span></button>
       <button class="reel-tab" data-pane="attendues" onclick="reelTab(this)">${recMode ? 'Recettes attendues' : 'Attendues'} <span class="cnt">${expectedLines.length + cas2Pending.length}</span>${(expectedLines.length + cas2Pending.length) > 0 ? '<span class="alert"></span>' : ''}</button>
-      <button class="reel-tab" data-pane="notes" onclick="reelTab(this)">Notes</button>
     </div>
 
     <div class="reel-pane on" data-pane="courbe" id="reel-pane-courbe">${courbe({ points: [], ceiling: ttcEst, engage: ttcEngage, mode: recMode ? 'recette' : 'depense' })}</div>
@@ -5807,14 +5806,6 @@ async function openReelDrawer(deptId, sectionIdx, lineIdx, recRef) {
         Aucune dépense attendue pour le moment.<br>
         <span style="font-size:.85em;color:var(--text-dim)">Les dépenses attendues alimenteront cette section.</span>
       </div>`)}
-    </div>
-    </div>
-
-    <div class="reel-pane" data-pane="notes">
-    <!-- Drawer-fixes FIX3: réelles Note tab = READ-ONLY display of the line's note (line.obs, same field ef-obs edits). No save path — réelles is Fermer-only; edit in the edit drawer. -->
-    <div class="drawer-section">
-      <div class="drawer-section-title">Note</div>
-      ${(line.obs && String(line.obs).trim()) ? `<textarea class="df-input" rows="5" readonly style="resize:vertical;min-height:90px;line-height:1.5;color:var(--text-muted);cursor:default">${line.obs}</textarea>` : `<div class="df-hint" style="color:var(--text-dim)">Aucune note</div>`}
     </div>
     </div>
   `;

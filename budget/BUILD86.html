@@ -1967,7 +1967,6 @@ function apiRowsToDept(tabName, rows) {
   // not created on first classify). Render sorts it last + dashed/amber; ensureDiversLine finds it
   // (its .find already handles a pre-seeded section, so no duplicate is created). Empty = OK.
   const _sections = sortedOrder.map(s => ({s, lines: sectionsMap[s]}));
-  if (!sectionsMap['À TRIER']) _sections.push({ s: 'À TRIER', lines: [] });
   return {
     id: meta.id,
     name: meta.name,
@@ -2741,22 +2740,12 @@ function renderDept(id){
     return `<span class="${v > 0 ? 'cpos' : 'cneg'}">${v > 0 ? '+' : ''}${fe(v)}</span>`;
   };
 
-  // Sort sections: À TRIER always last (preserved per §2.2 — pre-existing _x code, must survive intact).
-  // Post-§1.8 this is effectively a no-op since À TRIER is filtered from _vis, but preservation avoids
-  // a bump in §4.10 hunk count and keeps the sort a safety-net if callers ever pass unfiltered depts.
-  const sortedSections = [...dept.sections].sort((a,b) => {
-    if (a.s === 'À TRIER') return 1;
-    if (b.s === 'À TRIER') return -1;
-    return 0;
-  });
-
   // BUILD61 §2.2 — map over _vis (was: sortedSections). origIdx stays dept.sections.indexOf(sec)
   // (object identity, load-bearing for openReelDrawer/openEditLigne ITEM29). NO section cloning.
   const secHTML=_vis.map((sec,si)=>{
     const origIdx = dept.sections.indexOf(sec);
     const sid=`s${id}${origIdx}`;
     const _open = _openSecs.has(sid);   // §ITEM29 restore open-state on re-render
-    const isAtrier = sec.s === 'À TRIER';   // false by construction after §1.8 filter; kept for structural parity
     // BUILD61 §1.2/§1.3d — sec-scoped aggregates walk secReal (isReal-filtered).
     // Placeholders are still excluded row-by-row below (§2.2 identity trap #1: map stays over sec.lines
     // to keep `li` a stable index into sec.lines, consumed by openReelDrawer/openEditLigne).
@@ -2864,7 +2853,7 @@ function renderDept(id){
     const sSoldeLab = sEc >= 0 ? 'RESTANT' : 'DÉPASSEMENT';
     const sSoldeCls = sEc >= 0 ? 'pos' : 'neg';
 
-    return `<div class="sec-block" style="${isAtrier?'margin-top:28px;border-top:1px dashed rgba(251,191,36,.15);padding-top:12px':''}">
+    return `<div class="sec-block" style="">
       <div class="twrap">
       <table class="tbl dep-tbl pl-tbl">
         <thead>
@@ -2879,7 +2868,7 @@ function renderDept(id){
               <div class="cat-head${_open?' expanded':''}">
                 <div class="cat-title-row">
                   <span id="arr-${sid}" class="cat-arr" style="transform:rotate(${_open?'90deg':'0deg'})">▶</span>
-                  <span class="cat-name" style="color:${isAtrier?'var(--amber)':'#fff'}">${sec.s}${isAtrier?' ⚠':''}</span>
+                  <span class="cat-name" style="color:#fff">${sec.s}</span>
                   <div class="dkpi-strip cat-strip">${sStrip}</div>
                 </div>
                 ${_open ? `
@@ -2929,7 +2918,7 @@ function renderDept(id){
           </tr>
         </thead>
         <tbody id="${sid}" style="display:${_open?'':'none'}">${rows}${rows===''?`
-          <tr class="empty-sec-row"><td colspan="6" style="padding:14px 16px;text-align:center;color:var(--text-dim);font-size:.82em;font-style:italic">${isAtrier?'Aucune transaction à trier pour l\'instant':'Aucune ligne dans cette section'}</td></tr>`:''}
+          <tr class="empty-sec-row"><td colspan="6" style="padding:14px 16px;text-align:center;color:var(--text-dim);font-size:.82em;font-style:italic">Aucune ligne dans cette section</td></tr>`:''}
           <tr class="add-ligne-row">
             <td colspan="6" style="padding:4px 10px">
               <button class="add-ligne-btn" onclick="openAddLigne('${id}',${origIdx})">
@@ -5308,14 +5297,13 @@ function assignedCard(dept, line, opts){
   opts = opts || {};
   const c = (typeof deptColorFor === 'function' ? deptColorFor(dept) : null) || '#fbbf24';
   const cat = opts.cat || (typeof lineCat === 'function' ? lineCat(dept, line) : '');
-  const atrier = opts.atrier ? '<span class="vcard-cat" style="color:var(--amber)">À TRIER</span>' : '';
   const intra  = opts.intra  ? '<span class="vcard-cat" style="color:var(--indigo)">INTRA</span>' : '';
   const amt = opts.amt ? '<span class="vcard-amt">' + opts.amt + '</span>' : '';
   const rm  = opts.onRemove ? '<button class="vcard-rm" onclick="' + opts.onRemove + '" title="Retirer">✕</button>' : '';
   const right = (amt || rm) ? '<div class="vcard-r" style="align-self:flex-start">' + amt + rm + '</div>' : '';
   return '<div class="vcard" style="align-items:flex-start">'
        + '<div class="vcard-l"><span class="vr-dot" style="background:' + c + ';margin-top:6px"></span>'
-       + '<span class="vcard-nm ilc-nm2"><span class="vcard-dept">' + dept + intra + atrier + '</span>'
+       + '<span class="vcard-nm ilc-nm2"><span class="vcard-dept">' + dept + intra + '</span>'
        + '<span class="ilc-line2">' + '<span class="vcard-cat">' + cat + '</span>' + line + '</span></span></div>'
        + right + '</div>';
 }
@@ -6273,15 +6261,15 @@ function optLigneFocus(){
 }
 
 function _optAssignedCardHtml(s){
-  if (!(s.dept && (s.line || s.atrier || s.relier))) return '';
+  if (!(s.dept && (s.line || s.relier))) return '';
   const label = s.isRevenue ? (s.cat || s.dept) : ((typeof DEPT_META !== 'undefined' && DEPT_META[s.dept]) ? DEPT_META[s.dept].name : s.dept);
-  const line  = s.atrier ? (s.fourn || 'Transaction') : (s.line || (s.relier ? '\u0053\u00e9lectionner une ligne' : s.line));
+  const line  = s.line || (s.relier ? '\u0053\u00e9lectionner une ligne' : s.line);
   // §v23a.2 (#4): the ✕ (vcard-rm) is gated in frozen assignedCard on onRemove. Omit onRemove when
   // the foot is locked (settled/cas1recv — same predicate as optApplyLock) so the assigned card is
   // inert in locked; editing/open still carry the live optClearLigne() ✕.
   const st = _optFootState(s);
   const locked = (st === 'settled') || (st === 'cas1recv');
-  return assignedCard(label, line, { cat: s.cat || '', atrier: !!s.atrier, onRemove: locked ? undefined : 'optClearLigne()' });
+  return assignedCard(label, line, { cat: s.cat || '', onRemove: locked ? undefined : 'optClearLigne()' });
 }
 
 // v23a.1 — cas1recv amber #orient prompt (mock L1275). Renders ONLY when the foot state is
@@ -6339,7 +6327,6 @@ function optPickLigne(dept, line, cat){
   if (d) { d.value = dept; if (typeof populateAssignLines === 'function') populateAssignLines(dept); }
   const l = document.getElementById('assign-ligne');
   if (l) { l.innerHTML = '<option selected>' + _optEsc(line) + '</option>'; l.value = line; }
-  window._isAtrier = false;
   _optAfterPick();
 }
 
@@ -6385,7 +6372,6 @@ function optClearLigne(){
   if (!_optState) return;
   _optState.dept = (_optState.preselect && !_optState.isRevenue) ? _optState.preselect : null;
   _optState.line = null; _optState.atrier = false; _optState._atrierMode = false;
-  window._isAtrier = false;
   _optAfterPick();
 }
 
@@ -6393,8 +6379,8 @@ function optClearLigne(){
 function _optAfterPick(){
   const s = _optState; if (!s) return;
   const cur = document.getElementById('opt-ligne-cur'); if (cur) cur.innerHTML = _optAssignedCardHtml(s);
-  const hint = document.getElementById('relie-hint'); if (hint) hint.style.display = (s.dept && (s.line || s.atrier || s.relier) && !(s.relier && !s.line && !s.atrier)) ? '' : 'none';
-  const chk = document.getElementById('opt-tab-check'); if (chk) { chk.style.display = (s.dept && (s.line || s.atrier || s.relier)) ? '' : 'none'; chk.classList.toggle('partial', !!(s.relier && !s.line && !s.atrier)); }
+  const hint = document.getElementById('relie-hint'); if (hint) hint.style.display = (s.dept && (s.line || s.relier) && !(s.relier && !s.line)) ? '' : 'none';
+  const chk = document.getElementById('opt-tab-check'); if (chk) { chk.style.display = (s.dept && (s.line || s.relier)) ? '' : 'none'; chk.classList.toggle('partial', !!(s.relier && !s.line)); }
   const res = document.getElementById('opt-ligne-res'); if (res) { res.classList.remove('on'); } if (_optState) _optState._ligneFocusOpen = false;
   const inp = document.getElementById('opt-ligne-input'); if (inp) inp.value = '';
   const hero = document.getElementById('opt-hero'); if (hero) hero.innerHTML = transactionCard(_optBuildTx(s), { role: 'preview' });
@@ -7310,7 +7296,7 @@ function _optRenderFoot(s){
   const st = _optFootState(s);
   let primary, secondary;
   if (st === 'open') {
-    const ready = !!(s.dept && (s.line || s.atrier || s.relier));
+    const ready = !!(s.dept && (s.line || s.relier));
     secondary = '<button class="drawer-btn" onclick="closeDrawer()">Annuler</button>';
     primary = '<button class="drawer-btn primary" onclick="optFootPrimary()"' + (ready ? '' : ' disabled style="opacity:.45;cursor:not-allowed"') + '>Confirmer</button>';
   } else if (st === 'settled') {
@@ -7329,9 +7315,9 @@ function optFootPrimary(){
   const s = _optState; if (!s) return;
   const st = _optFootState(s);
   if (st === 'open' || st === 'editing') {
-    if (!(s.dept && (s.line || s.atrier || s.relier))) return;            // Confirmer needs dept + line/à-trier/à-relier
+    if (!(s.dept && (s.line || s.relier))) return;            // Confirmer needs dept + line/à-trier/à-relier
     _optLogStub('CL-48', 'assign-commit (' + (st === 'open' ? 'open' : 'edit') + '\u2192settled)',
-      (s.fourn || '') + ' \u2192 ' + s.dept + (s.atrier ? ' · \u00C0 TRIER' : (s.line ? ' · ' + s.line : (s.relier ? ' · \u00C0 RELIER' : ''))) + (s.cas && s.cas !== 'none' ? ' [' + s.cas + ']' : ''));
+      (s.fourn || '') + ' \u2192 ' + s.dept + (s.line ? ' · ' + s.line : (s.relier ? ' · \u00C0 RELIER' : '')) + (s.cas && s.cas !== 'none' ? ' [' + s.cas + ']' : ''));
     s.lock = 'settled'; s.editing = false;
     // Item 39 #5 — clear remb subview state on commit so the post-commit back-stack is coherent
     // (_optPaint regenerates the relié pane, discarding the moved picker node; just reset the flags).
@@ -7376,8 +7362,7 @@ function _optPaint(){
   document.getElementById('drawer-body').innerHTML = _optRenderBody(s);
   // re-establish the hidden bridge to the current selection (no POST; for the preserved orphan machinery)
   if (s.dept) { const d = document.getElementById('assign-dept'); if (d) { d.value = s.dept; if (typeof populateAssignLines === 'function') populateAssignLines(s.dept); } }
-  if (s.atrier) { if (typeof selectAssignDivers === 'function') selectAssignDivers(); }
-  else if (s.line) { const l = document.getElementById('assign-ligne'); if (l) { l.innerHTML = '<option selected>' + _optEsc(s.line) + '</option>'; l.value = s.line; window._isAtrier = false; } }
+  if (s.line) { const l = document.getElementById('assign-ligne'); if (l) { l.innerHTML = '<option selected>' + _optEsc(s.line) + '</option>'; l.value = s.line; } }
   document.getElementById('drawer-footer').innerHTML = _optRenderFoot(s);
   optApplyLock();
   optRenderNotes();
@@ -7386,7 +7371,7 @@ function _optPaint(){
 // ── the three-tab body builder (emitted for BOTH src arms) ────────────────────
 function _optRenderBody(s){
   const tx = _optBuildTx(s);
-  const picked = !!(s.dept && (s.line || s.atrier || s.relier));
+  const picked = !!(s.dept && (s.line || s.relier));
   // hidden bridge (#assign-dept/#assign-ligne/divers) so the sealed line engine + the
   // preserved orphan-remb machinery keep working; the new search drives it.
   const bridge = '<div id="opt-bridge" style="display:none">' + (s._picker || '') + '</div>';
@@ -7420,7 +7405,7 @@ function _optRenderBody(s){
       </div>
       <div class="lineres" id="opt-ligne-res"></div>
       <div id="opt-ligne-cur">${(s.ventLines && s.ventLines.length) ? _optVentHtml(s) : _optAssignedCardHtml(s)}</div>
-      <div class="relie-hint" id="relie-hint" style="display:${(picked && !(s.relier && !s.line && !s.atrier)) ? '' : 'none'}">${_hintMsg}</div>
+      <div class="relie-hint" id="relie-hint" style="display:${(picked && !(s.relier && !s.line)) ? '' : 'none'}">${_hintMsg}</div>
       ${orphanRemb}
       <div class="opt-action-cards dsec" style="margin-top:28px"><div class="dsec-t">Autres actions</div><div class="optgrid">
         ${atrierCard}
@@ -7485,7 +7470,7 @@ function _optRenderBody(s){
 
   // tab bar + hero + panes
   return `<div class="opt-tabs">
-      <button class="opt-tab on" data-pane="relie" onclick="optTab(this)">Relier <span class="tab-check${(_optState.relier && !_optState.line && !_optState.atrier) ? ' partial' : ''}" id="opt-tab-check" style="display:${picked ? '' : 'none'}">\u2713</span></button>
+      <button class="opt-tab on" data-pane="relie" onclick="optTab(this)">Relier <span class="tab-check${(_optState.relier && !_optState.line) ? ' partial' : ''}" id="opt-tab-check" style="display:${picked ? '' : 'none'}">\u2713</span></button>
       <button class="opt-tab" data-pane="type" onclick="optTab(this)">Type</button>
       <button class="opt-tab" data-pane="notes" onclick="optTab(this)">Notes <span class="cnt" id="notes-cnt">0</span></button>
     </div>
@@ -7555,7 +7540,6 @@ function _openAssignDrawerCore(src, c) {
         </select>
       </div>
       <div id="assign-divers-wrap" style="display:none;margin-bottom:14px">
-        <button onclick="selectAssignDivers()" style="width:100%;padding:10px;border-radius:8px;border:1px dashed rgba(251,191,36,.25);background:rgba(251,191,36,.04);color:var(--amber);font-family:'DM Sans',sans-serif;font-size:.78em;font-weight:600;cursor:pointer;transition:all .15s" onmouseover="this.style.background='rgba(251,191,36,.08)'" onmouseout="this.style.background='rgba(251,191,36,.04)'">Pas sûr ? → À trier</button>
       </div>`;
   // ── v23a OPTIONS FOLD — body+foot no longer src-split ─────────────────────
   // Both arms ('unmatched' + 'orphan') now render the SAME three-tab face (Relier /
@@ -7581,7 +7565,6 @@ function _openAssignDrawerCore(src, c) {
     cas: null,
     dept: (preselect && !isRevenue) ? preselect : null,
     line: null,
-    atrier: false,
     relier: false,   // à-relier discriminant (relier action) — distinct from genuine à-trier
     preselect: preselect || '',
     isReattribuer: !!isReattribuer,
@@ -7622,7 +7605,6 @@ function _openAssignDrawerCore(src, c) {
     if (_hyd.cat != null)         _optState.cat        = _hyd.cat;
     if (_hyd.cas != null)         _optState.cas        = _hyd.cas;
     if (_hyd.cls != null)         _optState.cls        = _hyd.cls;
-    if (_hyd.atrier != null)      _optState.atrier     = !!_hyd.atrier;
     if (_hyd.relier != null)      _optState.relier     = !!_hyd.relier;
     if (_hyd.sub != null)         _optState.sub        = _hyd.sub;
     if (_hyd.originIntra != null) _optState.originIntra = _hyd.originIntra;
@@ -7652,7 +7634,7 @@ function _openAssignDrawerCore(src, c) {
     document.getElementById('drawer-title').textContent = fourn || 'Transaction non associée';
     document.getElementById('drawer-sub').textContent = 'Assigner manuellement à une ligne budgétaire';
   } else {
-    document.getElementById('drawer-title').textContent = (_optState.atrier || _optState.relier) ? 'Relier \u00E0 une ligne' : 'Assigner la transaction';
+    document.getElementById('drawer-title').textContent = (_optState.relier) ? 'Relier \u00E0 une ligne' : 'Assigner la transaction';
     // Item 39 Step 2 EDIT 1 — recette subtitle now matches the dépense arm ("<tx> · à relier")
     // instead of the "Recette — +X €" face. fourn destructured from c (L6020), in scope here.
     document.getElementById('drawer-sub').innerHTML = `<b>${_esc(fourn)}</b> \u00B7 \u00E0 relier`;
@@ -7785,7 +7767,6 @@ function populateAssignLines(tabName) {
   }
 
   window._assignLines = lines;
-  window._isAtrier = false;
 
   // Build searchable list UI
   sel.style.display = 'none';
@@ -7812,19 +7793,6 @@ function populateAssignLines(tabName) {
   if (diversWrap) diversWrap.style.display = '';
 }
 
-function selectAssignDivers() {
-  const sel = document.getElementById('assign-ligne');
-  const fourn = window._currentAssignFourn || 'Transaction';
-  sel.innerHTML = `<option value="${fourn}" selected>${fourn}</option>`;
-  sel.value = fourn;
-  window._isAtrier = true;
-  // Highlight in list if visible
-  document.querySelectorAll('#assign-list > div').forEach(d => {
-    d.style.background = ''; d.style.fontWeight = '';
-  });
-  showToast('→ Ligne sélectionnée', `"${fourn}" → À TRIER · Clique Confirmer pour valider`, 'amber');
-}
-
 function renderAssignList(lines) {
   const list = document.getElementById('assign-list');
   const sel = document.getElementById('assign-ligne');
@@ -7839,7 +7807,6 @@ function renderAssignList(lines) {
 
 function selectAssignLine(el, value) {
   const sel = document.getElementById('assign-ligne');
-  window._isAtrier = false;
   // Update hidden select
   sel.innerHTML = `<option value="${value}" selected>${value}</option>`;
   sel.value = value;
@@ -8044,28 +8011,6 @@ function assignReopen(openFn, ...args){
 }
 function openOrphanAssign(fourn, note, ht, ttc, cat, date) {
   _openAssignDrawerCore('orphan', { fourn, note, ht, ttc, cat, date });
-}
-
-async function ensureDiversLine(dept, ligneName) {
-  // Check if this line already exists in "À TRIER" section
-  const meta = DEPT_META[dept];
-  const deptData = meta ? DEPTS.find(d => d.id === meta.id) : null;
-  if (deptData) {
-    const aTrierSection = deptData.sections.find(s => s.s === 'À TRIER');
-    if (aTrierSection && aTrierSection.lines.some(l => l.l === ligneName)) return;
-  }
-  // Create À TRIER section (if needed) + line
-  try {
-    const resp = await fetch(`${API}/api/budget/add-ligne`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({session: SESSION, dept, section: 'À TRIER', ligne: ligneName, est_ht: 0, statut: 'ESTIMATION'})
-    });
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      showToast('⚠ À TRIER échoué', `${dept}: ${err.detail || resp.status}`, 'red');
-    }
-  } catch(e) { showToast('⚠ À TRIER échoué', `${dept}: ${e.message}`, 'red'); }
 }
 
 async function confirmOrphanAssign() {

@@ -1647,6 +1647,7 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
         <select id="releve-filter-match" class="rf-ctl" onchange="filterReleve()">
           <option value="">Toutes</option>
           <option value="unmatched">Non reliée</option>
+          <option value="a-relier">À relier</option>
           <option value="matched">Reliée</option>
           <option value="revenue">Recettes</option>
         </select>
@@ -8407,10 +8408,15 @@ function filterReleve() {
     const isRec = (tx.ttc||0) > 0;
     const txDept = isMatched ? mi.dept : (tx.cat || '');
     const noLine = isMatched && (!mi.ligne || mi.ligne === '(non affecté)');
+    // à relier vs non relié — mirrors the row subtext (L8459-8468): dept known (match/cat/note) w/o ligne → à relier; no dept → non relié
+    const _hasDeptUnm = (!!tx.cat || !!deptFromNote(tx.note));
+    const _aRelier = !isRec && ((isMatched && noLine) || (!isMatched && _hasDeptUnm));
+    const _nonRelie = !isRec && !isMatched && !_hasDeptUnm;
 
     if (catFilter && txDept.toUpperCase() !== catFilter.toUpperCase()) return false;
     // 4 expense match-states (7→4 collapse, derived from existing matched/dept/ligne state):
-    if (matchFilter === 'unmatched' && (isMatched || isRec)) return false;          // Non relié (absorbs nodept/noligne)
+    if (matchFilter === 'unmatched' && !_nonRelie) return false;                     // Non reliée = non relié only (no dept)
+    if (matchFilter === 'a-relier'  && !_aRelier)  return false;                     // À relier = dept known, ligne pending
     if (matchFilter === 'matched' && (!isMatched || noLine)) return false;          // Relié (dept + ligne)
     if (matchFilter === 'revenue' && !isRec) return false;                          // Recettes — preserved pending Leo
     // Classification filter (orthogonal axis, absorbs CL-16 via the intra2/attendue slice):

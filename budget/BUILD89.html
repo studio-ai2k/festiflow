@@ -781,6 +781,8 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .ctag.recu{background:rgba(251,191,36,.1);color:var(--amber);border:1px solid rgba(251,191,36,.25)}
 .ctag.annule{background:rgba(148,163,184,.12);color:var(--text-muted);border:1px solid rgba(148,163,184,.22)}
 .ctag.paye{background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.25)}
+.ctag.avalider{background:rgba(251,191,36,.1);color:var(--amber);border:1px solid rgba(251,191,36,.25)}
+.ctag.valide{background:rgba(129,140,248,.1);color:var(--intra);border:1px solid rgba(129,140,248,.25)}
 .split-row{background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:13px 14px;position:relative}
 /* Item 39 #4 — card-tap selection = GREEN left-edge accent. Scoped through .remb-subview so
    specificity is (0,4,0), beating .split-row.cls.ext (0,3,0) which otherwise re-colours the
@@ -828,6 +830,8 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .statut-pill.on.signe{border-color:rgba(129,140,248,.5);background:rgba(129,140,248,.12);color:var(--intra)}
 .statut-pill.on.annule{border-color:rgba(148,163,184,.4);background:rgba(148,163,184,.14);color:var(--text-muted)}
 .statut-pill.on.paye{border-color:rgba(52,211,153,.5);background:rgba(52,211,153,.12);color:var(--green)}
+.statut-pill.on.avalider{border-color:rgba(251,191,36,.5);background:rgba(251,191,36,.12);color:var(--amber)}
+.statut-pill.on.valide{border-color:rgba(129,140,248,.5);background:rgba(129,140,248,.12);color:var(--intra)}
 .dt-actions{display:flex;gap:7px;margin-top:12px}
 .dt-act-btn{font-size:var(--fs-caption);padding:6px 11px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--text-muted);font-family:inherit;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.14s}
 .dt-act-btn svg{width:12px;height:12px}
@@ -4522,8 +4526,8 @@ function edDeleteLigneStub(name) {
    with persisted devis. Delete the _DEVIS_DEMO seed + _edDevisDemoKey one-shot to ship empty.
    ════════════════════════════════════════════════════════════════════════════ */
 const _DEVIS_DEMO = [
-  { fournisseur:'Scène Pro SARL',       ht:3300, tva:'0.2', statut:'signe', date:'2026-03-03', ref:'SP-2026-042', lien:'https://drive.google.com/scene-pro-devis-042' },
-  { fournisseur:'Barrières & Sécu Loc', ht:2100, tva:'0.2', statut:'recu',  date:'2026-02-28', ref:'BSL-0091',    lien:'https://qonto.com/attachments/bsl-0091' }
+  { fournisseur:'Scène Pro SARL',       montant_ht:3300, tva:'0.2', statut:'Signé', date:'2026-03-03', ref:'SP-2026-042', lien:'https://drive.google.com/scene-pro-devis-042' },
+  { fournisseur:'Barrières & Sécu Loc', montant_ht:2100, tva:'0.2', statut:'Reçu',  date:'2026-02-28', ref:'BSL-0091',    lien:'https://qonto.com/attachments/bsl-0091' }
 ];
 const _edDevisStore = {};   // lineKey -> [devis]
 let _edDevisDemoKey = null; // one-shot demo-seed target (first dépense line opened)
@@ -4540,10 +4544,10 @@ function _devisTTC(ht, tva){ const n = parseFloat(tva); return (!isNaN(n) ? Math
 function _devisStats(arr){
   return {
     count:  arr.length,
-    engage: arr.reduce((a,d)=>a+(+d.ht||0),0),
-    signe:  arr.filter(d=>d.statut==='signe').length,
-    recu:   arr.filter(d=>d.statut==='recu').length,
-    annule: arr.filter(d=>d.statut==='annule').length
+    engage: arr.reduce((a,d)=>a+(+d.montant_ht||0),0),
+    signe:  arr.filter(d=>d.statut==='Signé').length,
+    recu:   arr.filter(d=>d.statut==='Reçu').length,
+    annule: arr.filter(d=>d.statut==='Annulé').length
   };
 }
 const _DEVIS_SVG = {
@@ -4552,22 +4556,37 @@ const _DEVIS_SVG = {
   signe:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
   annule:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
   paye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>',
+  avalider:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  valide:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
   edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
   trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
   link:'<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-left:5px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'
 };
-const _STATUT_LABEL = { recu:'reçu', signe:'signé', annule:'annulé' };
+// ADR-0025 canonical state map (single source of truth: code ↔ statut ↔ label ↔ border).
+// d.statut stores the Title-case `statut` (what the frozen consumer computeEngage/à-valider CTA reads);
+// CSS classes / icon keys / highlight use the safe `code` ('à valider' can't be a class).
+const _DEVIS_STATES = [
+  { code:'recu',     statut:'Reçu',      label:'reçu',      border:'var(--text-dim)' },
+  { code:'avalider', statut:'à valider', label:'à valider', border:'var(--amber)'    },
+  { code:'valide',   statut:'Validé',    label:'validé',    border:'var(--intra)'    },
+  { code:'signe',    statut:'Signé',     label:'signé',     border:'var(--intra)'    },
+  { code:'paye',     statut:'Payé',      label:'payé',      border:'var(--green)'    },
+  { code:'annule',   statut:'Annulé',    label:'annulé',    border:'var(--text-dim)' },
+];
+const _stByStatut = s => _DEVIS_STATES.find(x => x.statut === s) || _DEVIS_STATES[0];  // render: statut → state
+const _stByCode   = c => _DEVIS_STATES.find(x => x.code   === c) || _DEVIS_STATES[0];  // click:  code   → state
 function _esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function _devisRowHTML(d, idx){
-  const ttc = _devisTTC(d.ht, d.tva);
+  const ttc = _devisTTC(d.montant_ht, d.tva);
   const tvaNum = parseFloat(d.tva);
   const tvaPct = !isNaN(tvaNum) ? Math.round(tvaNum*100)+'%' : 'Sans TVA';
-  const tvaAmt = !isNaN(tvaNum) ? ' · '+fe(Math.round(d.ht*tvaNum)) : '';
-  const st = d.statut || 'recu';
-  const isSigne = st==='signe', isAnnule = st==='annule';
+  const tvaAmt = !isNaN(tvaNum) ? ' · '+fe(Math.round(d.montant_ht*tvaNum)) : '';
+  const st = d.statut || 'Reçu';
+  const _s = _stByStatut(st);
+  const isSigne = _s.code==='signe', isAnnule = _s.code==='annule';
   const cls = 'split-row devis-row cls' + (isAnnule ? ' devis-annule' : '');
-  const borderCol = isSigne ? 'var(--green)' : isAnnule ? 'var(--text-dim)' : 'var(--text-dim)';
+  const borderCol = _s.border;
   const dateFr = d.date ? d.date.split('-').reverse().join('/') : '—';
   const _lien = (d.lien || '').trim();
   const _isLienURL = /^(https?:\/\/|www\.)\S+$/i.test(_lien);
@@ -4577,28 +4596,28 @@ function _devisRowHTML(d, idx){
     : _isLienURL
       ? `<a href="${_esc(_lienHref)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#a5b4fc;text-decoration:none">Ouvrir le devis${_DEVIS_SVG.link}</a>`
       : `<span style="color:var(--text-muted)">${_esc(_lien)}</span>`;
-  const pill = (k) => `<div class="statut-pill ${k}${st===k?' on':''}" onclick="event.stopPropagation();setDevisStatut(this,'${k}')">${_DEVIS_SVG[k]}${k==='recu'?'Reçu':k==='signe'?'Signé':k==='paye'?'Payé':'Annulé'}</div>`;
+  const pill = (k) => `<div class="statut-pill ${k}${_s.code===k?' on':''}" onclick="event.stopPropagation();setDevisStatut(this,'${k}')">${_DEVIS_SVG[k]}${_stByCode(k).statut}</div>`;
   return `
     <div class="${cls}" data-devis-idx="${idx}" style="border-left-color:${borderCol}" onclick="toggleDevis(this)">
       <div class="sr-top">
-        <span class="sr-name"><span style="color:#fff">${_esc(d.fournisseur||'Fournisseur')}</span> <span class="ctag ${st}">${_STATUT_LABEL[st]}</span></span>
-        <span style="display:flex;align-items:flex-start"><span><span class="sr-amt" style="color:var(--amber)">${fe(ttc)}</span><span class="sr-ht">${fe(d.ht)} HT</span></span>${_DEVIS_SVG.chev}</span>
+        <span class="sr-name"><span style="color:#fff">${_esc(d.fournisseur||'Fournisseur')}</span> <span class="ctag ${_s.code}">${_s.label}</span></span>
+        <span style="display:flex;align-items:flex-start"><span><span class="sr-amt" style="color:var(--amber)">${fe(ttc)}</span><span class="sr-ht">${fe(d.montant_ht)} HT</span></span>${_DEVIS_SVG.chev}</span>
       </div>
-      <div class="metaline"><span style="font-size:11px;color:var(--text-dim);font-family:'DM Mono',monospace">${isSigne?'Signé':isAnnule?'Annulé':'Reçu'} le ${dateFr}</span>${d.ref?`<span style="font-size:11px;color:var(--text-dim)">Devis #${_esc(d.ref)}</span>`:''}</div>
+      <div class="metaline"><span style="font-size:11px;color:var(--text-dim);font-family:'DM Mono',monospace">${_s.statut} le ${dateFr}</span>${d.ref?`<span style="font-size:11px;color:var(--text-dim)">Devis #${_esc(d.ref)}</span>`:''}</div>
       <div class="rc-detail">
         <div class="dt-kv">
           <div class="kv"><span class="k">Fournisseur</span><span class="v">${_esc(d.fournisseur||'—')}</span></div>
-          <div class="kv"><span class="k">Montant HT</span><span class="v">${fe(d.ht)}</span></div>
+          <div class="kv"><span class="k">Montant HT</span><span class="v">${fe(d.montant_ht)}</span></div>
           <div class="kv"><span class="k">TVA</span><span class="v">${tvaPct}${tvaAmt}</span></div>
           <div class="kv"><span class="k">Montant TTC</span><span class="v">${fe(ttc)}</span></div>
-          <div class="kv"><span class="k">Statut</span><span class="v">${_STATUT_LABEL[st].charAt(0).toUpperCase()+_STATUT_LABEL[st].slice(1)}</span></div>
+          <div class="kv"><span class="k">Statut</span><span class="v">${_s.statut}</span></div>
           <div class="kv"><span class="k">Date</span><span class="v">${dateFr}</span></div>
           <div class="kv"><span class="k">Référence</span><span class="v">${d.ref?_esc(d.ref):'—'}</span></div>
           <div class="kv"><span class="k">Lien</span><span class="v">${lienHTML}</span></div>
         </div>
         <div class="statut-changer">
           <div class="statut-changer-lbl">Statut du devis</div>
-          <div class="statut-pills">${pill('recu')}${pill('signe')}${pill('paye')}${pill('annule')}</div>
+          <div class="statut-pills">${pill('recu')}${pill('avalider')}${pill('valide')}${pill('signe')}${pill('paye')}${pill('annule')}</div>
         </div>
         <div class="dt-actions">
           <button class="dt-act-btn" onclick="event.stopPropagation();edDevisModify(this)">${_DEVIS_SVG.edit}Modifier</button>
@@ -4622,9 +4641,9 @@ function _devisDeptHTML(tabName){
   if (!secNames.length) return `<div class="devis-empty">Aucun devis enregistré dans ce département pour l'instant.</div>`;
   return secNames.map(sec => {
     const rows = groups[sec].map(({name, arr}) => arr.map(d => {
-      const ttc = _devisTTC(d.ht, d.tva), st=d.statut||'recu';
-      return `<div class="split-row devis-row cls" style="border-left-color:${st==='signe'?'var(--green)':'var(--text-dim)'}">
-        <div class="sr-top"><span class="sr-name"><span style="color:#fff">${_esc(d.fournisseur)}</span> <span class="ctag ${st}">${_STATUT_LABEL[st]}</span></span>
+      const ttc = _devisTTC(d.montant_ht, d.tva), st=d.statut||'Reçu', _s=_stByStatut(st);
+      return `<div class="split-row devis-row cls" style="border-left-color:${_s.border}">
+        <div class="sr-top"><span class="sr-name"><span style="color:#fff">${_esc(d.fournisseur)}</span> <span class="ctag ${_s.code}">${_s.label}</span></span>
         <span><span class="sr-amt" style="color:var(--amber)">${fe(ttc)}</span></span></div>
         <div class="metaline"><span style="font-size:11px;color:var(--text-dim);font-family:'DM Mono',monospace">${_esc(name)}${d.ref?' · #'+_esc(d.ref):''}</span></div></div>`;
     }).join('')).join('');
@@ -4680,7 +4699,7 @@ function edDevisPaneHTML(key, est, tabName){
           <div class="df-group"><label class="df-label">TVA</label><select class="df-select devf-tva" onchange="devisFormTTC(this)"><option value="0.2" selected>20%</option><option value="0.1">10%</option><option value="0.055">5.5%</option><option value="NA">Sans TVA</option></select></div>
         </div>
         <div class="df-row">
-          <div class="df-group"><label class="df-label">Statut</label><div class="seg"><div class="seg-opt recu on" data-statut="recu" onclick="devisSeg(this)">${_DEVIS_SVG.recu}Reçu</div><div class="seg-opt signe" data-statut="signe" onclick="devisSeg(this)">${_DEVIS_SVG.signe}Signé</div></div></div>
+          <div class="df-group"><label class="df-label">Statut</label><div class="seg"><div class="seg-opt recu on" data-statut="recu" onclick="devisSeg(this)">${_DEVIS_SVG.recu}Reçu</div><div class="seg-opt avalider" data-statut="avalider" onclick="devisSeg(this)">${_DEVIS_SVG.avalider}à valider</div></div></div>
           <div class="df-group"><label class="df-label">Date</label><input class="df-input devf-date" type="date"></div>
         </div>
         <div class="df-group"><label class="df-label">Référence (optionnel)</label><input class="df-input devf-ref" type="text" placeholder="ex: SP-2026-042"></div>
@@ -4719,17 +4738,14 @@ function setDevisStatut(pill, key){
   pill.classList.add('on');
   const row = pill.closest('.split-row');
   const chip = row.querySelector('.sr-name .ctag');
-  const map = { recu:['recu','reçu'], signe:['signe','signé'], paye:['paye','payé'], annule:['annule','annulé'] };
-  if (chip){ chip.className = 'ctag '+map[key][0]; chip.textContent = map[key][1]; }
+  const state = _stByCode(key);
+  if (chip){ chip.className = 'ctag '+state.code; chip.textContent = state.label; }
   row.classList.toggle('devis-annule', key==='annule');
-  if (key==='signe'){ row.classList.add('cls'); row.style.borderLeftColor='var(--intra)'; }
-  else if (key==='recu'){ row.classList.add('cls'); row.style.borderLeftColor='var(--text-dim)'; }
-  else if (key==='paye'){ row.classList.add('cls'); row.style.borderLeftColor='var(--green)'; }
-  else { row.classList.add('cls'); row.style.borderLeftColor='var(--text-dim)'; }
+  row.classList.add('cls'); row.style.borderLeftColor = state.border;
   // keep the client (UI) state consistent so the change survives a re-render — but NO persistence.
   const pane = pill.closest('.ed-pane[data-edpane="devis"]');
   const idx = row.dataset.devisIdx;
-  if (pane && idx != null) { const arr = _edDevisStore[pane.dataset.lineKey]; if (arr && arr[idx]) arr[idx].statut = key; }
+  if (pane && idx != null) { const arr = _edDevisStore[pane.dataset.lineKey]; if (arr && arr[idx]) arr[idx].statut = state.statut; }
   // PERSIST-STUBBED: amber Phase-D affordance, no write.
   showToast('⏳ Bientôt', 'Statut du devis — enregistrement backend à venir (Phase-D).', 'amber');
 }
@@ -4782,12 +4798,12 @@ function edDevisSubmit(btn){
   const v = sel => form.querySelector(sel)?.value?.trim() || '';
   const fournisseur = v('.devf-four');
   if (!fournisseur){ showToast('Champ requis', 'Le fournisseur est obligatoire.', 'amber'); form.querySelector('.devf-four')?.focus(); return; }
-  const statut = form.querySelector('.seg-opt.on')?.dataset.statut || 'recu';
+  const statutCode = form.querySelector('.seg-opt.on')?.dataset.statut || 'recu';
   const devis = {
     fournisseur,
-    ht: parseFloat(v('.devf-ht')) || 0,
+    montant_ht: parseFloat(v('.devf-ht')) || 0,
     tva: v('.devf-tva') || '0.2',
-    statut,
+    statut: _stByCode(statutCode).statut,
     date: v('.devf-date') || new Date().toISOString().slice(0,10),
     ref: v('.devf-ref'),
     lien: v('.devf-lien')

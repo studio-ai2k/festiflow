@@ -6250,7 +6250,7 @@ function optFilterLignes(){
     res.classList.add('on');
     res.innerHTML = depts.length
       ? depts.map(d => `<div class="lr-row" onclick="optAtrierPickDept('${_optJs(d.tab)}')">
-          <div class="lr-dept">${_optEsc(d.name)}</div>
+          <div class="lr-dept"><span class="dpl-dot" style="background:${(typeof deptColorFor==='function'?deptColorFor(d.tab):null)||'#fbbf24'}"></span>${_optEsc(d.name)}</div>
           <div class="lr-line">Relier \u00e0 ce d\u00e9partement</div></div>`).join('')
       : '<div class="lr-empty">Aucun d\u00e9partement</div>';
     return;

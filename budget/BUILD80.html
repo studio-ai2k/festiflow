@@ -7498,7 +7498,7 @@ function _openAssignDrawerCore(src, c) {
       : Object.entries(DEPT_META).map(([tab, m]) => `<option value="${tab}">${m.name}</option>`).join('');
 
     // Pre-select dept based on catégorie if possible (recette → RECETTES, populates flat recette lines)
-    const catNorm = (cat||'').toUpperCase();
+    const catNorm = normStr(cat||'');
     preselect = isRevenue ? 'RECETTES' : (POLE_MAP_CLIENT[catNorm] || '');
   } else {
     _orphanData = { fourn, note, ht, ttc, cat, date };
@@ -7513,9 +7513,9 @@ function _openAssignDrawerCore(src, c) {
     deptOptions = isRevenue
       ? `<option value="RECETTES" selected>RECETTES</option>` + REC.map(c => `<option value="${c.cat.replace(/"/g,'&quot;')}">${c.cat}</option>`).join('')
       : Object.keys(DEPT_META).map(k =>
-          `<option value="${k}" ${k === POLE_MAP_CLIENT[cat?.toUpperCase()] ? 'selected' : ''}>${DEPT_META[k].name}</option>`
+          `<option value="${k}" ${k === POLE_MAP_CLIENT[normStr(cat||'')] ? 'selected' : ''}>${DEPT_META[k].name}</option>`
         ).join('');
-    preselect = isRevenue ? 'RECETTES' : (POLE_MAP_CLIENT[cat?.toUpperCase()] || '');
+    preselect = isRevenue ? 'RECETTES' : (POLE_MAP_CLIENT[normStr(cat||'')] || '');
   }
 
   // shared destination-picker render core (written once; ${deptOptions} is the per-src value)

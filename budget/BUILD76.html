@@ -2090,6 +2090,7 @@ function renderBilan(){
   const res=recHT-tE;
   const p=pct(tR,tE);
   const allL=DEPTS.flatMap(d=>d.sections.flatMap(s=>s.lines));
+  const visL=DEPTS.flatMap(d=>(d.sections||[]).filter(s => s.s !== 'À TRIER').flatMap(s=>s.lines||[]));   // BUILD76 — mirror dept _vis (À TRIER excluded)
   const STORDER=['ESTIMATION','EN COURS','DEVIS SIGNÉ','VALIDÉ','PAYÉ'];
   const stAmounts={};
   STORDER.forEach(s=>{ stAmounts[s]=allL.filter(l=>l.st===s).reduce((a,l)=>a+(l.est||0),0); });
@@ -2105,15 +2106,15 @@ function renderBilan(){
     const computeEngageB = devis => (devis || []).reduce((a, d) =>
       a + (( d.statut === 'Validé' || d.statut === 'Signé' ||
             (d.statut === 'Payé' && !d.matched_transaction_id) ) ? (d.montant_ht || 0) : 0), 0);
-    const engageT  = allL.reduce((a,l) => a + computeEngageB(l.devis), 0);                       // global engagé (HT · computeEngage basis, LEO#2)
+    const engageT  = visL.reduce((a,l) => a + computeEngageB(l.devis), 0);                       // global engagé (HT · computeEngage basis, LEO#2)
     const aRelierT = DEPTS.reduce((a,d) => a + unmatchedForDept(d.id).filter(u => (u.ttc||0) < 0)
                        .reduce((s,u) => s + Math.abs(u.ttc||0), 0), 0);                          // global à-relier (TTC · ttc<0)
     const resEstime = recHT - tE - aRelierT;                                                     // hero value — LEO#1 (net absorbs à-relier → estimé)
-    const overN   = allL.filter(l => ((l.est||0)-(l.reel||0)-computeEngageB(l.devis)) < 0).length;
-    const overN10 = allL.filter(l => { const b=l.est||0; return b>0 && ((l.est||0)-(l.reel||0)-computeEngageB(l.devis)) < -0.10*b; }).length;
+    const overN   = visL.filter(l => ((l.est||0)-(l.reel||0)-computeEngageB(l.devis)) < 0).length;
+    const overN10 = visL.filter(l => { const b=l.est||0; return b>0 && ((l.est||0)-(l.reel||0)-computeEngageB(l.devis)) < -0.10*b; }).length;
     // devis-row colour from a dept id. NOTE: deptColorFor() takes a NAME (not an id) → use the canonical DEPT_COLORS index.
     const bColor = did => { const i = DEPTS.findIndex(d => d.id === did); return i >= 0 ? (DEPT_COLORS[i] || 'var(--indigo)') : 'var(--indigo)'; };
-    const aValiderList = DEPTS.flatMap(d => (d.sections||[]).flatMap((sec,si) =>
+    const aValiderList = DEPTS.flatMap(d => (d.sections||[]).flatMap((sec,si) => sec.s === 'À TRIER' ? [] :
                           (sec.lines||[]).flatMap((l,li) => (l.devis||[])
                             .filter(dv => dv.statut === 'à valider')
                             .map(dv => ({ deptId:d.id, pole:d.name, color:bColor(d.id), origIdx:si, li,

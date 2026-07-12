@@ -1423,6 +1423,8 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 /* Item 39 Step 1 — remb subview hides the relié pane's normal content while active
    (mirrors .intra-subview-active). Child host = #remb-subview. */
 #drawer .opt-pane[data-pane="relie"].remb-subview-active.on > :not(#remb-subview){display:none}
+/* Ventilé subview — mirrors .intra-subview-active/.remb-subview-active; child host = #vent-subview. */
+#drawer .opt-pane[data-pane="relie"].vent-subview-active.on > :not(#vent-subview){display:none}
 /* v23a.1 — settled-read hydration render bits (all gated on hydrated fields; absent on open). */
 .opt-orient{display:flex;align-items:flex-start;gap:8px;font-size:var(--fs-body);line-height:1.45;color:var(--amber);background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.22);border-radius:9px;padding:10px 11px;margin-bottom:12px}
 .opt-orient svg{width:15px;height:15px;flex-shrink:0;margin-top:1px}
@@ -6999,6 +7001,15 @@ function _ventBaseColor(s){
   const idx = Math.max(0, keys.indexOf(s && s.dept));
   return _VENT_COLORS[idx % _VENT_COLORS.length];
 }
+// relié-pane child host accessor (creates #vent-subview INSIDE the relié pane). Mirrors _intraHost / _rembHost.
+function _ventHost(){
+  const pane = document.querySelector('#drawer .opt-pane[data-pane="relie"]');
+  if (!pane) return null;
+  let host = document.getElementById('vent-subview');
+  if (!host){ host = document.createElement('div'); host.id = 'vent-subview'; pane.appendChild(host); }
+  return host;
+}
+
 function openVentiler(){
   const s = (typeof _optState !== 'undefined' && _optState) ? _optState : (window._optState = (window._optState || {}));
   // migrate any legacy {ligne,montant} seed/hydration to {name,cat,amt} (committed-view shape)
@@ -7014,12 +7025,11 @@ function openVentiler(){
   // from CLS_LABEL.ventile (no tcTop edit). Restored on Annuler via ventCancel() (kept on Confirm).
   if (s.cls !== 'ventile') s._clsPrevVent = s.cls;
   s.cls = 'ventile';
-  const drawer = document.getElementById('drawer'); if (drawer) drawer.classList.remove('opt-mode', 'reel-mode', 'edit-mode');
-  const tEl = document.getElementById('drawer-title'); if (tEl) tEl.textContent = 'Ventiler la transaction';
-  const subEl = document.getElementById('drawer-sub'); if (subEl) subEl.textContent = (s.dept || '') + ' \u00b7 r\u00e9partir sur plusieurs lignes';
-  const body = document.getElementById('drawer-body'); if (!body) return;
-  body.innerHTML =
-      '<div class="opt-hero preview">' + transactionCard(_optBuildTx(s), { role:'preview' }) + '</div>'
+  const heroV = document.getElementById('opt-hero'); if (heroV) heroV.innerHTML = transactionCard(_optBuildTx(s), { role:'preview' });
+  const pane = document.querySelector('#drawer .opt-pane[data-pane="relie"]');
+  const host = _ventHost(); if (!pane || !host) return;
+  host.innerHTML =
+      '<div class="vent-subview"><div class="drawer-section-title">Ventiler la transaction</div>'
     + '<div class="drawer-section" id="vent-sec">'
     +   '<div class="vent-pie" id="vent-pie">'
     +     '<div class="vent-pie-ring" id="vent-pie-ring"><div class="vent-pie-hole" id="vent-pie-hole"><span class="vph-amt" id="vent-pie-amt">\u2014</span><span class="vph-lbl">total</span></div></div>'
@@ -7033,7 +7043,9 @@ function openVentiler(){
     +     '<input id="vent-search-input" placeholder="Rechercher une ligne \u00e0 ventiler\u2026" oninput="ventFilterLignes()" onfocus="ventSearchFocus()"><span class="vent-scope-chip" id="vent-scope" style="display:none"></span></div>'
     +   '<div class="lineres" id="vent-search-res"></div>'
     +   '<div id="vent-summary"></div>'
+    + '</div>'
     + '</div>';
+  pane.classList.add('vent-subview-active');
   ventRender();
   const foot = document.getElementById('drawer-footer');
   if (foot){
@@ -7257,6 +7269,7 @@ function ventRenderFoot(){
 function ventCancel(){
   const s = (typeof _optState !== 'undefined' && _optState) ? _optState : window._optState;
   if (s && s.cls === 'ventile'){ s.cls = (s._clsPrevVent || 'ext'); s._clsPrevVent = undefined; }
+  { const pane = document.querySelector('#drawer .opt-pane[data-pane="relie"]'); if (pane) pane.classList.remove('vent-subview-active'); const host = document.getElementById('vent-subview'); if (host) host.remove(); }
   if (typeof closeDrawer === 'function') closeDrawer();
 }
 function ventConfirm(){
@@ -7269,6 +7282,7 @@ function ventConfirm(){
   s.relier = true;
   s._clsPrevVent = undefined;   // HUNK 4 — committed: keep cls='ventile' (tx is now ventilated); drop the saved prior
   window._ventPreview = { lines: s.ventLines.slice(), ts: Date.now() };
+  { const pane = document.querySelector('#drawer .opt-pane[data-pane="relie"]'); if (pane) pane.classList.remove('vent-subview-active'); const host = document.getElementById('vent-subview'); if (host) host.remove(); }
   try { if (typeof drawerBack === 'function') drawerBack(); } catch (e) {}
   if (typeof showToast === 'function')
     showToast('\u2713 Ventilation enregistr\u00e9e (aper\u00e7u)', s.ventLines.length + ' ligne' + (s.ventLines.length > 1 ? 's' : ''), 'green');

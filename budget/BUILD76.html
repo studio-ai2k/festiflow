@@ -6350,13 +6350,14 @@ function optPickLigne(dept, line, cat){
   _optAfterPick();
 }
 
-// CL-50 — à-trier: a fournisseur-named line in the dept's À-TRIER section (graduates
-// non→reliée counted). STUB: selectAssignDivers() sets _isAtrier + the bridge value
-// (no POST); ensureDiversLine (the real creator) is NOT called. recette has no À-trier.
-// Ruling 3 — À TRIER is dept-FIRST. Clicking "À trier" flips the search to DEPT-mode (the
-// results list DEPARTMENTS, not lines); picking a department creates the À-TRIER section/line
-// there (title = tx name, réel = tx amount). The creation WRITE stays stubbed (CL-50, no POST);
-// the flow + the resulting settled à-trier card render live. (No "Département requis" gate now —
+// CL-50 — à-relier: picking a department tags the tx to that dept (relier:true; dept known,
+// ligne pending) so it surfaces in the dept's à-relier table via its `dept` tag on _unmatchedRows
+// and counts as à-relier expense. No fake À-TRIER line, no _isAtrier, no ensureDiversLine.
+// recette has no à-relier card.
+// The "à relier" action is dept-FIRST. Clicking it flips the search to DEPT-mode (the results
+// list DEPARTMENTS, not lines); picking a department sets relier:true (dept, ligne pending). The
+// WRITE stays STUBBED (CL-50 PROPOSED → _contractLedgerProposed, no POST); the flow + the settled
+// à-relier card render live. Live write = S3. (No "Département requis" gate now —
 // the inverted flow that demanded a dept up front is what Ruling 3 replaces.)
 function optPickAtrier(){
   if (!_optState || _optState.isRevenue) return;            // dépense-only (recette has no à-trier card, §13)
@@ -6366,21 +6367,20 @@ function optPickAtrier(){
   if (_known){ optAtrierPickDept(_known); return; }
   _optState._atrierMode = true;                             // enter dept-mode (dept unknown → choose)
   const inp = document.getElementById('opt-ligne-input');
-  if (inp){ inp.value = ''; inp.placeholder = '\u00C0 trier \u2014 choisir un d\u00E9partement\u2026'; try { inp.focus(); } catch (e) {} }
+  if (inp){ inp.value = ''; inp.placeholder = '\u00C0 relier \u2014 choisir un d\u00E9partement\u2026'; try { inp.focus(); } catch (e) {} }
   optFilterLignes();                                        // re-render results as the department list
 }
 
-// Ruling 3 confirm — a department was picked in à-trier dept-mode. Create the À-TRIER section/line
-// (title = tx name, réel = tx amount) — STUBBED (CL-50 PROPOSED, no POST) — and render the resulting
-// settled à-trier card. (If an À-TRIER section already exists in the dept, the real creator would add
-// a line into it; here both render the same à-trier card. No live ensureDiversLine call.)
+// Confirm — a department was picked → à-relier (dept, ligne pending). Sets relier:true so the tx
+// surfaces in the dept à-relier table (via its `dept` tag on _unmatchedRows) and counts as à-relier
+// expense. STUBBED (proposed to _contractLedgerProposed, no POST; live write = S3). No fake
+// À-TRIER line.
 function optAtrierPickDept(dept){
   if (!_optState) return;
-  _optState.dept = dept; _optState.atrier = true; _optState.line = null; _optState._atrierMode = false;
-  if (typeof selectAssignDivers === 'function') selectAssignDivers();   // hidden bridge only — no POST
+  _optState.dept = dept; _optState.relier = true; _optState.atrier = false; _optState.line = null; _optState._atrierMode = false;
+  window._isAtrier = false;   // à-relier: dept-only, NOT à-trier — no _isAtrier, no fake-line bridge
   const inp = document.getElementById('opt-ligne-input'); if (inp) inp.placeholder = 'Rechercher un d\u00E9partement ou une ligne\u2026';
-  _optLogStub('CL-50', '\u00E0-trier section/line creation (title=tx, r\u00E9el=montant)',
-    (_optState.fourn || 'Transaction') + ' \u2192 \u00C0 TRIER \u00b7 ' + dept + ' \u00b7 r\u00e9el=' + fmtAmt(Math.abs(_optState.ttc || 0)));
+  _optLogStub('CL-50', '\u00e0-relier dept assignment (no ligne)', (_optState.fourn || 'Transaction') + ' \u2192 \u00C0 RELIER \u00b7 ' + dept);
   _optAfterPick();
 }
 
@@ -7379,8 +7379,8 @@ function _optRenderBody(s){
   }[_optFootState(s)] || 'Cliquez sur <b>Confirmer</b> pour relier cette transaction.';
   const atrierCard = s.isRevenue ? '' :
     `<div class="vtoggle" onclick="optPickAtrier()"><div class="vt-body"><div class="vt-t">
-       <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h12"/></svg>\u00C0 trier</div>
-       <div class="vt-d">D\u00E9partement connu, ligne \u00E0 reclasser plus tard.</div></div>
+       <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h12"/></svg>\u00C0 relier</div>
+       <div class="vt-d">Assigne la transaction \u00E0 un d\u00E9partement ; ligne \u00E0 assigner plus tard.</div></div>
        <svg class="vt-chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>`;
   // Item 39 Step 1.5 — the OLD recette-drawer remb entry (Remboursement title + dashed
   // `recette ✎` chip + #orphan-amt + the hidden inline scaffold) is REMOVED now that the
@@ -7620,8 +7620,9 @@ function _openAssignDrawerCore(src, c) {
   // reattribuer (settled/Options) keeps its prior title/sub byte-identical. Everything else is keyed
   // on the relier/atrier discriminants: à-relier table (hydrate relier:true) → partially assigned →
   // "Relier à une ligne"; transaction page / guessed dept (neither) → fully unassigned → "Assigner la
-  // transaction". (relier and atrier are DISTINCT: relier is the à-relier action; atrier is the genuine
-  // À TRIER state that drives the amber badge — only atrier shows "À TRIER".)
+  // transaction". The action now sets relier (à-relier: dept, ligne pending); atrier is RETIRED pending
+  // its data-model removal in the next build (S2) — no longer set true anywhere, so the `_optState.atrier ||`
+  // in the title expression (L7629) is transitional dead code, removed in S2.
   if (isReattribuer) {
     document.getElementById('drawer-title').textContent = fourn || 'Transaction non associée';
     document.getElementById('drawer-sub').textContent = 'Assigner manuellement à une ligne budgétaire';
@@ -8052,11 +8053,9 @@ async function confirmOrphanAssign() {
   }
   if (!ligne) {
     ligne = window._currentAssignFourn || 'Transaction';
-    window._isAtrier = true;
   }
   const btn = document.querySelector('#drawer-footer .primary');
   if (btn) { btn.textContent = 'En cours\u2026'; btn.disabled = true; }
-  if (window._isAtrier) await ensureDiversLine(dept, ligne);
   try {
     const resp = await fetch(`${API}/api/assign-direct`, {
       method: 'POST',
@@ -8110,17 +8109,15 @@ async function confirmAssign(unmatchedIdx) {
     return;
   }
 
-  // No ligne selected → auto-route to À TRIER with fournisseur name
+  // No ligne → à-relier (dept-only). Fake-À-TRIER-line path removed; dept-only POST payload finalized in S3 (Q1).
   if (!ligne) {
     ligne = window._currentAssignFourn || 'Transaction';
-    window._isAtrier = true;
   }
 
   // Update button to loading state
   const btn = document.querySelector('#drawer-footer .primary');
   if (btn) { btn.textContent = 'En cours…'; btn.disabled = true; }
 
-  if (window._isAtrier) await ensureDiversLine(dept, ligne);
 
   try {
     const resp = await fetch(`${API}/api/assign`, {

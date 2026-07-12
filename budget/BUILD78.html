@@ -6369,6 +6369,10 @@ function optPickAtrier(){
   const inp = document.getElementById('opt-ligne-input');
   if (inp){ inp.value = ''; inp.placeholder = '\u00C0 relier \u2014 choisir un d\u00E9partement\u2026'; try { inp.focus(); } catch (e) {} }
   optFilterLignes();                                        // re-render results as the department list
+  // #3 — ensure the freshly-rendered dept list is in view on card-click (it renders + shows, but sits above the
+  // clicked card; without this the user may not see it until they scroll/type). Best-effort, guarded.
+  const _res = document.getElementById('opt-ligne-res');
+  if (_res && typeof _res.scrollIntoView === 'function') { try { _res.scrollIntoView({ block: 'nearest' }); } catch (e) {} }
 }
 
 // Confirm — a department was picked → à-relier (dept, ligne pending). Sets relier:true so the tx
@@ -7285,7 +7289,7 @@ function _optRenderFoot(s){
   const st = _optFootState(s);
   let primary, secondary;
   if (st === 'open') {
-    const ready = !!(s.dept && (s.line || s.atrier));
+    const ready = !!(s.dept && (s.line || s.atrier || s.relier));
     secondary = '<button class="drawer-btn" onclick="closeDrawer()">Annuler</button>';
     primary = '<button class="drawer-btn primary" onclick="optFootPrimary()"' + (ready ? '' : ' disabled style="opacity:.45;cursor:not-allowed"') + '>Confirmer</button>';
   } else if (st === 'settled') {
@@ -7304,9 +7308,9 @@ function optFootPrimary(){
   const s = _optState; if (!s) return;
   const st = _optFootState(s);
   if (st === 'open' || st === 'editing') {
-    if (!(s.dept && (s.line || s.atrier))) return;            // Confirmer needs dept + line/à-trier
+    if (!(s.dept && (s.line || s.atrier || s.relier))) return;            // Confirmer needs dept + line/à-trier/à-relier
     _optLogStub('CL-48', 'assign-commit (' + (st === 'open' ? 'open' : 'edit') + '\u2192settled)',
-      (s.fourn || '') + ' \u2192 ' + s.dept + (s.atrier ? ' · \u00C0 TRIER' : (s.line ? ' · ' + s.line : '')) + (s.cas && s.cas !== 'none' ? ' [' + s.cas + ']' : ''));
+      (s.fourn || '') + ' \u2192 ' + s.dept + (s.atrier ? ' · \u00C0 TRIER' : (s.line ? ' · ' + s.line : (s.relier ? ' · \u00C0 RELIER' : ''))) + (s.cas && s.cas !== 'none' ? ' [' + s.cas + ']' : ''));
     s.lock = 'settled'; s.editing = false;
     // Item 39 #5 — clear remb subview state on commit so the post-commit back-stack is coherent
     // (_optPaint regenerates the relié pane, discarding the moved picker node; just reset the flags).

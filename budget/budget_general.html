@@ -559,6 +559,202 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   .drawer-hdr::before{content:'';display:block;width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 12px;position:absolute;top:10px;left:50%;transform:translateX(-50%)}
   .drawer-hdr{padding-top:24px}
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DRAWER TIER-0 FOUNDATION — additive dormant CSS, ported from event 0f1a3ebc.
+   Component families .rail/.ed-/.encsrc/.opt-/.seg + the .det-pie donut family,
+   the two pane @keyframes (edFade/eFade), the 8 :root tokens, and the ≤720 rescale.
+   General has 0 elements in any of these families so all rules are dormant. No
+   shared drawer class selector or drawer/overlay id-rule is touched here. ═══════ */
+
+/* — 8 design tokens the ported chrome + detPie resolve against (verbatim event values;
+     general defines none of these 8 today → additive-inert). --ff-num resolves via
+     general's existing --ff-num-table. — */
+:root{
+  --ff-display:'Space Grotesk',sans-serif;
+  --fs-display:22px; --fs-heading:16px; --fs-micro:9px; --fs-title:18px;
+  --fw-bold:700;
+  --rb:#5eead4;
+  --ff-num:var(--ff-num-table);
+}
+/* mobile rescale for the 4 --fs-* tokens introduced above (event L36-37 subset;
+   general already rescales caption/small/body/strong so those are left untouched). */
+@media(max-width:720px){ :root{
+  --fs-micro:8px; --fs-heading:13px; --fs-title:14px; --fs-display:17px; } }
+
+/* — pane fade keyframes (ported panes animate these; general has neither) — */
+@keyframes edFade{from{opacity:0}to{opacity:1}}
+@keyframes eFade{from{opacity:0}to{opacity:1}}
+
+/* — component-family rules (source order; bodies verbatim) — */
+.ed-tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.ed-tab{position:relative;flex:1;padding:9px 6px;border:none;background:transparent;color:var(--text-dim);font-family:'DM Sans',sans-serif;font-size:var(--fs-body);font-weight:600;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.ed-tab:hover{color:var(--text-muted)}
+.ed-tab.on{color:#fff}
+.ed-tab.on::after{content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:2px;border-radius:2px;background:#fff}
+.ed-tabs-single{justify-content:flex-start}
+.ed-tabs-single .ed-tab{flex:0 0 auto}
+.ed-pane{display:none}
+.ed-pane.on{display:block;animation:edFade .18s ease}
+.ed-sec{margin-bottom:18px}
+.ed-sec-t{font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim);font-weight:700;margin-bottom:11px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.ed-kv .row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:var(--fs-strong)}
+.ed-kv .row:last-child{border-bottom:none}
+.ed-kv .k{color:var(--text-muted)}
+.ed-kv .v{font-family:var(--ff-num);color:var(--text);font-weight:600;font-variant-numeric:tabular-nums lining-nums}
+.ed-phase{display:flex;gap:8px;align-items:flex-start;margin-top:12px;padding:11px 12px;border:1px dashed var(--border-h);border-radius:9px;background:rgba(255,255,255,.015);font-size:var(--fs-body);line-height:1.5;color:var(--text-dim)}
+.ed-phase svg{width:14px;height:14px;flex-shrink:0;margin-top:1px;color:var(--text-dim)}
+.ed-ttc{font-size:var(--fs-small);color:var(--text-dim);margin-top:6px}
+.ed-ttc b{font-family:var(--ff-num);color:var(--text-muted);font-variant-numeric:tabular-nums lining-nums}
+.ed-lock{display:flex;gap:7px;align-items:flex-start;margin-top:7px;font-size:var(--fs-small);line-height:1.45;color:var(--amber)}
+.ed-lock svg{width:13px;height:13px;flex-shrink:0;margin-top:1px}
+.ed-disabled{opacity:.5;pointer-events:none}
+.ed-stub-select{opacity:.82}
+.ed-warn{margin-top:16px;padding:13px 14px;border:1px solid rgba(251,191,36,.22);border-radius:10px;background:rgba(251,191,36,.05)}
+.ed-warn .wt{display:flex;gap:8px;align-items:center;font-size:var(--fs-body);font-weight:700;color:var(--amber);margin-bottom:7px}
+.ed-warn .wt svg{width:14px;height:14px;flex-shrink:0}
+.ed-warn .wd{font-size:var(--fs-small);line-height:1.55;color:var(--text-muted)}
+.ed-delcard{display:flex;gap:12px;align-items:center;padding:13px 14px;border:1px solid rgba(248,113,113,.2);border-radius:10px;background:rgba(248,113,113,.04);cursor:pointer;transition:all .15s}
+.ed-delcard:hover{border-color:rgba(248,113,113,.4);background:rgba(248,113,113,.08)}
+.ed-delcard-ic{width:30px;height:30px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--red)}
+.ed-delcard-ic svg{width:17px;height:17px}
+.ed-delcard-b .t{font-size:var(--fs-strong);font-weight:600;color:var(--red);margin-bottom:2px}
+.ed-delcard-b .d{font-size:var(--fs-small);color:var(--text-dim);line-height:1.45}
+.rail-hdr{padding:20px 22px 15px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.rail-title{font-family:var(--ff-display);font-size:var(--fs-heading);font-weight:700;color:#fff;line-height:1.25;letter-spacing:-.01em;display:flex;align-items:center;gap:9px}
+.rail-title svg{width:16px;height:16px;color:var(--text-muted)}
+.rail-sub{font-size:var(--fs-small);color:var(--text-muted);margin-top:4px}
+.rail-sub b{color:#fff}
+.rail-x{background:none;border:1px solid var(--border);border-radius:7px;color:var(--text-dim);cursor:pointer;padding:6px 11px;font-size:var(--fs-caption);flex-shrink:0;font-family:inherit;transition:.15s}
+.rail-x:hover{border-color:var(--text-muted);color:#fff}
+.rail-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);flex-shrink:0}
+.rail-kpis.k3{grid-template-columns:repeat(3,1fr)}
+.rail-kpi{background:var(--surface);padding:11px 14px}
+.rail-kpi .k{font-size:var(--fs-micro);text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);font-weight:700}
+.rail-kpi .v{font-family:var(--ff-num);font-size:var(--fs-strong);font-weight:600;color:#fff;margin-top:4px;white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}
+.rail-kpi .v.prevu{color:#fff}
+.rail-kpi .v.engage{color:var(--amber)}
+.rail-kpi .v.reel{color:var(--rb)}
+.rail-kpi .v.ed-phase-v{color:var(--text-dim)}
+@media(max-width:560px){.rail-kpis{grid-template-columns:repeat(2,1fr)}}
+.det-pie{display:flex;align-items:center;gap:18px;margin-bottom:18px}
+.det-pie-ring{width:100px;height:100px;border-radius:50%;flex-shrink:0;position:relative}
+.det-pie-hole{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.det-pie-hole .ph-amt{font-family:var(--ff-num);font-size:var(--fs-strong);font-weight:700;color:#fff;line-height:1;font-variant-numeric:tabular-nums lining-nums}
+.det-pie-hole .ph-lbl{font-size:var(--fs-micro);text-transform:uppercase;letter-spacing:.12em;color:var(--text-dim);margin-top:2px}
+.det-pie-side{flex:1;display:flex;flex-direction:column;gap:9px;min-width:0}
+.det-pie-side .ps-head{font-size:var(--fs-caption);color:var(--text-muted)}
+.det-pie-side .ps-head b{color:#fff;font-size:var(--fs-body)}
+.det-pie-legend{display:flex;flex-direction:column;gap:6px;min-width:0}
+.dpl-row{display:flex;align-items:center;gap:8px;font-size:var(--fs-caption)}
+.dpl-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.dpl-nm{color:var(--text-muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dpl-amt{font-family:var(--ff-num);color:var(--text);font-size:var(--fs-caption);flex-shrink:0;font-weight:600;font-variant-numeric:tabular-nums lining-nums}
+.opt-hero .split-row{display:flex;flex-direction:column}
+.opt-hero .split-row > .sr-top{order:0}
+.opt-hero .split-row > .intra-origin,
+.opt-hero .split-row > .remb-origin,
+.opt-hero .split-row > .remb-link{order:3;margin-top:9px}
+.opt-hero .split-row > .rc-detail{order:2}
+.seg{display:flex;gap:6px;margin-top:2px}
+.seg-opt{flex:1;text-align:center;font-size:var(--fs-small);font-weight:600;padding:8px;border-radius:8px;border:1px solid var(--border-h);background:var(--surface);color:var(--text-muted);cursor:pointer;transition:.14s;display:flex;align-items:center;justify-content:center;gap:6px}
+.seg-opt svg{width:13px;height:13px}
+.seg-opt:hover{border-color:var(--text-dim)}
+.seg-opt.on.recu{border-color:rgba(251,191,36,.5);background:rgba(251,191,36,.1);color:var(--amber)}
+.seg-opt.on.signe{border-color:rgba(52,211,153,.5);background:rgba(52,211,153,.1);color:var(--green)}
+.rail-kpi.enc{box-shadow:inset 0 0 0 1px rgba(94,234,212,.22)}
+.rail-kpi.enc.flash{box-shadow:inset 0 0 0 1px rgba(94,234,212,.7);background:rgba(94,234,212,.06)}
+.encsrc .seg-opt.on{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.06);color:#fff}
+.encsrc-body{margin-top:14px}
+.encsrc-mode{display:none}
+.encsrc-mode.on{display:block;animation:eFade .18s ease}
+.encsrc-tx{display:flex;align-items:center;gap:11px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2)}
+.encsrc-tx .ic{width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text-muted)}
+.encsrc-tx .ic svg{width:15px;height:15px}
+.encsrc-tx .b{flex:1}
+.encsrc-tx .t{font-size:var(--fs-body);font-weight:600;color:#fff}
+.encsrc-tx .d{font-size:var(--fs-caption);color:var(--text-dim);margin-top:2px}
+.encsrc-tx .amt{font-family:var(--ff-num);font-size:var(--fs-heading);font-weight:600;color:var(--rb);white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}
+.encsrc-tx.empty .ic,.encsrc-tx.empty .amt{color:var(--text-dim)}
+.encsrc-tx.empty .t{color:var(--text-muted)}
+.encsrc-api{border:1px solid var(--border-h);border-radius:11px;background:var(--surface-2);overflow:hidden}
+.encsrc-prow{display:flex;align-items:center;gap:11px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04)}
+.encsrc-prow .av{width:26px;height:26px;border-radius:7px;background:var(--surface);border:1px solid var(--border-h);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--ff-num);font-size:var(--fs-caption);font-weight:500;color:var(--text-muted);font-variant-numeric:tabular-nums lining-nums}
+.encsrc-prow .nm{flex:1;font-size:var(--fs-body);font-weight:600;color:var(--text)}
+.encsrc-prow .nm small{display:block;font-weight:400;font-size:var(--fs-micro);letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);margin-top:1px}
+.encsrc-prow .pv{font-family:var(--ff-num);font-size:var(--fs-body);font-weight:500;color:var(--text);white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}
+.encsrc-total{display:flex;align-items:center;gap:11px;padding:12px 14px;background:rgba(94,234,212,.05);border-top:1px solid var(--border-h)}
+.encsrc-total .av{width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--rb)}
+.encsrc-total .av svg{width:15px;height:15px}
+.encsrc-total .nm{flex:1;font-size:var(--fs-body);font-weight:700;color:#fff}
+.encsrc-total .nm small{display:block;font-weight:400;font-size:var(--fs-micro);letter-spacing:.06em;text-transform:uppercase;color:var(--rb);opacity:.8;margin-top:2px}
+.encsrc-total .pv{font-family:var(--ff-num);font-size:var(--fs-title);font-weight:700;color:var(--rb);white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}
+.encsrc-sync{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:10px;font-size:var(--fs-small);color:var(--text-dim)}
+.encsrc-sync .dot{width:6px;height:6px;border-radius:50%;background:var(--text-dim);flex-shrink:0}
+.encsrc-sync .grow{flex:1;min-width:120px}
+.encsrc-refresh{display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:var(--fs-small);font-weight:600;color:var(--text-dim);background:var(--surface);border:1px solid var(--border-h);border-radius:7px;padding:5px 9px;cursor:not-allowed;opacity:.72}
+.encsrc-refresh svg{width:12px;height:12px}
+.encsrc-manual{position:relative}
+.encsrc-manual .cur{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-family:var(--ff-num);font-size:var(--fs-body);color:var(--text-dim);pointer-events:none;font-variant-numeric:tabular-nums lining-nums}
+.encsrc-manual input{font-family:var(--ff-num);text-align:right;padding-left:30px;font-variant-numeric:tabular-nums lining-nums}
+.encsrc-out{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;padding:13px 15px;border:1px solid rgba(94,234,212,.24);border-radius:11px;background:rgba(94,234,212,.05)}
+.encsrc-out .l .lbl{font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:.9px;color:var(--rb);font-weight:700}
+.encsrc-out .l .cap{font-size:var(--fs-micro);color:var(--text-dim);margin-top:3px;display:flex;align-items:center;gap:5px}
+.encsrc-out .l .cap svg{width:11px;height:11px;color:var(--rb)}
+.encsrc-out .val{font-family:var(--ff-num);font-size:var(--fs-display);font-weight:700;color:var(--rb);white-space:nowrap;line-height:1;font-variant-numeric:tabular-nums lining-nums}
+.opt-tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--border)}
+.opt-tabs,.reel-tabs{margin:0 -20px 16px;padding:0 20px;position:sticky;top:-20px;z-index:5;background:var(--surface)}
+.opt-tabs{margin-top:-20px}
+.opt-tab{appearance:none;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);font-family:var(--ff-display);font-size:var(--fs-small);font-weight:600;padding:8px 12px 9px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;position:relative;transition:color .14s,border-color .14s}
+.opt-tab:hover{color:var(--text-muted)}
+.opt-tab.on{color:#fff}
+.opt-tab.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:#fff}
+.opt-tab .cnt{font-size:var(--fs-caption);padding:1px 6px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--text-muted);font-weight:700}
+.opt-tab .tab-check{color:var(--green);font-weight:var(--fw-bold);font-size:var(--fs-title);line-height:1}
+.opt-tab .tab-check.partial{color:var(--amber)}
+.opt-pane{display:none;animation:edFade .2s ease}
+.opt-pane.on{display:block}
+.opt-hero{margin-bottom:18px}
+.opt-pane .linefield{display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;margin-bottom:8px}
+.opt-pane .linefield svg{width:15px;height:15px;color:var(--text-dim);flex-shrink:0}
+.opt-pane .linefield input{flex:1;background:none;border:none;outline:none;color:#fff;font-family:'DM Sans',sans-serif;font-size:var(--fs-heading)}
+.opt-pane .lineres{display:none;max-height:240px;overflow-y:auto;margin-bottom:10px}
+.opt-pane .lineres.on{display:block}
+.opt-pane .lr-row{padding:9px 12px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.03);transition:background .1s}
+.opt-pane .lr-row:hover{background:rgba(255,255,255,.05)}
+.opt-pane .lr-dept{font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:.5px;color:var(--text-dim);font-weight:700;display:flex;align-items:center;gap:6px}
+.opt-pane .lr-line{font-size:var(--fs-strong);color:#ddd;margin-top:1px}
+.opt-pane .lr-cat{font-family:var(--ff-num);font-size:var(--fs-caption);color:var(--text-muted)}
+.opt-pane .lr-empty{padding:12px;font-size:var(--fs-body);color:var(--text-dim);text-align:center}
+.opt-action-cards .optgrid{display:flex;flex-direction:column;gap:8px}
+.opt-pane .optgrid{display:flex;flex-direction:column;gap:8px}
+.opt-note-field{width:100%;min-height:88px;resize:vertical;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:10px 11px;color:#fff;font-family:'DM Sans',sans-serif;font-size:var(--fs-heading);outline:none}
+.opt-notes-log-t{font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:700;margin:14px 0 8px}
+.opt-timeline{display:flex;flex-direction:column;gap:9px}
+.opt-tl-row{display:flex;gap:9px;font-size:var(--fs-small);line-height:1.45}
+.opt-tl-dot{width:7px;height:7px;border-radius:50%;background:#818cf8;flex-shrink:0;margin-top:4px}
+.opt-tl-body{flex:1;min-width:0}
+.opt-tl-when{color:var(--text-dim);font-size:var(--fs-heading)}
+.opt-tl-what{color:var(--text-muted)}
+.opt-tl-prov{font-size:var(--fs-heading);color:var(--text-dim)}
+#drawer.opt-locked #opt-ligne-field .linefield,
+#drawer.opt-locked #opt-ligne-res,
+#drawer.opt-locked .opt-action-cards,
+#drawer.opt-locked #relie-hint,
+#drawer.opt-locked #opt-bridge{display:none !important}
+#drawer.opt-locked .opt-pane.on[data-pane="relie"]{display:flex;flex-direction:column;flex:1;justify-content:flex-start}
+#drawer .opt-pane[data-pane="relie"].intra-subview-active.on > :not(#intra-subview){display:none}
+#drawer .opt-pane[data-pane="relie"].remb-subview-active.on > :not(#remb-subview){display:none}
+#drawer .opt-pane[data-pane="relie"].vent-subview-active.on > :not(#vent-subview){display:none}
+.opt-orient{display:flex;align-items:flex-start;gap:8px;font-size:var(--fs-body);line-height:1.45;color:var(--amber);background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.22);border-radius:9px;padding:10px 11px;margin-bottom:12px}
+.opt-orient svg{width:15px;height:15px;flex-shrink:0;margin-top:1px}
+.opt-orient b{color:#fff}
+.opt-iban-lock{display:flex;align-items:center;gap:7px;font-size:var(--fs-small);color:var(--text-dim);margin-top:8px}
+.opt-iban-lock svg{width:13px;height:13px;flex-shrink:0}
+.opt-vent-pie{display:flex;align-items:center;gap:13px;margin-bottom:10px}
+.opt-vent-pie .vp-ring{flex-shrink:0}
+.opt-vent-pie .vp-cap{font-size:var(--fs-caption);color:var(--text-dim);text-transform:uppercase;letter-spacing:.8px;font-weight:700}
+.opt-vent-splits{display:flex;flex-direction:column;gap:8px}
 </style>
 </head>
 <body>
@@ -5802,6 +5998,262 @@ function bootLanding(){ if (typeof go === 'function') go('bilan'); }
   var g=document.getElementById('pw-gate'); if(g) g.style.display='none';
   showLoadingOverlay(); loadBudgetData();
 })();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DRAWER TIER-0 FOUNDATION — additive dormant helpers, ported verbatim from
+   event budget_pa_x_0f1a3ebc (md5 0f1a3ebc…). Surgical by exact name; the two
+   general-owned lets (_drawerScrollY, _drawerCurrentLine) are NOT re-declared.
+   0 callers in general → fully dormant. ═══════════════════════════════════ */
+
+/* — escaper _esc — */
+function _esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+/* — money formatters — */
+/* French money, byte-faithful to the mock: ASCII-space thousands separator
+   (confirmed U+0020 at source, NOT narrow-NBSP) + " €" suffix, no decimals
+   (mock budget lines are whole euros). */
+function fmtEur(n){
+  const v = Math.round(Number(n) || 0);
+  const sign = v < 0 ? '\u2212' : '';
+  const grp = String(Math.abs(v)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return sign + grp + ' \u20ac';
+}
+
+/* v21.1 DL-1: compact form for the donut HOLE ONLY (the 64px ring overflows on long
+   values). Abbreviate at >= 10 000 (where "10 000 €" wraps the hole); below that, full
+   fmtEur (fits). French decimal comma, 1 decimal, trailing ",0" dropped. The legend rows,
+   KPI strip and sum-rows keep full fmtEur — precision is preserved beside the donut. */
+function fmtEurShort(n){
+  const v = Math.round(Number(n) || 0);
+  if (Math.abs(v) < 10000) return fmtEur(v);
+  const sign = v < 0 ? '\u2212' : '';
+  let s = (Math.round(Math.abs(v) / 100) / 10).toFixed(1).replace('.', ',');
+  if (s.endsWith(',0')) s = s.slice(0, -2);
+  return sign + s + ' k\u20ac';
+}
+
+/* — ring/degree helpers — */
+/* round a raw angle to a whole degree (mock conic stops are integers) */
+function _deg(raw){ return Math.round(raw); }
+
+/* conic-gradient from ordered segments [{deg,color}]; cumulative stops are
+   rounded and the final stop is forced to 360 so the ring always closes. */
+function _ring(segs){
+  let acc = 0;
+  const parts = segs.map((s, i) => {
+    const start = _deg(acc);
+    acc += s.deg;
+    const end = (i === segs.length - 1) ? 360 : _deg(acc);
+    return s.color + ' ' + start + 'deg ' + end + 'deg';
+  });
+  return 'conic-gradient(' + parts.join(', ') + ')';
+}
+
+/* — rail chrome builders — */
+/* ── #4 railX(state) — top-right control ───────────────────────────────────
+   'close' → Fermer ✕   ·   'back' → ← Retour
+   Edit drawer has no subview, so it always passes 'close'. The 'back' swap
+   exists so options (v22+) inherits it, driven by its #crumb subview state. */
+function railX(state){
+  return state === 'back'
+    ? '<button class="rail-x">\u2190 Retour</button>'
+    : '<button class="rail-x">Fermer \u2715</button>';
+}
+
+/* ── #1 railHdr({icon,title,subHTML,railXState}) — drawer header shell ──────
+   Mock shape: title is the FIXED mode string; the line name lives bolded as
+   the lead of rail-sub. D2: NO Création/Édition badge in any case. icon is an
+   optional raw SVG string (réelles passes none → harmless flex on one node). */
+function railHdr({ icon = '', title = '', subHTML = '', railXState = 'close' } = {}){
+  return '<div class="rail-hdr">'
+       +   '<div>'
+       +     '<div class="rail-title">' + (icon || '') + '<span>' + title + '</span></div>'
+       +     '<div class="rail-sub">' + subHTML + '</div>'
+       +   '</div>'
+       +   railX(railXState)
+       + '</div>';
+}
+
+/* ── #2 railKpis(items,{k3}) — KPI strip ───────────────────────────────────
+   items = [{ label, value, colorClass }]. The helper renders the value STRING
+   verbatim — a "—" placeholder stays "—" (recette "Attendu · intégr." is
+   Phase-D and absent; it must never become a fabricated number). The
+   recette-vs-dépense decision lives in the caller (v21b); helper is mode-agnostic. */
+function railKpis(items, { k3 = true } = {}){
+  const cells = (items || []).map(it =>
+      '<div class="rail-kpi">'
+    +   '<div class="k">' + it.label + '</div>'
+    +   '<div class="v ' + (it.colorClass || '') + '">' + it.value + '</div>'
+    + '</div>'
+  ).join('');
+  return '<div class="rail-kpis' + (k3 ? ' k3' : '') + '">' + cells + '</div>';
+}
+
+/* — détails donut builder detPie (Leo-locked contract) — */
+/* ── #3 detPie({prevu,engage,reel,encaisse,mode}) — Détails donut ──────────
+   DONUT CONTRACT (Leo-locked). mode ∈ {'depense','recette'}. Every segment,
+   angle, hole figure and legend amount is computed from the inputs.
+
+   DÉPENSE within budget (peak ≤ prevu), basis = prevu:
+     Réel payé = reel (teal) · Devis à payer = engage−reel (gold)
+     · Libre après devis = prevu−engage (faint).  Each deg = amount/prevu·360.
+     Hole = prevu−engage € "libre".
+   DÉPENSE over budget (peak > prevu, peak = max(engage,reel)), basis = peak,
+   Option A red-overflow, NO clamp:
+     Réel payé = min(reel,prevu) (teal) · Devis dans le budget = max(0,prevu−reel)
+     (gold) · Dépassement = peak−prevu (red). Hole = peak−prevu € red "dépassement".
+     (min()/max() generalise the spec's primary amounts so the realised-overrun
+      sub-case reel>prevu never overflows the ring; for reel≤prevu these reduce
+      to reel / prevu−reel / engage−prevu exactly per the contract table.)
+   RECETTE (Option B, 2-segment real-only — the mock's fabricated Attendu/
+   À-sécuriser split is dropped), basis = prevu:
+     Encaissé = encaisse (teal) · Reste à encaisser = prevu−encaisse (faint).
+     Hole = prevu−encaisse € "à encaisser". Over budget: same red rule.
+   ZERO-PRÉVU guard: prevu ≤ 0 → no division; faint full ring, hole 0 €. */
+function detPie({ prevu = 0, engage = 0, reel = 0, encaisse = 0, mode = 'depense' } = {}){
+  prevu = Number(prevu) || 0; engage = Number(engage) || 0;
+  reel = Number(reel) || 0;   encaisse = Number(encaisse) || 0;
+
+  const RB         = 'var(--rb)';
+  const GOLD       = 'rgba(251,191,36,.7)';
+  const FAINT_RING = 'rgba(94,234,212,.14)';
+  const FAINT_DOT  = 'rgba(94,234,212,.22)';
+  const RED_RING   = 'rgba(248,113,113,.18)';
+  const RED_DOT    = 'rgba(248,113,113,.3)';
+
+  function shell(ringStyle, holeAmt, holeLbl, holeRed, headHTML, rows){
+    const legend = rows.map(r =>
+        '<div class="dpl-row">'
+      +   '<span class="dpl-dot" style="background:' + r.dot + '"></span>'
+      +   '<span class="dpl-nm"'  + (r.fg ? ' style="color:' + r.fg + '"' : '') + '>' + r.nm + '</span>'
+      +   '<span class="dpl-amt"' + (r.fg ? ' style="color:' + r.fg + '"' : '') + '>' + fmtEur(r.amt) + '</span>'
+      + '</div>'
+    ).join('');
+    return '<div class="det-pie">'
+         +   '<div class="det-pie-ring" style="background:' + ringStyle + '">'
+         +     '<div class="det-pie-hole">'
+         +       '<span class="ph-amt"' + (holeRed ? ' style="color:var(--red)"' : '') + '>' + fmtEurShort(holeAmt) + '</span>'
+         +       '<span class="ph-lbl">' + holeLbl + '</span>'
+         +     '</div>'
+         +   '</div>'
+         +   '<div class="det-pie-side">'
+         +     '<div class="ps-head">' + headHTML + '</div>'
+         +     '<div class="det-pie-legend">' + legend + '</div>'
+         +   '</div>'
+         + '</div>';
+  }
+
+  /* ── zero-prévu divide guard (fires before any angle math) ─────────────── */
+  if (prevu <= 0){
+    return shell(
+      _ring([{ deg: 360, color: FAINT_RING }]),
+      0, (mode === 'recette' ? 'à encaisser' : 'libre'), false,
+      'Aucun budget pr\u00e9vu',
+      [{ dot: FAINT_DOT, nm: 'Budget non d\u00e9fini', amt: 0 }]
+    );
+  }
+
+  /* ── RECETTE ───────────────────────────────────────────────────────────── */
+  if (mode === 'recette'){
+    if (encaisse > prevu){
+      const basis = encaisse;
+      const teal = prevu, depass = encaisse - prevu;
+      return shell(
+        _ring([
+          { deg: teal / basis * 360,   color: RB },
+          { deg: depass / basis * 360, color: RED_RING }
+        ]),
+        depass, 'd\u00e9passement', true,
+        'Sur <b>' + fmtEur(prevu) + '</b> pr\u00e9vu · <b style="color:var(--rb)">' + fmtEur(encaisse) + '</b> d\u00e9j\u00e0 encaiss\u00e9s',
+        [
+          { dot: RB,      nm: 'Encaiss\u00e9 (dans le budget)', amt: teal },
+          { dot: RED_DOT, nm: 'D\u00e9passement', amt: depass, fg: 'var(--red)' }
+        ]
+      );
+    }
+    const reste = prevu - encaisse;
+    return shell(
+      _ring([
+        { deg: encaisse / prevu * 360, color: RB },
+        { deg: reste / prevu * 360,    color: FAINT_RING }
+      ]),
+      reste, 'à encaisser', false,
+      'Sur <b>' + fmtEur(prevu) + '</b> pr\u00e9vu · <b style="color:var(--rb)">' + fmtEur(encaisse) + '</b> d\u00e9j\u00e0 encaiss\u00e9s',
+      [
+        { dot: RB,        nm: 'Encaiss\u00e9', amt: encaisse },
+        { dot: FAINT_DOT, nm: 'Reste \u00e0 encaisser', amt: reste, fg: 'var(--rb)' }
+      ]
+    );
+  }
+
+  /* ── DÉPENSE ───────────────────────────────────────────────────────────── */
+  const peak = Math.max(engage, reel);
+  if (peak > prevu){
+    const basis = peak;
+    const reelSeg  = Math.min(reel, prevu);     // teal arc, capped at the budget line
+    const devisSeg = Math.max(0, prevu - reel); // gold: devis within budget
+    const depass   = peak - prevu;              // red: committed-or-realised overrun
+    return shell(
+      _ring([
+        { deg: reelSeg / basis * 360,  color: RB },
+        { deg: devisSeg / basis * 360, color: GOLD },
+        { deg: depass / basis * 360,   color: RED_RING }
+      ]),
+      depass, 'd\u00e9passement', true,
+      'Sur <b>' + fmtEur(prevu) + '</b> pr\u00e9vu · <b style="color:var(--amber)">' + fmtEur(engage) + '</b> d\u00e9j\u00e0 engag\u00e9s (devis)',
+      [
+        { dot: RB,      nm: 'R\u00e9el pay\u00e9', amt: reelSeg },
+        { dot: GOLD,    nm: 'Devis dans le budget', amt: devisSeg },
+        { dot: RED_DOT, nm: 'D\u00e9passement', amt: depass, fg: 'var(--red)' }
+      ]
+    );
+  }
+  const reelSeg  = reel;
+  const devisSeg = engage - reel;
+  const libre    = prevu - engage;
+  return shell(
+    _ring([
+      { deg: reelSeg / prevu * 360,  color: RB },
+      { deg: devisSeg / prevu * 360, color: GOLD },
+      { deg: libre / prevu * 360,    color: FAINT_RING }
+    ]),
+    libre, 'libre', false,
+    'Sur <b>' + fmtEur(prevu) + '</b> pr\u00e9vu · <b style="color:var(--amber)">' + fmtEur(engage) + '</b> d\u00e9j\u00e0 engag\u00e9s (devis)',
+    [
+      { dot: RB,        nm: 'R\u00e9el pay\u00e9', amt: reelSeg },
+      { dot: GOLD,      nm: 'Devis \u00e0 payer', amt: devisSeg },
+      { dot: FAINT_DOT, nm: 'Libre apr\u00e8s devis', amt: libre, fg: 'var(--rb)' }
+    ]
+  );
+}
+
+/* — drawer provenance-stack nav (dormant: #drawer-close-btn absent in general) — */
+// ── LOCK-15 Item 8 (mechanism A — provenance stack): drawers reuse the single #drawer element, so
+//    "back" needs a re-open thunk for the parent. A nested-open pushes the parent's reconstruct-thunk;
+//    the top-right button pops + calls it; a root drawer shows "Fermer ✕" and clears the stack.
+//    Scoped this LOCK to the assign→intra (Cas 1/2) nesting (Leo); other entry points keep Fermer ✕.
+let _drawerStack = [];
+function pushDrawerReturn(thunk) { _drawerStack.push(thunk); }
+function drawerBack() {
+  const thunk = _drawerStack.pop();
+  if (typeof thunk === 'function') { thunk(); }      // thunk re-renders the parent + calls updateDrawerCloseBtn
+  else { closeDrawer(); }                             // nothing to return to → behave as close
+}
+function updateDrawerCloseBtn() {
+  const btn = document.getElementById('drawer-close-btn');
+  if (!btn) return;
+  if (_drawerStack.length > 0) {
+    btn.innerHTML = '\u2190 Retour';
+    btn.setAttribute('onclick', 'drawerBack()');
+  } else {
+    btn.innerHTML = 'Fermer \u2715';
+    btn.setAttribute('onclick', 'closeDrawer()');
+  }
+}
+
+/* — JS-string escapers _optJs / _jsAttr (_jsAttr = _esc(_optJs(s))) — */
+function _optJs(s){ return (s == null ? '' : String(s)).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+function _jsAttr(s){ return _esc(_optJs(s)); }   // B56: JS-string-escape first, THEN HTML-attr-escape — composition of the two vetted escapers, zero new logic
 </script>
 <footer style="max-width:1020px;margin:0 auto;padding:48px 20px 28px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.2);font-family:'DM Sans',sans-serif">
   <span style="font-weight:600;letter-spacing:.5px">Festiflow <span style="opacity:.5">·</span> Budget v0.5.5 <span style="opacity:.5">·</span> Générale 2026</span>

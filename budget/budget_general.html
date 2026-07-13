@@ -4296,16 +4296,6 @@ function buildEditDrawer(deptId, sectionIdx, lineIdx, isNew, recRef) {
             <div class="row"><span class="k">${recMode ? 'Part des recettes' : 'Part du département ' + (dept ? dept.name : '')}</span><span class="v">${_partPct != null ? _partPct + '%' : '—'}</span></div>
             ${recMode ? '' : `<div class="row"><span class="k">Devis enregistrés</span><span class="v" id="ed-devis-count">${_devisCount} devis</span></div>`}
           </div>
-          ${recMode ? '' : `<div class="df-group" style="margin-top:12px">
-            <label class="df-label">Statut</label>
-            <select id="ef-st" class="df-select">
-              <option value="ESTIMATION"  ${line.st==='ESTIMATION'?'selected':''}>ESTIMATION</option>
-              <option value="EN COURS"    ${line.st==='EN COURS'?'selected':''}>EN COURS</option>
-              <option value="DEVIS SIGNÉ" ${line.st==='DEVIS SIGNÉ'?'selected':''}>DEVIS SIGNÉ</option>
-              <option value="VALIDÉ"      ${line.st==='VALIDÉ'?'selected':''}>VALIDÉ</option>
-              <option value="PAYÉ"        ${line.st==='PAYÉ'?'selected':''}>PAYÉ</option>
-            </select>
-          </div>`}
           <div class="ed-phase">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             <span>${recMode
@@ -4332,16 +4322,6 @@ function buildEditDrawer(deptId, sectionIdx, lineIdx, isNew, recRef) {
               </select>
             </div>
           </div>`}
-          <div class="df-row">
-            ${recMode ? '' : `<div class="df-group">
-              <label class="df-label">Type</label>
-              <select id="ef-typ" class="df-select">
-                <option value="" ${!line.typ?'selected':''}>— Non défini</option>
-                <option value="S" ${line.typ==='S'?'selected':''}>S — Staff / Salaire</option>
-                <option value="G" ${line.typ==='G'?'selected':''}>G — Prestataire</option>
-              </select>
-            </div>`}
-          </div>
           ${recMode ? '' : `<div class="df-group">
             <label class="df-label">Récurrence</label>
             <select id="ef-rec" class="df-select">
@@ -4540,9 +4520,7 @@ async function saveLigne(deptId, sectionIdx, lineIdx, isNew) {
   const nom     = document.getElementById('ef-nom')?.value.trim();
   const section = document.getElementById('ef-section')?.value.trim();
   const tva     = document.getElementById('ef-tva')?.value;
-  const typ     = document.getElementById('ef-typ')?.value;
   const est     = parseFloat(document.getElementById('ef-est')?.value) || 0;
-  const st      = document.getElementById('ef-st')?.value || 'ESTIMATION';   // step-2 C3.1: #ef-st re-added (Details pane); read live and value-swapped into the edit write below
   const rec     = document.getElementById('ef-rec')?.value || 'P';           // step-2 Δ1: #ef-rec re-added (Budget pane); default 'P' — lissé reads l.rec
   const obs        = document.getElementById('ef-obs')?.value.trim();
   const qonto_ref  = document.getElementById('ef-qonto-ref')?.value.trim();
@@ -4579,7 +4557,7 @@ async function saveLigne(deptId, sectionIdx, lineIdx, isNew) {
         body: JSON.stringify({
           session: SESSION, dept: tabName,
           section: section || dept.sections[sectionIdx]?.s || '',
-          ligne: nom, obs: obsWithRef, typ, tva: tva || '', est_ht: est, statut: st, recurrence: rec
+          ligne: nom, obs: obsWithRef, tva: tva || '', est_ht: est, recurrence: rec
         })
       });
       if (!resp.ok) {
@@ -4615,8 +4593,8 @@ async function saveLigne(deptId, sectionIdx, lineIdx, isNew) {
           {field:'tva',          value: tva},
           {field:'est_ht',       value: String(est)},
           {field:'est_ttc',      value: String(estTTC)},
-          {field:'statut',       value: st},             // step-2 C3.1: value-swap line.st → st (reads re-added #ef-st)
           {field:'recurrence',   value: rec},            // step-2 Δ1: recurrence write re-homed (was general's deleted saveLigne)
+          // step-2 editfix (FIX 2): statut write dropped from the edit drawer — statut now owned solely by the table statut-pill path
           {field:'observations', value: obsWithRef},
         ];
         for (const u of updates) {

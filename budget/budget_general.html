@@ -547,6 +547,60 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 }
 .df-badge.edit{background:rgba(168,85,247,.1);color:#c4b5fd;border:1px solid rgba(168,85,247,.2)}
 .df-badge.new{background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.2)}
+/* ═══ seam 27es — recette encaissé SOURCE SELECTOR (.encsrc-*) · lifted from event 0f1a3ebc (SRC L885-927) ═══ */
+/* Scoped vars: general lacks --rb + the --fs-*/--ff-num scale the event's encsrc CSS uses; scope them to .encsrc so the lift is self-contained (zero effect outside the selector). */
+.encsrc{--rb:#5eead4;--ff-num:'Space Grotesk','DM Sans',sans-serif;--fs-micro:9px;--fs-caption:11px;--fs-small:12px;--fs-body:13px;--fs-heading:16px;--fs-title:18px;--fs-display:22px}
+@media(max-width:720px){.encsrc{--fs-micro:8px;--fs-caption:9px;--fs-small:10px;--fs-body:11px;--fs-heading:13px;--fs-title:14px;--fs-display:17px}}
+/* segmented control (.seg/.seg-opt) — absent in general (SRC L868-871) */
+.seg{display:flex;gap:6px;margin-top:2px}
+.seg-opt{flex:1;text-align:center;font-size:var(--fs-small);font-weight:600;padding:8px;border-radius:8px;border:1px solid var(--border-h);background:var(--surface);color:var(--text-muted);cursor:pointer;transition:.14s;display:flex;align-items:center;justify-content:center;gap:6px}
+.seg-opt svg{width:13px;height:13px}
+.seg-opt:hover{border-color:var(--text-dim)}
+/* df-hint (SRC L710) + ed-phase note box (SRC L706-707) — absent in general */
+.ed-phase{display:flex;gap:8px;align-items:flex-start;margin-top:12px;padding:11px 12px;border:1px dashed var(--border-h);border-radius:9px;background:rgba(255,255,255,.015);font-size:var(--fs-body);line-height:1.5;color:var(--text-dim)}
+.ed-phase svg{width:14px;height:14px;flex-shrink:0;margin-top:1px;color:var(--text-dim)}
+.df-hint{font-size:var(--fs-small);color:var(--text-dim);margin-top:6px;line-height:1.5}
+/* .encsrc .seg-opt.on (SRC L888) + the .encsrc-* rules (SRC L889-927) */
+.encsrc .seg-opt.on{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.06);color:#fff}
+.encsrc-body{margin-top:14px}
+.encsrc-mode{display:none}
+.encsrc-mode.on{display:block;animation:eFade .18s ease}
+@keyframes eFade{from{opacity:0}to{opacity:1}}
+.encsrc-tx{display:flex;align-items:center;gap:11px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2)}
+.encsrc-tx .ic{width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text-muted)}
+.encsrc-tx .ic svg{width:15px;height:15px}
+.encsrc-tx .b{flex:1}
+.encsrc-tx .t{font-size:var(--fs-body);font-weight:600;color:#fff}
+.encsrc-tx .d{font-size:var(--fs-caption);color:var(--text-dim);margin-top:2px}
+.encsrc-tx .amt{font-family:var(--ff-num);font-size:var(--fs-heading);font-weight:600;color:var(--rb);white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}
+.encsrc-tx.empty .ic,.encsrc-tx.empty .amt{color:var(--text-dim)}
+.encsrc-tx.empty .t{color:var(--text-muted)}
+.encsrc-api{border:1px solid var(--border-h);border-radius:11px;background:var(--surface-2);overflow:hidden}
+.encsrc-prow{display:flex;align-items:center;gap:11px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04)}
+.encsrc-prow .av{width:26px;height:26px;border-radius:7px;background:var(--surface);border:1px solid var(--border-h);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--ff-num);font-size:var(--fs-caption);font-weight:500;color:var(--text-muted);font-variant-numeric:tabular-nums lining-nums}
+.encsrc-prow .nm{flex:1;font-size:var(--fs-body);font-weight:600;color:var(--text)}
+.encsrc-prow .nm small{display:block;font-weight:400;font-size:var(--fs-micro);letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);margin-top:1px}
+.encsrc-prow .pv{font-family:var(--ff-num);font-size:var(--fs-body);font-weight:500;color:var(--text);white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}
+.encsrc-total{display:flex;align-items:center;gap:11px;padding:12px 14px;background:rgba(94,234,212,.05);border-top:1px solid var(--border-h)}
+.encsrc-total .av{width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--rb)}
+.encsrc-total .av svg{width:15px;height:15px}
+.encsrc-total .nm{flex:1;font-size:var(--fs-body);font-weight:700;color:#fff}
+.encsrc-total .nm small{display:block;font-weight:400;font-size:var(--fs-micro);letter-spacing:.06em;text-transform:uppercase;color:var(--rb);opacity:.8;margin-top:2px}
+.encsrc-total .pv{font-family:var(--ff-num);font-size:var(--fs-title);font-weight:700;color:var(--rb);white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}
+.encsrc-sync{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:10px;font-size:var(--fs-small);color:var(--text-dim)}
+.encsrc-sync .dot{width:6px;height:6px;border-radius:50%;background:var(--text-dim);flex-shrink:0}
+.encsrc-sync .grow{flex:1;min-width:120px}
+.encsrc-refresh{display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:var(--fs-small);font-weight:600;color:var(--text-dim);background:var(--surface);border:1px solid var(--border-h);border-radius:7px;padding:5px 9px;cursor:not-allowed;opacity:.72}
+.encsrc-refresh svg{width:12px;height:12px}
+.avenir{font-size:var(--fs-micro);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);background:var(--surface-2);border:1px solid var(--border-h);border-radius:5px;padding:2px 7px}
+.encsrc-manual{position:relative}
+.encsrc-manual .cur{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-family:var(--ff-num);font-size:var(--fs-body);color:var(--text-dim);pointer-events:none;font-variant-numeric:tabular-nums lining-nums}
+.encsrc-manual input{font-family:var(--ff-num);text-align:right;padding-left:30px;font-variant-numeric:tabular-nums lining-nums}
+.encsrc-out{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;padding:13px 15px;border:1px solid rgba(94,234,212,.24);border-radius:11px;background:rgba(94,234,212,.05)}
+.encsrc-out .l .lbl{font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:.9px;color:var(--rb);font-weight:700}
+.encsrc-out .l .cap{font-size:var(--fs-micro);color:var(--text-dim);margin-top:3px;display:flex;align-items:center;gap:5px}
+.encsrc-out .l .cap svg{width:11px;height:11px;color:var(--rb)}
+.encsrc-out .val{font-family:var(--ff-num);font-size:var(--fs-display);font-weight:700;color:var(--rb);white-space:nowrap;line-height:1;font-variant-numeric:tabular-nums lining-nums}
 
 /* ── MOBILE bottom sheet ─── */
 @media(max-width:720px){
@@ -2962,10 +3016,91 @@ async function saveRecLigne() {
   }
 }
 
+// ═══ seam 27es — recette encaissé source selector (.encsrc) · lifted from event 0f1a3ebc (SRC L3313-3315, L3899-3964) ═══
+// Session-only (Map, no backend / no localStorage); cross-reload persistence = Phase-D. Injected into openRecetteDrawer's body.
+// NOTE: _encsrcSync's rail-kpi flash targets #rail-kpis-host (event's tabbed drawer) — absent in general's flat drawer,
+//       so querySelector returns null and that block no-ops. The rest is drawer-shell-agnostic.
+const _encsrcStore = new Map();
+
+const _ENCSRC_HINTS = {
+  tx:  "Par d\u00e9faut. L'encaiss\u00e9 = somme des transactions rapproch\u00e9es \u00e0 cette ligne (comme le r\u00e9el c\u00f4t\u00e9 d\u00e9penses).",
+  api: "L'encaiss\u00e9 est tir\u00e9 des plateformes de billetterie. Dice et Shotgun restent s\u00e9par\u00e9s ; c'est leur total qui devient l'encaiss\u00e9.",
+  man: "Saisie directe. \u00c9crase les autres sources tant qu'une valeur est pr\u00e9sente."
+};
+// Resolve the encaissé for a given mode by reading the rendered mode figures (no fabricated numbers).
+function _encsrcResolve(mode){
+  const body = document.querySelector('.encsrc'); if(!body) return null;
+  if (mode === 'man'){
+    const inp = document.getElementById('encsrc-man-input');
+    const v = inp && inp.value !== '' ? Math.max(0, parseFloat(inp.value)||0) : null;
+    return v;   // null → no manual value yet (falls back visually to tx)
+  }
+  if (mode === 'api'){
+    const t = document.getElementById('encsrc-api-total');
+    return t ? t.textContent : null;
+  }
+  const amt = body.querySelector('.encsrc-mode[data-mode="tx"] .amt');
+  return amt ? amt.textContent : null;
+}
+function encsrcMode(mode){
+  const root = document.querySelector('.encsrc'); if(!root) return;
+  root.querySelectorAll('.seg-opt').forEach(b=>{
+    const on = b.dataset.mode===mode; b.classList.toggle('on',on); b.setAttribute('aria-selected', on?'true':'false');
+  });
+  root.querySelectorAll('.encsrc-mode').forEach(m=> m.classList.toggle('on', m.dataset.mode===mode));
+  const hint = document.getElementById('encsrc-hint'); if(hint) hint.textContent = _ENCSRC_HINTS[mode] || '';
+  _encsrcPersist(mode);
+  _encsrcSync(mode);
+  // FIX-2: switching to Saisie manuelle must place the caret in the manual input. Otherwise focus
+  // stays on the segment button just clicked (or on BODY when the mode is restored at open) and the
+  // now-visible field silently swallows keystrokes — the "won't let me type" bug. Hidden pane → no-op.
+  if (mode === 'man'){ const _mi = document.getElementById('encsrc-man-input'); if (_mi) _mi.focus(); }
+}
+function encsrcManual(){ _encsrcPersist('man'); _encsrcSync('man'); }
+// seam 27db — persist mode + manual value in-session, keyed by the line's canonical key on the .encsrc root.
+function _encsrcPersist(mode){
+  const root = document.querySelector('.encsrc'); if(!root) return;
+  const key = root.dataset.encsrcKey; if(!key) return;   // no key (isNew / no name) → don't persist
+  const inp = document.getElementById('encsrc-man-input');
+  const manualVal = inp && inp.value !== '' ? inp.value : null;
+  _encsrcStore.set(key, { mode, manualVal });
+}
+// Apply saved state after the drawer body renders (called from openEditLigne's post-render).
+function encsrcRestore(){
+  const root = document.querySelector('.encsrc'); if(!root) return;
+  const mode = root.dataset.encsrcMode || 'tx';
+  if (mode !== 'tx') encsrcMode(mode);   // switch reveals the saved mode (input value already prefilled in markup)
+  else _encsrcSync('tx');                 // default: still sync the resolved strip/KPI once
+}
+// Update the resolved "Encaissé HT retenu" strip + flash the drawer's Encaissé KPI (UI only; not persisted).
+function _encsrcSync(mode){
+  const out = document.getElementById('encsrc-out-val'); if(!out) return;
+  let resolved = _encsrcResolve(mode);
+  // manual with empty input: fall back to the transactions figure so the strip never reads blank
+  if (mode==='man' && (resolved===null || isNaN(resolved))){
+    const txAmt = document.querySelector('.encsrc-mode[data-mode="tx"] .amt');
+    out.textContent = txAmt ? txAmt.textContent : out.textContent;
+  } else if (typeof resolved === 'number'){
+    out.textContent = (typeof fe==='function') ? fe(resolved) : String(resolved);
+  } else if (resolved!=null){
+    out.textContent = resolved;   // already a formatted string (tx/api)
+  }
+  const kpi = document.querySelector('#rail-kpis-host .rail-kpi:last-child');
+  if (kpi){ kpi.classList.add('enc','flash'); setTimeout(()=>kpi.classList.remove('flash'), 450); }
+}
+
 function openRecetteDrawer(ci, ri) {
   const cat = REC[ci];
   const r = cat ? cat.rows[ri] : null;
   if (!r) return;
+
+  // seam 27es — encaissé source selector state (session-only, keyed per line). ci is the real REC index (recCi threading).
+  const _reelV = r.reel || 0;
+  const _encsrcKey  = (cat.cat || '') + '\u241F' + (r.l || '');   // stable per-line composite (category ␟ label)
+  const _encsrcSaved = _encsrcStore.has(_encsrcKey) ? _encsrcStore.get(_encsrcKey) : null;
+  const _encsrcMode0 = _encsrcSaved ? _encsrcSaved.mode : 'tx';
+  const _encsrcMan0  = _encsrcSaved && _encsrcSaved.manualVal != null ? _encsrcSaved.manualVal : '';
+  const _encAttr = s => String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;');   // inline attr escape (general has no _esc)
 
   document.getElementById('drawer-title').innerHTML =
     `<span style="color:#c4b5fd">\u270F</span> ${r.l || 'Ligne recette'}`;
@@ -3035,6 +3170,81 @@ function openRecetteDrawer(ci, ri) {
         </div>
       </div>
     </div>
+
+    <!-- seam 27es — encaissé SOURCE SELECTOR (.encsrc) · lifted from event 0f1a3ebc (SRC L4303-4372), adapted to the flat drawer. Same drawer serves both recette tables. -->
+    <div class="drawer-section" style="margin-top:8px">
+      <div class="encsrc" data-encsrc-key="${_encAttr(_encsrcKey)}" data-encsrc-mode="${_encsrcMode0}" data-encsrc-man="${_encAttr(_encsrcMan0)}">
+        <div class="drawer-section-title" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+          <span>Source de l'encaiss\u00E9 r\u00E9el</span>
+          <span class="df-badge new" style="letter-spacing:.6px">Nouveau</span>
+        </div>
+        <div class="df-group" style="margin-bottom:0">
+          <label class="df-label">Mode de calcul</label>
+          <div class="seg" role="tablist" aria-label="Source de l'encaiss\u00E9">
+            <button class="seg-opt on" role="tab" aria-selected="true" data-mode="tx" onclick="encsrcMode('tx')">Par transactions</button>
+            <button class="seg-opt" role="tab" aria-selected="false" data-mode="api" onclick="encsrcMode('api')">Par API</button>
+            <button class="seg-opt" role="tab" aria-selected="false" data-mode="man" onclick="encsrcMode('man')">Saisie manuelle</button>
+          </div>
+          <div class="df-hint" id="encsrc-hint">Par d\u00E9faut. L'encaiss\u00E9 = somme des transactions rapproch\u00E9es \u00E0 cette ligne (comme le r\u00E9el c\u00F4t\u00E9 d\u00E9penses).</div>
+        </div>
+        <div class="encsrc-body">
+          <!-- MODE 1 · par transactions (real: line.reel) -->
+          <div class="encsrc-mode on" data-mode="tx">
+            <div class="encsrc-tx${_reelV>0?'':' empty'}">
+              <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
+              <div class="b">
+                <div class="t">${_reelV>0?'Transactions reli\u00E9es':'Aucune transaction reli\u00E9e'}</div>
+                <div class="d">rapproch\u00E9es \u00E0 cette ligne \u00B7 lecture seule</div>
+              </div>
+              <div class="amt">${fe(_reelV)}</div>
+            </div>
+          </div>
+          <!-- MODE 2 · API billetterie (Dice + Shotgun) · Phase-D stub -->
+          <div class="encsrc-mode" data-mode="api">
+            <div class="encsrc-api">
+              <div class="encsrc-prow"><div class="av">Di</div><div class="nm">Dice<small>billetterie</small></div><div class="pv">${fe(0)}</div></div>
+              <div class="encsrc-prow"><div class="av">Sh</div><div class="nm">Shotgun<small>billetterie</small></div><div class="pv">${fe(0)}</div></div>
+              <div class="encsrc-total">
+                <div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></div>
+                <div class="nm">Total encaiss\u00E9<small>Dice + Shotgun \u00B7 = Encaiss\u00E9 HT</small></div>
+                <div class="pv" id="encsrc-api-total">${fe(0)}</div>
+              </div>
+            </div>
+            <div class="encsrc-sync">
+              <span class="dot"></span>
+              <span class="grow">Synchronis\u00E9 via Dice \u00B7 Shotgun \u2014 derni\u00E8re synchro : \u2014</span>
+              <span class="encsrc-refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Rafra\u00EEchir</span>
+              <span class="avenir">\u00E0 venir</span>
+            </div>
+            <div class="ed-phase">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>La r\u00E9cup\u00E9ration r\u00E9elle, le choix des valeurs (brut / net de frais) et le mapping des plateformes se r\u00E8glent sur la surface Int\u00E9grations (Phase-D). Ici : la structure s\u00E9par\u00E9 \u2192 total uniquement.</span>
+            </div>
+          </div>
+          <!-- MODE 3 · saisie manuelle (override) -->
+          <div class="encsrc-mode" data-mode="man">
+            <div class="df-group encsrc-manual" style="margin-bottom:8px">
+              <label class="df-label">Encaiss\u00E9 HT saisi</label>
+              <span class="cur">\u20AC</span>
+              <input class="df-input" type="number" min="0" step="1" placeholder="0" id="encsrc-man-input" value="${_encAttr(_encsrcMan0)}" oninput="encsrcManual()" inputmode="decimal">
+            </div>
+            <div class="df-hint">Une valeur saisie ici <b style="color:var(--text-muted)">prend le pas</b> sur les transactions et l'API. \u00C0 utiliser pour un montant connu hors plateforme (esp\u00E8ces, virement direct\u2026).</div>
+          </div>
+        </div>
+        <!-- resolved anchor — this value IS the encaissé retenu (destination = Encaissé HT / P&L, Phase-D) -->
+        <div class="encsrc-out">
+          <div class="l">
+            <div class="lbl">Encaiss\u00E9 HT retenu</div>
+            <div class="cap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>colonne ENCAISS\u00C9 HT \u00B7 alimente le P&amp;L</div>
+          </div>
+          <div class="val" id="encsrc-out-val">${fe(_reelV)}</div>
+        </div>
+        <div class="ed-phase" style="margin-top:14px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>Le mode et la valeur saisie sont conserv\u00E9s c\u00F4t\u00E9 interface. L'\u00E9criture backend (persistance, r\u00E9cup\u00E9ration billetterie) arrive en Phase-D.</span>
+        </div>
+      </div>
+    </div>
   `;
 
   document.getElementById('drawer-footer').style.display = 'flex';
@@ -3046,6 +3256,7 @@ function openRecetteDrawer(ci, ri) {
 
   document.getElementById('drawer-overlay').classList.add('open');
   document.getElementById('drawer').classList.add('open');
+  if (document.querySelector('.encsrc')) encsrcRestore();   // seam 27es — restore saved recette encaissé source (mode + manual)
   setTimeout(() => document.getElementById('rf-nom')?.focus(), 80);
 }
 

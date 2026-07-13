@@ -1746,6 +1746,16 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     {section:'SPONSORS', ligne:'Sponsor principal', qte:1, pu:15000, est_ht:15000, reel_ht:15000, statut:'PERÇU', tva:0.20},
     {section:'SPONSORS', ligne:'Partenaire boisson', qte:1, pu:5000, est_ht:5000, reel_ht:5000, statut:'PERÇU', tva:0.20},
     {section:'MERCHANDISING', ligne:'Vente merch annuelle', qte:300, pu:25, est_ht:7500, reel_ht:4200, statut:'ENGAGÉ', tva:0.20},
+    // seam 27es — ticketing is a recette like any other: platform payouts land in REC (was __BILL). One section per platform.
+    {section:'Shotgun', ligne:'ML 130326 · Paris XXL', qte:430, pu:26, est_ht:11180, reel_ht:9650, statut:'PERÇU', tva:0},
+    {section:'Shotgun', ligne:'ML 120626 · Bordeaux', qte:320, pu:26, est_ht:8320, reel_ht:8400, statut:'PERÇU', tva:0},
+    {section:'Shotgun', ligne:'EPK 050926 · Paris', qte:300, pu:26, est_ht:7800, reel_ht:7800, statut:'PERÇU', tva:0},
+    {section:'Dice', ligne:'ML 130326 · Paris XXL', qte:600, pu:30, est_ht:18000, reel_ht:18420, statut:'PERÇU', tva:0},
+    {section:'Dice', ligne:'ML 120626 · Bordeaux', qte:410, pu:30, est_ht:12300, reel_ht:12300, statut:'PERÇU', tva:0},
+    {section:'Dice', ligne:'EPK 050926 · Paris', qte:230, pu:30, est_ht:6900, reel_ht:6900, statut:'PERÇU', tva:0},
+    {section:'Resident Advisor', ligne:'ML 130326 · Paris XXL', qte:200, pu:25, est_ht:5000, reel_ht:5200, statut:'PERÇU', tva:0},
+    {section:'Resident Advisor', ligne:'ML 120626 · Bordeaux', qte:164, pu:25, est_ht:4100, reel_ht:4100, statut:'PERÇU', tva:0},
+    {section:'Resident Advisor', ligne:'EPK 050926 · Paris', qte:144, pu:25, est_ht:3600, reel_ht:3600, statut:'PERÇU', tva:0},
   ];
   function budgetRows(){
     const data={};
@@ -1766,46 +1776,11 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     return Promise.resolve({ok:true, status:200, json:async()=>({data:[]})});
   };
 
-  /* ──── BILLETTERIE-ENCAISSÉE mock throughput (passthrough display only) ────
-     Shapes match transactions_qonto (SCHEMA §5.3) + qonto_accounts (§4.1).
-     The `tag` axis (intra/inter/external) is the ADR-0012 axis-2 column NOT YET in
-     SCHEMA — deferred to the BudgetFlow V1 build per ADR-0012 §Context. Rendered here
-     as DISPLAY STATE, never derived. Logged as a schema-absorption item, not invented.
-     NUMBERS ARE MOCK — not seed, not real, removed at Slice-5 wiring.
-     The general account is the SOURCE (clearinghouse), never a destination row.
-
-     V1 WIRING CONTRACT (Slice 5): renderBilletterie iterates window.__BILL.accounts —
-     it does NOT hardcode the event list. At V1 this array is populated from the backend,
-     NOT from this shim: read `qonto_accounts WHERE company = <Episode> AND is_general =
-     FALSE` (per-company scope per ADR-0016) joined to `events` for display names → map to
-     {id, qonto_name, event}. The render loop is count-agnostic: N accounts in → N rows out.
-     Exact endpoint/query shape is the Slice-5 backend decision (not defined here). */
-  const BILL_ACCOUNTS = [
-    {id:'qa-gen', company:'EPISODE', qonto_name:'MADAME LOYAL PRINCIPAL', bank:'Qonto', is_general:true,  general_account_id:null,   iban_tail:'001'},
-    {id:'qa-vil', company:'EPISODE', qonto_name:'EPISODE · ML 130326',    bank:'Qonto', is_general:false, general_account_id:'qa-gen', iban_tail:'204', event:'ML 130326 — Paris XXL'},
-    {id:'qa-bdx', company:'EPISODE', qonto_name:'EPISODE · ML 120626',    bank:'Qonto', is_general:false, general_account_id:'qa-gen', iban_tail:'318', event:'ML 120626 — Bordeaux'},
-    {id:'qa-epk', company:'EPISODE', qonto_name:'EPISODE · EPK 050926',   bank:'Qonto', is_general:false, general_account_id:'qa-gen', iban_tail:'452', event:'EPK 050926 — Paris'},
-  ];
-  // Throughput legs. RECETTE = inflow (Dice/Shotgun → Générale). TRANSFERT+intra = distribution (Générale → event sub).
-  const BILL_TX = [
-    // ── inflows: tickets land in the Générale clearinghouse (recette + external) ──
-    {id:'tx-i1', qonto_account_id:'qa-gen', contrepartie:'Dice',    note:'BILLETERIE - ML130326', date_operation:'2026-03-02T09:14:00Z', montant_ht:18420, montant_ttc:18420, primitive_type:'RECETTE', tag:'external', matching_status:'MATCHED_AUTO', event_id:null,    dest_account_id:null},
-    {id:'tx-i2', qonto_account_id:'qa-gen', contrepartie:'Shotgun', note:'BILLETERIE - ML130326', date_operation:'2026-03-04T16:40:00Z', montant_ht:9650,  montant_ttc:9650,  primitive_type:'RECETTE', tag:'external', matching_status:'MATCHED_AUTO', event_id:null,    dest_account_id:null},
-    {id:'tx-i3', qonto_account_id:'qa-gen', contrepartie:'Dice',    note:'BILLETERIE - ML120626', date_operation:'2026-05-28T11:02:00Z', montant_ht:12300, montant_ttc:12300, primitive_type:'RECETTE', tag:'external', matching_status:'MATCHED_AUTO', event_id:null,    dest_account_id:null},
-    {id:'tx-i4', qonto_account_id:'qa-gen', contrepartie:'Shotgun', note:'BILLETERIE - EPK050926',date_operation:'2026-04-18T19:25:00Z', montant_ht:7800,  montant_ttc:7800,  primitive_type:'RECETTE', tag:'external', matching_status:'UNMATCHED',    event_id:null,    dest_account_id:null, match_reason:'Aucun événement résolu depuis la note'},
-    // seam 27es — spread inflows across the three ticketing platforms (Shotgun · Dice · Resident Advisor),
-    // each event now sells on several platforms; each platform has 3 RECETTE lines. Distributions below unchanged.
-    {id:'tx-i5', qonto_account_id:'qa-gen', contrepartie:'Shotgun', note:'BILLETERIE - ML120626', date_operation:'2026-05-29T14:10:00Z', montant_ht:8400,  montant_ttc:8400,  primitive_type:'RECETTE', tag:'external', matching_status:'MATCHED_AUTO', event_id:null,    dest_account_id:null},
-    {id:'tx-i6', qonto_account_id:'qa-gen', contrepartie:'Dice',    note:'BILLETERIE - EPK050926',date_operation:'2026-04-19T10:35:00Z', montant_ht:6900,  montant_ttc:6900,  primitive_type:'RECETTE', tag:'external', matching_status:'MATCHED_AUTO', event_id:null,    dest_account_id:null},
-    {id:'tx-i7', qonto_account_id:'qa-gen', contrepartie:'Resident Advisor', note:'BILLETERIE - ML130326', date_operation:'2026-03-05T12:20:00Z', montant_ht:5200, montant_ttc:5200, primitive_type:'RECETTE', tag:'external', matching_status:'MATCHED_AUTO', event_id:null, dest_account_id:null},
-    {id:'tx-i8', qonto_account_id:'qa-gen', contrepartie:'Resident Advisor', note:'BILLETERIE - ML120626', date_operation:'2026-05-29T18:45:00Z', montant_ht:4100, montant_ttc:4100, primitive_type:'RECETTE', tag:'external', matching_status:'MATCHED_AUTO', event_id:null, dest_account_id:null},
-    {id:'tx-i9', qonto_account_id:'qa-gen', contrepartie:'Resident Advisor', note:'BILLETERIE - EPK050926',date_operation:'2026-04-19T21:05:00Z', montant_ht:3600, montant_ttc:3600, primitive_type:'RECETTE', tag:'external', matching_status:'MATCHED_AUTO', event_id:null, dest_account_id:null},
-    // ── distributions: Générale wires it out to each event sub-account (transfert + intra) ──
-    {id:'tx-d1', qonto_account_id:'qa-gen', contrepartie:'Virement interne', note:'TRANSFERT - ML130326', date_operation:'2026-03-06T10:00:00Z', montant_ht:-28070, montant_ttc:-28070, primitive_type:'TRANSFERT', tag:'intra', matching_status:'MATCHED_MANUAL', event_id:'qa-vil', dest_account_id:'qa-vil'},
-    {id:'tx-d2', qonto_account_id:'qa-gen', contrepartie:'Virement interne', note:'TRANSFERT - ML120626', date_operation:'2026-05-30T10:00:00Z', montant_ht:-12300, montant_ttc:-12300, primitive_type:'TRANSFERT', tag:'intra', matching_status:'MATCHED_MANUAL', event_id:'qa-bdx', dest_account_id:'qa-bdx'},
-    {id:'tx-d3', qonto_account_id:'qa-gen', contrepartie:'Virement interne', note:'TRANSFERT - ?',        date_operation:'2026-04-20T10:00:00Z', montant_ht:-7800,  montant_ttc:-7800,  primitive_type:'TRANSFERT', tag:'intra', matching_status:'UNMATCHED',     event_id:null,    dest_account_id:null, match_reason:'Compte événement destinataire non résolu'},
-  ];
-  window.__BILL = { accounts: BILL_ACCOUNTS, tx: BILL_TX };
+  /* ──── __BILL mock throughput REMOVED (seam 27es) ────
+     Ticketing is now a recette in REC (see the Shotgun/Dice/Resident Advisor rows in RECETTES above),
+     so the billetterie encaissé table is just a filtered REC view. The old window.__BILL shim
+     (BILL_ACCOUNTS + BILL_TX) is gone. Remaining window.__BILL reads elsewhere are all guarded
+     (?. / && / || [] / early-return) → they degrade to empty until the Cashflow page rebuild. */
 })();
 </script>
 
@@ -1827,6 +1802,9 @@ const SESSION = 'gen';
 
 // ── Recettes data (loaded from RECETTES sheet tab via API) ──────────────
 let REC = [];
+// Recette categories shown in the "Billetterie encaissé" mount (Mount 2); everything else → hors-billetterie (Mount 1).
+// Both mounts are filtered views of the SAME REC (seam 27es): ticketing edits exactly like any other recette.
+const TICKETING_CATS = ['Shotgun','Dice','Resident Advisor'];
 
 async function loadRecettes() {
   try {
@@ -2171,34 +2149,8 @@ function setAllRecSections(containerId, open){
   });
 }
 
-// __BILL → {cats,_kind:'bill'} adapter (Mount 2 data). Groups RECETTE throughput tx into one category
-// per ticketing platform (Shotgun · Dice · Resident Advisor, fixed order). reel = montant_ht (encaissé);
-// est = 0 (empty until drawer-set — the Estimé column is KEPT, per spec). _kind:'bill' keeps rows inert
-// (routing fix): general's REC drawers index REC and must not be fed __BILL rows.
-function __billToRecData(){
-  const bill = window.__BILL;
-  if(!bill || !Array.isArray(bill.tx)) return { cats: [], _kind:'bill' };
-  const rows = bill.tx.filter(t => t.primitive_type === 'RECETTE').map(t => {
-    const evTok = (t.note||'').replace(/^\s*BILL?ET+ERIE\s*-\s*/i,'').trim();
-    return {
-      l: (t.contrepartie || t.note || '—') + (evTok ? ' · ' + evTok : ''),
-      ht: 0,                        // estimé unset — drawer-set later
-      reel: t.montant_ht || 0,      // encaissé HT
-      obs: '',
-      _billRef: t.id,
-      _plat: t.contrepartie,        // group key — one category per ticketing platform
-    };
-  });
-  // group RECETTE rows by contrepartie → one cat per platform, fixed order (seam 27es)
-  const order = ['Shotgun','Dice','Resident Advisor'];
-  const byCat = {};
-  rows.forEach(r => { const k = r._plat; (byCat[k] = byCat[k] || []).push(r); });
-  const cats = order.filter(k => byCat[k]).map(k => ({ cat:k, rows: byCat[k] }));
-  return { cats, _kind:'bill' };
-}
-
 // The renderer — emits the compact⇄expanded sectioned recette table (event L2377-2512) into #containerId.
-// data: REC-shaped array [{cat, rows:[{l,ht,reel,obs}]}] OR {cats:[…], _kind:'bill'}. opts:{sidPrefix,title,hasEstime}.
+// data: array of REC cats [{cat, rows:[{l,ht,reel,obs}], _recCi}] — a filtered REC view (both mounts). opts:{sidPrefix,title,hasEstime}.
 // Écart via ecH(e,false,reel>0,true) — the 4th recette-polarity arg. Grand total summed from data (raw,
 // internally consistent, display-only — résultat net still uses renderBilan's own view-adjusted totals).
 function renderRecetteTable(containerId, data, opts){
@@ -2206,8 +2158,7 @@ function renderRecetteTable(containerId, data, opts){
   if(!cont) return;
   opts = opts || {};
   const sidPrefix = opts.sidPrefix || 'recs';
-  const kind = (!Array.isArray(data) && data && data._kind) || 'rec';   // 'rec' | 'bill'
-  const cats = Array.isArray(data) ? data : ((data && data.cats) || []);
+  const cats = Array.isArray(data) ? data : [];   // uniform: both mounts pass a filtered REC array (seam 27es — bill special-case removed)
   let gEst=0, gReel=0;
   const sections = cats.map((cat, ci) => {
     const catEst  = cat.rows.reduce((a,r)=>a+(r.ht||0),0);
@@ -2224,25 +2175,26 @@ function renderRecetteTable(containerId, data, opts){
     const rPRest = _rPct(Math.abs(rEc), catEst);                            // % restant
     const sid = sidPrefix + '-' + ci;
     const _open = _openSecs.has(sid);                                       // §ITEM29 restore on re-render
+    const recCi = (cat._recCi != null) ? cat._recCi : ci;                   // ORIGINAL REC index (filtered views carry _recCi) → drawer resolves into REC, not the filtered-map index
     const dataRows = cat.rows.map((r, ri) => {
       const reeH = r.reel||0;
       const e = (r.ht||0) - reeH;
-      const rowClick = kind==='bill' ? "" : `openRecetteDrawer(${ci},${ri})`;
-      const encClick = kind==='bill' ? "" : `openRecCatDrawer(${ci})`;
-      const pencil = kind==='bill' ? '' :
-        `<button class="edit-ligne-btn" onclick="event.stopPropagation();openRecetteDrawer(${ci},${ri})" title="Détails de la ligne"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`;
-      return `<tr class="rec-row"${kind==='bill' ? '' : ` style="cursor:pointer" onclick="${rowClick}"`}>
+      const rowClick = `openRecetteDrawer(${recCi},${ri})`;
+      const encClick = `openRecCatDrawer(${recCi})`;
+      const pencil =
+        `<button class="edit-ligne-btn" onclick="event.stopPropagation();openRecetteDrawer(${recCi},${ri})" title="Détails de la ligne"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`;
+      return `<tr class="rec-row" style="cursor:pointer" onclick="${rowClick}">
         <td class="tl"><div style="display:flex;align-items:center;gap:6px">
           <span class="ligne-label" style="flex:1">${r.l}</span>
           ${pencil}
         </div></td>
         <td class="clickable-cell" title="Voir transactions"><span class="cro" style="color:#fff;font-weight:600">${r.ht?fe(r.ht):'<span style="color:var(--text-dim)">—</span>'}</span></td>
-        <td${kind==='bill' ? '' : ` class="clickable-cell" onclick="event.stopPropagation();${encClick}" title="Voir transactions"`}><span class="cro">${reeH?fe(reeH):'<span style="color:var(--text-dim)">—</span>'}</span></td>
+        <td class="clickable-cell" onclick="event.stopPropagation();${encClick}" title="Voir transactions"><span class="cro">${reeH?fe(reeH):'<span style="color:var(--text-dim)">—</span>'}</span></td>
         <td><div style="display:flex;align-items:center;gap:4px;justify-content:flex-end">${ecH(e,false,reeH>0,true)}</div></td>
         <td class="obs"><span class="obs-label" style="color:var(--text-dim);font-size:.78em">${r.obs||''}</span></td>
       </tr>`;
     }).join('');
-    const addRow = kind==='bill' ? '' : `<tr class="add-ligne-row">
+    const addRow = `<tr class="add-ligne-row">
           <td colspan="5" style="padding:4px 10px">
             <button class="add-ligne-btn" onclick="openAddRecLigne('${(cat.cat||'').replace(/'/g,"\\'")}')">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -2522,8 +2474,11 @@ function renderBilan(){
   //   Mount 1 hors-billetterie ← REC (real estimé + encaissé; rows wired to general's recette drawers).
   //   Mount 2 billetterie encaissé ← __BILL adapter (real encaissé; estimé empty until drawer-set).
   //   ONE renderer (renderRecetteTable) called twice; state namespaced per mount (recs-hb / recs-be).
-  renderRecetteTable('b-rec-hb', REC, {sidPrefix:'recs-hb', title:'Recettes (hors billetterie)', hasEstime:true});
-  renderRecetteTable('b-rec-be', __billToRecData(), {sidPrefix:'recs-be', title:'Billetterie encaissé', hasEstime:true});
+  const _recIdx = REC.map((c,i)=>({...c, _recCi:i}));   // carry each cat's ORIGINAL REC index into the filtered views (drawer index)
+  renderRecetteTable('b-rec-hb', _recIdx.filter(c=>!TICKETING_CATS.includes(c.cat)),
+     {sidPrefix:'recs-hb', title:'Recettes (hors billetterie)', hasEstime:true});
+  renderRecetteTable('b-rec-be', _recIdx.filter(c=> TICKETING_CATS.includes(c.cat)),
+     {sidPrefix:'recs-be', title:'Billetterie encaissé', hasEstime:true});
 
   // ── Résultat net — P&L bottom line ────────────────────────────
   if(el('b-resultat-net')) {

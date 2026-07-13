@@ -1228,7 +1228,7 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .reel-tab{appearance:none;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);font-family:var(--ff-display);font-size:var(--fs-small);font-weight:600;padding:8px 12px 9px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:color .14s,border-color .14s}
 .reel-tab:hover{color:var(--text-muted)}
 .reel-tab.on{color:#fff;border-bottom-color:#fff}
-.reel-tab .cnt{font-size:var(--fs-heading);padding:1px 6px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--text-muted);font-weight:700}
+.reel-tab .cnt{font-size:var(--fs-caption);padding:1px 6px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--text-muted);font-weight:700}
 .reel-tab .alert{width:6px;height:6px;border-radius:50%;background:var(--amber);display:inline-block}
 .reel-pane{display:none;animation:edFade .2s ease}
 .reel-pane.on{display:block}
@@ -1284,7 +1284,7 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 .opt-tab:hover{color:var(--text-muted)}
 .opt-tab.on{color:#fff}
 .opt-tab.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:#fff}
-.opt-tab .cnt{font-size:var(--fs-heading);padding:1px 6px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--text-muted);font-weight:700}
+.opt-tab .cnt{font-size:var(--fs-caption);padding:1px 6px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--text-muted);font-weight:700}
 /* tab-check — a REAL span (NOT ::after; the active-underline ::after above already owns that
    pseudo-element). green ✓ next to "Relier" once a line is picked (pre-confirm). §12. */
 .opt-tab .tab-check{color:var(--green);font-weight:var(--fw-bold);font-size:var(--fs-title);line-height:1}
@@ -5854,6 +5854,9 @@ async function openReelDrawer(deptId, sectionIdx, lineIdx, recRef) {
     const hHost = document.getElementById('rail-hdr-host');
     if (hHost) {
       hHost.innerHTML = railHdr({
+        icon: recMode
+          ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'
+          : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
         title: recMode ? 'Recettes réelles' : 'Dépenses réelles',
         subHTML: `<b>${line.l}</b> · ${section} · ${dept.name}`,
         railXState: 'close'

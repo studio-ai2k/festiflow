@@ -444,6 +444,27 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .edit-ligne-btn svg{opacity:.6;transition:opacity .18s}
 .edit-ligne-btn:hover svg{opacity:1}
 
+/* DEPV3 — dépense-table pencil = event's integrated icon, not general's bordered "Éditer" pill.
+   Scoped to .dep-tbl (the only consumer of .edit-ligne-btn in general); overrides box-model +
+   border/background/hover so the lone icon reads as an integrated 20×20 glyph, matching the event. */
+.dep-tbl .edit-ligne-btn{
+  justify-content:center;
+  gap:0;
+  padding:0;
+  width:20px;
+  border:none;
+  background:none;
+  color:var(--text-dim);
+  font-size:0;
+  letter-spacing:normal;
+  transition:color .18s;
+}
+.dep-tbl .edit-ligne-btn:hover{
+  border-color:transparent;
+  background:none;
+  color:var(--text);
+}
+
 /* ── SEC-VIEW TOGGLE (DEPV2 FIX 2) — expand/collapse-all pair, ported from event .sec-view-toggle ── */
 .sec-view-toggle{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden}
 .sec-view-toggle button{padding:5px 9px;background:transparent;border:none;color:var(--text-dim);cursor:pointer;display:flex;align-items:center}

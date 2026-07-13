@@ -272,7 +272,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   #b-imp-bars{grid-template-columns:repeat(10,minmax(70px,1fr))!important;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
 
   /* ── bilan dept table + P&L + recettes: horizontal scroll ── */
-  #b-dep-wrapper,#b-resultat-net,#b-rec-summary,#b-rec-expanded{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  #b-dep-wrapper,#b-resultat-net,#b-rec-hb,#b-rec-be{overflow-x:auto;-webkit-overflow-scrolling:touch}
 
   /* ── toast ── */
   #import-toast{min-width:260px;max-width:calc(100vw - 32px);left:50%;font-size:.9em}
@@ -317,6 +317,8 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   .edit-ligne-btn{display:none}
   /* DEPV2 FIX 1 — reveal dépense-table pencil on ≤480 (iPad-touch, no hover), mirroring the event's recette deviation (.rec-row .edit-ligne-btn), scoped to the ported .dep-tbl rows. openEditLigne unchanged. */
   .dep-tbl .edit-ligne-btn{display:inline-flex}
+  /* seam 27es — same always-visible-pencil deviation for the ported recette rows (event L279), scoped to .rec-row. */
+  .rec-row .edit-ligne-btn{display:inline-flex}
   .tbl th:nth-child(4),.tbl td:nth-child(4),
   .tbl th:nth-child(5),.tbl td:nth-child(5){display:none}
 
@@ -463,6 +465,27 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   border-color:transparent;
   background:none;
   color:var(--text);
+}
+
+/* ═══ RECETTE TABLES (seam 27es) — CSS lifted from event budget_pa BUILD92 ═══
+   Base .cat-head / .cat-vals / .dkpi-burn.cat-burn / .cat-meta / .pl-tbl / .trow already resident (dépense
+   port). Lifted here: the grand-total row, the slim conso bar + the .cat-head.expanded state (all 0 in
+   general — general's dépense .cat-head never expands), and the recette pencil's integrated-icon box-model
+   (general's base .edit-ligne-btn is a bordered pill; the event's is the integrated glyph — scope it to
+   .rec-row exactly as general already does for .dep-tbl, so the recette pencil matches the event). */
+.tbl .rec-grandtot td{font-weight:700;color:#fff;background:rgba(255,255,255,.02);border-top:1px solid var(--border)!important;border-bottom:none!important}   /* event L197 */
+.cat-burn-slim{margin-top:14px;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden}   /* event L344 */
+.cat-burn-slim i{display:block;height:100%}                                                                    /* event L345 */
+.cat-head.expanded{padding-bottom:0}                                                                           /* event L493 */
+.cat-head.expanded .cat-vals{display:none}                                                                     /* event L498 — compact⇄expanded swap */
+.cat-head.expanded .cat-burn-slim{margin:13px -16px 0;border-radius:0}                                         /* event L512 */
+.cat-head.expanded .dkpi-meta.cat-meta{margin-bottom:14px}                                                     /* event L516 */
+/* recette pencil = integrated icon (mirror of general's .dep-tbl .edit-ligne-btn box-model / hover). */
+.rec-row .edit-ligne-btn{justify-content:center;gap:0;padding:0;width:20px;border:none;background:none;color:var(--text-dim);font-size:0;letter-spacing:normal;transition:color .18s}
+.rec-row .edit-ligne-btn:hover{border-color:transparent;background:none;color:var(--text)}
+@media(max-width:390px){
+  /* event L524 — expanded burn bar goes full-bleed at the narrow breakpoint. */
+  .cat-head .dkpi-burn.cat-burn{margin-left:-16px;margin-right:-16px;border-radius:0}
 }
 
 /* ── SEC-VIEW TOGGLE (DEPV2 FIX 2) — expand/collapse-all pair, ported from event .sec-view-toggle ── */
@@ -671,15 +694,52 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="bchip"><div class="bchip-label">Imprévus</div><div class="bchip-val" id="kpi-imp-val">—</div><div class="bchip-sub" id="kpi-imp-sub">à définir</div></div>
   </div>
 
-  <!-- P&L Recettes — summary + expandable detail -->
+  <!-- P&L Recettes — two event-style tables (seam 27es): hors-billetterie + billetterie encaissé -->
+  <!-- ── Mount 1: Recettes (hors billetterie) ← REC ── -->
   <div class="sdiv" style="align-items:center">
     <div class="sdl"></div>
     <div class="sdt" style="white-space:nowrap">Recettes (hors billetterie)</div>
     <div class="sdl"></div>
     <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
   </div>
-  <div id="b-rec-summary" class="mb"></div>
-  <div id="b-rec-expanded" class="mb" style="display:none"></div>
+  <div class="dept-hdr">
+    <div class="dept-hdr-rail" style="background:#fff"></div>
+    <div class="dept-hdr-body">
+      <div class="dept-hdr-top">
+        <span class="dept-hdr-name">CATÉGORIES</span>
+        <span style="margin-left:auto;display:flex;gap:6px">
+          <div class="sec-view-toggle">
+            <button type="button" data-act="expand" title="Tout déplier" aria-label="Tout déplier" onclick="setAllRecSections('b-rec-hb',true)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg></button>
+            <button type="button" data-act="collapse" title="Tout replier" aria-label="Tout replier" onclick="setAllRecSections('b-rec-hb',false)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></button>
+          </div>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div id="b-rec-hb" class="mb"></div>
+
+  <!-- ── Mount 2: Billetterie encaissé ← __BILL (summarized) ── -->
+  <div class="sdiv" style="align-items:center">
+    <div class="sdl"></div>
+    <div class="sdt" style="white-space:nowrap">Billetterie encaissé</div>
+    <div class="sdl"></div>
+    <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
+  </div>
+  <div class="dept-hdr">
+    <div class="dept-hdr-rail" style="background:#fff"></div>
+    <div class="dept-hdr-body">
+      <div class="dept-hdr-top">
+        <span class="dept-hdr-name">CATÉGORIES</span>
+        <span style="margin-left:auto;display:flex;gap:6px">
+          <div class="sec-view-toggle">
+            <button type="button" data-act="expand" title="Tout déplier" aria-label="Tout déplier" onclick="setAllRecSections('b-rec-be',true)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg></button>
+            <button type="button" data-act="collapse" title="Tout replier" aria-label="Tout replier" onclick="setAllRecSections('b-rec-be',false)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></button>
+          </div>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div id="b-rec-be" class="mb"></div>
 
   <!-- ── Dépenses par mois ── -->
   <div class="sdiv" style="align-items:center">
@@ -2039,10 +2099,13 @@ async function toggleBilanView(view) {
 const fc = p => p>=100?'danger':p>=75?'warn':'safe';
 const stcls = s => ({'ESTIMATION':'est','EN COURS':'ec','DEVIS SIGNÉ':'ds','VALIDÉ':'val','PAYÉ':'pay'}[s]||'est');
 const chipcls = s => ({'ESTIMATION':'chip-est','EN COURS':'chip-ec','DEVIS SIGNÉ':'chip-ds','VALIDÉ':'chip-val','PAYÉ':'chip-pay'}[s]||'chip-est');
-const ecH = (e, untracked=false, hasReel=true) => {
+const ecH = (e, untracked=false, hasReel=true, recette=false) => {
   if(!hasReel) return '<span class="cdim">—</span>'; // no réel yet — don't show écart
   if(Math.abs(e||0)<1) return '<span class="cdim">—</span>';
   const tag=untracked?'<span title="Dépensé sans statut signé — vérifier" style="color:var(--amber);margin-left:3px;font-size:.7em">⚠</span>':'';
+  if(recette) return e>0
+    ? `<span class="cdim">${fe(Math.abs(e))}</span>${tag}`      /* reste à encaisser — neutral */
+    : `<span class="cpos">+${fe(Math.abs(e))}</span>${tag}`;    /* excédent — green/good (seam 27es recette polarity) */
   return `<span class="${e>0?'cpos':'cneg'}">${e>0?'+':''}${fe(e)}</span>${tag}`;
 };
 const typchip = t => !t?'':t==='S'?'<span class="chip chip-s">S</span>':t==='G'?'<span class="chip chip-g">G</span>':'';
@@ -2064,6 +2127,180 @@ const DEPT_COLORS = [
 ];
 
 /* ═══ BILAN ═══ */
+/* ═══ RECETTE TABLES (seam 27es) ═══
+   Two event-style recette tables ported from budget_pa BUILD92 (SRC L2377-2512), mounted TWICE by
+   renderBilan (hors-billetterie ← REC, billetterie ← __BILL). ONE renderer; state namespaced per mount.
+   ── Kept deliberately separate from general's dépense tog()/setAllSections(), which stay byte-untouched:
+      general's dépense .cat-head never takes the .expanded class, so the ported togRec (which toggles it)
+      must not be the shared tog() or expanding a dépense section would hide its .cat-vals. ── */
+const _openSecs = new Set();   // §ITEM29 open-state memory, keyed by namespaced sid (session-lived)
+
+// Recette accordion toggle — event tog() body (display flip + .cat-head.expanded sync + _openSecs),
+// renamed so general's shared tog() (dépense) is untouched. Works on any mount (sid is fully qualified).
+function togRec(sid){
+  const tb=document.getElementById(sid);
+  const hd=document.getElementById('hdr-'+sid);
+  const ar=document.getElementById('arr-'+sid);
+  if(!tb) return;
+  const vis=tb.style.display!=='none';
+  tb.style.display=vis?'none':'';
+  if(hd) hd.style.display=vis?'none':'';
+  if(ar) ar.style.transform=vis?'rotate(0)':'rotate(90deg)';
+  const ch = ar ? ar.closest('.cat-head') : null;          // BUILD67 Fix 1b — keep .expanded in sync
+  if (ch) ch.classList.toggle('expanded', !vis);
+  if(vis) _openSecs.delete(sid); else _openSecs.add(sid);  // §ITEM29 persist
+}
+
+// Recette expand/collapse-all — PARAMETERIZED by container (each mount's dept-hdr drives its own table).
+// Reads the rendered tbody ids straight from the DOM and drives each through togRec (flips + persists).
+function setAllRecSections(containerId, open){
+  const wrap = document.getElementById(containerId);
+  if (!wrap) return;
+  const tbodies = Array.from(wrap.querySelectorAll('.sec-block tbody[id]'));
+  if (tbodies.length === 0) return;                        // no rendered sections: both buttons no-op
+  tbodies.forEach(tb => {
+    const isVisible = tb.style.display !== 'none';
+    if (open !== isVisible) togRec(tb.id);
+  });
+}
+
+// __BILL → {cats,_kind:'bill'} adapter (Mount 2 data). Groups RECETTE throughput tx into one
+// "Billetterie" category. reel = montant_ht (encaissé); est = 0 (empty until drawer-set — the Estimé
+// column is KEPT, per spec). _kind:'bill' routes row/pencil to the billetterie throughput page (this
+// summarized mount is read-only; general's REC drawers index REC and must not be fed __BILL rows).
+function __billToRecData(){
+  const bill = window.__BILL;
+  if(!bill || !Array.isArray(bill.tx)) return { cats: [], _kind:'bill' };
+  const rows = bill.tx.filter(t => t.primitive_type === 'RECETTE').map(t => {
+    const evTok = (t.note||'').replace(/^\s*BILL?ET+ERIE\s*-\s*/i,'').trim();
+    return {
+      l: (t.contrepartie || t.note || '—') + (evTok ? ' · ' + evTok : ''),
+      ht: 0,                        // estimé unset — drawer-set later
+      reel: t.montant_ht || 0,      // encaissé HT
+      obs: '',
+      _billRef: t.id,
+    };
+  });
+  return { cats: rows.length ? [{ cat:'Billetterie', rows }] : [], _kind:'bill' };
+}
+
+// The renderer — emits the compact⇄expanded sectioned recette table (event L2377-2512) into #containerId.
+// data: REC-shaped array [{cat, rows:[{l,ht,reel,obs}]}] OR {cats:[…], _kind:'bill'}. opts:{sidPrefix,title,hasEstime}.
+// Écart via ecH(e,false,reel>0,true) — the 4th recette-polarity arg. Grand total summed from data (raw,
+// internally consistent, display-only — résultat net still uses renderBilan's own view-adjusted totals).
+function renderRecetteTable(containerId, data, opts){
+  const cont = document.getElementById(containerId);
+  if(!cont) return;
+  opts = opts || {};
+  const sidPrefix = opts.sidPrefix || 'recs';
+  const kind = (!Array.isArray(data) && data && data._kind) || 'rec';   // 'rec' | 'bill'
+  const cats = Array.isArray(data) ? data : ((data && data.cats) || []);
+  let gEst=0, gReel=0;
+  const sections = cats.map((cat, ci) => {
+    const catEst  = cat.rows.reduce((a,r)=>a+(r.ht||0),0);
+    const catReel = cat.rows.reduce((a,r)=>a+(r.reel||0),0);
+    gEst += catEst; gReel += catReel;
+    const rEc    = catEst - catReel;                                        // écart (estimé − encaissé)
+    const rPeak  = Math.max(catEst, catReel) || 1;
+    const rReelW = Math.min(catReel, catEst) / rPeak * 100;                 // encaissé segment (.reel green)
+    const rOverW = catReel > catEst ? (catReel - catEst) / rPeak * 100 : 0; // excédent (.over)
+    const rLibW  = catReel > catEst ? 0 : Math.max(0, catEst - catReel) / rPeak * 100;  // reste (.libre)
+    const rBurnPct = catEst > 0 ? Math.min(Math.round(catReel / catEst * 100), 100) : 0;// slim bar (expanded)
+    const _rPct  = (n,d) => d>0 ? Math.round(n/d*100) : 0;
+    const rPRe   = _rPct(catReel, catEst);                                  // % réelle (encaissé)
+    const rPRest = _rPct(Math.abs(rEc), catEst);                            // % restant
+    const sid = sidPrefix + '-' + ci;
+    const _open = _openSecs.has(sid);                                       // §ITEM29 restore on re-render
+    const dataRows = cat.rows.map((r, ri) => {
+      const reeH = r.reel||0;
+      const e = (r.ht||0) - reeH;
+      const rowClick = kind==='bill' ? "go('billetterie')" : `openRecetteDrawer(${ci},${ri})`;
+      const encClick = kind==='bill' ? "go('billetterie')" : `openRecCatDrawer(${ci})`;
+      const pencil = kind==='bill' ? '' :
+        `<button class="edit-ligne-btn" onclick="event.stopPropagation();openRecetteDrawer(${ci},${ri})" title="Détails de la ligne"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`;
+      return `<tr class="rec-row" style="cursor:pointer" onclick="${rowClick}">
+        <td class="tl"><div style="display:flex;align-items:center;gap:6px">
+          <span class="ligne-label" style="flex:1">${r.l}</span>
+          ${pencil}
+        </div></td>
+        <td class="clickable-cell" title="Voir transactions"><span class="cro" style="color:#fff;font-weight:600">${r.ht?fe(r.ht):'<span style="color:var(--text-dim)">—</span>'}</span></td>
+        <td class="clickable-cell" onclick="event.stopPropagation();${encClick}" title="Voir transactions"><span class="cro">${reeH?fe(reeH):'<span style="color:var(--text-dim)">—</span>'}</span></td>
+        <td><div style="display:flex;align-items:center;gap:4px;justify-content:flex-end">${ecH(e,false,reeH>0,true)}</div></td>
+        <td class="obs"><span class="obs-label" style="color:var(--text-dim);font-size:.78em">${r.obs||''}</span></td>
+      </tr>`;
+    }).join('');
+    const addRow = kind==='bill' ? '' : `<tr class="add-ligne-row">
+          <td colspan="5" style="padding:4px 10px">
+            <button class="add-ligne-btn" onclick="openAddRecLigne('${(cat.cat||'').replace(/'/g,"\\'")}')">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Ajouter une ligne
+            </button>
+          </td>
+        </tr>`;
+    return `<div class="sec-block">
+        <table class="tbl pl-tbl">
+          <tr class="shead" onclick="togRec('${sid}')">
+            <td colspan="5" style="padding:0">
+              <div class="cat-head${_open?' expanded':''}">
+                <div class="cat-title-row">
+                  <span id="arr-${sid}" class="cat-arr" style="transform:rotate(${_open?'90deg':'0deg'})">▶</span>
+                  <span class="cat-name">${cat.cat}</span>
+                </div>
+                ${_open ? `
+                <div class="cat-burn-slim"><i style="width:${rBurnPct}%;background:var(--green)"></i></div>
+                ` : `
+                <div class="cat-vals">
+                  <div class="vb-cell"><div class="vb-lab">ESTIMÉ</div><div class="dkpi-v">${fe(catEst)}</div></div>
+                  <div class="vb-cell"><div class="vb-lab">ENCAISSÉ</div><div class="dkpi-v">${catReel?fe(catReel):'—'}</div></div>
+                  <div class="vb-cell"><div class="vb-lab">${rEc<0?'EXCÉDENT':'À ENCAISSER'}</div><div class="dkpi-v"${rEc<0?' style="color:var(--green)"':''}>${fe(Math.abs(rEc))}</div></div>
+                </div>
+                <div class="dkpi-burn cat-burn">
+                  <i class="reel"  style="width:${rReelW}%"></i>
+                  ${rOverW>0 ? `<i class="over" style="width:${rOverW}%;background:var(--green)"></i>` : `<i class="libre" style="width:${rLibW}%"></i>`}
+                </div>
+                `}
+                <div class="dkpi-meta cat-meta">
+                  <span class="m-pct"><b>${rPRe}%</b> réelle</span>
+                  <span class="dot"></span>
+                  <span class="m-pct"><b>${rPRest}%</b> restant</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr id="hdr-${sid}" style="display:${_open?'':'none'}">
+            <th class="tl" style="min-width:180px">Poste</th>
+            <th>Estimé HT</th>
+            <th>Encaissé HT</th>
+            <th>Écart</th>
+            <th class="obs">Observations</th>
+          </tr>
+          <tbody id="${sid}" style="display:${_open?'':'none'}">${dataRows}
+          ${addRow}
+          <tr class="trow">
+            <td>TOTAL</td>
+            <td><span class="cro" style="font-weight:700;color:#fff">${fe(catEst)}</span></td>
+            <td><span class="cro" style="font-weight:700;color:#fff">${catReel?fe(catReel):'—'}</span></td>
+            <td>${ecH(rEc, false, catReel>0, true)}</td>
+            <td class="obs"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>`;
+  });
+  const grandTotalHtml = `<table class="tbl pl-tbl" style="margin-top:-1px">
+        <tr class="rec-grandtot">
+          <td class="tl">TOTAL RECETTES</td>
+          <td><span class="cro" style="font-weight:700;color:#fff">${fe(gEst)}</span></td>
+          <td><span class="cro" style="font-weight:700;color:#fff">${gReel?fe(gReel):'—'}</span></td>
+          <td>${ecH(gEst-gReel, false, gReel>0, true)}</td>
+          <td class="obs"></td>
+        </tr>
+      </table>`;
+  cont.innerHTML = `
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:0 0 10px 10px;overflow:hidden">${sections.join('')}${grandTotalHtml}</div>`;
+}
+
+/* ═══ BILAN (render) ═══ */
 function renderBilan(){
   const viewLabel = _bilanView === 'mensuel' ? 'Mensuel' : 'Annuel';
   const tE=EXP_DEPTS().reduce((a,d)=>a+dtotAdj(d).est,0);
@@ -2268,122 +2505,12 @@ function renderBilan(){
   const totalRecEst  = _bilanView === 'mensuel' ? rawRecEst / 12  : rawRecEst;
   const totalRecReel = _bilanView === 'mensuel' ? rawRecReel / 12 : rawRecReel;
 
-  // Summary row on Bilan — category rows clickable for drawer, toggle for expand
-  if(el('b-rec-summary')) {
-    el('b-rec-summary').innerHTML = `
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden">
-        <table class="tbl">
-          <thead><tr>
-            <th class="tl">Catégorie</th>
-            <th>Estimé HT</th>
-            <th>Encaissé HT</th>
-            <th>Écart</th>
-          </tr></thead>
-          <tbody>
-            ${REC.map((cat,ci) => {
-              const catEst = cat.rows.reduce((a,r)=>a+(r.ht||0),0);
-              const catReel = cat.rows.reduce((a,r)=>a+(r.reel||0),0);
-              return `<tr style="cursor:pointer" onclick="openRecCatDrawer(${ci})">
-                <td style="font-weight:500;color:#fff">${cat.cat}</td>
-                <td><span class="cro" style="color:#fff;font-weight:600">${fe(catEst)}</span></td>
-                <td><span class="cro">${catReel?fe(catReel):'—'}</span></td>
-                <td>${ecH(catEst-catReel,false,catReel>0)}</td>
-              </tr>`;
-            }).join('')}
-          </tbody>
-          <tr class="trow">
-            <td style="font-weight:700;color:var(--green)">TOTAL RECETTES</td>
-            <td><span class="cro" style="font-weight:700;color:var(--green)">${fe(rawRecEst)}</span></td>
-            <td><span class="cro" style="font-weight:700;color:var(--green)">${rawRecReel?fe(rawRecReel):'—'}</span></td>
-            <td>${ecH(rawRecEst-rawRecReel,false,rawRecReel>0)}</td>
-          </tr>
-        </table>
-      </div>
-      <div onclick="toggleRecDetail()" style="text-align:center;padding:6px 0;font-size:11px;color:var(--text-dim);cursor:pointer;transition:color .15s" onmouseover="this.style.color='var(--text-muted)'" onmouseout="this.style.color='var(--text-dim)'">
-        <span id="rec-toggle-label">Détails et édition →</span>
-      </div>`;
-  }
-
-  // Expanded detail view — full recettes table with collapsible sections
-  if(el('b-rec-expanded')) {
-    const sections = REC.map((cat, ci) => {
-      const catEst  = cat.rows.reduce((a,r)=>a+(r.ht||0),0);
-      const catReel = cat.rows.reduce((a,r)=>a+(r.reel||0),0);
-      const nLines = cat.rows.length;
-      const dataRows = cat.rows.map((r, ri) => {
-        const reeH = r.reel||0;
-        return `<tr>
-          <td style="font-weight:500;color:#fff;cursor:pointer" onclick="openRecetteDrawer(${ci},${ri})">${r.l}</td>
-          <td class="clickable-cell" onclick="openRecetteDrawer(${ci},${ri})" title="Éditer estimé"><span class="cro" style="color:#fff;font-weight:600">${r.ht?fe(r.ht):'—'}</span></td>
-          <td class="clickable-cell" onclick="openRecCatDrawer(${ci})" title="Voir transactions"><span class="cro">${reeH?fe(reeH):'—'}</span></td>
-          <td>${ecH(r.ht-reeH,false,reeH>0)}</td>
-        </tr>`;
-      }).join('');
-      return `<div class="sec-block">
-        <table class="tbl">
-          <tr class="shead" onclick="const t=document.getElementById('brs${ci}'),h=document.getElementById('brh${ci}'),a=document.getElementById('bra${ci}');if(t.style.display==='none'){t.style.display='';h.style.display='';a.style.transform='rotate(90deg)'}else{t.style.display='none';h.style.display='none';a.style.transform='rotate(0deg)'}">
-            <td colspan="4" style="padding:0">
-              <div style="display:flex;align-items:center;padding:14px 16px;gap:0">
-                <span id="bra${ci}" style="font-size:12px;color:var(--text-dim);transition:transform .25s;display:inline-block;transform:rotate(90deg);flex-shrink:0;margin-right:10px">▶</span>
-                <span style="font-weight:700;font-size:14px;letter-spacing:.3px;text-transform:uppercase;color:#fff;flex-shrink:0;cursor:pointer" onclick="event.stopPropagation();openRecCatDrawer(${ci})" title="Voir transactions">${cat.cat}</span>
-                <span style="font-size:12px;color:var(--text-dim);margin-left:10px;flex-shrink:0">${nLines} ligne${nLines>1?'s':''}</span>
-                <span style="flex:1"></span>
-                <span style="font-size:13px;font-weight:700;color:var(--text-muted)">${fe(catEst)}</span>
-              </div>
-            </td>
-          </tr>
-          <tr id="brh${ci}">
-            <th class="tl" style="min-width:180px">Poste</th>
-            <th>Estimé HT</th>
-            <th>Encaissé HT</th>
-            <th>Écart</th>
-          </tr>
-          <tbody id="brs${ci}">${dataRows}
-          <tr class="add-ligne-row">
-            <td colspan="4" style="padding:4px 10px">
-              <button class="add-ligne-btn" onclick="openAddRecLigne('${cat.cat.replace(/'/g,"\\'")}')">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Ajouter une ligne
-              </button>
-            </td>
-          </tr>
-          </tbody>
-          <tr class="trow">
-            <td>TOTAL HT</td>
-            <td><span class="cro" style="font-weight:700;color:#fff">${fe(catEst)}</span></td>
-            <td><span class="cro" style="font-weight:700;color:#fff">${catReel?fe(catReel):'—'}</span></td>
-            <td>${ecH(catEst-catReel,false,catReel>0)}</td>
-          </tr>
-        </table>
-      </div>`;
-    });
-    const grandTotalHtml = `<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-top:8px">
-      <table class="tbl"><tr class="trow" style="border-top:none!important">
-        <td style="font-size:14px;font-weight:700;color:var(--green)">TOTAL RECETTES</td>
-        <td><span class="cro" style="font-weight:700;color:var(--green)">${fe(totalRecEst)}</span></td>
-        <td><span class="cro" style="font-weight:700;color:var(--green)">${totalRecReel?fe(totalRecReel):'—'}</span></td>
-        <td>${ecH(totalRecEst-totalRecReel,false,totalRecReel>0)}</td>
-      </tr></table>
-    </div>`;
-    el('b-rec-expanded').innerHTML = `
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden">${sections.join('')}</div>
-      <div style="padding:8px 0">
-        <button class="add-ligne-btn" onclick="openAddRecLigne('')" style="width:100%">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Nouvelle catégorie de recette
-        </button>
-      </div>
-      ${grandTotalHtml}
-      <div onclick="toggleRecDetail()" style="text-align:center;padding:6px 0;font-size:11px;color:var(--text-dim);cursor:pointer;transition:color .15s" onmouseover="this.style.color='var(--text-muted)'" onmouseout="this.style.color='var(--text-dim)'">
-        ← Replier
-      </div>`;
-  }
-
-  // Sync expanded/collapsed display state after re-render
-  if(el('b-rec-summary') && el('b-rec-expanded')) {
-    el('b-rec-summary').style.display = _recDetailOpen ? 'none' : '';
-    el('b-rec-expanded').style.display = _recDetailOpen ? '' : 'none';
-  }
+  // ── Recettes — two event-style tables (seam 27es, tables-first port from budget_pa BUILD92) ──
+  //   Mount 1 hors-billetterie ← REC (real estimé + encaissé; rows wired to general's recette drawers).
+  //   Mount 2 billetterie encaissé ← __BILL adapter (real encaissé; estimé empty until drawer-set).
+  //   ONE renderer (renderRecetteTable) called twice; state namespaced per mount (recs-hb / recs-be).
+  renderRecetteTable('b-rec-hb', REC, {sidPrefix:'recs-hb', title:'Recettes (hors billetterie)', hasEstime:true});
+  renderRecetteTable('b-rec-be', __billToRecData(), {sidPrefix:'recs-be', title:'Billetterie encaissé', hasEstime:true});
 
   // ── Résultat net — P&L bottom line ────────────────────────────
   if(el('b-resultat-net')) {

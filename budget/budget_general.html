@@ -755,6 +755,127 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .opt-vent-pie .vp-ring{flex-shrink:0}
 .opt-vent-pie .vp-cap{font-size:var(--fs-caption);color:var(--text-dim);text-transform:uppercase;letter-spacing:.8px;font-weight:700}
 .opt-vent-splits{display:flex;flex-direction:column;gap:8px}
+/* ═══ STEP-2 B-CSS · devis / statut / dept-devis / edit-mode — additive-only, ported from event 0f1a3ebc.
+   Comment-free; every selector introduces >=1 class absent from general; no general selector overwritten. ═══ */
+:root{ --ext:#94a3b8; --intra:#818cf8; }
+#drawer.edit-mode .df-input:focus{border-color:rgba(255,255,255,.25);box-shadow:0 0 0 3px rgba(255,255,255,.06)}
+#drawer.edit-mode .df-select:focus{border-color:rgba(255,255,255,.25)}
+.df-hint{font-size:var(--fs-small);color:var(--text-dim);margin-top:6px;line-height:1.5}
+#drawer.edit-mode .drawer-hdr,#drawer.opt-mode .drawer-hdr,#drawer.reel-mode .drawer-hdr{display:none}
+#drawer.edit-mode #rail-hdr-host,#drawer.opt-mode #rail-hdr-host,#drawer.reel-mode #rail-hdr-host{display:block}
+#drawer.edit-mode #rail-kpis-host,#drawer.reel-mode #rail-kpis-host{display:block}
+.tabpane NOT folded — _x has its own).
+   No new design tokens; reuses _x vars. animation:fade dropped (no keyframe in _x). ════ */
+.dsec{margin-bottom:22px}
+.dsec-t{font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:.14em;color:var(--text-dim);font-weight:700;margin-bottom:11px;padding-bottom:7px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.req{color:var(--red)}
+.metaline{display:flex;align-items:center;gap:12px;margin-top:9px;flex-wrap:wrap}
+.ctag{display:inline-flex;align-items:center;gap:4px;font-size:var(--fs-caption);font-weight:700;text-transform:uppercase;letter-spacing:.7px;line-height:1;padding:3px 8px;border-radius:5px}
+.ctag.signe{background:rgba(129,140,248,.1);color:var(--intra);border:1px solid rgba(129,140,248,.25)}
+.ctag.recu{background:rgba(251,191,36,.1);color:var(--amber);border:1px solid rgba(251,191,36,.25)}
+.ctag.annule{background:rgba(148,163,184,.12);color:var(--text-muted);border:1px solid rgba(148,163,184,.22)}
+.ctag.paye{background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.25)}
+.ctag.avalider{background:rgba(251,191,36,.1);color:var(--amber);border:1px solid rgba(251,191,36,.25)}
+.ctag.valide{background:rgba(129,140,248,.1);color:var(--intra);border:1px solid rgba(129,140,248,.25)}
+.split-row .sr-name{font-size:var(--fs-body);font-weight:600;display:flex;align-items:center;gap:8px}
+.split-row .sr-amt{font-family:var(--ff-num);font-size:var(--fs-strong);font-weight:700;font-variant-numeric:tabular-nums lining-nums}
+.split-row .sr-chev{width:14px;height:14px;color:var(--text-dim);transition:transform .18s;flex-shrink:0;margin-left:10px}
+.split-row.expanded .sr-chev{transform:rotate(180deg)}
+.split-row .sr-ht{display:none;font-family:var(--ff-num);font-size:var(--fs-caption);color:var(--text-dim);text-align:right;margin-top:2px;font-variant-numeric:tabular-nums lining-nums}
+.split-row.expanded .sr-ht{display:block}
+.split-row.devis-annule{opacity:.6}
+.split-row.devis-annule .sr-name>span:first-child{text-decoration:line-through;text-decoration-color:var(--text-dim)}
+.split-row.devis-annule .sr-amt{color:var(--text-dim)!important;text-decoration:line-through}
+.split-row.devis-annule.cls{border-left-color:var(--text-dim)!important}
+.devis-row{margin-bottom:9px;cursor:pointer}
+.dt-kv{display:flex;flex-direction:column;gap:7px}
+.dt-kv .kv{display:flex;gap:10px;font-size:var(--fs-caption);line-height:1.4}
+.dt-kv .kv .k{color:var(--text-dim);width:118px;flex-shrink:0}
+.dt-kv .kv .v{color:var(--text);font-weight:500}
+.statut-changer{margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.statut-changer-lbl{font-size:var(--fs-micro);text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);font-weight:700;margin-bottom:8px}
+.statut-pills{display:flex;gap:6px}
+.statut-pill{flex:1;text-align:center;font-size:var(--fs-caption);font-weight:600;padding:7px;border-radius:7px;border:1px solid var(--border-h);background:var(--surface);color:var(--text-muted);cursor:pointer;transition:.14s;display:flex;align-items:center;justify-content:center;gap:5px}
+.statut-pill svg{width:12px;height:12px}
+.statut-pill:hover{border-color:var(--text-dim)}
+.statut-pill.on.recu{border-color:rgba(251,191,36,.5);background:rgba(251,191,36,.12);color:var(--amber)}
+.statut-pill.on.signe{border-color:rgba(129,140,248,.5);background:rgba(129,140,248,.12);color:var(--intra)}
+.statut-pill.on.annule{border-color:rgba(148,163,184,.4);background:rgba(148,163,184,.14);color:var(--text-muted)}
+.statut-pill.on.paye{border-color:rgba(52,211,153,.5);background:rgba(52,211,153,.12);color:var(--green)}
+.statut-pill.on.avalider{border-color:rgba(251,191,36,.5);background:rgba(251,191,36,.12);color:var(--amber)}
+.statut-pill.on.valide{border-color:rgba(129,140,248,.5);background:rgba(129,140,248,.12);color:var(--intra)}
+.dt-actions{display:flex;gap:7px;margin-top:12px}
+.dt-act-btn{font-size:var(--fs-caption);padding:6px 11px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--text-muted);font-family:inherit;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.14s}
+.dt-act-btn svg{width:12px;height:12px}
+.dt-act-btn:hover{border-color:var(--text-muted);color:var(--text)}
+.dt-act-btn.danger{color:var(--red);border-color:rgba(248,113,113,.25)}
+.dt-act-btn.danger:hover{background:rgba(248,113,113,.08)}
+.devis-sum{background:linear-gradient(135deg,rgba(251,191,36,.06),rgba(255,255,255,0));border:1px solid var(--border-h);border-radius:13px;padding:16px 17px}
+.devis-sum .ds-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:13px}
+.devis-sum .ds-k{font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);font-weight:700}
+.devis-sum .ds-v{font-family:var(--ff-num);font-size:var(--fs-display);font-weight:700;color:var(--amber);line-height:1;margin-top:5px;font-variant-numeric:tabular-nums lining-nums}
+.devis-sum .ds-count{font-size:var(--fs-caption);color:var(--text-muted);text-align:right;line-height:1.5}
+.devis-sum .ds-count b{color:#fff}
+.devis-sum .ds-bar{height:7px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);overflow:hidden;position:relative}
+.devis-sum .ds-bar i{position:absolute;top:0;bottom:0;left:0;border-radius:4px;background:rgba(251,191,36,.6)}
+.devis-sum .ds-foot{display:flex;justify-content:space-between;margin-top:9px;font-size:var(--fs-caption)}
+.devis-sum .ds-foot .fl{color:var(--text-muted)}
+.devis-sum .ds-foot .fl b{font-family:var(--ff-num);color:var(--text);font-variant-numeric:tabular-nums lining-nums}
+.devis-sum .ds-foot .fr{font-family:var(--ff-num);color:var(--rb);font-variant-numeric:tabular-nums lining-nums}
+.devis-empty{padding:20px 14px;text-align:center;border:1px dashed var(--border-h);border-radius:11px;color:var(--text-dim);font-size:var(--fs-small);line-height:1.55}
+.df-ttc{font-family:var(--ff-num);font-size:var(--fs-caption);color:var(--text-muted);margin-top:7px;font-variant-numeric:tabular-nums lining-nums}
+.df-ttc b{color:var(--text);font-weight:600}
+.add-card{display:flex;align-items:center;gap:11px;padding:11px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2);cursor:pointer;transition:.14s;margin-top:10px}
+.add-card:hover{border-color:var(--text-dim);background:var(--surface)}
+.add-card .ac-ic{width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.add-card .ac-ic svg{width:15px;height:15px;color:var(--text-muted)}
+.add-card .ac-body{flex:1}
+.add-card .ac-t{font-size:var(--fs-body);font-weight:700;color:#fff}
+.add-card .ac-d{font-size:var(--fs-caption);color:var(--text-muted);margin-top:3px;line-height:1.4}
+.add-card .ac-chev{flex-shrink:0;color:var(--text-dim);width:16px;height:16px}
+.devis-form{border:1px solid var(--border-h);border-radius:11px;background:var(--surface-2);padding:15px;margin-top:10px;display:none}
+.devis-form.open{display:block}
+.devis-form-t{font-family:var(--ff-display);font-size:var(--fs-body);font-weight:700;color:#fff;margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.devis-form-t svg{width:14px;height:14px;color:var(--text-muted)}
+.devis-form-foot{display:flex;gap:8px;margin-top:15px}
+.devis-form-foot button{flex:1;padding:9px;border-radius:8px;font-family:inherit;font-size:var(--fs-small);font-weight:600;cursor:pointer;transition:.14s;border:1px solid var(--border)}
+.devis-form-foot .dfb-cancel{background:var(--surface);color:var(--text-muted)}
+.devis-form-foot .dfb-cancel:hover{border-color:var(--text-muted);color:var(--text)}
+.devis-form-foot .dfb-save{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);color:#fff}
+.devis-form-foot .dfb-save:hover{background:rgba(255,255,255,.1)}
+.devis-line-group{font-size:var(--fs-caption);font-weight:700;color:var(--text-muted);margin:16px 0 9px;display:flex;align-items:center;gap:8px}
+.devis-line-group:first-child{margin-top:0}
+.devis-line-group .lg-dot{width:5px;height:5px;border-radius:50%;background:var(--text-dim);flex-shrink:0}
+.dep-devis-deptview .dv-line-only{display:none}
+.avenir{font-size:var(--fs-micro);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);background:var(--surface-2);border:1px solid var(--border-h);border-radius:5px;padding:2px 7px}
+.split-row .sr-name{font-size:var(--fs-body);font-weight:600;display:flex;align-items:center;gap:8px}
+.split-row .sr-amt{font-family:var(--ff-num);font-size:var(--fs-strong);font-weight:700;font-variant-numeric:tabular-nums lining-nums}
+.split-row .sr-ht{display:none;font-family:var(--ff-num);font-size:var(--fs-caption);color:var(--text-dim);text-align:right;margin-top:2px;font-variant-numeric:tabular-nums lining-nums}
+.split-row.expanded .sr-ht{display:block}
+.split-row .sr-chev{width:14px;height:14px;color:var(--text-dim);transition:transform .18s;flex-shrink:0;margin-left:10px}
+.split-row.expanded .sr-chev{transform:rotate(180deg)}
+.dt-kv{display:flex;flex-direction:column;gap:7px}
+.dt-kv .kv{display:flex;gap:10px;font-size:var(--fs-caption);line-height:1.4}
+.dt-kv .kv .k{color:var(--text-dim);width:118px;flex-shrink:0}
+.dt-kv .kv .v{color:var(--text);font-weight:500}
+.dt-kv .kv .v.rap-auto{color:#818cf8;font-weight:700}
+.dt-kv .kv .v.rap-manuel{color:#c4b5fd;font-weight:700}
+.dsec{margin-bottom:22px}
+.dsec-t{font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:.14em;color:var(--text-dim);font-weight:700;
+  margin-bottom:11px;padding-bottom:7px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.dsec-t .pill{font-size:var(--fs-heading);padding:2px 7px;border-radius:4px;background:rgba(251,191,36,.1);color:var(--amber);font-weight:700;letter-spacing:0}
+.ctag{display:inline-flex;align-items:center;gap:4px;font-size:var(--fs-caption);font-weight:700;text-transform:uppercase;letter-spacing:.7px;line-height:1;padding:3px 8px;border-radius:5px}
+.ctag.ext{background:rgba(148,163,184,.1);color:var(--ext);border:1px solid rgba(148,163,184,.18)}
+.ctag.intra{background:rgba(129,140,248,.12);color:var(--intra);border:1px solid rgba(129,140,248,.25)}
+.ctag.inter{background:rgba(251,191,36,.1);color:var(--amber);border:1px solid rgba(251,191,36,.25)}
+.ctag.rec{background:rgba(99,102,241,.1);color:#a5b4fc;border:1px solid rgba(99,102,241,.25)}
+.ctag.rb{background:rgba(94,234,212,.12);color:var(--rb);border:1px solid rgba(94,234,212,.25)}
+.ctag.dash{background:rgba(255,255,255,.05);color:var(--text-muted);border:1px dashed rgba(255,255,255,.25);cursor:pointer}
+.metaline{display:flex;align-items:center;gap:12px;margin-top:9px;flex-wrap:wrap}
+.ctag.remb{background:rgba(94,234,212,.12);color:var(--rb);border:1px solid rgba(94,234,212,.28)}
+.ctag.ventile{font-size:0;background:rgba(56,189,248,.12);color:#38bdf8;border:1px solid rgba(56,189,248,.30)}
+.ctag.ventile::after{content:'VENTIL\00C9';font-size:var(--fs-caption)}
+.ctag.cas{background:rgba(217,128,250,.12);color:#e0a8ff;border:1px solid rgba(217,128,250,.30)}
 </style>
 </head>
 <body>
@@ -1871,8 +1992,11 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       <div class="drawer-title" id="drawer-title">Ligne budgétaire</div>
       <div class="drawer-sub" id="drawer-sub"></div>
     </div>
-    <button class="drawer-close" onclick="closeDrawer()">Fermer ✕</button>
+    <button class="drawer-close" id="drawer-close-btn" onclick="closeDrawer()">Fermer ✕</button>
   </div>
+  <!-- step-2 §D: rail chrome hosts — edit drawer only (shown via #drawer.edit-mode, populated by buildEditDrawer) -->
+  <div id="rail-hdr-host"></div>
+  <div id="rail-kpis-host"></div>
   <div class="drawer-body" id="drawer-body">
     <div class="drawer-empty">
       <div class="drawer-empty-icon">📋</div>
@@ -4010,132 +4134,393 @@ function getSections(deptId) {
   return [...new Set(dept.sections.map(s => s.s))];
 }
 
-function buildEditDrawer(deptId, sectionIdx, lineIdx, isNew) {
-  const dept = DEPTS.find(d => d.id === deptId);
-  if (!dept) return;
+// ═══════════════════════════════════════════════════════════════════════════════════════
 
-  const line = isNew
-    ? {l:'', obs:'', typ:'', tva:'0.2', est:0, st:'ESTIMATION', rec:'P', _row: null}
+// STEP-2 · DÉPENSE EDIT DRAWER — ported & adapted from event 0f1a3ebc (replaces general's).
+
+// buildEditDrawer/openEditLigne/openAddLigne/saveLigne + the full devis+status closure.
+
+// Adaptations: Δ1 recurrence, C3 statut/rename/delete/section, C4 openEstDrawer shim, C5 devis drawer-only.
+
+// ═══════════════════════════════════════════════════════════════════════════════════════
+
+function buildEditDrawer(deptId, sectionIdx, lineIdx, isNew, recRef) {
+  // LOCK-12 (CL-36): recette fit (approach A, confirmed). recRef = {ci, ri} present → recette
+  // mode (resolve from REC[ci].rows[ri], supply display values, omit dépense-only fields, save via
+  // saveRecFromEdit). recRef absent → dépense path BYTE-IDENTICAL (every existing caller).
+  const recMode = !!recRef;
+  let dept, line, tabName, sections, currentSection, allDeptOptions;
+  if (recMode) {
+    const cat = (recRef.ci != null) ? REC[recRef.ci] : null;
+    if (!isNew && !cat) return;
+    line = isNew
+      ? {l:'', obs:'', typ:'', tva:'0.2', est:0, st:'ESTIMATION', _row: null}
+      : cat.rows[recRef.ri];
+    if (!line) return;
+    // supply recette display equivalents (framing correction: supply, not just omit)
+    const catName = (recRef.preCat || (cat && cat.cat) || '');
+    dept = { name: 'Recettes', sections: [] };  // §ITEM21: dept slot = pole label; category stays in currentSection (subtext reads line · CATEGORY · Recettes)
+    tabName = 'RECETTES';
+    sections = [];
+    currentSection = catName;
+    allDeptOptions = '';
+  } else {
+  const dept_ = DEPTS.find(d => d.id === deptId);
+  if (!dept_) return;
+  dept = dept_;
+
+  line = isNew
+    ? {l:'', obs:'', typ:'', tva:'0.2', est:0, st:'ESTIMATION', _row: null}
     : dept.sections[sectionIdx]?.lines[lineIdx];
   if (!line) return;
 
-  const tabName = Object.entries(DEPT_META).find(([,m]) => m.id === deptId)?.[0] || deptId.toUpperCase();
-  const sections = getSections(deptId);
-  const currentSection = dept.sections[sectionIdx]?.s || '';
-  const allDeptOptions = Object.entries(DEPT_META).map(([tab, m]) =>
+  tabName = Object.entries(DEPT_META).find(([,m]) => m.id === deptId)?.[0] || deptId.toUpperCase();
+  sections = getSections(deptId);
+  currentSection = dept.sections[sectionIdx]?.s || '';
+  allDeptOptions = Object.entries(DEPT_META).map(([tab, m]) =>
     `<option value="${tab}" ${tab === tabName ? 'selected' : ''}>${m.name}</option>`
   ).join('');
+  }
 
-  document.getElementById('drawer-title').innerHTML =
-    `${isNew
-      ? '<span style="color:var(--green)">+</span> Nouvelle ligne'
-      : `<span style="color:#c4b5fd">✏</span> ${line.l || 'Ligne sans nom'}`}`;
-  document.getElementById('drawer-sub').innerHTML =
-    `<span class="df-badge ${isNew?'new':'edit'}">${isNew?'Création':'Édition'}</span>
-     <span style="margin-left:6px">${dept.name} › ${currentSection}</span>`;
+  // v21b: edit drawer adopts the rail chrome (additive-toggle). Set edit-mode so CSS
+  // shows #rail-hdr-host/#rail-kpis-host and hides the generic .drawer-hdr; closeDrawer clears it.
+  document.getElementById('drawer').classList.add('edit-mode');
+  const _edPencil = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+  document.getElementById('rail-hdr-host').innerHTML = railHdr({
+    icon: _edPencil,
+    title: isNew ? 'Nouvelle ligne' : 'Détails de la ligne',
+    subHTML: `<b>${line.l || 'Ligne sans nom'}</b> · ${currentSection} · ${dept.name}`,
+    railXState: 'close'
+  });
+  // railX renders markup only — attach the close handler to the rendered .rail-x.
+  document.getElementById('rail-hdr-host').querySelector('.rail-x').onclick = closeDrawer;
+
+  // ── (iv-a) edit-drawer facelift · analytic precompute (LIVE read-path only;
+  //     devis / engagé / intégrations / tx-reliées / historique layer = Phase-D, lands in iv-b) ──
+  const _estV   = line.est || 0;
+  const _reelV  = line.reel || 0;
+  const _resteV = _estV - _reelV;
+  const _reelPct = _estV > 0 ? Math.min(100, Math.round(_reelV / _estV * 100)) : 0;
+  let _partPct = null;
+  try {
+    if (recMode) {
+      const _recTot = (typeof REC !== 'undefined' && REC) ? REC.flatMap(c => c.rows || []).reduce((a, r) => a + (r.est || 0), 0) : 0;
+      _partPct = _recTot > 0 ? Math.round(_estV / _recTot * 100) : null;
+    } else if (dept && dept.sections) {
+      const _dEst = dtot(dept).est;
+      _partPct = _dEst > 0 ? Math.round(_estV / _dEst * 100) : null;
+    }
+  } catch (e) { _partPct = null; }
+  const _tvaNum0 = parseFloat(line.tva);
+  const _ttc0 = (_estV && !isNaN(_tvaNum0)) ? Math.round(_estV * (1 + _tvaNum0)) : _estV;
+  const _midKpiLabel   = recMode ? 'Attendu · intégr.' : 'Engagé · devis';
+  const _rightKpiLabel = recMode ? 'Encaissé' : 'Réel';
+  const _nameEsc = _jsAttr(line.l || '');
+
+  // ── (iv-b) devis engagé layer — line-derived metrics (client UI state; persistence = Phase-D) ──
+  // §ITEM22: a brand-new line (isNew) has no name yet, so its devis key would be empty and could
+  // trip the _edDevisGet demo-seed (or collide) → phantom "Engagé · devis" on a 0/0 line. A new line
+  // has no devis by definition: force engagé 0 / count 0, skip the lookup entirely.
+  const _lineKey    = (recMode || isNew) ? null : _edDevisKey(tabName, currentSection, line.l || '');
+  // seam 27db — canonical key for the recette encaissé selector (recMode only; same composite builder as devis).
+  const _encsrcKey  = (recMode && !isNew) ? _edDevisKey(tabName, currentSection, line.l || '') : null;
+  const _encsrcSaved = _encsrcKey && _encsrcStore.has(_encsrcKey) ? _encsrcStore.get(_encsrcKey) : null;
+  const _encsrcMode0 = _encsrcSaved ? _encsrcSaved.mode : 'tx';
+  const _encsrcMan0  = _encsrcSaved && _encsrcSaved.manualVal != null ? _encsrcSaved.manualVal : '';
+  const _devisArr   = _lineKey ? _edDevisGet(_lineKey) : [];
+  const _devisStatV = _devisStats(_devisArr);
+  const _engageV    = _devisStatV.engage;
+  const _devisCount = _devisStatV.count;
+
+  // v21b: KPI strip now lives in the fixed #rail-kpis-host (not doubled in-body). Real values;
+  // recette middle KPI is the Phase-D "—" placeholder, never a fabricated number (mirrors old in-body logic).
+  document.getElementById('rail-kpis-host').innerHTML = railKpis([
+    { label: 'Prévu HT',     value: fe(_estV),                    colorClass: 'prevu' },
+    { label: _midKpiLabel,   value: recMode ? '—' : fe(_engageV), colorClass: recMode ? 'engage ed-phase-v' : 'engage' },
+    { label: _rightKpiLabel, value: fe(_reelV),                   colorClass: 'reel' }
+  ], { k3: true });
 
   document.getElementById('drawer-body').innerHTML = `
-    <div class="drawer-section">
-      <div class="df-group">
-        <label class="df-label">Nom de la ligne *</label>
-        <input id="ef-nom" class="df-input" type="text"
-          placeholder="ex: Régie Bar, Location Van…"
-          value="${(line.l||'').replace(/^(\(ligne \d+\))$/, '')}">
-      </div>
+    <div class="ed-tabs${isNew ? ' ed-tabs-single' : ''}">
+      ${isNew ? `<button class="ed-tab on" data-edpane="nouveau" onclick="edTab(this)">Nouvelle ligne</button>` : ''}
+      ${isNew ? '' : `<button class="ed-tab on" data-edpane="details"  onclick="edTab(this)">Détails</button>
+      <button class="ed-tab"    data-edpane="budget"   onclick="edTab(this)">Budget</button>
+      <button class="ed-tab"    data-edpane="${recMode ? 'integrations' : 'devis'}" onclick="edTab(this)">${recMode ? 'Intégrations' : 'Devis'}</button>
+      <button class="ed-tab"    data-edpane="notes"    onclick="edTab(this)">Notes</button>
+      <button class="ed-tab"    data-edpane="reglages" onclick="edTab(this)">Réglages</button>`}
+    </div>
 
-      <div class="df-row">
-        <div class="df-group">
-          <label class="df-label">Montant HT (€)</label>
-          <input id="ef-est" class="df-input" type="number" min="0" step="0.01"
-            placeholder="0" value="${line.est||''}">
+    <div class="ed-body">
+      ${isNew ? `<div class="ed-pane on" data-edpane="nouveau">
+        <div class="ed-sec">
+          <div class="df-group" style="margin-bottom:14px">
+            <label class="df-label">Nom de la ligne *</label>
+            <input id="ef-nom" class="df-input" type="text" placeholder="ex: Régie Bar, Location Van…" value="${(line.l||'').replace(/^(\(ligne \d+\))$/, '').replace(/"/g,'&quot;')}">
+          </div>
+          <div class="df-row">
+            <div class="df-group">
+              <label class="df-label">Montant HT (€)</label>
+              <input id="ef-est" class="df-input" type="number" min="0" step="0.01" placeholder="0" value="${line.est||''}" oninput="edRecalcTTC(this)">
+              <div class="ed-ttc">TTC estimé · <b class="ed-ttc-v">${fe(_ttc0)}</b></div>
+            </div>
+            <div class="df-group">
+              <label class="df-label">TVA / Régime</label>
+              <select id="ef-tva" class="df-select" onchange="edRecalcTTC(this)">
+                ${tvaOpts(line.tva)}
+              </select>
+            </div>
+          </div>
+          <div class="df-group" style="margin-top:14px">
+            ${recMode
+              ? `<label class="df-label">Catégorie</label>
+                 <input id="ef-rec-cat" class="df-input" type="text" list="ef-rec-cat-list" placeholder="Choisir ou créer une catégorie…" value="${currentSection}">
+                 <datalist id="ef-rec-cat-list">${REC.map(c => `<option value="${(c.cat||'').replace(/"/g,'&quot;')}">`).join('')}</datalist>
+                 <div class="df-hint">Choisir une catégorie existante, ou taper un nouveau nom pour la créer (additif, non destructif).</div>`
+              : `<label class="df-label">Section</label>
+                 <input id="ef-section" class="df-input" type="text" list="ef-section-list" placeholder="Choisir ou créer une section…" value="${currentSection}">
+                 <datalist id="ef-section-list">${sections.map(s => `<option value="${s}">`).join('')}</datalist>
+                 <div class="df-hint">Choisir une section existante, ou taper un nouveau nom pour la créer (additif, non destructif).</div>`}
+          </div>
         </div>
-        <div class="df-group">
-          <label class="df-label">TVA / Régime</label>
-          <select id="ef-tva" class="df-select">
-            ${tvaOpts(line.tva)}
-          </select>
+      </div>` : ''}
+
+      <!-- ░░ DÉTAILS — read-only analytic (live prévu/réel; devis/intégr layer degraded to Phase-D) ░░ -->
+      <div class="ed-pane${isNew ? '' : ' on'}" data-edpane="details">
+        <div class="ed-sec">
+          <div class="ed-sec-t">${recMode ? 'Encaissement' : 'Consommation du budget'}</div>
+          ${detPie({ prevu: _estV, engage: _engageV, reel: _reelV, encaisse: _reelV, mode: recMode ? 'recette' : 'depense' })}
+          <div class="ed-kv">
+            <div class="row"><span class="k">Prévu HT</span><span class="v">${fe(_estV)}</span></div>
+            <div class="row"><span class="k">${recMode ? 'Encaissé' : 'Réel payé'}</span><span class="v">${fe(_reelV)}</span></div>
+            <div class="row"><span class="k">${recMode ? 'Reste à encaisser' : 'Reste sur le prévu'}</span><span class="v" style="color:var(--rb)">${fe(_resteV)}</span></div>
+            <div class="row"><span class="k">${recMode ? 'Part des recettes' : 'Part du département ' + (dept ? dept.name : '')}</span><span class="v">${_partPct != null ? _partPct + '%' : '—'}</span></div>
+            ${recMode ? '' : `<div class="row"><span class="k">Devis enregistrés</span><span class="v" id="ed-devis-count">${_devisCount} devis</span></div>`}
+          </div>
+          ${recMode ? '' : `<div class="df-group" style="margin-top:12px">
+            <label class="df-label">Statut</label>
+            <select id="ef-st" class="df-select">
+              <option value="ESTIMATION"  ${line.st==='ESTIMATION'?'selected':''}>ESTIMATION</option>
+              <option value="EN COURS"    ${line.st==='EN COURS'?'selected':''}>EN COURS</option>
+              <option value="DEVIS SIGNÉ" ${line.st==='DEVIS SIGNÉ'?'selected':''}>DEVIS SIGNÉ</option>
+              <option value="VALIDÉ"      ${line.st==='VALIDÉ'?'selected':''}>VALIDÉ</option>
+              <option value="PAYÉ"        ${line.st==='PAYÉ'?'selected':''}>PAYÉ</option>
+            </select>
+          </div>`}
+          <div class="ed-phase">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>${recMode
+              ? "Attendu (intégrations), intégration active et transactions reliées arrivent avec l'onglet Intégrations (Phase-D)."
+              : "Transactions reliées et historique des devis arrivent en Phase-D."}</span>
+          </div>
         </div>
       </div>
 
-      ${deptId==='billetterie'?'':`<div class="df-row">
-        <div class="df-group">
-          <label class="df-label">Type</label>
-          <select id="ef-typ" class="df-select">
-            <option value="" ${!line.typ?'selected':''}>— Non défini</option>
-            <option value="S" ${line.typ==='S'?'selected':''}>S — Staff / Salaire</option>
-            <option value="G" ${line.typ==='G'?'selected':''}>G — Prestataire</option>
-          </select>
+      <!-- ░░ BUDGET — safe-editable financial fields (no name) ░░ -->
+      <div class="ed-pane" data-edpane="budget">
+        <div class="ed-sec">
+          <div class="ed-sec-t">Budget prévisionnel</div>
+          ${isNew ? `<div class="df-hint" style="margin-bottom:4px">Montant HT et TVA se saisissent dans l'onglet <b>Nouvelle ligne</b>.</div>` : `<div class="df-row">
+            <div class="df-group">
+              <label class="df-label">Montant HT (€)</label>
+              <input id="ef-est" class="df-input" type="number" min="0" step="0.01" placeholder="0" value="${line.est||''}" oninput="edRecalcTTC(this)">
+              <div class="ed-ttc">TTC estimé · <b class="ed-ttc-v">${fe(_ttc0)}</b></div>
+            </div>
+            <div class="df-group">
+              <label class="df-label">TVA / Régime</label>
+              <select id="ef-tva" class="df-select" onchange="edRecalcTTC(this)">
+                ${tvaOpts(line.tva)}
+              </select>
+            </div>
+          </div>`}
+          <div class="df-row">
+            ${recMode ? '' : `<div class="df-group">
+              <label class="df-label">Type</label>
+              <select id="ef-typ" class="df-select">
+                <option value="" ${!line.typ?'selected':''}>— Non défini</option>
+                <option value="S" ${line.typ==='S'?'selected':''}>S — Staff / Salaire</option>
+                <option value="G" ${line.typ==='G'?'selected':''}>G — Prestataire</option>
+              </select>
+            </div>`}
+          </div>
+          ${recMode ? '' : `<div class="df-group">
+            <label class="df-label">Récurrence</label>
+            <select id="ef-rec" class="df-select">
+              <option value="P" ${(line.rec||'P')==='P'?'selected':''}>Ponctuel</option>
+              <option value="M" ${line.rec==='M'?'selected':''}>Mensuel</option>
+              <option value="A" ${line.rec==='A'?'selected':''}>Annuel</option>
+            </select>
+            <div class="df-hint">Ponctuel = imputé une seule fois sur son mois. Mensuel = compté chaque mois. Annuel = imputé sur son mois, ou lissé sur 12 si l'option « Lisser sur l'année » est active.</div>
+          </div>`}
         </div>
-        <div class="df-group">
-          <label class="df-label">Statut</label>
-          <select id="ef-st" class="df-select">
-            <option value="ESTIMATION"  ${line.st==='ESTIMATION'?'selected':''}>ESTIMATION</option>
-            <option value="EN COURS"    ${line.st==='EN COURS'?'selected':''}>EN COURS</option>
-            <option value="DEVIS SIGNÉ" ${line.st==='DEVIS SIGNÉ'?'selected':''}>DEVIS SIGNÉ</option>
-            <option value="VALIDÉ"      ${line.st==='VALIDÉ'?'selected':''}>VALIDÉ</option>
-            <option value="PAYÉ"        ${line.st==='PAYÉ'?'selected':''}>PAYÉ</option>
-          </select>
+      </div>
+
+      <!-- ░░ (iv-b) 5th pane — DEVIS (dépense, engagé layer) / INTÉGRATIONS shell (recette, à concevoir) ░░ -->
+      ${recMode
+        ? `<div class="ed-pane" data-edpane="integrations">
+        <div class="encsrc" data-encsrc-key="${_encsrcKey?_esc(_encsrcKey):''}" data-encsrc-mode="${_encsrcMode0}" data-encsrc-man="${_encsrcMan0}">
+          <div class="ed-sec">
+            <div class="ed-sec-t" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <span>Source de l'encaissé réel</span>
+              <span class="df-badge new" style="letter-spacing:.6px">Nouveau</span>
+            </div>
+            <div class="df-group" style="margin-bottom:0">
+              <label class="df-label">Mode de calcul</label>
+              <div class="seg" role="tablist" aria-label="Source de l'encaissé">
+                <button class="seg-opt on" role="tab" aria-selected="true" data-mode="tx" onclick="encsrcMode('tx')">Par transactions</button>
+                <button class="seg-opt" role="tab" aria-selected="false" data-mode="api" onclick="encsrcMode('api')">Par API</button>
+                <button class="seg-opt" role="tab" aria-selected="false" data-mode="man" onclick="encsrcMode('man')">Saisie manuelle</button>
+              </div>
+              <div class="df-hint" id="encsrc-hint">Par défaut. L'encaissé = somme des transactions rapprochées à cette ligne (comme le réel côté dépenses).</div>
+            </div>
+            <div class="encsrc-body">
+              <!-- MODE 1 · par transactions (real: line.reel — reconciled) -->
+              <div class="encsrc-mode on" data-mode="tx">
+                <div class="encsrc-tx${_reelV>0?'':' empty'}">
+                  <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
+                  <div class="b">
+                    <div class="t">${_reelV>0?'Transactions reliées':'Aucune transaction reliée'}</div>
+                    <div class="d">rapprochées à cette ligne · lecture seule</div>
+                  </div>
+                  <div class="amt">${fe(_reelV)}</div>
+                </div>
+              </div>
+              <!-- MODE 2 · API billetterie (Dice + Shotgun → total) · placeholder split, Phase-D fetch -->
+              <div class="encsrc-mode" data-mode="api">
+                <div class="encsrc-api">
+                  <div class="encsrc-prow"><div class="av">Di</div><div class="nm">Dice<small>billetterie</small></div><div class="pv">${fe(0)}</div></div>
+                  <div class="encsrc-prow"><div class="av">Sh</div><div class="nm">Shotgun<small>billetterie</small></div><div class="pv">${fe(0)}</div></div>
+                  <div class="encsrc-total">
+                    <div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></div>
+                    <div class="nm">Total encaissé<small>Dice + Shotgun · = Encaissé HT</small></div>
+                    <div class="pv" id="encsrc-api-total">${fe(0)}</div>
+                  </div>
+                </div>
+                <div class="encsrc-sync">
+                  <span class="dot"></span>
+                  <span class="grow">Synchronisé via Dice · Shotgun — dernière synchro : —</span>
+                  <span class="encsrc-refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Rafraîchir</span>
+                  <span class="avenir">à venir</span>
+                </div>
+                <!-- Pick #4: brut as-is; net-de-frais qualifier is a Phase-D hook, NOT computed here -->
+                <div class="ed-phase">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <span>La récupération réelle, le choix des valeurs (brut / net de frais) et le mapping des plateformes se règlent sur la surface Intégrations (Phase-D). Ici : la structure séparé → total uniquement.</span>
+                </div>
+              </div>
+              <!-- MODE 3 · saisie manuelle (override) -->
+              <div class="encsrc-mode" data-mode="man">
+                <div class="df-group encsrc-manual" style="margin-bottom:8px">
+                  <label class="df-label">Encaissé HT saisi</label>
+                  <span class="cur">€</span>
+                  <input class="df-input" type="number" min="0" step="1" placeholder="0" id="encsrc-man-input" value="${_encsrcMan0}" oninput="encsrcManual()" inputmode="decimal">
+                </div>
+                <div class="df-hint">Une valeur saisie ici <b style="color:var(--text-muted)">prend le pas</b> sur les transactions et l'API. À utiliser pour un montant connu hors plateforme (espèces, virement direct…).</div>
+              </div>
+            </div>
+            <!-- resolved anchor — this value IS the encaissé (destination = Encaissé HT / P&L) -->
+            <div class="encsrc-out">
+              <div class="l">
+                <div class="lbl">Encaissé HT retenu</div>
+                <div class="cap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>colonne ENCAISSÉ HT · alimente le P&L</div>
+              </div>
+              <div class="val" id="encsrc-out-val">${fe(_reelV)}</div>
+            </div>
+            <div class="ed-phase" style="margin-top:14px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>Le mode et la valeur saisie sont conservés côté interface. L'écriture backend (persistance, récupération billetterie) arrive en Phase-D.</span>
+            </div>
+          </div>
         </div>
-      </div>`}
+      </div>`
+        : `<div class="ed-pane" data-edpane="devis" data-line-key="${_esc(_lineKey)}" data-est="${_estV}" data-tab="${_esc(tabName)}">${edDevisPaneHTML(_lineKey, _estV, tabName)}</div>`}
 
-      <div class="df-group">
-        <label class="df-label">Récurrence</label>
-        <select id="ef-rec" class="df-select">
-          <option value="P" ${(line.rec||'P')==='P'?'selected':''}>Ponctuel</option>
-          <option value="M" ${line.rec==='M'?'selected':''}>Mensuel</option>
-          <option value="A" ${line.rec==='A'?'selected':''}>Annuel</option>
-        </select>
-        <div style="font-size:11px;color:var(--text-dim);margin-top:4px">Ponctuel = imputé une seule fois sur son mois. Mensuel = compté chaque mois. Annuel = imputé sur son mois, ou lissé sur 12 si l'option « Lisser sur l'année » est active.</div>
+      <!-- ░░ NOTES — live notes field (historique = Phase-D) ░░ -->
+      <div class="ed-pane" data-edpane="notes">
+        <div class="ed-sec">
+          <div class="ed-sec-t">Note</div>
+          <textarea id="ef-obs" class="df-input" rows="5" style="resize:vertical;min-height:90px;line-height:1.5" placeholder="Notes, références, détails…">${line.obs||''}</textarea>
+        </div>
+        <div class="ed-sec">
+          <div class="ed-sec-t">Historique de la ligne</div>
+          <div class="ed-phase">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Le journal d'audit (créations, changements de montant, intégrations) arrive en Phase-D.</span>
+          </div>
+        </div>
       </div>
 
-      <div class="df-group">
-        <label class="df-label">Notes</label>
-        <textarea id="ef-obs" class="df-input" rows="4"
-          style="resize:vertical;min-height:80px;line-height:1.5"
-          placeholder="Notes, références, détails…">${line.obs||''}</textarea>
+      <!-- ░░ RÉGLAGES — name-fragile / structural / destructive surface, uniformly soft-blocked in V1 ░░ -->
+      <div class="ed-pane" data-edpane="reglages">
+        <div class="ed-sec">
+          ${isNew ? '' : `<div class="df-group">
+            <label class="df-label">Nom de la ligne *</label>
+            <input id="ef-nom" class="df-input" type="text" placeholder="ex: Régie Bar, Location Van…" value="${(line.l||'').replace(/^(\(ligne \d+\))$/, '')}">
+            <div class="ed-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>${recMode ? 'Renommer peut délier des recettes.' : 'Renommer peut délier des transactions.'}</span></div>
+          </div>`}
+
+          ${isNew
+            ? ''
+            : (recMode
+              ? `<div class="df-group">
+                  <label class="df-label">Catégorie</label>
+                  <select class="df-select ed-disabled" disabled aria-disabled="true" tabindex="-1">
+                    ${REC.map(c => `<option value="${(c.cat||'').replace(/"/g,'&quot;')}" ${c.cat===currentSection?'selected':''}>${c.cat||''}</option>`).join('')}
+                  </select>
+                  <input type="hidden" id="ef-rec-cat" value="${(currentSection||'').replace(/"/g,'&quot;')}">
+                  <div class="ed-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Changer de catégorie est désactivé (V1).</span></div>
+                </div>`
+              : `<div class="df-group">
+                  <label class="df-label">Section</label>
+                  <select class="df-select ed-disabled" disabled aria-disabled="true" tabindex="-1">
+                    ${sections.map(s => `<option value="${s.replace(/"/g,'&quot;')}" ${s===currentSection?'selected':''}>${s}</option>`).join('')}
+                  </select>
+                  <input type="hidden" id="ef-section" value="${(currentSection||'').replace(/"/g,'&quot;')}">
+                  <div class="ed-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Changer de section est désactivé (V1).</span></div>
+                </div>`)}
+
+          ${recMode ? '' : `<div class="df-group">
+            <label class="df-label">Département</label>
+            <select class="df-select ed-disabled" disabled aria-disabled="true" tabindex="-1">${allDeptOptions}</select>
+            <div class="ed-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Déplacer une ligne est désactivé (V1).</span></div>
+          </div>`}
+        </div>
+
+        ${!isNew && line._row ? `<div class="ed-sec">
+          <div class="ed-sec-t">Zone sensible</div>
+          <div class="ed-delcard" onclick="deleteLigne('${tabName}',${line._row},'${_nameEsc}','${deptId}')">
+            <div class="ed-delcard-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div>
+            <div class="ed-delcard-b"><div class="t">Supprimer la ligne budgétaire</div><div class="d">${recMode ? 'Retire la recette du budget. Les transactions reliées seront déliées.' : 'Retire la ligne du budget. Les transactions reliées seront déliées.'}</div></div>
+          </div>
+        </div>` : ''}
+
+        <div class="ed-warn">
+          <div class="wt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Réglages structurels — sensibles</span></div>
+          <div class="wd">Renommer une ligne${recMode ? ' ou changer de catégorie' : ', changer de section ou de département'} touche au nom qui sert de clé aux rapprochements : les ${recMode ? 'recettes' : 'transactions'} reliées peuvent se désapparier. Ces écritures arrivent en Phase-D.</div>
+        </div>
       </div>
 
-      ${isNew ? `
-      <div style="margin:16px 24px 14px;height:1px;background:rgba(255,255,255,.06)"></div>
-
-      <div class="df-group">
-        <label class="df-label">Section</label>
-        <input id="ef-section" class="df-input" type="text"
-          list="ef-section-list"
-          placeholder="Choisir ou créer une section…"
-          value="${currentSection}">
-        <datalist id="ef-section-list">
-          ${sections.map(s => `<option value="${s}">`).join('')}
-        </datalist>
-        <div style="font-size:11px;color:var(--text-dim);margin-top:5px;line-height:1.5">Choisir une section existante, ou taper un nouveau nom pour créer une section. La ligne budgétaire sera ajoutée à cette section.</div>
-      </div>
-      ` : ''}
     </div>
 
     <input type="hidden" id="ef-dept" value="${tabName}">
-    ${isNew ? '' : `<input type="hidden" id="ef-section" value="${currentSection}">`}
     <input type="hidden" id="ef-qonto-ref" value="${line.qonto_ref||''}">
   `;
 
   document.getElementById('drawer-footer').style.display = 'flex';
   document.getElementById('drawer-footer').innerHTML = `
     <button class="drawer-btn" onclick="closeDrawer()">Annuler</button>
-    ${!isNew && line._row ? `<button class="drawer-btn" onclick="deleteLigne('${tabName}',${line._row},'${(line.l||'').replace(/'/g,"\\'")}','${deptId}')" style="color:var(--red);border-color:rgba(248,113,113,.2)">Supprimer</button>` : ''}
-    <button class="drawer-btn" id="ef-save-btn"
-      onclick="saveLigne('${deptId}',${sectionIdx},${lineIdx},${isNew})">
-      ${isNew ? '+ Créer' : 'Enregistrer'}
-    </button>
+    ${recMode
+      ? `<button class="drawer-btn primary" id="ef-save-btn" onclick="saveRecFromEdit(${recRef.ci},${recRef.ri},${isNew})">${isNew ? '+ Créer' : 'Enregistrer'}</button>`
+      : `<button class="drawer-btn primary" id="ef-save-btn" onclick="saveLigne('${deptId}',${sectionIdx},${lineIdx},${isNew})">${isNew ? '+ Créer' : 'Enregistrer'}</button>`}
   `;
 
   // Focus name field
   setTimeout(() => document.getElementById('ef-nom')?.focus(), 80);
+  if (document.querySelector('.encsrc')) encsrcRestore();   // seam 27db — restore saved recette encaissé source
 }
 
-let _editLigneActive = false;
-
-function openEditLigne(deptId, sectionIdx, lineIdx) {
+function openEditLigne(deptId, sectionIdx, lineIdx, recRef) {
   _editLigneActive = true;
-  buildEditDrawer(deptId, sectionIdx, lineIdx, false);
+  buildEditDrawer(deptId, sectionIdx, lineIdx, false, recRef);
   document.getElementById('drawer-overlay').classList.add('open');
   document.getElementById('drawer').classList.add('open');
   
@@ -4157,8 +4542,8 @@ async function saveLigne(deptId, sectionIdx, lineIdx, isNew) {
   const tva     = document.getElementById('ef-tva')?.value;
   const typ     = document.getElementById('ef-typ')?.value;
   const est     = parseFloat(document.getElementById('ef-est')?.value) || 0;
-  const st      = document.getElementById('ef-st')?.value;
-  const rec     = document.getElementById('ef-rec')?.value || 'P';
+  const st      = document.getElementById('ef-st')?.value || 'ESTIMATION';   // step-2 C3.1: #ef-st re-added (Details pane); read live and value-swapped into the edit write below
+  const rec     = document.getElementById('ef-rec')?.value || 'P';           // step-2 Δ1: #ef-rec re-added (Budget pane); default 'P' — lissé reads l.rec
   const obs        = document.getElementById('ef-obs')?.value.trim();
   const qonto_ref  = document.getElementById('ef-qonto-ref')?.value.trim();
   // Read dept from dropdown (user may have changed it)
@@ -4202,29 +4587,50 @@ async function saveLigne(deptId, sectionIdx, lineIdx, isNew) {
         throw new Error(err.detail || `Erreur ${resp.status}`);
       }
     } else {
-      const line = dept.sections[sectionIdx]?.lines[lineIdx];
+      // Resolve the ORIGINAL line against the ORIGINAL dept (the param deptId, baked into the drawer
+      // at build time) — NOT the effective/target dept — so line.l is the true pre-edit name and the
+      // move detection compares original→target correctly even when ef-dept was changed.
+      const origDept = DEPTS.find(d => d.id === deptId);
+      const line = origDept?.sections[sectionIdx]?.lines[lineIdx];
       if (!line?._row) throw new Error('Numéro de ligne introuvable');
+      const originalTabName = Object.entries(DEPT_META).find(([,m]) => m.id === deptId)?.[0] || (deptId||'').toUpperCase();
       const tvaNum = parseFloat(tva);
       const estTTC = est && !isNaN(tvaNum) ? Math.round(est * (1 + tvaNum)) : est;
-      const updates = [
-        {field:'ligne',        value: nom},
-        {field:'tva',          value: tva},
-        {field:'est_ht',       value: String(est)},
-        {field:'est_ttc',      value: String(estTTC)},
-        {field:'statut',       value: st},
-        {field:'recurrence',   value: rec},
-        {field:'observations', value: obsWithRef},
-      ];
-      for (const u of updates) {
-        await fetch(`${API}/api/budget/update`, {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({session: SESSION, dept: tabName, row: line._row, field: u.field, value: u.value})
-        });
+
+      // ── STUB-AT-THE-BOUNDARY (Pass A sub-pass i, CONTRACT_LEDGER) ──────────────────────────
+      // Name-keyed matching (`${tabName}|${line.l}`, loadAndMatchQontoRaw/storeQontoTransactions)
+      // means a rename or dept-move ORPHANS the persisted dept|ligne-name assignments: the line gets
+      // the new name/dept via _row, the assignment records still carry the old key, nothing re-points.
+      // Until the Phase-D budget_lines PK / transactions.budget_line_id FK lands, the identity write
+      // stubs at the boundary. NON-DESTRUCTIVE fields (tva/est_ht/est_ttc/statut/observations) stay LIVE.
+      const renamed = nom !== line.l;
+      const moved   = effectiveTabName !== originalTabName;
+
+      if (moved) {
+        // Dept-move stubs the WHOLE line-write: every field's POST would land under the wrong dept key.
+        showToast('⏳ Bientôt', `Changement de département de « ${line.l} » — écriture backend à venir (Phase-D).`, 'amber');
+      } else {
+        const updates = [
+          {field:'ligne',        value: nom},            // step-2 C3.3: rename write is now LIVE (filter + Phase-D toast removed)
+          {field:'tva',          value: tva},
+          {field:'est_ht',       value: String(est)},
+          {field:'est_ttc',      value: String(estTTC)},
+          {field:'statut',       value: st},             // step-2 C3.1: value-swap line.st → st (reads re-added #ef-st)
+          {field:'recurrence',   value: rec},            // step-2 Δ1: recurrence write re-homed (was general's deleted saveLigne)
+          {field:'observations', value: obsWithRef},
+        ];
+        for (const u of updates) {
+          await fetch(`${API}/api/budget/update`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({session: SESSION, dept: originalTabName, row: line._row, field: u.field, value: u.value})
+          });
+        }
       }
     }
 
     closeDrawer();
+    _monthlyReelCache = null;   // step-2 Δ1: invalidate monthly cache so lissé re-balances after a recurrence change (was general's toggleRecurrence)
     await refreshBudgetData();
     go(effectiveDeptId, null);
     showToast(
@@ -4238,6 +4644,391 @@ async function saveLigne(deptId, sectionIdx, lineIdx, isNew) {
   }
 }
 
+// ─── devis + status subsystem (dépense-path closure, fixpoint-traced) ───
+
+/* ==== _edDevisStore (ev L4531) ==== */
+const _edDevisStore = {};   // lineKey -> [devis]
+
+/* ==== _edDevisKey (ev L4534) ==== */
+function _edDevisKey(tabName, section, name){ return [tabName, section, name].join('\u241F'); }
+
+/* ==== _edDevisGet (ev L4535) ==== */
+function _edDevisGet(key){
+  // C5 (step-2): demo-seed neutralized — return [] for unseeded keys (no phantom devis on the
+  // first line opened). Devis are session-only client state via _edDevisStore; persistence = Phase-D.
+  if (!(key in _edDevisStore)) { _edDevisStore[key] = []; }
+  return _edDevisStore[key];
+}
+
+/* ==== _devisTTC (ev L4542) ==== */
+function _devisTTC(ht, tva){ const n = parseFloat(tva); return (!isNaN(n) ? Math.round(ht*(1+n)) : Math.round(ht)); }
+
+/* ==== _devisStats (ev L4543) ==== */
+function _devisStats(arr){
+  return {
+    count:  arr.length,
+    engage: arr.reduce((a,d)=>a+(+d.montant_ht||0),0),
+    signe:  arr.filter(d=>d.statut==='Signé').length,
+    recu:   arr.filter(d=>d.statut==='Reçu').length,
+    annule: arr.filter(d=>d.statut==='Annulé').length
+  };
+}
+
+/* ==== _DEVIS_SVG (ev L4552) ==== */
+const _DEVIS_SVG = {
+  chev:'<svg class="sr-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>',
+  recu:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>',
+  signe:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  annule:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+  paye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>',
+  avalider:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  valide:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+  link:'<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-left:5px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'
+};
+// ADR-0025 canonical state map (single source of truth: code ↔ statut ↔ label ↔ border).
+// d.statut stores the Title-case `statut` (what the frozen consumer computeEngage/à-valider CTA reads);
+// CSS classes / icon keys / highlight use the safe `code` ('à valider' can't be a class).
+
+/* ==== _DEVIS_STATES (ev L4567) ==== */
+const _DEVIS_STATES = [
+  { code:'recu',     statut:'Reçu',      label:'reçu',      border:'var(--text-dim)' },
+  { code:'avalider', statut:'à valider', label:'à valider', border:'var(--amber)'    },
+  { code:'valide',   statut:'Validé',    label:'validé',    border:'var(--intra)'    },
+  { code:'signe',    statut:'Signé',     label:'signé',     border:'var(--intra)'    },
+  { code:'paye',     statut:'Payé',      label:'payé',      border:'var(--green)'    },
+  { code:'annule',   statut:'Annulé',    label:'annulé',    border:'var(--text-dim)' },
+];
+
+/* ==== _stByStatut (ev L4575) ==== */
+const _stByStatut = s => _DEVIS_STATES.find(x => x.statut === s) || _DEVIS_STATES[0];  // render: statut → state
+
+/* ==== _stByCode (ev L4576) ==== */
+const _stByCode   = c => _DEVIS_STATES.find(x => x.code   === c) || _DEVIS_STATES[0];  // click:  code   → state
+
+/* ==== _devisRowHTML (ev L4579) ==== */
+function _devisRowHTML(d, idx){
+  const ttc = _devisTTC(d.montant_ht, d.tva);
+  const tvaNum = parseFloat(d.tva);
+  const tvaPct = !isNaN(tvaNum) ? Math.round(tvaNum*100)+'%' : 'Sans TVA';
+  const tvaAmt = !isNaN(tvaNum) ? ' · '+fe(Math.round(d.montant_ht*tvaNum)) : '';
+  const st = d.statut || 'Reçu';
+  const _s = _stByStatut(st);
+  const isSigne = _s.code==='signe', isAnnule = _s.code==='annule';
+  const cls = 'split-row devis-row cls' + (isAnnule ? ' devis-annule' : '');
+  const borderCol = _s.border;
+  const dateFr = d.date ? d.date.split('-').reverse().join('/') : '—';
+  const _lien = (d.lien || '').trim();
+  const _isLienURL = /^(https?:\/\/|www\.)\S+$/i.test(_lien);
+  const _lienHref  = /^www\./i.test(_lien) ? 'https://' + _lien : _lien;   // normalize bare www.
+  const lienHTML = !_lien
+    ? '<span style="color:var(--text-dim)">—</span>'
+    : _isLienURL
+      ? `<a href="${_esc(_lienHref)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#a5b4fc;text-decoration:none">Ouvrir le devis${_DEVIS_SVG.link}</a>`
+      : `<span style="color:var(--text-muted)">${_esc(_lien)}</span>`;
+  const pill = (k) => `<div class="statut-pill ${k}${_s.code===k?' on':''}" onclick="event.stopPropagation();setDevisStatut(this,'${k}')">${_DEVIS_SVG[k]}${_stByCode(k).statut}</div>`;
+  return `
+    <div class="${cls}" data-devis-idx="${idx}" style="border-left-color:${borderCol}" onclick="toggleDevis(this)">
+      <div class="sr-top">
+        <span class="sr-name"><span style="color:#fff">${_esc(d.fournisseur||'Fournisseur')}</span> <span class="ctag ${_s.code}">${_s.label}</span></span>
+        <span style="display:flex;align-items:flex-start"><span><span class="sr-amt" style="color:var(--amber)">${fe(ttc)}</span><span class="sr-ht">${fe(d.montant_ht)} HT</span></span>${_DEVIS_SVG.chev}</span>
+      </div>
+      <div class="metaline"><span style="font-size:11px;color:var(--text-dim);font-family:var(--ff-num)">${_s.statut} le ${dateFr}</span>${d.ref?`<span style="font-size:11px;color:var(--text-dim)">Devis #${_esc(d.ref)}</span>`:''}</div>
+      <div class="rc-detail">
+        <div class="dt-kv">
+          <div class="kv"><span class="k">Fournisseur</span><span class="v">${_esc(d.fournisseur||'—')}</span></div>
+          <div class="kv"><span class="k">Montant HT</span><span class="v">${fe(d.montant_ht)}</span></div>
+          <div class="kv"><span class="k">TVA</span><span class="v">${tvaPct}${tvaAmt}</span></div>
+          <div class="kv"><span class="k">Montant TTC</span><span class="v">${fe(ttc)}</span></div>
+          <div class="kv"><span class="k">Statut</span><span class="v">${_s.statut}</span></div>
+          <div class="kv"><span class="k">Date</span><span class="v">${dateFr}</span></div>
+          <div class="kv"><span class="k">Référence</span><span class="v">${d.ref?_esc(d.ref):'—'}</span></div>
+          <div class="kv"><span class="k">Lien</span><span class="v">${lienHTML}</span></div>
+        </div>
+        <div class="statut-changer">
+          <div class="statut-changer-lbl">Statut du devis</div>
+          <div class="statut-pills">${_DEVIS_STATES.filter(s => s.code !== 'annule').map(s => pill(s.code)).join('')}</div>
+        </div>
+        <div class="dt-actions">
+          <button class="dt-act-btn" onclick="event.stopPropagation();edDevisModify(this)">${_DEVIS_SVG.edit}Modifier</button>
+          <button class="dt-act-btn danger" onclick="event.stopPropagation();edDevisCancel(this)">${_DEVIS_SVG.annule}Annuler</button>
+          <button class="dt-act-btn danger" onclick="event.stopPropagation();edDevisRemove(this)">${_DEVIS_SVG.trash}Retirer</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ==== _devisDeptHTML (ev L4630) ==== */
+function _devisDeptHTML(tabName){
+  // honest aggregate: every line of this département that has client devis, grouped by section.
+  const prefix = tabName + '\u241F';
+  const groups = {};
+  Object.keys(_edDevisStore).forEach(k => {
+    if (!k.startsWith(prefix)) return;
+    const arr = _edDevisStore[k]; if (!arr || !arr.length) return;
+    const [, section, name] = k.split('\u241F');
+    (groups[section] = groups[section] || []).push({ name, arr });
+  });
+  const secNames = Object.keys(groups);
+  if (!secNames.length) return `<div class="devis-empty">Aucun devis enregistré dans ce département pour l'instant.</div>`;
+  return secNames.map(sec => {
+    const rows = groups[sec].map(({name, arr}) => arr.map(d => {
+      const ttc = _devisTTC(d.montant_ht, d.tva), st=d.statut||'Reçu', _s=_stByStatut(st);
+      return `<div class="split-row devis-row cls" style="border-left-color:${_s.border}">
+        <div class="sr-top"><span class="sr-name"><span style="color:#fff">${_esc(d.fournisseur)}</span> <span class="ctag ${_s.code}">${_s.label}</span></span>
+        <span><span class="sr-amt" style="color:var(--amber)">${fe(ttc)}</span></span></div>
+        <div class="metaline"><span style="font-size:11px;color:var(--text-dim);font-family:var(--ff-num)">${_esc(name)}${d.ref?' · #'+_esc(d.ref):''}</span></div></div>`;
+    }).join('')).join('');
+    return `<div class="devis-line-group"><span class="lg-dot"></span>${_esc(sec)}</div>${rows}`;
+  }).join('');
+}
+
+/* ==== edDevisPaneHTML (ev L4654) ==== */
+function edDevisPaneHTML(key, est, tabName){
+  const arr = _edDevisGet(key);
+  const s = _devisStats(arr);
+  const pct = est > 0 ? Math.min(100, Math.round(s.engage/est*100)) : 0;
+  const libre = (est||0) - s.engage;
+  const summary = `
+    <div class="dsec dv-line-only" style="margin-bottom:14px">
+      <div class="devis-sum">
+        <div class="ds-top">
+          <div><div class="ds-k">Engagé · total des devis</div><div class="ds-v">${fe(s.engage)}</div></div>
+          <div class="ds-count">${s.count} devis${s.count?`<br><b>${s.signe}</b> signé · <b>${s.recu}</b> reçu`:''}</div>
+        </div>
+        <div class="ds-bar"><i style="width:${pct}%"></i></div>
+        <div class="ds-foot"><span class="fl">sur <b>${fe(est||0)}</b> prévu · ${pct}% engagé</span><span class="fr">${fe(libre)} libre</span></div>
+      </div>
+    </div>`;
+  const lineRows = arr.length
+    ? arr.map((d,i)=>_devisRowHTML(d,i)).join('')
+    : `<div class="devis-empty dv-line-only">Aucun devis sur cette ligne.<br>Ajoutez un devis pour suivre l'engagé (montant signé / reçu).</div>`;
+  const rowsBlock = `
+    <div class="dsec">
+      <div class="dsec-t dv-line-only">Devis enregistrés</div>
+      <div class="edit dv-line-only">${lineRows}</div>
+      <div class="dv-dept-only" style="display:none">${_devisDeptHTML(tabName)}</div>
+    </div>`;
+  const actions = `
+    <div class="dsec dv-line-only" style="margin-top:6px">
+      <div class="dsec-t">Actions</div>
+      <div class="add-card" onclick="showDeptDevis(this)" style="border-style:solid">
+        <div class="ac-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
+        <div class="ac-body"><div class="ac-t">Tous les devis du département</div><div class="ac-d">Voir l'ensemble des devis de ${_esc(tabName)}, toutes lignes confondues.</div></div>
+        <svg class="ac-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="add-card" id="devis-add-card" onclick="addDevis(this)">
+        <div class="ac-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        <div class="ac-body"><div class="ac-t">Ajouter un devis</div><div class="ac-d">Fournisseur, montant HT, statut (reçu / signé), date.</div></div>
+        <svg class="ac-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="devis-form" id="dep-devis-form">
+        <div class="devis-form-t">${_DEVIS_SVG.edit}Nouveau devis</div>
+        <div class="df-group"><label class="df-label">Fournisseur <span class="req">*</span></label><input class="df-input devf-four" type="text" placeholder="ex: Scène Pro SARL"></div>
+        <div class="df-row">
+          <div class="df-group"><label class="df-label">Montant HT (€)</label><input class="df-input devf-ht" type="number" placeholder="0" oninput="devisFormTTC(this)"><div class="df-ttc">TTC · <b class="devf-ttc">—</b></div></div>
+          <div class="df-group"><label class="df-label">TVA</label><select class="df-select devf-tva" onchange="devisFormTTC(this)"><option value="0.2" selected>20%</option><option value="0.1">10%</option><option value="0.055">5.5%</option><option value="NA">Sans TVA</option></select></div>
+        </div>
+        <div class="df-row">
+          <div class="df-group"><label class="df-label">Statut</label><div class="seg"><div class="seg-opt recu on" data-statut="recu" onclick="devisSeg(this)">${_DEVIS_SVG.recu}Reçu</div><div class="seg-opt avalider" data-statut="avalider" onclick="devisSeg(this)">${_DEVIS_SVG.avalider}à valider</div></div></div>
+          <div class="df-group"><label class="df-label">Date</label><input class="df-input devf-date" type="date"></div>
+        </div>
+        <div class="df-group"><label class="df-label">Référence (optionnel)</label><input class="df-input devf-ref" type="text" placeholder="ex: SP-2026-042"></div>
+        <div class="df-group"><label class="df-label">Lien du devis (optionnel)</label><input class="df-input devf-lien" type="text" placeholder="Lien ou note…"><div class="df-hint">Un lien (cliquable) ou une note libre.</div></div>
+        <div class="devis-form-foot">
+          <button class="dfb-cancel" onclick="closeDevisForm(this)">Annuler</button>
+          <button class="dfb-save" onclick="edDevisSubmit(this)">Ajouter le devis</button>
+        </div>
+      </div>
+    </div>`;
+  return summary + rowsBlock + actions;
+}
+
+/* ==== edDevisRerender (ev L4715) ==== */
+function edDevisRerender(root){
+  const pane = (root||document).querySelector('.ed-pane[data-edpane="devis"]');
+  if (!pane) return;
+  const key = pane.dataset.lineKey, est = +pane.dataset.est || 0, tab = pane.dataset.tab || '';
+  pane.innerHTML = edDevisPaneHTML(key, est, tab);
+  edDevisSyncMetrics(root, key, est);
+}
+
+/* ==== edDevisSyncMetrics (ev L4722) ==== */
+function edDevisSyncMetrics(root, key, est){
+  const s = _devisStats(_edDevisGet(key));
+  const kpi = (root||document).querySelector('.ed-phase-v');
+  if (kpi) { kpi.textContent = fe(s.engage); kpi.classList.remove('ed-phase-v'); }
+  const cnt = (root||document).querySelector('#ed-devis-count');
+  if (cnt) cnt.textContent = s.count + ' devis';
+}
+
+/* ==== toggleDevis (ev L4731) ==== */
+function toggleDevis(row){ row.classList.toggle('expanded'); }
+
+/* ==== _applyDevisState (ev L4732) ==== */
+function _applyDevisState(row, code){
+  // Shared visual + client-state write (pills + the Annuler action). NO persistence.
+  const state = _stByCode(code);
+  const chip = row.querySelector('.sr-name .ctag');
+  if (chip){ chip.className = 'ctag '+state.code; chip.textContent = state.label; }
+  row.classList.toggle('devis-annule', code==='annule');
+  row.classList.add('cls'); row.style.borderLeftColor = state.border;
+  // keep the client (UI) state consistent so the change survives a re-render — but NO persistence.
+  const pane = row.closest('.ed-pane[data-edpane="devis"]');
+  const idx = row.dataset.devisIdx;
+  if (pane && idx != null) { const arr = _edDevisStore[pane.dataset.lineKey]; if (arr && arr[idx]) arr[idx].statut = state.statut; }
+  // PERSIST-STUBBED: amber Phase-D affordance, no write.
+  showToast('⏳ Bientôt', 'Statut du devis — enregistrement backend à venir (Phase-D).', 'amber');
+}
+
+/* ==== setDevisStatut (ev L4746) ==== */
+function setDevisStatut(pill, key){
+  // VISUAL-LIVE: render the pill toggle + chip + border exactly as the design-of-record.
+  const changer = pill.closest('.statut-changer');
+  changer.querySelectorAll('.statut-pill').forEach(p => p.classList.remove('on'));
+  pill.classList.add('on');
+  _applyDevisState(pill.closest('.split-row'), key);
+}
+
+/* ==== edDevisCancel (ev L4753) ==== */
+function edDevisCancel(btn){
+  // Annuler action — Annulé is no longer a pill; de-highlight the forward pills, then apply the annule state.
+  const row = btn.closest('.split-row');
+  const changer = row.querySelector('.statut-changer');
+  if (changer) changer.querySelectorAll('.statut-pill').forEach(p => p.classList.remove('on'));
+  _applyDevisState(row, 'annule');
+}
+
+/* ==== showDeptDevis (ev L4760) ==== */
+function showDeptDevis(el){
+  const pane = el.closest('.ed-pane[data-edpane="devis"]');
+  pane.classList.add('dep-devis-deptview');
+  pane.querySelectorAll('.dv-dept-only').forEach(n => n.style.display='');
+  pane.querySelectorAll('.devis-row.expanded').forEach(r => r.classList.remove('expanded'));
+  // §Retour — the top-right SHELL control becomes Retour for the dept-devis view (mirrors openVentiler / .rail-x). hideDeptDevis restores it.
+  (function(){ const rx = document.getElementById('rail-hdr-host') && document.getElementById('rail-hdr-host').querySelector('.rail-x');
+    if (rx){ rx.innerHTML = '\u2190 Retour'; rx.onclick = () => hideDeptDevis(pane); } })();
+}
+
+/* ==== hideDeptDevis (ev L4769) ==== */
+function hideDeptDevis(el){
+  const pane = (el && el.closest && el.closest('.ed-pane[data-edpane="devis"]')) || document.querySelector('#drawer .ed-pane[data-edpane="devis"]');
+  if (!pane) return;
+  pane.classList.remove('dep-devis-deptview');
+  pane.querySelectorAll('.dv-dept-only').forEach(n => n.style.display='none');
+  // §Retour teardown — restore the edit-drawer's NORMAL rail-x (verified: buildEditDrawer sets railXState 'close' → Fermer ✕ / closeDrawer).
+  (function(){ const rx = document.getElementById('rail-hdr-host') && document.getElementById('rail-hdr-host').querySelector('.rail-x');
+    if (rx){ rx.innerHTML = 'Fermer \u2715'; rx.onclick = closeDrawer; } })();
+}
+
+/* ==== addDevis (ev L4778) ==== */
+function addDevis(el){
+  const pane = el.closest('.ed-pane[data-edpane="devis"]');
+  const form = pane.querySelector('#dep-devis-form');
+  if (!form) return;
+  form.classList.add('open');
+  const addCard = pane.querySelector('#devis-add-card'); if (addCard) addCard.style.display='none';
+  form.scrollIntoView({behavior:'smooth', block:'nearest'});
+  setTimeout(()=>form.querySelector('input')?.focus(), 120);
+}
+
+/* ==== closeDevisForm (ev L4787) ==== */
+function closeDevisForm(btn){
+  const form = btn.closest('.devis-form');
+  form.classList.remove('open');
+  const pane = form.closest('.ed-pane[data-edpane="devis"]');
+  const addCard = pane?.querySelector('#devis-add-card'); if (addCard) addCard.style.display='';
+}
+
+/* ==== devisSeg (ev L4793) ==== */
+function devisSeg(opt){
+  opt.parentElement.querySelectorAll('.seg-opt').forEach(o => o.classList.remove('on'));
+  opt.classList.add('on');
+}
+
+/* ==== devisFormTTC (ev L4797) ==== */
+function devisFormTTC(el){
+  const form = el.closest('.devis-form');
+  const ht = parseFloat(form.querySelector('.devf-ht')?.value) || 0;
+  const tva = form.querySelector('.devf-tva')?.value || '';
+  const num = parseFloat(tva);
+  const out = form.querySelector('.devf-ttc');
+  if (!out) return;
+  if (!ht){ out.textContent='—'; return; }
+  out.textContent = (!isNaN(num) ? Math.round(ht*(1+num)) : ht).toLocaleString('fr-FR') + ' €';
+}
+
+/* ==== edDevisSubmit (ev L4810) ==== */
+function edDevisSubmit(btn){
+  const form = btn.closest('.devis-form');
+  const pane = form.closest('.ed-pane[data-edpane="devis"]');
+  const v = sel => form.querySelector(sel)?.value?.trim() || '';
+  const fournisseur = v('.devf-four');
+  if (!fournisseur){ showToast('Champ requis', 'Le fournisseur est obligatoire.', 'amber'); form.querySelector('.devf-four')?.focus(); return; }
+  const statutCode = form.querySelector('.seg-opt.on')?.dataset.statut || 'recu';
+  const devis = {
+    fournisseur,
+    montant_ht: parseFloat(v('.devf-ht')) || 0,
+    tva: v('.devf-tva') || '0.2',
+    statut: _stByCode(statutCode).statut,
+    date: v('.devf-date') || new Date().toISOString().slice(0,10),
+    ref: v('.devf-ref'),
+    lien: v('.devf-lien')
+  };
+  // optimistic client-render (NON-persisted UI state) — keeps the UX real.
+  _edDevisGet(pane.dataset.lineKey).push(devis);
+  closeDevisForm(btn);
+  edDevisRerender(pane.closest('#drawer') || document);
+  // PERSIST-STUBBED: amber Phase-D affordance, NO POST.
+  showToast('⏳ Bientôt', 'Devis ajouté à l\u2019écran — enregistrement backend à venir (Phase-D).', 'amber');
+}
+
+/* ==== edDevisModify (ev L4833) ==== */
+function edDevisModify(btn){
+  showToast('⏳ Bientôt', 'Modification d\u2019un devis — édition backend à venir (Phase-D).', 'amber');
+}
+
+/* ==== edDevisRemove (ev L4836) ==== */
+function edDevisRemove(btn){
+  const row = btn.closest('.split-row');
+  const pane = btn.closest('.ed-pane[data-edpane="devis"]');
+  const idx = +row.dataset.devisIdx;
+  const arr = _edDevisStore[pane.dataset.lineKey];
+  if (arr && idx>=0 && idx<arr.length) arr.splice(idx,1);   // optimistic remove (UI state)
+  edDevisRerender(pane.closest('#drawer') || document);
+  showToast('⏳ Bientôt', 'Devis retiré de l\u2019écran — suppression backend à venir (Phase-D).', 'amber');
+}
+
+/* ==== edTab (ev L4471) ==== */
+function edTab(btn) {
+  const root = btn.closest('#drawer') || document;
+  const pane = btn.dataset.edpane;
+  root.querySelectorAll('.ed-tab').forEach(t => t.classList.toggle('on', t === btn));
+  root.querySelectorAll('.ed-pane').forEach(p => p.classList.toggle('on', p.dataset.edpane === pane));
+}
+
+/* ==== edRecalcTTC (ev L4477) ==== */
+function edRecalcTTC(el) {
+  const root = el.closest('#drawer') || document;
+  const ht = parseFloat(root.querySelector('#ef-est')?.value) || 0;
+  const tvaNum = parseFloat(root.querySelector('#ef-tva')?.value || '');
+  const out = root.querySelector('.ed-ttc-v');
+  if (!out) return;
+  const fmt = n => Math.round(n).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0');
+  out.textContent = !isNaN(tvaNum) ? fmt(ht * (1 + tvaNum)) + '\u00a0€' : fmt(ht) + '\u00a0€ (sans TVA)';
+}
+
+function openEstDrawer(deptId, sectionIdx, lineIdx) {  // step-2 C4: general's estimation drawer
+  return openEditLigne(deptId, sectionIdx, lineIdx);    // shimmed onto the ported edit drawer
+}
+
+
+let _editLigneActive = false;
+
+
+
+
 // ════════════════════════════════════════════════════
 // BILAN TABLE TTC TOGGLES (dep + rec)
 // ════════════════════════════════════════════════════
@@ -4250,165 +5041,6 @@ let _bilanRecTTC = false;
 // ════════════════════════════════════════════════════
 // PANEL 2 — AU BUDGET (Estimation source) — VISION
 // ════════════════════════════════════════════════════
-async function toggleRecurrence(deptId, sectionIdx, lineIdx, el) {
-  const dept = DEPTS.find(d => d.id === deptId);
-  if (!dept) return;
-  const line = dept.sections[sectionIdx]?.lines[lineIdx];
-  if (!line?._row) return;
-  const tabName = Object.entries(DEPT_META).find(([,m]) => m.id === deptId)?.[0] || deptId.toUpperCase();
-  const prevVal = line.rec;        // capture the SPECIFIC previous value for restore-on-error
-  const newVal = el.value;          // read the 3-value control directly, not checkbox.checked
-  el.disabled = true;
-  try {
-    const resp = await fetch(`${API}/api/budget/update`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({session: SESSION, dept: tabName, row: line._row, field: 'recurrence', value: newVal})
-    });
-    if (!resp.ok) throw new Error(`Erreur ${resp.status}`);
-    line.rec = newVal;
-    _monthlyReelCache = null; // invalidate cache since totals will change
-    // Update hint text (3-way)
-    const hint = document.getElementById('rec-hint');
-    if (hint) hint.textContent = newVal === 'M' ? 'chaque mois' : newVal === 'A' ? 'sur son mois — lissé sur 12 si l\'option active' : 'une fois, sur son mois';
-    showToast('✓ Récurrence', newVal === 'M' ? 'Coût mensuel' : newVal === 'A' ? 'Coût annuel' : 'Dépense ponctuelle', 'green');
-  } catch(e) {
-    el.value = prevVal;   // restore exactly the previous value (a select has 3 states; "flip" is meaningless)
-    line.rec = prevVal;
-    showToast('⚠ Erreur', e.message, 'red');
-  } finally {
-    el.disabled = false;
-  }
-}
-function openEstDrawer(deptId, sectionIdx, lineIdx) {
-  const dept = DEPTS.find(d => d.id === deptId);
-  if (!dept) return;
-  const line = dept.sections[sectionIdx]?.lines[lineIdx];
-  if (!line) return;
-  const section = dept.sections[sectionIdx]?.s || '';
-
-  document.getElementById('drawer-title').innerHTML = `<span style="color:#818cf8">📊</span> Source d'estimation`;
-  document.getElementById('drawer-sub').innerHTML = `<strong style="color:#fff">${line.l}</strong> · ${dept.name} › ${section}`;
-
-  const ttcEst = typeof line.tva === 'number' ? (line.est || 0) * (1 + line.tva) : (line.est || 0);
-
-  // ── VHR-specific context ──────────────────────────────
-  const isHotel = deptId === 'vhr' && /h.tel|chambre|h.bergement|nuit/i.test(line.l);
-  const isTransport = deptId === 'vhr' && /transport|navette|train|avion|taxi|voiture|v.hicule|van|camion|location/i.test(line.l);
-  const isVHR = deptId === 'vhr';
-
-  const vhrContextHtml = isVHR ? `
-    <div class="drawer-section">
-      <div class="drawer-section-title" style="display:flex;align-items:center;gap:8px">
-        ${isHotel ? '🏨 Détail hébergement' : isTransport ? '🚐 Détail transport' : '📋 Détail VHR'}
-        <span class="future-badge">✦ Bientôt</span>
-      </div>
-      ${isHotel ? `
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;opacity:.6">
-          ${[
-            ['Hôtel / lieu','—'],['Catégorie','—'],
-            ['Chambres prévues','—'],['Type de chambre','—'],
-            ['Nuitées totales','—'],['Coût / nuitée','—'],
-            ['Arrivée','—'],['Départ','—'],
-          ].map(([l,v])=>`<div style="background:var(--surface-2);border-radius:6px;padding:8px 10px">
-            <div style="font-size:.55em;color:var(--text-dim);text-transform:uppercase;letter-spacing:.7px;margin-bottom:2px">${l}</div>
-            <div style="font-size:.78em;font-weight:600;color:var(--text-dim)">${v}</div>
-          </div>`).join('')}
-        </div>
-        <div style="font-size:.65em;color:var(--text-dim);padding:8px 10px;background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.15);border-radius:7px;line-height:1.6">
-          Les données de rooming (personnes assignées, nuitées, chambres) seront disponibles via le module Hébergement Festiflow.
-        </div>` :
-      isTransport ? `
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;opacity:.6">
-          ${[
-            ['Type de transport','—'],['Prestataire','—'],
-            ['Départ','—'],['Arrivée','—'],
-            ['Nb. de personnes','—'],['Driver assigné','—'],
-            ['Horaire','—'],['Carte avantage','—'],
-          ].map(([l,v])=>`<div style="background:var(--surface-2);border-radius:6px;padding:8px 10px">
-            <div style="font-size:.55em;color:var(--text-dim);text-transform:uppercase;letter-spacing:.7px;margin-bottom:2px">${l}</div>
-            <div style="font-size:.78em;font-weight:600;color:var(--text-dim)">${v}</div>
-          </div>`).join('')}
-        </div>
-        <div style="font-size:.65em;color:var(--text-dim);padding:8px 10px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);border-radius:7px;line-height:1.6">
-          Le planning transport (navettes gare/site, cartes avantage SNCF, horaires) sera disponible via le module Transport Festiflow.
-        </div>` : `
-        <div style="font-size:.65em;color:var(--text-dim);line-height:1.6;padding:8px 0">
-          Associez cette ligne à une catégorie hébergement ou transport pour voir le détail logistique dans Festiflow.
-        </div>`}
-    </div>` : '';
-
-  document.getElementById('drawer-body').innerHTML = `
-
-    <!-- Current value -->
-    <div class="drawer-section">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <div class="drawer-section-title" style="margin-bottom:0">Estimation actuelle</div>
-        <button onclick="closeDrawer();openEditLigne('${deptId}',${sectionIdx},${lineIdx})" style="font-size:10px;padding:0 6px;height:20px;line-height:20px;border-radius:4px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:var(--text-muted);font-family:'DM Sans',-apple-system,sans-serif;font-weight:600;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:4px">
-          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          Modifier
-        </button>
-      </div>
-      <div class="drawer-kpi-row">
-        <div class="drawer-kpi">
-          <div class="drawer-kpi-label">Au budget HT</div>
-          <div class="drawer-kpi-val" style="color:#818cf8">${fe(line.est)}</div>
-        </div>
-        <div class="drawer-kpi">
-          <div class="drawer-kpi-label">TVA</div>
-          <div class="drawer-kpi-val" style="color:var(--text-muted)">${line.tva ? (line.tva * 100).toFixed(1) + '%' : '—'}</div>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;padding:8px 0;margin-top:4px">
-        <label style="display:flex;align-items:center;gap:8px;font-size:.75em;color:var(--text-muted)">
-          Récurrence
-          <select class="ss" onchange="toggleRecurrence('${deptId}',${sectionIdx},${lineIdx},this)" onclick="event.stopPropagation()" style="cursor:pointer">
-            <option value="P" ${line.rec==='P'?'selected':''}>Ponctuel</option>
-            <option value="M" ${line.rec==='M'?'selected':''}>Mensuel</option>
-            <option value="A" ${line.rec==='A'?'selected':''}>Annuel</option>
-          </select>
-        </label>
-        <span id="rec-hint" style="font-size:.62em;color:var(--text-dim)">${line.rec==='M'?'×12 en vue annuelle':line.rec==='A'?'÷12 en vue mensuelle — lissé si actif':'une fois'}</span>
-      </div>
-      ${line.obs ? `<div style="font-size:.72em;color:var(--text-dim);padding:8px 10px;background:var(--surface-2);border-radius:6px;border-left:2px solid rgba(99,102,241,.3)">${line.obs}</div>` : ''}
-    </div>
-
-    ${vhrContextHtml}
-
-    <!-- Comparaison éditions -->
-    <div class="drawer-section">
-      <div class="drawer-section-title" style="display:flex;align-items:center;gap:8px">
-        Comparaison
-        <span class="future-badge">✦ Bientôt</span>
-      </div>
-
-      <div style="border:1px dashed rgba(255,255,255,.1);border-radius:10px;padding:14px">
-        ${[
-          {event:'Générale 2025', val: Math.round((line.est||0)*0.92)},
-          {event:'Générale 2024', val: Math.round((line.est||0)*0.78)},
-          {event:'Générale 2023', val: Math.round((line.est||0)*0.65)},
-        ].map(r => `
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.03)">
-            <span style="font-size:13px;color:var(--text-muted)">${r.event}</span>
-            <span style="font-size:13px;font-weight:600;color:#fff">${fe(r.val)}</span>
-          </div>`).join('')}
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;margin-top:2px">
-          <span style="font-size:13px;font-weight:600;color:var(--text-dim)">2026 (actuel)</span>
-          <span style="font-size:13px;font-weight:700;color:#818cf8">${fe(line.est)}</span>
-        </div>
-      </div>
-    </div>
-  `;
-
-  document.getElementById('drawer-footer').style.display = 'flex';
-  document.getElementById('drawer-footer').innerHTML = `
-    <button class="drawer-btn" onclick="closeDrawer()">Fermer</button>
-  `;
-
-  document.getElementById('drawer-overlay').classList.add('open');
-  document.getElementById('drawer').classList.add('open');
-  
-}
 
 // ════════════════════════════════════════════════════
 // PANEL 3 — DÉPENSÉ (Qonto transactions + expected)
@@ -4961,7 +5593,16 @@ function openRecCatDrawer(ci) {
 function closeDrawer() {
   document.getElementById('drawer-overlay').classList.remove('open');
   document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('assign-nonmodal');  // seam 27cx — clear non-modal flag
+  document.getElementById('drawer').classList.remove('assign-nonmodal');
+  // §v23a.2 (D): sweep the FULL shell state-class set on every close so no rail/lock class leaks onto
+  // the next drawer sharing #drawer (the v21b edit-mode clear + the v23a.2 opt-locked/opt-mode/reel-mode).
+  // Gated by Verdict A — a class leaking into the next fixture would drop A below 11/11.
+  document.getElementById('drawer').classList.remove('edit-mode', 'opt-locked', 'opt-mode', 'reel-mode');
   _drawerCurrentLine = null;
+  // LOCK-15 Item 8: closing a (root) drawer clears the provenance stack — a fresh open starts clean.
+  _drawerStack = [];
+  updateDrawerCloseBtn();
 }
 let _drawerScrollY = 0;
 

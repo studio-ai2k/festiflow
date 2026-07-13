@@ -1793,6 +1793,13 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     {id:'tx-i2', qonto_account_id:'qa-gen', contrepartie:'Shotgun', note:'BILLETERIE - ML130326', date_operation:'2026-03-04T16:40:00Z', montant_ht:9650,  montant_ttc:9650,  primitive_type:'RECETTE', tag:'external', matching_status:'MATCHED_AUTO', event_id:null,    dest_account_id:null},
     {id:'tx-i3', qonto_account_id:'qa-gen', contrepartie:'Dice',    note:'BILLETERIE - ML120626', date_operation:'2026-05-28T11:02:00Z', montant_ht:12300, montant_ttc:12300, primitive_type:'RECETTE', tag:'external', matching_status:'MATCHED_AUTO', event_id:null,    dest_account_id:null},
     {id:'tx-i4', qonto_account_id:'qa-gen', contrepartie:'Shotgun', note:'BILLETERIE - EPK050926',date_operation:'2026-04-18T19:25:00Z', montant_ht:7800,  montant_ttc:7800,  primitive_type:'RECETTE', tag:'external', matching_status:'UNMATCHED',    event_id:null,    dest_account_id:null, match_reason:'Aucun événement résolu depuis la note'},
+    // seam 27es — spread inflows across the three ticketing platforms (Shotgun · Dice · Resident Advisor),
+    // each event now sells on several platforms; each platform has 3 RECETTE lines. Distributions below unchanged.
+    {id:'tx-i5', qonto_account_id:'qa-gen', contrepartie:'Shotgun', note:'BILLETERIE - ML120626', date_operation:'2026-05-29T14:10:00Z', montant_ht:8400,  montant_ttc:8400,  primitive_type:'RECETTE', tag:'external', matching_status:'MATCHED_AUTO', event_id:null,    dest_account_id:null},
+    {id:'tx-i6', qonto_account_id:'qa-gen', contrepartie:'Dice',    note:'BILLETERIE - EPK050926',date_operation:'2026-04-19T10:35:00Z', montant_ht:6900,  montant_ttc:6900,  primitive_type:'RECETTE', tag:'external', matching_status:'MATCHED_AUTO', event_id:null,    dest_account_id:null},
+    {id:'tx-i7', qonto_account_id:'qa-gen', contrepartie:'Resident Advisor', note:'BILLETERIE - ML130326', date_operation:'2026-03-05T12:20:00Z', montant_ht:5200, montant_ttc:5200, primitive_type:'RECETTE', tag:'external', matching_status:'MATCHED_AUTO', event_id:null, dest_account_id:null},
+    {id:'tx-i8', qonto_account_id:'qa-gen', contrepartie:'Resident Advisor', note:'BILLETERIE - ML120626', date_operation:'2026-05-29T18:45:00Z', montant_ht:4100, montant_ttc:4100, primitive_type:'RECETTE', tag:'external', matching_status:'MATCHED_AUTO', event_id:null, dest_account_id:null},
+    {id:'tx-i9', qonto_account_id:'qa-gen', contrepartie:'Resident Advisor', note:'BILLETERIE - EPK050926',date_operation:'2026-04-19T21:05:00Z', montant_ht:3600, montant_ttc:3600, primitive_type:'RECETTE', tag:'external', matching_status:'MATCHED_AUTO', event_id:null, dest_account_id:null},
     // ── distributions: Générale wires it out to each event sub-account (transfert + intra) ──
     {id:'tx-d1', qonto_account_id:'qa-gen', contrepartie:'Virement interne', note:'TRANSFERT - ML130326', date_operation:'2026-03-06T10:00:00Z', montant_ht:-28070, montant_ttc:-28070, primitive_type:'TRANSFERT', tag:'intra', matching_status:'MATCHED_MANUAL', event_id:'qa-vil', dest_account_id:'qa-vil'},
     {id:'tx-d2', qonto_account_id:'qa-gen', contrepartie:'Virement interne', note:'TRANSFERT - ML120626', date_operation:'2026-05-30T10:00:00Z', montant_ht:-12300, montant_ttc:-12300, primitive_type:'TRANSFERT', tag:'intra', matching_status:'MATCHED_MANUAL', event_id:'qa-bdx', dest_account_id:'qa-bdx'},
@@ -2164,10 +2171,10 @@ function setAllRecSections(containerId, open){
   });
 }
 
-// __BILL → {cats,_kind:'bill'} adapter (Mount 2 data). Groups RECETTE throughput tx into one
-// "Billetterie" category. reel = montant_ht (encaissé); est = 0 (empty until drawer-set — the Estimé
-// column is KEPT, per spec). _kind:'bill' routes row/pencil to the billetterie throughput page (this
-// summarized mount is read-only; general's REC drawers index REC and must not be fed __BILL rows).
+// __BILL → {cats,_kind:'bill'} adapter (Mount 2 data). Groups RECETTE throughput tx into one category
+// per ticketing platform (Shotgun · Dice · Resident Advisor, fixed order). reel = montant_ht (encaissé);
+// est = 0 (empty until drawer-set — the Estimé column is KEPT, per spec). _kind:'bill' keeps rows inert
+// (routing fix): general's REC drawers index REC and must not be fed __BILL rows.
 function __billToRecData(){
   const bill = window.__BILL;
   if(!bill || !Array.isArray(bill.tx)) return { cats: [], _kind:'bill' };
@@ -2179,9 +2186,15 @@ function __billToRecData(){
       reel: t.montant_ht || 0,      // encaissé HT
       obs: '',
       _billRef: t.id,
+      _plat: t.contrepartie,        // group key — one category per ticketing platform
     };
   });
-  return { cats: rows.length ? [{ cat:'Billetterie', rows }] : [], _kind:'bill' };
+  // group RECETTE rows by contrepartie → one cat per platform, fixed order (seam 27es)
+  const order = ['Shotgun','Dice','Resident Advisor'];
+  const byCat = {};
+  rows.forEach(r => { const k = r._plat; (byCat[k] = byCat[k] || []).push(r); });
+  const cats = order.filter(k => byCat[k]).map(k => ({ cat:k, rows: byCat[k] }));
+  return { cats, _kind:'bill' };
 }
 
 // The renderer — emits the compact⇄expanded sectioned recette table (event L2377-2512) into #containerId.

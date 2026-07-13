@@ -3218,13 +3218,16 @@ async function saveRecFromEdit(ci, ri, isNew) {
       // `ligne` field on name-change; non-destructive fields stay live. Recette has NO dept-move axis
       // (dept is hard-coded 'RECETTES'), so there is no whole-write stub here — rename axis only.
       const recRenamed = nom !== r.l;
+      // FIX2: statut + observations do NOT round-trip on the recette EDIT path — #ef-st is retired
+      // (reads default 'ESTIMATION') and loadRecettes never loads obs (#ef-obs opens blank), so
+      // writing them clobbered backend statut->ESTIMATION and obs->''. Removed those two pushes only.
+      // KEEP the const st/obs declarations above: the ADD path (isNew fetch body) still reads them.
+      // {ligne} keeps its existing Phase-D rename stub/filter unchanged; est_ht/est_ttc/tva round-trip.
       const updates = [
         {field: 'ligne',        value: nom},
-        {field: 'observations', value: obs},
         {field: 'est_ht',       value: String(est)},
         {field: 'est_ttc',      value: String(estTTC)},
         {field: 'tva',          value: tva},
-        {field: 'statut',       value: st},
       ].filter(u => !(recRenamed && u.field === 'ligne'));
       for (const u of updates) {
         await fetch(`${API}/api/budget/update`, {
@@ -4115,9 +4118,15 @@ function buildEditDrawer(deptId, sectionIdx, lineIdx, isNew, recRef) {
   if (recMode) {
     const cat = (recRef.ci != null) ? REC[recRef.ci] : null;
     if (!isNew && !cat) return;
+    // FIX1(a) est<-ht: REC rows store the estimate in `ht` (loadRecettes ht:r.est_ht, no est).
+    // Normalize the bound row so recMode reads resolve the estimate (drives _estV, both #ef-est
+    // inputs, _ttc0, donut prevu, "Prévu HT" KPI/row, _partPct numerator). Guarded so an out-of-
+    // range row still falls through to the existing `if (!line) return`. Shallow copy is safe:
+    // buildEditDrawer never writes line.*, and saveRecFromEdit reads DOM + re-fetches REC fresh.
+    const _recRow = isNew ? null : cat.rows[recRef.ri];
     line = isNew
       ? {l:'', obs:'', typ:'', tva:'0.2', est:0, st:'ESTIMATION', _row: null}
-      : cat.rows[recRef.ri];
+      : (_recRow ? { ..._recRow, est: _recRow.ht } : _recRow);
     if (!line) return;
     // supply recette display equivalents (framing correction: supply, not just omit)
     const catName = (recRef.preCat || (cat && cat.cat) || '');
@@ -4166,7 +4175,7 @@ function buildEditDrawer(deptId, sectionIdx, lineIdx, isNew, recRef) {
   let _partPct = null;
   try {
     if (recMode) {
-      const _recTot = (typeof REC !== 'undefined' && REC) ? REC.flatMap(c => c.rows || []).reduce((a, r) => a + (r.est || 0), 0) : 0;
+      const _recTot = (typeof REC !== 'undefined' && REC) ? REC.flatMap(c => c.rows || []).reduce((a, r) => a + (r.est ?? r.ht ?? 0), 0) : 0;  // FIX1(b) est<-ht: all-rows sum, normalize can't reach here
       _partPct = _recTot > 0 ? Math.round(_estV / _recTot * 100) : null;
     } else if (dept && dept.sections) {
       const _dEst = dtot(dept).est;

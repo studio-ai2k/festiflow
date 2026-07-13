@@ -315,6 +315,8 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   .tbl td:first-child{max-width:none;white-space:normal}
   .tbl th:first-child,.btbl th:first-child{min-width:auto!important}
   .edit-ligne-btn{display:none}
+  /* DEPV2 FIX 1 — reveal dépense-table pencil on ≤480 (iPad-touch, no hover), mirroring the event's recette deviation (.rec-row .edit-ligne-btn), scoped to the ported .dep-tbl rows. openEditLigne unchanged. */
+  .dep-tbl .edit-ligne-btn{display:inline-flex}
   .tbl th:nth-child(4),.tbl td:nth-child(4),
   .tbl th:nth-child(5),.tbl td:nth-child(5){display:none}
 
@@ -441,6 +443,12 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 }
 .edit-ligne-btn svg{opacity:.6;transition:opacity .18s}
 .edit-ligne-btn:hover svg{opacity:1}
+
+/* ── SEC-VIEW TOGGLE (DEPV2 FIX 2) — expand/collapse-all pair, ported from event .sec-view-toggle ── */
+.sec-view-toggle{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.sec-view-toggle button{padding:5px 9px;background:transparent;border:none;color:var(--text-dim);cursor:pointer;display:flex;align-items:center}
+.sec-view-toggle button:hover{background:var(--surface-2);color:var(--text)}
+.sec-view-toggle button svg{display:block}
 
 /* ── ADD LIGNE PLACEHOLDER ROW ── */
 .add-ligne-row td{border-bottom:none!important;}
@@ -698,6 +706,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
     <div class="sdt" style="white-space:nowrap">Tous les départements</div>
     <div class="sdl"></div>
+    <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
   </div>
 <div class="month-cat" data-cat="humain">
     <div id="month-block-janvier-humain"></div>
@@ -754,6 +763,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
     <div class="sdt" style="white-space:nowrap">Tous les départements</div>
     <div class="sdl"></div>
+    <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
   </div>
 <div class="month-cat" data-cat="humain">
     <div id="month-block-fevrier-humain"></div>
@@ -810,6 +820,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
     <div class="sdt" style="white-space:nowrap">Tous les départements</div>
     <div class="sdl"></div>
+    <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
   </div>
 <div class="month-cat" data-cat="humain">
     <div id="month-block-mars-humain"></div>
@@ -866,6 +877,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
     <div class="sdt" style="white-space:nowrap">Tous les départements</div>
     <div class="sdl"></div>
+    <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
   </div>
 <div class="month-cat" data-cat="humain">
     <div id="month-block-avril-humain"></div>
@@ -922,6 +934,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
     <div class="sdt" style="white-space:nowrap">Tous les départements</div>
     <div class="sdl"></div>
+    <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
   </div>
 <div class="month-cat" data-cat="humain">
     <div id="month-block-mai-humain"></div>
@@ -978,6 +991,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
     <div class="sdt" style="white-space:nowrap">Tous les départements</div>
     <div class="sdl"></div>
+    <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
   </div>
 <div class="month-cat" data-cat="humain">
     <div id="month-block-juin-humain"></div>
@@ -1034,6 +1048,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
     <div class="sdt" style="white-space:nowrap">Tous les départements</div>
     <div class="sdl"></div>
+    <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
   </div>
 <div class="month-cat" data-cat="humain">
     <div id="month-block-juillet-humain"></div>
@@ -1090,6 +1105,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
     <div class="sdt" style="white-space:nowrap">Tous les départements</div>
     <div class="sdl"></div>
+    <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
   </div>
 <div class="month-cat" data-cat="humain">
     <div id="month-block-aout-humain"></div>
@@ -1146,6 +1162,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
     <div class="sdt" style="white-space:nowrap">Tous les départements</div>
     <div class="sdl"></div>
+    <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
   </div>
 <div class="month-cat" data-cat="humain">
     <div id="month-block-septembre-humain"></div>
@@ -1202,6 +1219,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
     <div class="sdt" style="white-space:nowrap">Tous les départements</div>
     <div class="sdl"></div>
+    <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
   </div>
 <div class="month-cat" data-cat="humain">
     <div id="month-block-octobre-humain"></div>
@@ -1258,6 +1276,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
     <div class="sdt" style="white-space:nowrap">Tous les départements</div>
     <div class="sdl"></div>
+    <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
   </div>
 <div class="month-cat" data-cat="humain">
     <div id="month-block-novembre-humain"></div>
@@ -1314,6 +1333,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
     <div class="sdt" style="white-space:nowrap">Tous les départements</div>
     <div class="sdl"></div>
+    <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
   </div>
 <div class="month-cat" data-cat="humain">
     <div id="month-block-decembre-humain"></div>
@@ -2618,7 +2638,10 @@ function renderDept(id){
         <div class="dept-hdr-top">
           <span class="dept-hdr-name">${dept.name}</span>
           <span style="margin-left:auto;display:flex;gap:6px">
-            <button id="expbtn-${id}" onclick="toggleAllSections('${id}',this)" style="padding:3px 10px;border-radius:5px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-dim);font-family:'DM Sans',sans-serif;font-size:.65em;font-weight:600;cursor:pointer;margin:0;width:auto;display:flex;align-items:center;gap:5px;text-transform:uppercase;letter-spacing:.5px"><span>TOUT DÉPLIER</span></button>
+            <div class="sec-view-toggle">
+              <button type="button" data-act="expand" title="Tout déplier" aria-label="Tout déplier" onclick="setAllSections('${id}', true)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg></button>
+              <button type="button" data-act="collapse" title="Tout replier" aria-label="Tout replier" onclick="setAllSections('${id}', false)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></button>
+            </div>
           </span>
         </div>
       </div>
@@ -3039,6 +3062,23 @@ function toggleAllSections(deptId, btn){
     if(chevron) chevron.style.transform='';
     if(label) label.textContent='TOUT DÉPLIER';
   }
+}
+function setAllSections(deptId, open){
+  // DEPV2 FIX 2 — explicit open/close for the sec-view-toggle pair.
+  // Mirrors the open/close branch of toggleAllSections (same DOM ids, same display/transform),
+  // so it stays consistent with tog() and the per-section headers. No button-label mutation (these are actions, not state).
+  const dept=DEPTS.find(d=>d.id===deptId);
+  if(!dept) return;
+  dept.sections.forEach((s,si)=>{
+    const sid='s'+deptId+si;
+    const tb=document.getElementById(sid);
+    const hd=document.getElementById('hdr-'+sid);
+    const ar=document.getElementById('arr-'+sid);
+    if(!tb) return;
+    tb.style.display = open ? '' : 'none';
+    hd.style.display = open ? '' : 'none';
+    if(ar) ar.style.transform = open ? 'rotate(90deg)' : 'rotate(0deg)';
+  });
 }
 function applyDeptTabColor(){
   document.querySelectorAll('.dt').forEach(d=>{

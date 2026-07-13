@@ -3165,261 +3165,157 @@ function buildDeptG3Cards(id, dept, tot, allL, p) {
 
 
 function openAddRecLigne(preSection) {
-  const existingCats = REC.map(c => c.cat);
-  const catOpts = existingCats.map(c => `<option value="${c}">`).join('');
-  const isNewCat = !preSection;
-
-  document.getElementById('drawer-title').innerHTML = isNewCat
-    ? '<span style="color:var(--green)">+</span> Nouvelle catégorie'
-    : '<span style="color:var(--green)">+</span> Nouvelle ligne';
-  document.getElementById('drawer-sub').innerHTML = isNewCat
-    ? 'Recettes · Nouvelle catégorie + première ligne'
-    : `Recettes · ${preSection}`;
-
-  const inputSt = 'width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:#fff;font-family:monospace;font-size:.9em;outline:none';
-
-  document.getElementById('drawer-body').innerHTML = `
-    <div class="drawer-section">
-      <div class="drawer-section-title">Ligne de recette</div>
-      <div style="margin-bottom:14px">
-        <label style="font-size:.65em;color:var(--text-dim);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px">Nom *</label>
-        <input id="rec-add-nom" type="text" placeholder="ex: EARLY, BAR VIP, Sponsor Gold…" style="${inputSt};font-family:'DM Sans',sans-serif">
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-        <div>
-          <label style="font-size:.65em;color:var(--text-dim);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px">Quantité</label>
-          <input id="rec-add-qte" type="number" min="0" placeholder="0" style="${inputSt}">
-        </div>
-        <div>
-          <label style="font-size:.65em;color:var(--text-dim);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px">Prix unitaire</label>
-          <input id="rec-add-pu" type="number" min="0" step="0.01" placeholder="0" style="${inputSt}">
-        </div>
-      </div>
-      <div style="margin-bottom:14px">
-        <label style="font-size:.65em;color:var(--text-dim);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px">Estimé HT (€)</label>
-        <input id="rec-add-est" type="number" min="0" step="0.01" placeholder="Auto si qté × prix" style="${inputSt}">
-        <div style="font-size:10px;color:var(--text-dim);margin-top:4px">Laisse vide pour calculer qté × prix unitaire automatiquement.</div>
-      </div>
-
-      <div style="margin:16px 0 14px;height:1px;background:rgba(255,255,255,.06)"></div>
-
-      <div style="margin-bottom:14px">
-        <label style="font-size:.65em;color:var(--text-dim);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px">Catégorie</label>
-        <input id="rec-add-cat" type="text" list="rec-add-cat-list"
-          placeholder="Choisir ou créer…" value="${preSection||''}"
-          style="${inputSt};font-family:'DM Sans',sans-serif">
-        <datalist id="rec-add-cat-list">${catOpts}</datalist>
-        ${isNewCat ? '<div style="font-size:10px;color:var(--text-dim);margin-top:4px">Tape un nouveau nom pour créer une catégorie, ou choisis une existante.</div>' : ''}
-      </div>
-    </div>`;
-
-  document.getElementById('drawer-footer').style.display = 'flex';
-  document.getElementById('drawer-footer').innerHTML = `
-    <button class="drawer-btn" onclick="closeDrawer()">Annuler</button>
-    <button class="drawer-btn primary" id="rec-add-save" onclick="saveRecLigne()">+ Créer</button>`;
-
-  document.getElementById('drawer-overlay').classList.add('open');
-  document.getElementById('drawer').classList.add('open');
-  setTimeout(() => document.getElementById('rec-add-nom')?.focus(), 80);
-}
-
-async function saveRecLigne() {
-  const nom = document.getElementById('rec-add-nom')?.value.trim();
-  const cat = document.getElementById('rec-add-cat')?.value.trim();
-  const qte = parseFloat(document.getElementById('rec-add-qte')?.value) || 0;
-  const pu  = parseFloat(document.getElementById('rec-add-pu')?.value) || 0;
-  let est   = parseFloat(document.getElementById('rec-add-est')?.value) || 0;
-
-  if (!nom) {
-    document.getElementById('rec-add-nom').style.borderColor = 'rgba(248,113,113,.6)';
-    document.getElementById('rec-add-nom').focus();
-    return;
-  }
-  if (!cat) {
-    document.getElementById('rec-add-cat').style.borderColor = 'rgba(248,113,113,.6)';
-    document.getElementById('rec-add-cat').focus();
-    return;
-  }
-
-  // Auto-calc est from qte × pu if not manually set
-  if (!est && qte && pu) est = Math.round(qte * pu);
-
-  const btn = document.getElementById('rec-add-save');
-  if (btn) { btn.textContent = 'En cours…'; btn.disabled = true; }
-
-  try {
-    // obs = prix unitaire (stored in col C for RECETTES)
-    // rh = quantité (stored in col H) — but add-ligne doesn't have a rh field,
-    // so we write qte via a separate update call after insertion
-    const resp = await fetch(`${API}/api/budget/add-ligne`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        session: SESSION, dept: 'RECETTES',
-        section: cat, ligne: nom,
-        obs: pu ? String(pu) : '',
-        est_ht: est, statut: 'ESTIMATION'
-      })
-    });
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      throw new Error(err.detail || `Erreur ${resp.status}`);
-    }
-    const result = await resp.json();
-
-    // Write QTE to col H if provided (add-ligne doesn't have a rh field)
-    if (qte && result.inserted_row) {
-      await fetch(`${API}/api/budget/update`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({session: SESSION, dept: 'RECETTES', row: result.inserted_row, field: 'rh', value: String(qte)})
-      }).catch(() => {});
-    }
-
-    closeDrawer();
-    await refreshBudgetData();
-    renderBilan();
-    showToast('✅ Ligne créée', `"${nom}" ajoutée à ${cat}`, 'green');
-  } catch (e) {
-    if (btn) { btn.textContent = '+ Créer'; btn.disabled = false; }
-    showToast('⚠ Erreur', e.message, 'red');
-  }
+  // STEP-3 (B): shimmed to the unified recette edit drawer. Old self-rendered add body +
+  // saveRecLigne retired. preSection → recRef.preCat (isNew add path).
+  openRecLigne(null, null, true, preSection);
 }
 
 function openRecetteDrawer(ci, ri) {
-  const cat = REC[ci];
-  const r = cat ? cat.rows[ri] : null;
-  if (!r) return;
-
-  document.getElementById('drawer-title').innerHTML =
-    `<span style="color:#c4b5fd">\u270F</span> ${r.l || 'Ligne recette'}`;
-  document.getElementById('drawer-sub').innerHTML =
-    `<span class="df-badge edit">\u00C9dition</span>
-     <span style="margin-left:6px">${cat.cat} \u203A Recettes</span>`;
-
-  document.getElementById('drawer-body').innerHTML = `
-    <div class="drawer-section">
-      <div class="df-group">
-        <label class="df-label">Nom de la ligne *</label>
-        <input id="rf-nom" class="df-input" type="text"
-          placeholder="ex: EARLY, BAR VIP\u2026"
-          value="${(r.l||'').replace(/"/g,'&quot;')}">
-      </div>
-
-      <div class="df-row">
-        <div class="df-group">
-          <label class="df-label">Quantit\u00E9</label>
-          <input id="rf-qte" class="df-input" type="number" min="0"
-            placeholder="0" value="${r.qte||''}">
-        </div>
-        <div class="df-group">
-          <label class="df-label">Prix unitaire (\u20AC)</label>
-          <input id="rf-pu" class="df-input" type="number" min="0" step="0.01"
-            placeholder="0" value="${r.pu||''}">
-        </div>
-      </div>
-
-      <div class="df-group">
-        <label class="df-label">Estim\u00E9 HT (\u20AC)</label>
-        <input id="rf-est" class="df-input" type="number" min="0" step="0.01"
-          placeholder="Auto si qt\u00E9 \u00D7 prix" value="${r.ht||''}">
-        <div style="font-size:11px;color:var(--text-dim);margin-top:5px;line-height:1.5">Si Qt\u00E9 et Prix unitaire sont renseign\u00E9s, ce champ se calcule automatiquement au save.</div>
-      </div>
-
-      <div class="df-row">
-        <div class="df-group">
-          <label class="df-label">TVA</label>
-          <select id="rf-tva" class="df-select">
-            ${tvaOpts(r.tva)}
-          </select>
-        </div>
-        <div class="df-group">
-          <label class="df-label">Statut</label>
-          <select id="rf-st" class="df-select">
-            <option value="ESTIMATION"  ${r.st==='ESTIMATION'?'selected':''}>ESTIMATION</option>
-            <option value="EN COURS"    ${r.st==='EN COURS'?'selected':''}>EN COURS</option>
-            <option value="DEVIS SIGN\u00C9" ${r.st==='DEVIS SIGN\u00C9'?'selected':''}>DEVIS SIGN\u00C9</option>
-            <option value="VALID\u00C9"      ${r.st==='VALID\u00C9'?'selected':''}>VALID\u00C9</option>
-            <option value="PAY\u00C9"        ${r.st==='PAY\u00C9'?'selected':''}>PAY\u00C9</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <div class="drawer-section" style="margin-top:8px">
-      <div class="drawer-section-title">R\u00E9sum\u00E9</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div style="background:var(--surface-2);border-radius:8px;padding:10px 14px">
-          <div style="font-size:.6em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Au budget HT</div>
-          <div style="font-size:.9em;font-weight:700;color:#fff">${r.ht ? fe(r.ht) : '\u2014'}</div>
-        </div>
-        <div style="background:var(--surface-2);border-radius:8px;padding:10px 14px">
-          <div style="font-size:.6em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">R\u00E9el HT</div>
-          <div style="font-size:.9em;font-weight:700;color:${r.reel > 0 ? 'var(--green)' : 'var(--text-dim)'}">${r.reel ? fe(r.reel) : '\u2014'}</div>
-        </div>
-      </div>
-    </div>
-  `;
-
-  document.getElementById('drawer-footer').style.display = 'flex';
-  document.getElementById('drawer-footer').innerHTML = `
-    <button class="drawer-btn" onclick="closeDrawer()">Annuler</button>
-    ${r._row ? `<button class="drawer-btn" onclick="deleteLigne('RECETTES',${r._row},'${(r.l||'').replace(/'/g,"\\'")}','bilan')" style="color:var(--red);border-color:rgba(248,113,113,.2)">Supprimer</button>` : ''}
-    <button class="drawer-btn" id="rf-save-btn" onclick="saveRecEdit(${ci},${ri})">Enregistrer</button>
-  `;
-
-  document.getElementById('drawer-overlay').classList.add('open');
-  document.getElementById('drawer').classList.add('open');
-  setTimeout(() => document.getElementById('rf-nom')?.focus(), 80);
+  // STEP-3 (B): shimmed to the unified recette edit drawer. Shimming the DEFINITION covers
+  // all 3 call-sites (table row + edit button + openRecCatDrawer). Old self-rendered edit
+  // body + saveRecEdit retired.
+  openRecLigne(ci, ri, false);
 }
 
-async function saveRecEdit(ci, ri) {
-  const nom = document.getElementById('rf-nom')?.value.trim();
-  const qte = parseFloat(document.getElementById('rf-qte')?.value) || 0;
-  const pu  = parseFloat(document.getElementById('rf-pu')?.value) || 0;
-  let est   = parseFloat(document.getElementById('rf-est')?.value) || 0;
-  const tva = document.getElementById('rf-tva')?.value || '';
-  const st  = document.getElementById('rf-st')?.value || 'ESTIMATION';
+/* ════════ STEP-3 recette port — additive, from BUILD93 (md5 baffb62d…) ════════
+   Ports the recette-only deps that are referenced-but-undefined in general:
+   openRecLigne + saveRecFromEdit (BUILD93 FIX2: edit array = ligne/est_ht/est_ttc/
+   tva ONLY — no statut/obs clobber) + the encsrc encaissé-source subsystem.
+   A3 (the one general adaptation): recette rename write is LIVE (see saveRecFromEdit).
+   ═══════════════════════════════════════════════════════════════ */
+// seam 27db — recette encaissé source selector: in-session per-line persistence (mode + manual value).
+// Keyed by the drawer's canonical line key (_edDevisKey composite). UI-only, survives reopen within the
+// session; cross-reload persistence is Phase-D backend (out of scope). NOT localStorage (tool convention).
+const _encsrcStore = new Map();
+// ── seam 27da — recette encaissé source selector (client-side; persistence = Phase-D no-POST) ──
+const _ENCSRC_HINTS = {
+  tx:  "Par d\u00e9faut. L'encaiss\u00e9 = somme des transactions rapproch\u00e9es \u00e0 cette ligne (comme le r\u00e9el c\u00f4t\u00e9 d\u00e9penses).",
+  api: "L'encaiss\u00e9 est tir\u00e9 des plateformes de billetterie. Dice et Shotgun restent s\u00e9par\u00e9s ; c'est leur total qui devient l'encaiss\u00e9.",
+  man: "Saisie directe. \u00c9crase les autres sources tant qu'une valeur est pr\u00e9sente."
+};
+// Resolve the encaissé for a given mode by reading the rendered mode figures (no fabricated numbers).
+function _encsrcResolve(mode){
+  const body = document.querySelector('.encsrc'); if(!body) return null;
+  if (mode === 'man'){
+    const inp = document.getElementById('encsrc-man-input');
+    const v = inp && inp.value !== '' ? Math.max(0, parseFloat(inp.value)||0) : null;
+    return v;   // null → no manual value yet (falls back visually to tx)
+  }
+  if (mode === 'api'){
+    const t = document.getElementById('encsrc-api-total');
+    return t ? t.textContent : null;
+  }
+  const amt = body.querySelector('.encsrc-mode[data-mode="tx"] .amt');
+  return amt ? amt.textContent : null;
+}
+function encsrcMode(mode){
+  const root = document.querySelector('.encsrc'); if(!root) return;
+  root.querySelectorAll('.seg-opt').forEach(b=>{
+    const on = b.dataset.mode===mode; b.classList.toggle('on',on); b.setAttribute('aria-selected', on?'true':'false');
+  });
+  root.querySelectorAll('.encsrc-mode').forEach(m=> m.classList.toggle('on', m.dataset.mode===mode));
+  const hint = document.getElementById('encsrc-hint'); if(hint) hint.textContent = _ENCSRC_HINTS[mode] || '';
+  _encsrcPersist(mode);
+  _encsrcSync(mode);
+  // FIX-2: switching to Saisie manuelle must place the caret in the manual input. Otherwise focus
+  // stays on the segment button just clicked (or on BODY when the mode is restored at open) and the
+  // now-visible field silently swallows keystrokes — the "won't let me type" bug. Hidden pane → no-op.
+  if (mode === 'man'){ const _mi = document.getElementById('encsrc-man-input'); if (_mi) _mi.focus(); }
+}
+function encsrcManual(){ _encsrcPersist('man'); _encsrcSync('man'); }
+// seam 27db — persist mode + manual value in-session, keyed by the line's canonical key on the .encsrc root.
+function _encsrcPersist(mode){
+  const root = document.querySelector('.encsrc'); if(!root) return;
+  const key = root.dataset.encsrcKey; if(!key) return;   // no key (isNew / no name) → don't persist
+  const inp = document.getElementById('encsrc-man-input');
+  const manualVal = inp && inp.value !== '' ? inp.value : null;
+  _encsrcStore.set(key, { mode, manualVal });
+}
+// Apply saved state after the drawer body renders (called from openEditLigne's post-render).
+function encsrcRestore(){
+  const root = document.querySelector('.encsrc'); if(!root) return;
+  const mode = root.dataset.encsrcMode || 'tx';
+  if (mode !== 'tx') encsrcMode(mode);   // switch reveals the saved mode (input value already prefilled in markup)
+  else _encsrcSync('tx');                 // default: still sync the resolved strip/KPI once
+}
+// Update the resolved "Encaissé HT retenu" strip + flash the drawer's Encaissé KPI (UI only; not persisted).
+function _encsrcSync(mode){
+  const out = document.getElementById('encsrc-out-val'); if(!out) return;
+  let resolved = _encsrcResolve(mode);
+  // manual with empty input: fall back to the transactions figure so the strip never reads blank
+  if (mode==='man' && (resolved===null || isNaN(resolved))){
+    const txAmt = document.querySelector('.encsrc-mode[data-mode="tx"] .amt');
+    out.textContent = txAmt ? txAmt.textContent : out.textContent;
+  } else if (typeof resolved === 'number'){
+    out.textContent = (typeof fe==='function') ? fe(resolved) : String(resolved);
+  } else if (resolved!=null){
+    out.textContent = resolved;   // already a formatted string (tx/api)
+  }
+  const kpi = document.querySelector('#rail-kpis-host .rail-kpi:last-child');
+  if (kpi){ kpi.classList.add('enc','flash'); setTimeout(()=>kpi.classList.remove('flash'), 450); }
+}
 
+function openRecLigne(ci, ri, isNew, preCat) {
+  _editLigneActive = true;
+  buildEditDrawer(null, null, null, !!isNew, { ci, ri, preCat: preCat || '' });
+  document.getElementById('drawer-overlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+  setTimeout(() => { _editLigneActive = false; }, 300);
+}
+
+async function saveRecFromEdit(ci, ri, isNew) {
+  const nom = document.getElementById('ef-nom')?.value.trim();
+  let est   = parseFloat(document.getElementById('ef-est')?.value) || 0;
+  const tva = document.getElementById('ef-tva')?.value || '';
+  const st  = document.getElementById('ef-st')?.value || 'ESTIMATION';
+  const obs = document.getElementById('ef-obs')?.value || '';
   if (!nom) {
-    document.getElementById('rf-nom').style.borderColor = 'rgba(248,113,113,.6)';
-    document.getElementById('rf-nom').focus();
+    const f = document.getElementById('ef-nom');
+    if (f) { f.style.borderColor = 'rgba(248,113,113,.6)'; f.focus(); }
     return;
   }
-
-  // Auto-calc est from qte × pu if not manually changed
-  if (!est && qte && pu) est = Math.round(qte * pu);
-
-  const btn = document.getElementById('rf-save-btn');
+  const btn = document.getElementById('ef-save-btn');
   if (btn) { btn.textContent = 'Enregistrement\u2026'; btn.classList.add('saving'); }
-
-  const r = REC[ci]?.rows[ri];
-  if (!r?._row) { showToast('\u26A0 Erreur', 'Ligne introuvable', 'red'); return; }
-
   try {
     const tvaNum = parseFloat(tva);
     const estTTC = est && !isNaN(tvaNum) ? Math.round(est * (1 + tvaNum)) : est;
-    const updates = [
-      {field: 'ligne',        value: nom},
-      {field: 'observations', value: pu ? String(pu) : ''},
-      {field: 'rh',           value: qte ? String(qte) : ''},
-      {field: 'est_ht',       value: String(est)},
-      {field: 'est_ttc',      value: String(estTTC)},
-      {field: 'tva',          value: tva},
-      {field: 'statut',       value: st},
-    ];
-    for (const u of updates) {
-      await fetch(`${API}/api/budget/update`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({session: SESSION, dept: 'RECETTES', row: r._row, field: u.field, value: u.value})
+    if (isNew) {
+      // new recette line — reuse recette's add endpoint. Category from the typed field (C2 fold):
+      // supports both pick-existing and create-new-by-typing; falls back to the preset category.
+      const cat = (document.getElementById('ef-rec-cat')?.value.trim()) || REC[ci]?.cat || '';
+      if (!cat) { const f=document.getElementById('ef-rec-cat'); if(f){f.style.borderColor='rgba(248,113,113,.6)';f.focus();} return; }
+      await fetch(`${API}/api/budget/add-ligne`, {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({session: SESSION, dept: 'RECETTES', categorie: cat, section: cat, ligne: nom, est_ht: String(est), est_ttc: String(estTTC), tva, statut: st, observations: obs})
       });
+    } else {
+      const r = REC[ci]?.rows[ri];
+      if (!r?._row) { showToast('\u26A0 Erreur', 'Ligne introuvable', 'red'); return; }
+      // A3 (general adaptation): recette rename write is LIVE — BUILD93's Phase-D rename stub
+      // (.filter on `ligne` + "⏳ Bientôt" toast) removed here, consistent with the step-2 dépense
+      // saveLigne rename. Recette has no dept-move axis (dept is hard-coded 'RECETTES').
+      // FIX2: statut + observations do NOT round-trip on the recette EDIT path — #ef-st is retired
+      // (reads default 'ESTIMATION') and loadRecettes never loads obs (#ef-obs opens blank), so
+      // writing them clobbered backend statut->ESTIMATION and obs->''. Removed those two pushes only.
+      // KEEP the const st/obs declarations above: the ADD path (isNew fetch body) still reads them.
+      // {ligne} write is LIVE (A3 — filter + toast removed); est_ht/est_ttc/tva round-trip.
+      const updates = [
+        {field: 'ligne',        value: nom},
+        {field: 'est_ht',       value: String(est)},
+        {field: 'est_ttc',      value: String(estTTC)},
+        {field: 'tva',          value: tva},
+      ];
+      for (const u of updates) {
+        await fetch(`${API}/api/budget/update`, {
+          method: 'POST', headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({session: SESSION, dept: 'RECETTES', row: r._row, field: u.field, value: u.value})
+        });
+      }
     }
-
     closeDrawer();
     await refreshBudgetData();
     renderBilan();
-    showToast('\u2705 Ligne mise \u00E0 jour', `"${nom}" enregistr\u00E9e`, 'green');
+    showToast('\u2705 Recette enregistr\u00E9e', `"${nom}"`, 'green');
   } catch (e) {
     if (btn) { btn.textContent = 'Enregistrer'; btn.classList.remove('saving'); }
     showToast('\u26A0 Erreur', e.message, 'red');
@@ -4153,9 +4049,15 @@ function buildEditDrawer(deptId, sectionIdx, lineIdx, isNew, recRef) {
   if (recMode) {
     const cat = (recRef.ci != null) ? REC[recRef.ci] : null;
     if (!isNew && !cat) return;
+    // FIX1(a) est<-ht: REC rows store the estimate in `ht` (loadRecettes ht:r.est_ht, no est).
+    // Normalize the bound row so recMode reads resolve the estimate (drives _estV, both #ef-est
+    // inputs, _ttc0, donut prevu, "Prévu HT" KPI/row, _partPct numerator). Guarded so an out-of-
+    // range row still falls through to the existing `if (!line) return`. Shallow copy is safe:
+    // buildEditDrawer never writes line.*, and saveRecFromEdit reads DOM + re-fetches REC fresh.
+    const _recRow = isNew ? null : cat.rows[recRef.ri];
     line = isNew
       ? {l:'', obs:'', typ:'', tva:'0.2', est:0, st:'ESTIMATION', _row: null}
-      : cat.rows[recRef.ri];
+      : (_recRow ? { ..._recRow, est: _recRow.ht } : _recRow);
     if (!line) return;
     // supply recette display equivalents (framing correction: supply, not just omit)
     const catName = (recRef.preCat || (cat && cat.cat) || '');
@@ -4204,7 +4106,7 @@ function buildEditDrawer(deptId, sectionIdx, lineIdx, isNew, recRef) {
   let _partPct = null;
   try {
     if (recMode) {
-      const _recTot = (typeof REC !== 'undefined' && REC) ? REC.flatMap(c => c.rows || []).reduce((a, r) => a + (r.est || 0), 0) : 0;
+      const _recTot = (typeof REC !== 'undefined' && REC) ? REC.flatMap(c => c.rows || []).reduce((a, r) => a + (r.est ?? r.ht ?? 0), 0) : 0;  // FIX1(b) est<-ht: all-rows sum, normalize can't reach here
       _partPct = _recTot > 0 ? Math.round(_estV / _recTot * 100) : null;
     } else if (dept && dept.sections) {
       const _dEst = dtot(dept).est;
@@ -4347,8 +4249,8 @@ function buildEditDrawer(deptId, sectionIdx, lineIdx, isNew, recRef) {
               <label class="df-label">Mode de calcul</label>
               <div class="seg" role="tablist" aria-label="Source de l'encaissé">
                 <button class="seg-opt on" role="tab" aria-selected="true" data-mode="tx" onclick="encsrcMode('tx')">Par transactions</button>
-                <button class="seg-opt" role="tab" aria-selected="false" data-mode="api" onclick="encsrcMode('api')">Par API</button>
-                <button class="seg-opt" role="tab" aria-selected="false" data-mode="man" onclick="encsrcMode('man')">Saisie manuelle</button>
+                <button class="seg-opt" role="tab" aria-selected="false" data-mode="api" onclick="encsrcMode('api')" disabled aria-disabled="true" title="À venir — Phase-D" style="opacity:.4;cursor:not-allowed">Par API</button>
+                <button class="seg-opt" role="tab" aria-selected="false" data-mode="man" onclick="encsrcMode('man')" disabled aria-disabled="true" title="À venir — Phase-D" style="opacity:.4;cursor:not-allowed">Saisie manuelle</button>
               </div>
               <div class="df-hint" id="encsrc-hint">Par défaut. L'encaissé = somme des transactions rapprochées à cette ligne (comme le réel côté dépenses).</div>
             </div>

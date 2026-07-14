@@ -876,6 +876,261 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .ctag.ventile{font-size:0;background:rgba(56,189,248,.12);color:#38bdf8;border:1px solid rgba(56,189,248,.30)}
 .ctag.ventile::after{content:'VENTIL\00C9';font-size:var(--fs-caption)}
 .ctag.cas{background:rgba(217,128,250,.12);color:#e0a8ff;border:1px solid rgba(217,128,250,.30)}
+/* ════════ v22b FOLD — sealed réelles-components.css (VERBATIM; md5 89a5a1ee…) ════════ */
+/* =============================================================================
+   reelles-components.css  —  v22a NET-NEW STYLES (built in ISOLATION)
+   Festiflow BudgetFlow V1 · réelles sub-pass v22a
+   -----------------------------------------------------------------------------
+   DR-9 role-scoping is the load-bearing risk. .split-row is a SHARED component
+   used in three roles: edit (already in _x), réelles = .list, options = .preview.
+   Every property that DIVERGES between roles is emitted under .list / .preview,
+   NEVER in the unscoped base — an unscoped divergent prop is what would silently
+   restyle the other drawer. v22a ships: shared base + .list overrides (réelles)
+   + the .preview scoping selectors (options fills .preview detail in v23).
+
+   TOKEN NOTE: .cls.ext / .cls.intra reference var(--ext)=#94a3b8 and
+   var(--intra)=#818cf8. These two tokens are réelles-mock additions and are
+   NOT yet in _x's :root — the harness adds them; v22b must add them to _x.
+   ============================================================================= */
+
+
+/* ════════════════════════════════════════════════════════════════════════════
+   1) SHARED BASE — unscoped, byte-identical across réelles / options / _x.
+      Contains ONLY non-divergent properties.
+   ════════════════════════════════════════════════════════════════════════════ */
+.split-row{background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:13px 14px;position:relative}
+/* classification coloured left edge (shared markup uses .cls; colour variants
+   are net-new vs _x, which has .cls but not the .ext/.intra/.inter/.remb tints) */
+.split-row.cls{border-left-width:2px;border-left-style:solid}
+.split-row.cls.ext{border-left-color:var(--ext)}
+.split-row.cls.intra{border-left-color:var(--intra)}
+.split-row.cls.inter{border-left-color:var(--amber)}
+.split-row.cls.remb{border-left-color:var(--rb)}
+.split-row .sr-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px}
+.split-row.clickable{cursor:pointer;transition:background .14s,border-color .14s}
+.split-row.clickable:hover{background:#1a1a24}
+/* rc-detail COLLAPSED base + transition is byte-identical across roles -> shared.
+   The EXPANDED behaviour (380px list / always-open preview) DIVERGES -> §2/§3. */
+.split-row .rc-detail{max-height:0;overflow:hidden;opacity:0;transition:max-height .24s ease,opacity .18s ease}
+/* ════════════════════════════════════════════════════════════════════════════
+   2) .list ROLE OVERRIDES — réelles. Collapsible detail + the dt-foot action row.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* §v23a.2: réelles (.list) expanded height now uses the shared .split-row.expanded rule (§1) — no per-role cap */
+
+/* list-role detail content (no competing options def; scoped per DR-9 so a
+   future .preview foot can't collide) */
+/* §v23a.3 §A1 — foot CSS DE-SCOPED from `.list .split-row .rc-detail` to the unified card
+   class `.split-row .rc-detail` so the foot styles NEUTRALLY in list/edit/preview/hero alike
+   (fixes Image-1 unstyled white boxes outside .list). Source-order cascade preserved: the
+   tinted .opt rule below is overridden by the colourless-standard rule (same specificity,
+   later → WINS) in EVERY context — so the foot is neutral everywhere, never purple. No
+   separate de-purple rule added (ADJUDICATION flag 1). */
+.split-row .rc-detail .dt-foot{display:flex;justify-content:space-between;align-items:center;gap:7px;margin-top:11px;padding-top:11px;border-top:1px solid rgba(255,255,255,.06)}
+.split-row .rc-detail .dt-btns{display:flex;gap:7px}
+.split-row .rc-detail .dt-btn{font-size:var(--fs-caption);padding:4px 9px;border-radius:5px;cursor:pointer;font-family:inherit;font-weight:600;border:1px solid;background:none;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.split-row .rc-detail .dt-btn svg{width:11px;height:11px}
+/* original tinted buttons … */
+.split-row .rc-detail .dt-btn.opt{border-color:rgba(168,85,247,.4);background:rgba(168,85,247,.06);color:#c4b5fd}
+.split-row .rc-detail .dt-btn.opt:hover{background:var(--surface-2)}
+.split-row .rc-detail .dt-btn.dis{border-color:rgba(248,113,113,.22);background:rgba(248,113,113,.05);color:var(--red)}
+.split-row .rc-detail .dt-btn.dis:hover{background:rgba(248,113,113,.13)}
+/* … overridden to colourless standard tokens (later rule, same specificity -> WINS,
+   matching the réelles mock cascade L247-250 then L261-264) */
+.split-row .rc-detail .dt-btn.opt,
+.split-row .rc-detail .dt-btn.note-btn{border-color:var(--border);background:var(--surface-2);color:var(--text-muted)}
+.split-row .rc-detail .dt-btn.opt:hover,
+.split-row .rc-detail .dt-btn.note-btn:hover{border-color:var(--text-muted);color:var(--text)}
+/* ════════════════════════════════════════════════════════════════════════════
+   3) .preview ROLE SCOPING — options. Establish the selectors only; v23 fills
+      the rest of the preview detail without touching the shared base.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* §v23a.2 (F-1): preview always-open NEUTRALISED — preview now collapses/expands via the shared rule. Preview layout (sr-name/sr-amt) KEPT below. */
+/* preview name wraps; preview amount is its own block, right-aligned */
+/* Build 4 ① BADGE WRAP: pin the cls/cas chips to the name's FIRST line when the name
+   wraps (mirrors the proven §ITEM30 .list fix). align-items:flex-start tops the chips
+   so a 2-line name no longer centres the badge mid-row; the name TEXT (first-child span)
+   keeps wrapping below the pinned badge. CSS-only, .preview-scoped → tcTop body untouched,
+   NOT a frozen-leaf edit. Single-line names render identically to the prior centre. */
+.preview .split-row .sr-name{flex-wrap:wrap;align-items:flex-start}
+.preview .split-row .sr-name>span:first-child{overflow-wrap:anywhere;min-width:0}
+.preview .split-row .sr-name .ctag{flex-shrink:0}
+.preview .split-row .sr-amt{display:block;text-align:right;white-space:nowrap}
+/* §ITEM30 — réelles LIST card name/badge/amount stabilise (Leo screenshots IMG_2106).
+   SCOPED TO .list ONLY so the .preview hero (acceptable as-is, IMG_2105) renders
+   byte-identical — preview matches .preview/.split-row base, never these .list rules.
+   CSS-only: no tcTop JS change, so NOT a frozen-leaf edit.
+   Bug 1 (badge mid-row): a long name's text wraps inside .sr-name's first child, making
+   it 2 lines tall; the shared align-items:center then centres the ctag chip(s) against
+   that tall block. Fix: top-align the chips (flex-start) so they pin to the name's first line.
+   Bug 1b (§seam27bf REOPEN): the earlier `flex:1 1 auto` stretched .sr-name to the full
+   row width, so on a long (wrapped) name the chips floated far to the right. Fix: DON'T let
+   .sr-name grow — `flex:0 1 auto` keeps it content-sized (chips hug the name) but still
+   shrinkable; `min-width:0` lets it shrink so a long name WRAPS in the space left of the
+   amount instead of shoving it. The name TEXT is its own shrinking span (.nm below) so the
+   chips sit immediately after the name as a unit. Chips never shrink (flex-shrink:0) —
+   covers BOTH the cls badge AND the cas chip (both live in .sr-name).
+   Bug 2 (amount wraps to 2 lines): shared .sr-amt has no white-space rule → "−3 000,00"
+   breaks at the space. Fix: white-space:nowrap so the list amount stays one line. */
+.list .split-row .sr-name{align-items:flex-start;flex:0 1 auto;min-width:0}
+.list .split-row .sr-name>span:first-child{min-width:0;overflow-wrap:anywhere}
+.list .split-row .sr-name .ctag{flex-shrink:0}
+.list .split-row .sr-amt{white-space:nowrap}
+/* ══════════════════════════════════════════════════════════════════════════════════
+   3b) §v23a.2 CARD UNIFICATION — the per-role expanded caps (.edit 520px / .list
+       380px) and the .preview always-open rule are REPLACED by ONE shared rule in §1:
+       `.split-row.expanded .rc-detail{max-height:var(--rc-exp,100vh)}`. All roles now
+       share collapsed base (max-height:0) + this content-driven expanded reveal, so
+       cross-context card identity holds. Role wrappers keep only layout deltas (preview
+       sr-name/sr-amt below).
+   ══════════════════════════════════════════════════════════════════════════════════ */
+
+/* §v23a.2: edit-role expanded cap removed — shared .split-row.expanded rule (§1) governs all roles */
+
+
+/* ════════════════════════════════════════════════════════════════════════════
+   4) réelles split-row EXTRAS — stay as réelles classes (unscoped; inert in
+      options because the markup never appears there).
+   ════════════════════════════════════════════════════════════════════════════ */
+.split-row .reel-date-meta{display:inline}
+.split-row.expanded .reel-date-meta{display:none}
+.reliee-by{display:inline-flex;align-items:center;gap:6px;color:var(--text);white-space:nowrap}
+.reliee-by .avatar-ic{width:17px;height:17px}
+.reliee-by b{color:var(--text);font-weight:600}
+.reliee-by .rb-date{color:var(--text-dim);font-family:var(--ff-num);font-size:var(--fs-caption)}
+.mono{font-family:var(--ff-num);font-feature-settings:"tnum"}
+.dim{color:var(--text-muted)}
+.paypill{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:5px;font-size:var(--fs-caption);font-weight:600;
+  background:rgba(160,160,176,.06);color:var(--text-muted);border:1px solid rgba(255,255,255,.06)}
+.paypill svg{width:11px;height:11px}
+.paypill b{color:var(--text);font-weight:700}
+.initiator{display:inline-flex;align-items:center;gap:7px;font-size:var(--fs-small);color:var(--text-muted)}
+.initiator .lbl{color:var(--text-dim)}
+.initiator b{color:var(--text);font-weight:600}
+.avatar-ic{width:18px;height:18px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border-h);display:inline-grid;place-items:center;flex-shrink:0;color:var(--text-muted)}
+.avatar-ic svg{width:11px;height:11px}
+/* ════════════════════════════════════════════════════════════════════════════
+   6) assignedCard (.vcard family) — shared DR-7 line representation.
+      Verified at options mock L195-216, L394.
+   ════════════════════════════════════════════════════════════════════════════ */
+.vcard{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 13px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2);transition:.14s}
+.vcard.auto{background:rgba(52,211,153,.05);border-color:rgba(52,211,153,.25)}
+.vcard.warn{border-color:rgba(251,191,36,.55);background:rgba(251,191,36,.07)}
+.vcard-l{display:flex;align-items:center;gap:9px;min-width:0}
+.vr-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.vcard-nm{font-size:var(--fs-small);color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vcard-dept{font-weight:700;color:var(--text);font-size:var(--fs-body)}
+.ilc-nm2{display:flex;flex-direction:column;gap:5px;align-items:flex-start}
+.ilc-line2{font-size:var(--fs-small);font-weight:600;color:var(--text);display:flex;align-items:center}
+.ilc-line2 .vcard-cat{color:var(--text-muted);margin-right:7px}
+/* §FIX7b — relocated INTRA/À TRIER chips now live inside .vcard-dept (FIX6); space them off the dept name. */
+.vcard-dept .vcard-cat{margin-left:8px}
+.vcard-cat{font-family:var(--ff-num);font-size:var(--fs-micro);letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);background:rgba(255,255,255,.05);border-radius:4px;padding:2px 5px;margin-right:7px;vertical-align:middle}
+.lr-cat{font-family:var(--ff-num);font-size:var(--fs-micro);letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);background:rgba(255,255,255,.04);border-radius:4px;padding:2px 5px;flex-shrink:0}
+.vcard-r{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.vcard-amt{font-size:var(--fs-body);font-weight:700;color:var(--red);font-variant-numeric:tabular-nums}
+.vcard-rm{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:var(--fs-small);padding:2px 4px;transition:.13s}
+.vcard-rm:hover{color:var(--red)}
+/* ════════════════════════════════════════════════════════════════════════════════════════════
+   7) TRANSACTION-CARD net-new classes — copied BYTE-EXACT from the reconciled
+      réelles mock (reelles _CURRENT_v1.20). The sub-line / cas / chip / count-
+      header families the transactionCard renderer emits.
+      DR-2: the INLINE .remb-origin only (NO .ro-rm remove button, NOT the
+      options boxed version). DR-6: no .rap-* here (the kv-grid ones in §4 are
+      kept inert/unused — the renderer never emits a Rapprochement row).
+   ══════════════════════════════════════════════════════════════════════════════════ */
+
+/* receiving-side intra/inter compact sub-line (flowLine) — oracle L286-289 */
+.intra-origin{display:flex;flex-direction:column;gap:6px;margin-top:9px}
+.intra-origin .io-row{display:flex;align-items:center;gap:6px;font-size:var(--fs-caption);color:var(--intra)}
+.intra-origin .io-row svg{width:12px;height:12px;flex-shrink:0}
+.intra-origin .io-row .lbl{color:var(--text-dim)}
+.intra-origin .io-row b{color:var(--text);font-weight:700}
+/* cas-1 explanation marker (RE-8) — oracle L290-291 */
+.cas1-marker{display:flex;align-items:flex-start;gap:6px;font-size:var(--fs-caption);color:var(--intra);background:rgba(129,140,248,.06);border:1px solid rgba(129,140,248,.16);border-radius:7px;padding:7px 10px;margin-top:9px;line-height:1.45}
+.cas1-marker svg{width:12px;height:12px;flex-shrink:0;margin-top:1px}
+/* cut-off status pill (held-cas, no instrument yet) — oracle L301-302 */
+/* type-breakdown mini chips for the count header (RE-10) — oracle L304-310 */
+.typesum{display:inline-flex;gap:9px;vertical-align:middle;margin-left:6px}
+.minichip{display:inline-flex;align-items:center;gap:4px;font-family:var(--ff-num);font-size:var(--fs-caption);font-weight:600;color:var(--text-muted)}
+.minichip::before{content:"";width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.minichip.ext::before{background:var(--ext)}
+.minichip.inter::before{background:var(--amber)}
+.minichip.intra::before{background:var(--intra)}
+.minichip.remb::before{background:var(--rb)}
+/* DR-2 inline remb-origin (teal hint, NO box, NO .ro-rm) — oracle L311-313 */
+/* Build 4 Item 40: a long origin name (<b>) in this flex row had no wrap/width control,
+   so it ballooned the preview card. flex-wrap + min-width:0 let the name wrap within the
+   card; the icon pins to line 1 (align-items:flex-start) and never shrinks. CSS-only,
+   .remb-origin is OFF-leaf → tcRembOrigin body untouched, NOT a frozen-leaf edit. */
+.remb-origin{display:flex;flex-wrap:wrap;align-items:flex-start;gap:6px;font-size:var(--fs-caption);color:var(--rb);margin-top:9px;min-width:0}
+.remb-origin svg{width:12px;height:12px;flex-shrink:0;margin-top:2px}
+.remb-origin .lbl{color:var(--text-dim)}
+.remb-origin b{color:var(--text);font-weight:700;min-width:0;overflow-wrap:anywhere}
+/* original→refund forward link + rembpair adjacency connector — oracle L315-320 */
+.remb-link{display:flex;align-items:center;gap:6px;font-size:var(--fs-caption);color:var(--rb);margin-top:9px}
+.remb-link svg{width:12px;height:12px;flex-shrink:0}
+.remb-link .lbl{color:var(--text-dim)}
+.remb-link b{color:var(--rb);font-weight:700}
+.split-row.rembpair{border-left-color:var(--rb)}
+.split-row.rembpair:not(.rembpair-end){border-bottom-left-radius:0;border-bottom-right-radius:0;margin-bottom:-8px;border-bottom:1px dashed rgba(94,234,212,.25)}
+.split-row.rembpair.rembpair-end{border-top-left-radius:0;border-top-right-radius:0}
+/* held Dissocier (5a-gated, decision A): the slot is rendered PIXEL-EXACT but
+   inert. Colour/size/border untouched (parity preserved) — ONLY the cursor
+   signals held. Higher specificity than the base .dt-btn.dis so cursor wins. */
+.list .split-row .rc-detail .dt-btn.dis[aria-disabled="true"]{cursor:not-allowed}
+/* ════════ end sealed réelles-components.css ════════ */
+/* ── v22b FORK-1 (EXEC-authored, réelles-scoped tab chrome — flagged for review).
+      Provenance = the oracle .tab/.tabpane idiom (count pill + amber alert dot, per
+      the mock) adapted to _x's #drawer (the oracle's .rail switcher is not droppable);
+      reuses _x's existing edFade keyframe (oracle's `fade` was dropped from _x). These
+      class names are réelles-scoped (reel-*) and absent from _x → purely additive. */
+.reel-tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--border)}
+.reel-tab{appearance:none;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);font-family:var(--ff-display);font-size:var(--fs-small);font-weight:600;padding:8px 12px 9px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:color .14s,border-color .14s}
+.reel-tab:hover{color:var(--text-muted)}
+.reel-tab.on{color:#fff;border-bottom-color:#fff}
+.reel-tab .cnt{font-size:var(--fs-caption);padding:1px 6px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--text-muted);font-weight:700}
+.reel-tab .alert{width:6px;height:6px;border-radius:50%;background:var(--amber);display:inline-block}
+.reel-pane{display:none;animation:edFade .2s ease}
+.reel-pane.on{display:block}
+.reel-cards{display:flex;flex-direction:column;gap:8px}
+/* ── Courbe Variation B chart + stats primitives (seam 27dc; chart-scoped, additive,
+      cx-* absent from _x → no collision). Ported from courbe-B-FINAL-spec-and-states.html.
+      --dev (#818cf8) is inlined here since the base :root carries --indigo, not --dev. ── */
+.cx-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 12px 10px;position:relative}
+.cx-svg{display:block;width:100%;height:auto}
+.cx-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;pointer-events:none}
+.cx-empty .ic{font-size:22px;opacity:.5}
+.cx-empty .m{font-size:var(--fs-small);color:var(--text-dim);font-weight:500;max-width:220px}
+.cx-datex{display:flex;justify-content:space-between;font-family:var(--ff-num);font-size:10px;color:var(--text-dim);padding:0 2px;margin-top:5px}
+.cx-datex.one{justify-content:center}
+.cx-callout{display:flex;align-items:center;gap:9px;margin-top:11px;padding:8px 11px;border-radius:9px;background:var(--surface-2);border:1px solid var(--border);font-size:var(--fs-small);color:var(--text-muted)}
+.cx-callout .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:#818cf8}
+.cx-callout b{color:#fff;font-weight:600}
+.cx-callout .mono{font-family:var(--ff-num);color:var(--text)}
+.cx-strip{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:11px;overflow:hidden;margin-top:12px}
+.cx-cell{background:var(--surface);padding:9px 12px;min-width:0}
+.cx-cell.full{grid-column:1 / -1}
+.cx-cell .k{font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);font-weight:700;margin-bottom:3px}
+.cx-cell .v{font-family:var(--ff-num);font-size:var(--fs-small);color:var(--text);font-weight:500;line-height:1.32;overflow-wrap:anywhere;font-variant-numeric:tabular-nums lining-nums}
+.cx-cell .v .dt{color:var(--text-muted)}
+.cx-cell .v .sep{color:var(--text-dim);padding:0 3px}
+.cx-cell .v .sub{color:var(--text-dim)}
+@keyframes cxPulse{0%{r:5;opacity:.5}70%,100%{r:14;opacity:0}}
+.cx-pulse{animation:cxPulse 2.4s ease-out infinite}
+@media(prefers-reduced-motion:reduce){.cx-pulse{animation:none;opacity:0}}
+/* draw-on reveal (seam 27de): pathLength="1" normalises each line sub-path so dashoffset 1→0
+   wipes it on length-independently; all sub-paths start together, each reveals its own colour.
+   Gated by prefers-reduced-motion exactly like .cx-pulse — reduced-motion shows the full line. */
+@keyframes cxDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.cx-draw{stroke-dasharray:1;animation:cxDraw .6s ease-out both}
+@media(prefers-reduced-motion:reduce){.cx-draw{animation:none;stroke-dashoffset:0}}
+/* n=1 "Niveaux" reste-band calm fade-in (seam 27df) — gated like .cx-pulse/.cx-draw;
+   reduced-motion shows the band at its static opacity immediately. */
+@keyframes cxBand{from{opacity:0}to{opacity:1}}
+.cx-band{animation:cxBand .6s ease-out both}
+@media(prefers-reduced-motion:reduce){.cx-band{animation:none}}
 </style>
 </head>
 <body>
@@ -2503,24 +2758,23 @@ function renderRecetteTable(containerId, data, opts){
     const dataRows = cat.rows.map((r, ri) => {
       const reeH = r.reel||0;
       const e = (r.ht||0) - reeH;
-      const rowClick = `openRecetteDrawer(${recCi},${ri})`;
-      const encClick = `openRecCatDrawer(${recCi})`;
+      const rowClick = `openReelDrawer(null,null,null,{ci:${recCi},ri:${ri}})`;
       const pencil =
-        `<button class="edit-ligne-btn" onclick="event.stopPropagation();openRecetteDrawer(${recCi},${ri})" title="Détails de la ligne"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`;
+        `<button class="edit-ligne-btn" onclick="event.stopPropagation();openRecLigne(${recCi},${ri},false)" title="Détails de la ligne"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`;
       return `<tr class="rec-row" style="cursor:pointer" onclick="${rowClick}">
         <td class="tl"><div style="display:flex;align-items:center;gap:6px">
           <span class="ligne-label" style="flex:1">${r.l}</span>
           ${pencil}
         </div></td>
         <td class="clickable-cell" title="Voir transactions"><span class="cro" style="color:#fff;font-weight:600">${r.ht?fe(r.ht):'<span style="color:var(--text-dim)">—</span>'}</span></td>
-        <td class="clickable-cell" onclick="event.stopPropagation();${encClick}" title="Voir transactions"><span class="cro">${reeH?fe(reeH):'<span style="color:var(--text-dim)">—</span>'}</span></td>
+        <td class="clickable-cell" title="Voir transactions"><span class="cro">${reeH?fe(reeH):'<span style="color:var(--text-dim)">—</span>'}</span></td>
         <td><div style="display:flex;align-items:center;gap:4px;justify-content:flex-end">${ecH(e,false,reeH>0,true)}</div></td>
         <td class="obs"><span class="obs-label" style="color:var(--text-dim);font-size:.78em">${r.obs||''}</span></td>
       </tr>`;
     }).join('');
     const addRow = `<tr class="add-ligne-row">
           <td colspan="5" style="padding:4px 10px">
-            <button class="add-ligne-btn" onclick="openAddRecLigne('${(cat.cat||'').replace(/'/g,"\\'")}')">
+            <button class="add-ligne-btn" onclick="openRecLigne(null,null,true,'${_jsAttr(cat.cat)}')">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               Ajouter une ligne
             </button>
@@ -3163,19 +3417,6 @@ function buildDeptG3Cards(id, dept, tot, allL, p) {
   return unmatchedCard(id);
 }
 
-
-function openAddRecLigne(preSection) {
-  // STEP-3 (B): shimmed to the unified recette edit drawer. Old self-rendered add body +
-  // saveRecLigne retired. preSection → recRef.preCat (isNew add path).
-  openRecLigne(null, null, true, preSection);
-}
-
-function openRecetteDrawer(ci, ri) {
-  // STEP-3 (B): shimmed to the unified recette edit drawer. Shimming the DEFINITION covers
-  // all 3 call-sites (table row + edit button + openRecCatDrawer). Old self-rendered edit
-  // body + saveRecEdit retired.
-  openRecLigne(ci, ri, false);
-}
 
 /* ════════ STEP-3 recette port — additive, from BUILD93 (md5 baffb62d…) ════════
    Ports the recette-only deps that are referenced-but-undefined in general:
@@ -4925,95 +5166,823 @@ let _bilanRecTTC = false;
 // ════════════════════════════════════════════════════
 // PANEL 3 — DÉPENSÉ (Qonto transactions + expected)
 // ════════════════════════════════════════════════════
-async function openReelDrawer(deptId, sectionIdx, lineIdx) {
-  const dept = DEPTS.find(d => d.id === deptId);
-  if (!dept) return;
-  const line = dept.sections[sectionIdx]?.lines[lineIdx];
+/* ════════ STEP-4: deptColorFor (courbe dep, ported from event md5 baffb62d) ════════ */
+function deptColorFor(label) {
+  if (!label) return null;
+  const key = String(label).trim();
+  // tab-key path (DEPT_META key, e.g. "TECHNIQUE") → its .id → index in DEPTS
+  const meta = DEPT_META[key] || DEPT_META[key.toUpperCase()];
+  let id = meta ? meta.id : null;
+  if (!id) {
+    // name path: match a DEPTS entry by name (case-insensitive)
+    const byName = DEPTS.find(d => (d.name||'').toUpperCase() === key.toUpperCase());
+    if (byName) id = byName.id;
+  }
+  if (!id) return null;
+  const idx = DEPTS.findIndex(d => d.id === id);
+  return idx >= 0 ? (DEPT_COLORS[idx] || null) : null;
+}
+
+/* ════════ STEP-4: sealed reelles-components + v22b wiring + line-based openReelDrawer (ported from event md5 baffb62d; 3 opt-wrappers stubbed §D) ════════ */
+function groupFR(n){
+  return String(Math.round(Math.abs(n))).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+// k-abbreviated. 312000 -> "312k"; < 1000 falls back to grouped integer.
+function kAbbr(n){
+  n = Math.abs(n);
+  return n >= 1000 ? (Math.round(n / 1000) + 'k') : groupFR(n);
+}
+
+// Positive magnitude, 2 decimals w/ comma, trims a ",00" tail.
+// 1500 -> "1 500", 910.8 -> "910,80", 719.49 -> "719,49". Sign applied by caller.
+function eurSmart(n){
+  n = Math.abs(n);
+  const f = n.toFixed(2);
+  let int = f.slice(0, -3), dec = f.slice(-2);
+  int = int.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return dec === '00' ? int : (int + ',' + dec);
+}
+
+/* ----------------------------------------------------------------------------
+   COURBE  —  cumulative burn-down chart (réelles' Détails-equivalent viz)
+   -----------------------------------------------------------------------------
+   courbe({ points, ceiling, mode })
+     points  : ordered [{ date, cum, amt?, label? }]   cum = cumulative réel
+               (magnitude, positive). amt/label optional, used by "Rythme".
+     ceiling : the prévu (depense) / objectif (recette), magnitude.
+     mode    : 'depense' (purple, "−", downward semantics)
+             | 'recette' (green,  "+", upward  semantics)
+     opts.title : optional chart-section title override.
+
+   Returns the chart .dsec + the "Rythme" stats .dsec, as a markup string.
+   Same y/x math for both modes; only palette / sign / labels differ.
+   ---------------------------------------------------------------------------- */
+function courbe(opts){
+  // ── Courbe Variation B (seam 27dc) — taller 340×240 monotone-cubic burn-down.
+  //    Contract PRESERVED + EXTENDED by exactly two additions: `engage` (a single flat
+  //    devis-signés reference total, consumed inside courbeB) and `fourn` per point (added
+  //    in _reelSerie, consumed by the named stats cells). cum/sign math UNTOUCHED. The chart
+  //    + stats region is replaced to match courbe-B-FINAL-spec-and-states.html; everything
+  //    ABOVE the chart in the drawer stays byte-identical. This wrapper delegates to the
+  //    finalized B renderer (courbeB → { chart, stats }) and adds the drawer .dsec-t titles
+  //    (drawer context per courbe-B-on-current-build.html).
+  opts = opts || {};
+  const mode = opts.mode === 'recette' ? 'recette' : 'depense';
+  const chartTitle = opts.title || (mode === 'recette' ? 'Recette dans le temps' : 'Consommation dans le temps');
+  const r = courbeB(opts);
+  return '<div class="dsec-t">' + chartTitle + '</div>' + r.chart + r.stats;
+}
+
+/* ── Variation B renderer primitives (taller 340×240 remap: baseline 224, span 208;
+   xOf unchanged; groupFR/eurSmart reuse the sealed base formatters above) ── */
+const CH = { W:340, H:240, top:16, base:224 };   // taller: was 220 / base 206 / span 172
+const SPAN = CH.base - CH.top;                    // 208
+const BUSY = 16;
+const PAL = {
+  depense:{ line:'#a855f7', line2:'#6366f1', label:'#c4b5fd', a0:.34, a1:.02, sign:'\u2212',
+    ceilKey:'plafond prévu', etaKey:'Plafond', firstL:'Première', lastL:'Dernière', moyL:'Dépense moy.' },
+  recette:{ line:'#34d399', line2:'#34d399', label:'#6ee7b7', a0:.32, a1:.02, sign:'+',
+    ceilKey:'objectif', etaKey:'Objectif', firstL:'Première', lastL:'Dernière', moyL:'Recette moy.' }
+};
+const DEV='#818cf8', DEVT='#a5b4fc';
+const r1 = v => Math.round(v*10)/10;
+function parseFR(s){ const m=String(s).match(/(\d{2})\/(\d{2})\/(\d{2})/); return m?new Date(2000+ +m[3],+m[2]-1,+m[1]):null; }
+const fmtFR = d => ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+String(d.getFullYear()).slice(2);
+function interpDate(d1,d2,f){ const a=parseFR(d1),b=parseFR(d2); if(!a||!b) return d2; return fmtFR(new Date(a.getTime()+f*(b-a))); }
+
+/* monotone cubic (Fritsch–Carlson) — no overshoot on sharp cumulative jumps */
+function sampleMono(pts,steps){ steps=steps||18; const nn=pts.length; if(nn<2) return pts.map(p=>({x:p.x,y:p.y}));
+  const dx=[],dy=[],dd=[]; for(let i=0;i<nn-1;i++){ dx[i]=pts[i+1].x-pts[i].x; dy[i]=pts[i+1].y-pts[i].y; dd[i]=dx[i]?dy[i]/dx[i]:0; }
+  const m=[dd[0]]; for(let i=1;i<nn-1;i++){ m[i]=(dd[i-1]*dd[i]<=0)?0:(dd[i-1]+dd[i])/2; } m[nn-1]=dd[nn-2];
+  for(let i=0;i<nn-1;i++){ if(dd[i]===0){m[i]=0;m[i+1]=0;} else { const a=m[i]/dd[i],b=m[i+1]/dd[i],h=a*a+b*b;
+    if(h>9){ const t=3/Math.sqrt(h); m[i]=t*a*dd[i]; m[i+1]=t*b*dd[i]; } } }
+  const out=[{x:pts[0].x,y:pts[0].y}];
+  for(let i=0;i<nn-1;i++){ for(let s=1;s<=steps;s++){ const t=s/steps,h=dx[i],x=pts[i].x+t*h,t2=t*t,t3=t2*t,
+    a=2*t3-3*t2+1,b=t3-2*t2+t,c=-2*t3+3*t2,e=t3-t2, y=a*pts[i].y+b*h*m[i]+c*pts[i+1].y+e*h*m[i+1];
+    out.push({x,y:Math.max(CH.top-2,Math.min(CH.base,y))}); } }
+  return out;
+}
+const dOf = s => 'M'+s.map(p=>r1(p.x)+','+r1(p.y)).join(' L');
+const areaOf = s => dOf(s)+' L'+r1(s[s.length-1].x)+','+CH.base+' L'+r1(s[0].x)+','+CH.base+' Z';
+/* Over-budget colour split (seam 27de). Split the RENDERED sampled polyline S at the
+   ceiling y-coord cy into contiguous runs that meet EXACTLY on the plafond, so the
+   over-budget portion (y<cy ⟺ cum>ceiling; yOf is monotone-decreasing) can stroke red.
+   Per-segment test → multi-cross / refunds (cum dips back under then over) colour for free.
+   This is the shared VISUAL crossing (render space): it reuses the same ceiling the ETA
+   "Franchi" keys off (etaCell keeps its own cum-space fraction for the DATE text — the cubic
+   ≠ the cum-linear f, so the vertex is placed here at y===cy, guaranteeing it sits on the
+   plafond). doSplit=false (recette, or no ceiling) → a single run = whole line the mode
+   colour, byte-equivalent 'd'. */
+function ceilingRuns(S, cy, doSplit){
+  if(!doSplit || S.length<2) return [{over:false, pts:S}];
+  const runs=[]; let run=[{x:S[0].x,y:S[0].y}]; let over=S[0].y<cy;
+  for(let i=0;i<S.length-1;i++){ const a=S[i], b=S[i+1], aOver=a.y<cy, bOver=b.y<cy;
+    if(aOver===bOver){ run.push({x:b.x,y:b.y}); }
+    else { const t=(cy-a.y)/(b.y-a.y), cross={x:a.x+t*(b.x-a.x), y:cy};
+      run.push(cross); runs.push({over, pts:run}); run=[cross,{x:b.x,y:b.y}]; over=bOver; } }
+  runs.push({over, pts:run});
+  return runs.filter(r=>r.pts.length>=2);
+}
+let UID=0; const uid=()=> 'b'+(++UID);
+
+function etaCell(pts, ceiling, mode){
+  const P=PAL[mode], n=pts.length; if(n<1||!(ceiling>0)) return {k:P.etaKey,v:'—',col:'var(--text-muted)'};
+  const cumLast=pts[n-1].cum;
+  for(let i=1;i<n;i++){ const a=pts[i-1].cum,b=pts[i].cum;
+    if(a<ceiling && b>=ceiling){ const f=(ceiling-a)/(b-a);
+      return {k:P.etaKey,v:'Franchi ≈ '+interpDate(pts[i-1].date,pts[i].date,f),col:'var(--red)'}; } }
+  if(cumLast>=ceiling) return {k:P.etaKey,v:'Franchi',col:'var(--red)'};
+  const moy=cumLast/n, remain=ceiling-cumLast, steps=remain/moy;
+  let gaps=0,gc=0; for(let i=1;i<n;i++){ const a=parseFR(pts[i-1].date),b=parseFR(pts[i].date); if(a&&b){gaps+=(b-a)/864e5;gc++;} }
+  const avgGap=gc?gaps/gc:0;
+  if(!(moy>0)||!(avgGap>0)||!isFinite(steps)) return {k:P.etaKey,v:'Sous le '+(mode==='recette'?'objectif':'plafond'),col:'var(--text-muted)'};
+  const eta=new Date(parseFR(pts[n-1].date).getTime()+steps*avgGap*864e5);
+  return {k:P.etaKey+' ≈',v:fmtFR(eta),col:'var(--text)'};
+}
+
+/* main renderer → { chart, stats } (the two blocks under the KPI/tabs/title) */
+function courbeB(opts){
+  const points = opts.points||[], ceiling = Math.abs(+opts.ceiling||0),
+        engage = (opts.engage!=null)?Math.abs(+opts.engage):null, mode = opts.mode==='recette'?'recette':'depense';
+  const P=PAL[mode], n=points.length, id=uid();
+  const hasEng = engage!=null && engage>0;
+  const cums=points.map(p=>Math.abs(+p.cum||0));
+  const maxCum=cums.length?Math.max.apply(null,cums):0;
+  let yMax=Math.max(ceiling, hasEng?engage:0, maxCum); if(!(yMax>0)) yMax=1;
+  if (n===1 && !(ceiling>0) && !hasEng && maxCum>0) yMax = maxCum / 0.55;   // bare single level → 55% height, not pinned to top (finding 1c)
+  const yOf=c=>r1(CH.base-(c/yMax)*SPAN);
+  const xOf=i=>n<2?r1(CH.W/2):r1(i/(n-1)*CH.W);
+  const cy=yOf(ceiling), ey=hasEng?yOf(engage):null;
+  const defs='<linearGradient id="'+id+'a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+P.line+'" stop-opacity="'+P.a0+'"/><stop offset="1" stop-color="'+P.line2+'" stop-opacity="'+P.a1+'"/></linearGradient>'
+    +'<filter id="'+id+'g" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+  let grid=''; for(let k=1;k<=3;k++){ const y=r1(CH.top+SPAN*k/4); grid+='<line x1="0" y1="'+y+'" x2="'+CH.W+'" y2="'+y+'" stroke="rgba(255,255,255,.04)"/>'; }
+  // 3a de-collision (seam 27df): when plafond ≈ engagé, |cy−ey| shrinks under a label's
+  // line-height and the two top labels overprint into a smear. Convention (shared with the
+  // Niveaux view): engagé stays LEFT, plafond moves RIGHT (right-anchored) when close; far
+  // apart → today's left position, byte-identical. engagé label (engLayer) is untouched.
+  const _lblCollide = hasEng && ceiling>0 && Math.abs(cy-ey)<13;
+  const ceilLayer = ceiling>0 ? '<line x1="0" y1="'+cy+'" x2="'+CH.W+'" y2="'+cy+'" stroke="rgba(251,191,36,.55)" stroke-width="1.3" stroke-dasharray="4 4"/>'
+    +(_lblCollide
+      ? '<text x="'+(CH.W-4)+'" y="'+r1(cy-6)+'" text-anchor="end" fill="#fbbf24" font-size="9.5" font-family="Space Grotesk, DM Sans, sans-serif">'+P.ceilKey+' · '+groupFR(ceiling)+'</text>'
+      : '<text x="4" y="'+r1(cy-6)+'" fill="#fbbf24" font-size="9.5" font-family="Space Grotesk, DM Sans, sans-serif">'+P.ceilKey+' · '+groupFR(ceiling)+'</text>') : '';
+  let engLayer='';
+  if(hasEng){ const tol=engage*0.018, eT=yOf(engage+tol), eB=yOf(engage-tol);
+    engLayer='<rect x="0" y="'+eT+'" width="'+CH.W+'" height="'+r1(eB-eT)+'" fill="'+DEV+'" opacity="0.14"/>'
+      +'<line x1="0" y1="'+ey+'" x2="'+CH.W+'" y2="'+ey+'" stroke="'+DEV+'" stroke-width="1.3"/>'
+      +'<text x="6" y="'+r1(eT-5)+'" fill="'+DEVT+'" font-size="9.5" font-family="Space Grotesk, DM Sans, sans-serif">engagé · '+groupFR(engage)+'</text>'; }
+
+  /* ── n === 0 : designed empty state ── */
+  if(n===0){
+    const svg='<svg viewBox="0 0 '+CH.W+' '+CH.H+'" class="cx-svg"><defs>'+defs+'</defs>'+grid+ceilLayer+engLayer+'</svg>';
+    const msg = mode==='recette'?'Aucune recette reliée pour l\'instant':'Aucune dépense reliée pour l\'instant';
+    const card='<div class="cx-card">'+svg+'<div class="cx-empty"><div class="ic">📈</div><div class="m">'+msg+'</div></div></div>';
+    const cell=(k)=>'<div class="cx-cell"><div class="k">'+k+'</div><div class="v" style="color:var(--text-dim)">—</div></div>';
+    const stats='<div class="cx-strip">'+cell(P.firstL)+cell(P.lastL)+cell(P.moyL)+cell(P.etaKey)+'</div>';
+    return { chart:card, stats:'<div class="dsec-t" style="margin-top:20px">Rythme de '+(mode==='recette'?'recette':'dépense')+'</div>'+stats };
+  }
+
+  const pts=points.map((p,i)=>({x:xOf(i),y:yOf(Math.abs(+p.cum||0)),cum:Math.abs(+p.cum||0),amt:Math.abs(+p.amt||0),date:p.date||'',fourn:p.fourn||'—'}));
+  let pi=0; for(let i=1;i<n;i++) if(pts[i].amt>pts[pi].amt) pi=i;
+  const last=pts[n-1], cumLast=last.cum, moy=cumLast/n;
+  const busy = n>=BUSY;
+
+  /* ── line / dot ── */
+  let body='', nvSvg=null;   // nvSvg carries the single coherent n=1 template (its own composition)
+  if(n===1){
+    /* ── ONE n=1 template (seam 27ds): true-scale réel level + thin area to floor (same url(#…a)
+       gradient as n≥2), then ADD only the references that exist — plafond line if ceiling>0,
+       engagé line + reste band if hasEng. Bare (no ceiling, no engagé) = level + area only, sat at
+       55% via the yMax guard. Dot from geometry (CH.W/2), never the 170 literal. Over-ceiling
+       (dépense) colours the level+dot red. Reste stated ONCE — in the shared cx-callout below;
+       no in-band label here. A 2nd point continues this area into the monotone curve. ── */
+    const rp=pts[0], ry=r1(rp.y), xc=r1(CH.W/2);
+    const over = mode==='depense' && ceiling>0 && cumLast>ceiling;   // finding 7-note: single over-plafond point reads red
+    const lvlCol = over ? '#f87171' : P.line;
+    const reelArea='<rect x="0" y="'+ry+'" width="'+CH.W+'" height="'+r1(CH.base-rp.y)+'" fill="url(#'+id+'a)"/>'
+      +'<line x1="0" y1="'+ry+'" x2="'+CH.W+'" y2="'+ry+'" stroke="'+lvlCol+'" stroke-width="2" filter="url(#'+id+'g)"/>';
+    // engagé line + reste band (band only — reste figure lives in the callout, finding 4b)
+    let restBand='', engRef='';
+    if(hasEng){
+      const nvReste=engage-cumLast;
+      if(nvReste>0) restBand='<g class="cx-band"><rect x="0" y="'+ey+'" width="'+CH.W+'" height="'+r1(rp.y-ey)+'" fill="'+DEV+'" opacity="0.13"/></g>';
+      engRef='<line x1="0" y1="'+ey+'" x2="'+CH.W+'" y2="'+ey+'" stroke="'+DEV+'" stroke-width="1.3"/>'
+        +'<text x="6" y="'+r1(ey-6)+'" fill="'+DEVT+'" font-size="9.5" font-family="Space Grotesk, DM Sans, sans-serif">engagé · '+groupFR(engage)+'</text>';
+    }
+    // plafond line if ceiling>0 (3a convention: plafond RIGHT-anchored, engagé LEFT — de-collides by construction)
+    const ceilRef = ceiling>0 ? '<line x1="0" y1="'+cy+'" x2="'+CH.W+'" y2="'+cy+'" stroke="rgba(251,191,36,.55)" stroke-width="1.3" stroke-dasharray="4 4"/>'
+      +'<text x="'+(CH.W-4)+'" y="'+r1(cy-6)+'" text-anchor="end" fill="#fbbf24" font-size="9.5" font-family="Space Grotesk, DM Sans, sans-serif">'+P.ceilKey+' · '+groupFR(ceiling)+'</text>' : '';
+    // réel level label — pct-of-engagé when engagé exists, else just the amount (no fabricated ratio)
+    const above=rp.y>40, ly=above?r1(rp.y-8):r1(rp.y+13);
+    const pctTxt = hasEng ? ' · '+((cumLast/engage*100)<1?(cumLast/engage*100).toFixed(1):Math.round(cumLast/engage*100))+'%' : '';
+    const reelLbl='<text x="10" y="'+ly+'" fill="'+(over?'#f87171':P.label)+'" font-size="10" font-family="Space Grotesk, DM Sans, sans-serif">réel · '+groupFR(cumLast)+pctTxt+'</text>';
+    const dotN='<circle cx="'+xc+'" cy="'+ry+'" r="5" fill="none" stroke="'+lvlCol+'" stroke-width="1.4" class="cx-pulse"/>'
+      +'<circle cx="'+xc+'" cy="'+ry+'" r="4" fill="#0c0c12" stroke="'+lvlCol+'" stroke-width="2.4"/>';
+    nvSvg='<svg viewBox="0 0 '+CH.W+' '+CH.H+'" class="cx-svg"><defs>'+defs+'</defs>'
+      +grid+restBand+reelArea+engRef+ceilRef+reelLbl+dotN+'</svg>';
+  } else {
+    const S=sampleMono(pts);
+    const lw=(busy?1.6:2.6), split=(mode==='depense' && ceiling>0);
+    // over-budget (dépense only): below-ceiling runs stroke the mode colour, over-budget
+    // runs stroke the literal #f87171 (SVG presentation stroke does NOT resolve var(--red)).
+    // Each sub-path gets pathLength="1" + cx-draw so it wipes on over its OWN x-range only —
+    // simultaneous left-to-right reveal, each in its own colour (no wrong-colour flash).
+    let lines='';
+    ceilingRuns(S, cy, split).forEach(function(rn){
+      lines+='<path d="'+dOf(rn.pts)+'" pathLength="1" class="cx-draw" fill="none" stroke="'+(rn.over?'#f87171':P.line)+'" stroke-width="'+lw+'" stroke-linecap="round" stroke-linejoin="round" filter="url(#'+id+'g)"/>';
+    });
+    body='<path d="'+areaOf(S)+'" fill="url(#'+id+'a)"/>'+lines;
+  }
+  /* ── markers ── */
+  let mk='';
+  if(n>=2){
+    const show = busy ? [0,pi,n-1] : pts.map((_,i)=>i);
+    show.forEach(i=>{ const e=(i===0||i===n-1||i===pi);
+      mk+='<circle cx="'+pts[i].x+'" cy="'+r1(pts[i].y)+'" r="'+(e?3.4:2.4)+'" fill="#0c0c12" stroke="'+(i===pi?DEVT:P.line)+'" stroke-width="'+(e?2.2:1.6)+'"/>'; });
+  }
+  /* ── engagé bracket (reste à décaisser) ── */
+  let bracket='', reste=null;
+  if(hasEng){ reste=engage-cumLast;
+    if(reste>0){ const bx=r1(last.x-16);
+      bracket='<line x1="'+bx+'" y1="'+r1(last.y)+'" x2="'+bx+'" y2="'+ey+'" stroke="'+DEV+'" stroke-width="1.2"/>'
+        +'<line x1="'+r1(bx-3)+'" y1="'+r1(last.y)+'" x2="'+r1(bx+3)+'" y2="'+r1(last.y)+'" stroke="'+DEV+'" stroke-width="1.2"/>'
+        +'<line x1="'+r1(bx-3)+'" y1="'+ey+'" x2="'+r1(bx+3)+'" y2="'+ey+'" stroke="'+DEV+'" stroke-width="1.2"/>'
+        +'<text x="'+r1(bx-6)+'" y="'+r1((last.y+ey)/2+3)+'" text-anchor="end" fill="'+DEVT+'" font-size="9" font-family="Space Grotesk, DM Sans, sans-serif">'+groupFR(reste)+'</text>'; } }
+  /* ── pulse (last point) ── */
+  const pulse='<circle cx="'+last.x+'" cy="'+r1(last.y)+'" r="5" fill="none" stroke="'+P.line+'" stroke-width="1.4" class="cx-pulse"/>'
+    +'<circle cx="'+last.x+'" cy="'+r1(last.y)+'" r="4" fill="#0c0c12" stroke="'+P.line+'" stroke-width="2.4"/>';
+
+  const svg = nvSvg!==null ? nvSvg
+    : '<svg viewBox="0 0 '+CH.W+' '+CH.H+'" class="cx-svg"><defs>'+defs+'</defs>'
+      +grid+engLayer+body+ceilLayer+mk+bracket+pulse+'</svg>';
+
+  /* ── date axis (deduped) ── */
+  const idx=[0,Math.round((n-1)/2),n-1].filter((v,i,a)=>a.indexOf(v)===i);
+  const ds=idx.map(i=>pts[i].date), allSame=ds.every(d=>d===ds[0]);
+  let dax;
+  if(allSame){ dax='<div class="cx-datex one"><span>'+ds[0]+(n>1?' · '+n+' tx':'')+'</span></div>'; }
+  else { dax='<div class="cx-datex">'+ds.map(d=>'<span>'+d+'</span>').join('')+'</div>'; }
+
+  /* ── callout (engagé) ── */
+  let co='';
+  if(hasEng){ const word = mode==='recette'?'reste à encaisser':'reste à décaisser sur devis signés';
+    co = (reste>0)
+      ? '<div class="cx-callout"><span class="dot"></span><span><b>'+eurSmart(reste)+' €</b> '+word+' · réel cumulé <span class="mono">'+groupFR(cumLast)+'</span> / engagé <span class="mono" style="color:'+DEVT+'">'+groupFR(engage)+'</span></span></div>'
+      : '<div class="cx-callout"><span class="dot"></span><span>Réel cumulé <span class="mono">'+groupFR(cumLast)+'</span> ≥ engagé <span class="mono" style="color:'+DEVT+'">'+groupFR(engage)+'</span> — devis signé entièrement décaissé</span></div>'; }
+  const card='<div class="cx-card">'+svg+dax+co+'</div>';
+
+  /* ── stats card ── */
+  const named=(k,i,tint,txtcol)=>'<div class="cx-cell full"'+(tint?' style="background:linear-gradient(180deg,var(--surface),'+tint+')"':'')+'>'
+    +'<div class="k"'+(txtcol&&tint?' style="color:'+txtcol+'"':'')+'>'+k+'</div><div class="v"'+(txtcol?' style="color:'+txtcol+'"':'')+'>'
+    +'<span class="dt">'+pts[i].date+'</span><span class="sep">·</span>'+pts[i].fourn+'<span class="sep">·</span>'+P.sign+eurSmart(pts[i].amt)+' €</div></div>';
+  const eta=etaCell(pts,ceiling,mode);
+  const etaC='<div class="cx-cell"><div class="k">'+eta.k+'</div><div class="v" style="color:'+eta.col+'">'+eta.v+'</div></div>';
+  const moyC='<div class="cx-cell"><div class="k">'+P.moyL+'</div><div class="v">'+P.sign+eurSmart(moy)+' €<span class="sub"> /txn</span></div></div>';
+  const devC = hasEng ? '<div class="cx-cell full" style="background:linear-gradient(180deg,var(--surface),rgba(129,140,248,.07))"><div class="k" style="color:'+DEVT+'">Engagé · devis signés</div><div class="v" style="color:'+DEVT+'">'+groupFR(engage)+' €'+(reste>0?'<span class="sep">·</span><span class="sub">reste à décaisser</span> '+eurSmart(reste)+' €':'<span class="sep">·</span><span class="sub">décaissé</span>')+'</div></div>' : '';
+  let strip;
+  if(n===1){  /* collapse: no 3× duplicate; no fabricated trend (drop moy /txn + ETA-from-one-point) */
+    // static plafond/objectif flag — a state, not a projected date (finding 3 / step 5)
+    let flagC='';
+    if(ceiling>0){
+      const franchi = cumLast>ceiling;
+      const fLbl = mode==='recette' ? (franchi?'Objectif atteint':'Sous l\'objectif') : (franchi?'Franchi':'Sous le plafond');
+      const fCol = franchi ? (mode==='recette'?'var(--green)':'#f87171') : 'var(--text-muted)';
+      flagC='<div class="cx-cell"><div class="k">'+P.etaKey+'</div><div class="v" style="color:'+fCol+'">'+fLbl+'</div></div>';
+    } else {
+      flagC='<div class="cx-cell"><div class="k">'+P.etaKey+'</div><div class="v" style="color:var(--text-dim)">—</div></div>';
+    }
+    strip='<div class="cx-strip">'+named('Transaction unique',0,'rgba(168,85,247,.06)',P.label)+flagC+devC+'</div>';
+  } else {
+    strip='<div class="cx-strip">'+named(P.firstL,0)+named(P.lastL,n-1)+moyC+etaC
+      +named('Pic',pi,'rgba(168,85,247,.06)',P.label)+devC+'</div>';
+  }
+  return { chart:card, stats:'<div class="dsec-t" style="margin-top:20px">Rythme de '+(mode==='recette'?'recette':'dépense')+'</div>'+strip };
+}
+
+// Which point indices get a value label / date tick: first, middle, last.
+// (Geometric middle = round((n-1)/2); deduped for small n.) Retained export helper.
+function labelIdxs(n){
+  if (n <= 0) return [];
+  const mid = Math.round((n - 1) / 2);
+  const out = [];
+  [0, mid, n - 1].forEach(i => { if (out.indexOf(i) === -1) out.push(i); });
+  return out;
+}
+
+// "Rythme" stats (Variation B celled/named strip). Retained export: courbe() uses courbeB
+// directly; this returns the same B stats markup for the module export / any harness caller.
+function rythme(points, ceiling, mode){
+  return courbeB({ points: points, ceiling: ceiling, mode: mode }).stats;
+}
+
+/* ----------------------------------------------------------------------------
+   ASSIGNEDCARD  —  shared line representation (DR-7), used by BOTH drawers.
+   -----------------------------------------------------------------------------
+   Authored byte-for-byte compatible with the canonical options impl
+   (options mock L1789-1800); the signature must NOT change (v23 calls it).
+     assignedCard(dept, line, { cat, amt, atrier, onRemove })
+   The dot is coloured by DEPARTMENT brand colour (deptColorFor(dept)) — NOT by
+   transaction type. (See state-back: spec vectors conflate the dept dot with
+   the réelles type palette; the harness exercises the dot via a demo DEPTS
+   whose entries carry the enumerated palette colours.)
+   opts.onRemove falsy (read surfaces pass null) -> no remove affordance.
+   ---------------------------------------------------------------------------- */
+function assignedCard(dept, line, opts){
+  opts = opts || {};
+  const c = (typeof deptColorFor === 'function' ? deptColorFor(dept) : null) || '#fbbf24';
+  const cat = opts.cat || (typeof lineCat === 'function' ? lineCat(dept, line) : '');
+  const intra  = opts.intra  ? '<span class="vcard-cat" style="color:var(--indigo)">INTRA</span>' : '';
+  const amt = opts.amt ? '<span class="vcard-amt">' + opts.amt + '</span>' : '';
+  const rm  = opts.onRemove ? '<button class="vcard-rm" onclick="' + opts.onRemove + '" title="Retirer">✕</button>' : '';
+  const right = (amt || rm) ? '<div class="vcard-r" style="align-self:flex-start">' + amt + rm + '</div>' : '';
+  return '<div class="vcard" style="align-items:flex-start">'
+       + '<div class="vcard-l"><span class="vr-dot" style="background:' + c + ';margin-top:6px"></span>'
+       + '<span class="vcard-nm ilc-nm2"><span class="vcard-dept">' + dept + intra + '</span>'
+       + '<span class="ilc-line2">' + '<span class="vcard-cat">' + cat + '</span>' + line + '</span></span></div>'
+       + right + '</div>';
+}
+
+/* ----------------------------------------------------------------------------
+   TRANSACTION CARD  —  transactionCard(tx, { role, expanded, heldDissocier })
+   -----------------------------------------------------------------------------
+   The shared, role-aware reliée-transaction surface. SUPERSEDES v22a's stub
+   splitRowListCard / splitRowPreviewCard (which rendered name + paypill only).
+
+   ORACLE = the RECONCILED réelles mock (reelles _CURRENT_v1.20.html, the file
+   the spec cites by line). Pixel-exact EXCEPT the four DR overrides, which are
+   applied here and re-stated in the state-back:
+     DR-6  NO Rapprochement kv row in the card (-> Notes journal line elsewhere);
+           .rap-auto / .rap-manuel are never emitted by this renderer.
+     DR-2  remb-origin is the INLINE teal hint (.remb-origin, gap6 / 11.5px /
+           var(--rb)); NOT the options boxed version; NO .ro-rm remove button.
+     DR-7  the affected budget line is named via the sealed assignedCard helper
+           (dot+dept / mono .vcard-cat chip / line), NOT inline Département/Ligne
+           text.
+     DR-8  "Relier" (action) · "Reliée" (committed) · "Reliées (n)" (counts).
+
+   DERIVE-FROM-DATA: every amount / HT / date / count comes from `tx`. No mock
+   figure is hardcoded. money2() formats the always-2-decimals TTC/HT lines
+   (eurSmart trims ",00" and is wrong for the card amount, so the card has its
+   own formatter); sign and colour are derived, never copied.
+
+   ROLE (3-role scoping — this fixes divergence j):
+     'list'    réelles  — collapsible, 380px, dt-foot, metaline visible
+     'preview' options  — always-open, block-right amount, flex-wrap name
+     'edit'    _x edit  — collapsible, 520px (the rule currently UNSCOPED in _x)
+   The renderer emits ONE markup string; the role divergence lives entirely in
+   the CSS (.list / .preview / .edit). The unscoped base carries no divergent
+   property — see reelles-components.css §1-3.
+   ---------------------------------------------------------------------------- */
+
+// always-2-decimals FR money (TTC/HT show ",00"). 800 -> "800,00";
+// 775000 -> "775 000,00"; 910.8 -> "910,80". (eurSmart, used by courbe/rythme,
+// TRIMS ",00" — so the card needs its own; eurSmart stays sealed.)
+function money2(n){
+  const f = Math.abs(+n || 0).toFixed(2);
+  let int = f.slice(0, -3), dec = f.slice(-2);
+  int = int.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return int + ',' + dec;
+}
+const tcSign = n => (n < 0 ? '\u2212' : '+');   // U+2212 (−) for negatives, "+" otherwise
+
+/* ---- icon glyphs (verbatim from the réelles mock) ---- */
+const TC_CHEV   = '<svg class="sr-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>';
+const TC_AVATAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+const TC_PAY_CARD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>';
+const TC_PAY_WIRE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+const TC_IC_BACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg>';            // origin / remb-origin
+const TC_IC_FWD  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>';        // remb-link "Remboursé"
+const TC_IC_OUT  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>'; // wire out (inter "Vers société")
+const TC_IC_IN   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 10 20 15 15 20"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/></svg>';        // incoming (recette inter "Part reçue")
+const TC_IC_INFO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+const TC_IC_CLOCK= '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+const TC_IC_OPTIONS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>';
+const TC_IC_NOTE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>';
+const TC_IC_X    = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+// cas comptable long names (RE-6) — réelles mock L490/567/887/906 + legend L957-958
+const CAS_NAME = {
+  CCA: "Charges Constatées d'Avance",
+  FNP: "Factures Non Parvenues",
+  PCA: "Produits Constatés d'Avance",
+  FAE: "Factures \u00c0 \u00c9tablir"
+};
+// classification chip label (réelles type vocabulary)
+const CLS_LABEL = { ext:'externe', inter:'inter', intra:'intra', remb:'remboursement' };
+
+// amount colour: remb -> teal (--rb); recette non-remb -> green; else red.
+// Sign glyph comes from the numeric sign of the (derived) amount, so the same
+// rule reproduces every mock value: depense −red, remb +/−teal, recette +green.
+function tcAmtColor(cls, flow){
+  if (cls === 'remb') return 'var(--rb)';
+  return flow === 'recette' ? 'var(--green)' : 'var(--red)';
+}
+
+/* ---- pieces ---- */
+function tcPaypill(pay){
+  if (!pay || pay.kind === 'none') return '';
+  if (pay.kind === 'wire') return '<span class="paypill">' + TC_PAY_WIRE + 'Virement</span>';
+  return '<span class="paypill">' + TC_PAY_CARD + 'Carte \u00b7 <b>' + (pay.card || 'One') + '</b></span>';
+}
+function tcInitiator(tx){
+  if (!tx.initiator) return '';
+  const lbl = tx.initiatorLabel ? '<span class="lbl">' + tx.initiatorLabel + '</span> ' : '';
+  return '<span class="initiator"><span class="avatar-ic">' + TC_AVATAR + '</span>' + lbl + '<b>' + tx.initiator + '</b></span>';
+}
+function tcMetaline(tx){
+  const pay = tcPaypill(tx.pay);
+  const ini = tcInitiator(tx);
+  const date = tx.date ? '<span class="mono reel-date-meta" style="font-size:10.5px;color:var(--text-dim);margin-left:auto">' + tx.date + '</span>' : '';
+  if (!pay && !ini && !date) return '';
+  return '<div class="metaline" style="margin-top:0">' + pay + ini + date + '</div>';
+}
+function tcTop(tx){
+  const cls = tx.cls || 'ext';
+  const flow = tx.flow === 'recette' ? 'recette' : 'depense';
+  const chips = '<span class="ctag ' + cls + '">' + (CLS_LABEL[cls] || cls) + '</span>'
+              + (tx.cas ? ' <span class="ctag cas">' + tx.cas + '</span>' : '');     // RE-6 cas chip
+  const amt = tcSign(tx.ttc) + money2(tx.ttc);
+  const ht  = (tx.ht != null) ? '<span class="sr-ht">' + tcSign(tx.ht) + money2(tx.ht) + ' HT</span>' : '<span class="sr-ht"></span>';
+  return '<div class="sr-top"><span class="sr-name"><span style="color:#fff">' + (tx.name || '') + '</span> ' + chips + '</span>'
+       + '<span style="display:flex;align-items:flex-start"><span>'
+       + '<span class="sr-amt" style="color:' + tcAmtColor(cls, flow) + '">' + amt + '</span>'
+       + ht + '</span>' + TC_CHEV + '</span></div>';
+}
+function tcRelieeBy(lb){
+  return '<span class="reliee-by"><span class="avatar-ic">' + TC_AVATAR + '</span><b>'
+       + lb.who + '</b> <span class="rb-date">\u2014 ' + lb.date + '</span></span>';
+}
+function tcKv(tx){
+  const rows = [];
+  const kv = (k, v) => rows.push('<div class="kv"><span class="k">' + k + '</span><span class="v">' + v + '</span></div>');
+  if (tx.date)         kv("Date d'op\u00e9ration", tx.date);
+  if (tx.account)      kv('Compte', tx.account);
+  if (tx.note)         kv('Note relev\u00e9', tx.note);
+  (tx.kv || []).forEach(r => kv(r[0], r[1]));                               // card-specific rows sit right after Note relevé (mock cards 2/5/6: "Remboursé par" / "Affectée en intra le" / "Compte destinataire")
+  if (tx.societe)      kv('Soci\u00e9t\u00e9', '<span class="ctag inter">' + tx.societe + '</span>');
+  if (tx.cas)          kv('Cas comptable', '<span class="ctag cas">' + tx.cas + '</span> <span style="color:var(--text-dim)">\u00b7 ' + (CAS_NAME[tx.cas] || '') + '</span>');   // RE-6
+  if (tx.rattachement) kv('Rattachement', tx.rattachement);                 // RE-12 (data-driven / HELD)
+  if (tx.categorie)    kv('Cat\u00e9gorie', tx.categorie);                   // recette routing (catégories, not depts)
+  if (tx.typeRow)      kv('Type', tx.typeRow);
+  if (tx.linkedBy)     kv(tx.linkedBy.label || 'Reli\u00e9e par', tcRelieeBy(tx.linkedBy));   // ALWAYS LAST — mock invariant (every card ends Reliée par → dropped Rapprochement). RE-5 graceful-empty · DR-8 "Reliée"
+  /* DR-6: NO "Rapprochement" row — intentionally omitted (becomes a Notes
+     journal line on a different surface). .rap-auto/.rap-manuel never emitted. */
+  return '<div class="dt-kv">' + rows.join('') + '</div>';
+}
+function tcFlowLine(fl){
+  // .intra-origin > .io-row (intra/inter compact sub-line). dir picks the icon.
+  const tone = fl.tone === 'amber' ? ' style="color:var(--amber)"' : '';
+  const icon = fl.dir === 'out' ? TC_IC_OUT : fl.dir === 'in' ? TC_IC_IN : TC_IC_BACK;
+  const io = '<div class="io-row"' + tone + '>' + icon
+           + '<span class="lbl">' + fl.label + '</span> <b>' + fl.bold + '</b>'
+           + (fl.suffix ? ' <span class="lbl">' + fl.suffix + '</span>' : '') + '</div>';
+  let nested = '';
+  if (fl.remb){
+    const r = fl.remb;                                                       // DR-2 inline, nested (mock card #6)
+    nested = '<div class="remb-origin" style="margin-top:0">' + TC_IC_BACK
+           + '<span class="lbl">' + r.label + '</span> <b>' + r.bold + '</b>'
+           + (r.suffix ? ' <span class="lbl">' + r.suffix + '</span>' : '') + '</div>';
+  }
+  return '<div class="intra-origin" style="margin-top:9px">' + io + nested + '</div>';
+}
+function tcRembLink(rl){
+  return '<div class="remb-link">' + TC_IC_FWD
+       + '<span class="lbl">' + rl.label + '</span> <b>' + rl.bold + '</b>'
+       + (rl.suffix ? ' <span class="lbl">' + rl.suffix + '</span>' : '') + '</div>';
+}
+function tcRembOrigin(ro){
+  // DR-2: inline teal hint; NOT boxed; NO .ro-rm. tone 'dim' = the info variant.
+  const sty = ro.tone === 'dim' ? ' style="color:var(--text-dim)"' : '';
+  return '<div class="remb-origin"' + sty + '>' + (ro.icon === 'info' ? TC_IC_INFO : TC_IC_BACK)
+       + '<span class="lbl">' + ro.label + '</span>'
+       + (ro.bold ? ' <b>' + ro.bold + '</b>' : '')
+       + (ro.suffix ? ' <span class="lbl">' + ro.suffix + '</span>' : '') + '</div>';
+}
+function tcCas1(c){
+  // .cas1-marker — default indigo (intra reallocation); amber override = inter/cut-off.
+  const sty = (c.tone === 'amber')
+    ? ' style="color:var(--amber);background:rgba(251,191,36,.06);border-color:rgba(251,191,36,.18)"'
+    : '';
+  const icon = c.icon === 'clock' ? TC_IC_CLOCK : c.icon === 'in' ? TC_IC_IN : TC_IC_INFO;
+  return '<div class="cas1-marker"' + sty + '>' + icon + (c.text || '') + '</div>';
+}
+function tcFoot(opts){
+  // §v23a.3 §A2/A3/H — Options · Notes · Dissocier, all LIVE.
+  //   • A3: Options carries a REAL handler (optOpenFromCard → reattribuerTx open/hydrate path),
+  //         not the old `event.stopPropagation()` no-op. This is also the §D lock reach.
+  //   • A2: Notes button is back in the foot, RIGHT OF Options (reverses the v23a.2 #1 mis-scope),
+  //         using the intact frozen-leaf TC_IC_NOTE glyph → deep-links to the card's Notes tab.
+  //   • H : the 5a read↔edit hold is LIFTED (Leo). DEFAULT heldDissocier:false ⇒ live Dissocier;
+  //         the inert aria-disabled/data-held="5a" branch is dropped.
+  // The handlers take `this` (the button) so they can read the card's reliée context (data-opt-*
+  // on the .split-row root, threaded by the réelles assembly) and route the card's own tx.
+  const held = opts.heldDissocier === true;            // hold LIFTED → default live
+  const dis = held
+    ? '<button class="dt-btn dis" data-held="5a" aria-disabled="true" title="Dissocier \u2014 disponible en 5a (lecture\u2194\u00e9dition)" onclick="event.stopPropagation();return false">' + TC_IC_X + 'Dissocier</button>'
+    : '<button class="dt-btn dis" onclick="event.stopPropagation();optDissocierFromCard(this)">' + TC_IC_X + 'Dissocier</button>';
+  return '<div class="dt-foot"><div class="dt-btns">'
+       + '<button class="dt-btn opt" onclick="event.stopPropagation();optOpenFromCard(this)">' + TC_IC_OPTIONS + 'Options</button>'
+       + '<button class="dt-btn note-btn" onclick="event.stopPropagation();optNotesFromCard(this)">' + TC_IC_NOTE + 'Notes</button>'
+       + '</div>' + dis + '</div>';
+}
+
+// §v23a.3 §A3/§D — card-foot handlers. Read the card's reliée context from data-opt-* on the
+// nearest .split-row (threaded by the réelles assembly), fall back to live _optState. READ path;
+// reattribuerTx stashes _optionsLinked + opens with isReattribuer:true → settled hydrate + opt-locked.
+function _cardOptCtx(el){
+  const row = (el && el.closest) ? el.closest('.split-row') : null;
+  const d = (row && row.dataset) ? row.dataset : {};
+  const live = (typeof _optState !== 'undefined' && _optState) ? _optState : {};
+  return {
+    dept: d.optDept || live.dept || '',
+    ligne: d.optLigne || live.line || '',
+    fourn: d.optFourn || live.fourn || '',
+    note: d.optNote || live.note || '',
+    ht: parseFloat(d.optHt) || 0,
+    ttc: parseFloat(d.optTtc) || 0,
+    cas: d.optCas || live.cas || null,
+    tag: d.optTag || live.cls || null,
+    societe: d.optSociete || live.societe || ''
+  };
+}
+function optOpenFromCard(el){
+  // STEP-4 STUB (§D): real Options/Notes/Dissocier + 6->9-arg reattribuerTx land in STEP 5.
+  // No live opt-engine (openAssignDrawer) reachable from step 4 (event cas2Pending "Bientot" pattern).
+  showToast('\u23F3 Bient\u00F4t disponible');
+}
+function optNotesFromCard(el){
+  showToast('\u23F3 Bient\u00F4t disponible');
+}
+function optDissocierFromCard(el){
+  showToast('\u23F3 Bient\u00F4t disponible');
+}
+
+/* ---- the component ---- */
+function transactionCard(tx, opts){
+  tx = tx || {}; opts = opts || {};
+  const role = (opts.role === 'preview' || opts.role === 'edit') ? opts.role : 'list';
+  const cls  = tx.cls || 'ext';
+
+  // §v23a.2 card-unification: ALL roles (list/edit/preview) are collapsible,
+  // clickable, and carry expandRow + tcFoot. Cross-context identity is the gate;
+  // collapsed/expanded heights are shared in CSS §3 (no per-role caps).
+  const collapsible = true;
+  let rowCls = 'split-row';
+  if (collapsible) rowCls += ' clickable';
+  rowCls += ' cls ' + cls;
+  if (tx.rembpair) rowCls += ' rembpair' + (tx.rembpair === 'end' ? ' rembpair-end' : '');   // RE-9 grouping
+  if (opts.expanded) rowCls += ' expanded';
+  const onclick = collapsible ? ' onclick="expandRow(this)"' : '';
+
+  // §v23a.3 §A3/§D — optional reliée context for the foot handlers (data-opt-* on the root).
+  // Emitted ONLY when tx.optCtx is supplied (the réelles assembly threads it); cards without it
+  // (fixtures / canonicalTx) are byte-unchanged, so Task1 identity + the carried set are untouched.
+  let optData = '';
+  if (tx.optCtx) {
+    const o = tx.optCtx, esc = v => String(v == null ? '' : v).replace(/"/g, '&quot;');
+    optData = ` data-opt-dept="${esc(o.dept)}" data-opt-ligne="${esc(o.ligne)}" data-opt-fourn="${esc(o.fourn)}"`
+            + ` data-opt-note="${esc(o.note)}" data-opt-ht="${esc(o.ht)}" data-opt-ttc="${esc(o.ttc)}"`
+            + ` data-opt-cas="${esc(o.cas)}" data-opt-tag="${esc(o.tag)}" data-opt-societe="${esc(o.societe)}"`;
+  }
+
+  // compact sub-lines (outside rc-detail; always visible): flowLine -> rembLink -> rembOrigin
+  let sub = '';
+  if (tx.flowLine)   sub += tcFlowLine(tx.flowLine);
+  if (tx.rembLink)   sub += tcRembLink(tx.rembLink);
+  if (tx.rembOrigin) sub += tcRembOrigin(tx.rembOrigin);
+
+  // expanded detail
+  let detail = tcKv(tx);
+  if (tx.assigned) detail += '<div class="tc-assigned" style="margin-top:9px">'             // DR-7: assignedCard names the line
+                            + assignedCard(tx.assigned.dept, tx.assigned.line, { cat: tx.assigned.cat })
+                            + '</div>';
+  if (tx.cas1)        detail += tcCas1(tx.cas1);                                              // RE-8
+  if (collapsible && role === 'list') detail += tcFoot(opts);   // §v23a.4 hero-card: foot is LIST-only furniture (Options/Notes/Dissocier); dropped from edit + in-drawer preview hero
+
+  return '<div class="' + rowCls + '"' + onclick + optData + '>'
+       + tcTop(tx)
+       + tcMetaline(tx)
+       + sub
+       + '<div class="rc-detail">' + detail + '</div>'
+       + '</div>';
+}
+
+/* typesum / minichip count header (RE-10) — DERIVED from a tx list (or an
+   explicit count). pill green; one minichip per present cls, in ext/inter/
+   intra/remb order. DR-8 "Reliées (n)" applies to the title the caller passes. */
+function txCountHeader(o){
+  // Build 3 (reading-B, Leo-locked): title-row is title TEXT only. The green pill
+  // (Site 1) and the typesum/minichip ●dot cluster (Site 2) are dropped from this
+  // frozen body; the tab counter (Site 3) lives on a separate path and is untouched.
+  o = o || {};
+  return '<div class="dsec-t">' + (o.title || 'Transactions reli\u00e9es') + '</div>';
+}
+
+/* expandRow — the réelles accordion toggle (verified at réelles mock L989).
+   Included so the harness .list card is interactive; v22b reuses _x's own. */
+function expandRow(row){
+  const open = row.classList.contains('expanded');
+  row.parentElement.querySelectorAll('.split-row.expanded').forEach(r => { if (r !== row) r.classList.remove('expanded'); });
+  row.classList.toggle('expanded', !open);
+}
+
+/* Export for non-browser checks (no-op in the harness/_x). */
+if (typeof module !== 'undefined' && module.exports){
+  module.exports = { groupFR, kAbbr, eurSmart, courbe, labelIdxs, rythme, assignedCard, money2, transactionCard, txCountHeader, expandRow };
+}
+/* ════════ end sealed reelles-components.js ════════ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   v22b — EXEC-AUTHORED réelles wiring (NOT sealed; surfaced for cold-verify).
+   Two parts: (1) the live-tx → sealed-transactionCard ADAPTER, (2) the réelles
+   tab switcher. Every card field derives from the live match-log tx — no
+   hardcoded figures. HELD paths receive NO synthesised canon data (they stay
+   empty because the live tx carries no value for them today). Mappings that
+   lack a clean sealed slot are FLAGGED in the state-back, not approximated
+   silently. Runtime fidelity is Leo's deploy-look (GATE-SHAPE).
+   ═══════════════════════════════════════════════════════════════════════════ */
+function _reelCls(tx){
+  // classification → sealed cls token (drives the .cls border + the ctag chip).
+  if (tx.remboursement) return 'remb';
+  if (tx.tag === 'intra') return 'intra';
+  if (tx.tag === 'inter') return 'inter';
+  return 'ext';
+}
+function _reelTxToCard(tx, recMode){
+  const cls    = _reelCls(tx);
+  const isRemb = cls === 'remb';
+  const mag    = Math.abs(tx.ttc || 0);
+  // SIGN — reproduce the existing glyph+colour through the component's sign-keyed
+  // renderer: remb → +teal ; recette non-remb → +green (− only if stored negative,
+  // e.g. a future avoir) ; dépense → −red. money2() takes abs; tcSign keys on sign.
+  const ttc = isRemb ? mag : (recMode ? ((tx.ttc || 0) < 0 ? -mag : mag) : -mag);
+  const ht  = (tx.ht != null && tx.ht !== '')
+    ? (ttc < 0 ? -Math.abs(tx.ht) : Math.abs(tx.ht)) : null;
+  // pay-meta — degrade gracefully (fields may be absent on older imports).
+  const isWire = tx.method === 'wire' || tx.method === 'transfert';
+  const isCard = tx.method === 'card' || (!tx.method && (tx.card || tx.holder));
+  const pay = isWire ? { kind:'wire' }
+            : isCard ? { kind:'card', card: tx.card || tx.holder || 'One' }
+            : { kind:'none' };
+
+  const card = {
+    cls,
+    flow: recMode ? 'recette' : 'depense',
+    ttc, ht,
+    name: tx.fourn || '\u2014',
+    pay,
+    initiator: tx.initiator || '',
+    date: formatQontoDate(tx.date),
+    account: tx.account || '',
+    note: tx.note || '',
+    cas: tx.cas || '',                                   // RE-7 ext-cas / RE-17 recette PCA-FAE: HELD → empty unless backend feeds
+    societe: (cls === 'inter') ? (tx.societe || '') : ''
+    // RE-12 Rattachement: intentionally NOT passed → dormant (no canon data).
+    // RE-5 reliée-par (linkedBy): no live author field today → omitted (graceful).
+    // DR-7 assignedCard: not fed by the live reliées strip → omitted.
+  };
+
+  // intra Cas-1 reallocation (live: tx.intraCas===1, tx.origin) — marker + origin sub-line.
+  if (cls === 'intra' && tx.intraCas === 1){
+    card.cas1 = { icon:'info', text:"R\u00e9allocation interne \u00b7 sans virement \u2014 pas de cash Qonto sur ce compte. Compt\u00e9 une fois ici." };
+    if (tx.origin) card.flowLine = { dir:'back', label:'Origine :', bold: tx.origin, suffix:"\u00b7 relev\u00e9 d\u2019origine" };
+  }
+  // remboursement provenance (LOCK-11). Two states via the sealed rembOrigin slot:
+  //   matched  → "Li\u00e9 \u00e0 la d\u00e9pense du {date}"  (back icon)
+  //   pending  → "Li\u00e9 \u2014 en attente d\u2019assignation"  (info icon)  [FLAG: boxed teal
+  //              "counts-nowhere" marker downgraded to inline hint — no clean sealed box slot]
+  if (isRemb){
+    if (tx.refundPendingAssign){
+      card.rembOrigin = { tone:'dim', icon:'info', label:"Li\u00e9 \u2014 en attente d\u2019assignation de la d\u00e9pense" };
+    } else if (tx.refundOf){
+      card.rembOrigin = { tone:'dim', icon:'back', label:'Li\u00e9 \u00e0 la d\u00e9pense du', bold: formatQontoDate(tx.refundOfDate || tx.date) };
+    }
+  }
+  // FLAG (no sealed slot): the inter ibanManual provenance note (tx.ibanManual) has no
+  // transactionCard field — omitted in the folded card (backend-fed, empty today).
+  return card;
+}
+// seam 27db — chronological sort key for the courbe/rythme. Sibling to formatQontoDate (which is FROZEN —
+// call-only): normalizes t.date (ISO YYYY-MM-DD·YYYY/MM/DD, FR DD/MM/YYYY, dashed DD-MM-YYYY) to a comparable
+// YYYYMMDD string so the burn-down sorts by real chronology, not leading-char string order (the 26/02-last bug).
+const _courbeDateKey = raw => {
+  const s = String(raw||'').trim();
+  let m;
+  if ((m = s.match(/^(\d{4})[-\/](\d{2})[-\/](\d{2})/))) return m[1]+m[2]+m[3];   // ISO  YYYYMMDD
+  if ((m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})/)))       return m[3]+m[2]+m[1];   // FR   DD/MM/YYYY
+  if ((m = s.match(/^(\d{2})-(\d{2})-(\d{4})/)))         return m[3]+m[2]+m[1];   // dash DD-MM-YYYY
+  return s;   // unknown format → original (stable-ish fallback)
+};
+function _reelSerie(txs){
+  // Burn-down série for courbe(): cumulative running magnitude over date-sorted tx,
+  // mirroring the sign-aware total (pending refunds count nowhere; remb credits
+  // subtract) so the curve endpoint == "Total assigné". FLAGGED read-path contract.
+  const rows = (txs || []).filter(t => !t.refundPendingAssign)
+    .slice().sort((a, b) => _courbeDateKey(a.date).localeCompare(_courbeDateKey(b.date)));
+  let cum = 0; const pts = [];
+  rows.forEach(t => {
+    cum += t.remboursement ? -Math.abs(t.ttc || 0) : Math.abs(t.ttc || 0);
+    pts.push({ cum: cum, date: formatQontoDate(t.date), amt: Math.abs(t.ttc || 0), fourn: t.fourn });   // seam 27dc: +fourn per point (Courbe B named stats). cum/sign math unchanged.
+  });
+  return pts;
+}
+// réelles tab switcher (EXEC-authored; réelles-scoped, no collision with edTab).
+function reelTab(btn){
+  const bar = btn.closest('.reel-tabs'); if (!bar) return;
+  const root = bar.parentElement;
+  const pane = btn.getAttribute('data-pane');
+  bar.querySelectorAll('.reel-tab').forEach(t => t.classList.toggle('on', t === btn));
+  root.querySelectorAll('.reel-pane').forEach(p => p.classList.toggle('on', p.getAttribute('data-pane') === pane));
+}
+
+
+async function openReelDrawer(deptId, sectionIdx, lineIdx, recRef) {
+  // LOCK-12 (CL-36): recette fit (approach A). recRef={ci,ri} → recette mode (resolve from REC, supply
+  // display values, cas2Pending stays intra-only). recRef absent → dépense path BYTE-IDENTICAL.
+  const recMode = !!recRef;
+  let dept, line, section, tabName;
+  if (recMode) {
+    const cat = REC[recRef.ci];
+    if (!cat) return;
+    line = cat.rows[recRef.ri];
+    if (!line) return;
+    dept = { name: cat.cat || 'Recettes' };
+    section = cat.cat || '';
+    tabName = 'RECETTES';
+  } else {
+  const dept_ = DEPTS.find(d => d.id === deptId);
+  if (!dept_) return;
+  dept = dept_;
+  line = dept.sections[sectionIdx]?.lines[lineIdx];
   if (!line) return;
-  const section = dept.sections[sectionIdx]?.s || '';
-  const tabName = Object.entries(DEPT_META).find(([,m]) => m.id === deptId)?.[0] || deptId.toUpperCase();
+  section = dept.sections[sectionIdx]?.s || '';
+  tabName = Object.entries(DEPT_META).find(([,m]) => m.id === deptId)?.[0] || deptId.toUpperCase();
+  }
 
   const ttcReel = typeof line.tva === 'number' ? (line.reel || 0) * (1 + line.tva) : (line.reel || 0);
   const ttcEst  = typeof line.tva === 'number' ? (line.est  || 0) * (1 + line.tva) : (line.est  || 0);
+  // seam 27dc — engagé (flat devis-signés reference) for Courbe B. Mirrors renderDept's SIGNED-line
+  // logic (seam 27cu): a line is engagé iff signed; figure = (l.engage ?? l.est). TTC-scaled exactly
+  // like ttcEst so it sits on the same axis as ceiling + the TTC cum series. Unsigned → 0 → the
+  // renderer hides the engagé layer ("Absent → couche engagé masquée"). NOT a series; no cum/réel reconcile.
+  const _SIGNED_ST = ['DEVIS SIGNÉ', 'VALIDÉ', 'PAYÉ'];
+  const engageHT  = _SIGNED_ST.includes(line.st) ? (line.engage != null ? line.engage : (line.est || 0)) : 0;
+  const ttcEngage = typeof line.tva === 'number' ? engageHT * (1 + line.tva) : engageHT;
   const ecart   = (line.est || 0) - (line.reel || 0);
   const pct2    = line.est ? Math.round((line.reel||0)/line.est*100) : 0;
   const pctColor= pct2>=100?'var(--red)':pct2>=75?'var(--amber)':'var(--green)';
 
-  const expectedLines = dept.sections[sectionIdx]?.lines.filter(l =>
-    l.l && !l.l.startsWith('(ligne') && l !== line &&
-    ['EN COURS','DEVIS SIGNÉ'].includes(l.st) && !(l.reel > 0)
-  ) || [];
+  const expectedLines = recMode
+    ? (REC[recRef.ci]?.rows.filter(l =>
+        l.l && l !== line && ['EN COURS','DEVIS SIGNÉ'].includes(l.st) && !(l.reel > 0)) || [])
+    : (dept.sections[sectionIdx]?.lines.filter(l =>
+        l.l && !l.l.startsWith('(ligne') && l !== line &&
+        ['EN COURS','DEVIS SIGNÉ'].includes(l.st) && !(l.reel > 0)
+      ) || []);
 
-  const isBillLine = deptId==='billetterie' && line._bill;
-  document.getElementById('drawer-title').innerHTML = isBillLine
-    ? `<span style="color:#a5b4fc">⇄</span> Distribution`
-    : `<span style="color:var(--red)">💳</span> Dépenses réelles`;
-  document.getElementById('drawer-sub').innerHTML = isBillLine
-    ? `<strong style="color:#fff">${line.l}</strong> · distribué vers ${line._bill.dest}`
-    : `<strong style="color:#fff">${line.l}</strong> · ${dept.name} › ${section}`;
+  // Cas-2 intra pending entries (CL-20) — expected incoming wires from another session, count NOWHERE until linked (CL-15).
+  // Backend writes these (line.cas2Pending); absent today → empty, degrades gracefully. Always-render section (Q4).
+  // LOCK-12: Cas-2 is INTRA-only (transfert concept, not recette-coherent — confirmed at source) → empty in recette mode.
+  const cas2Pending = (!recMode && line && Array.isArray(line.cas2Pending)) ? line.cas2Pending : [];
+
+  document.getElementById('drawer-title').innerHTML = recMode ? `Recettes réelles` : `Dépenses réelles`;
+  document.getElementById('drawer-sub').innerHTML = `<strong style="color:#fff">${line.l}</strong> · ${section} · ${dept.name}`;
 
   // Show drawer immediately with loading placeholder for transactions
+  // Show drawer immediately (v22b fold: tabbed réelles drawer — Courbe/Reliées/Attendues/Notes)
   document.getElementById('drawer-body').innerHTML = `
-    <div class="drawer-section">
-      <div class="drawer-section-title">Résumé</div>
-      ${isBillLine ? `<div class="drawer-kpi-row">
-        <div class="drawer-kpi">
-          <div class="drawer-kpi-label">Montant distribué</div>
-          <div class="drawer-kpi-val" style="color:#a5b4fc">${line.reel?fe(line.reel):fe(line.est)}</div>
-        </div>
-        <div class="drawer-kpi">
-          <div class="drawer-kpi-label">Compte destinataire</div>
-          <div class="drawer-kpi-val" style="color:#fff;font-size:.82em;line-height:1.3">${line._bill.dest}</div>
-        </div>
-        <div class="drawer-kpi">
-          <div class="drawer-kpi-label">Classification</div>
-          <div class="drawer-kpi-val">${BILL_KPI_TAG[line._bill.tag]||line._bill.tag||'—'}</div>
-        </div>
-        <div class="drawer-kpi">
-          <div class="drawer-kpi-label">Date d'opération</div>
-          <div class="drawer-kpi-val" style="color:var(--text-muted);font-size:.85em">${new Date(line._bill.date).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'})}</div>
-        </div>
-      </div>` : `<div class="drawer-kpi-row">
-        <div class="drawer-kpi">
-          <div class="drawer-kpi-label">Dépensé HT</div>
-          <div class="drawer-kpi-val" style="color:${(line.reel||0)>0?'var(--red)':'var(--text-dim)'}">${line.reel?fe(line.reel):'—'}</div>
-        </div>
-        <div class="drawer-kpi">
-          <div class="drawer-kpi-label">Dépensé TTC</div>
-          <div class="drawer-kpi-val" style="color:var(--text-muted)">${line.reel?fe(ttcReel):'—'}</div>
-        </div>
-        <div class="drawer-kpi">
-          <div class="drawer-kpi-label">Au budget HT</div>
-          <div class="drawer-kpi-val" style="color:var(--text-muted)">${fe(line.est||0)}</div>
-        </div>
-        <div class="drawer-kpi">
-          <div class="drawer-kpi-label">Écart HT</div>
-          <div class="drawer-kpi-val" style="color:${ecart>=0?'var(--green)':'var(--red)'}">${ecart>=0?'+':''}${fe(ecart)}</div>
-        </div>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
-        <span style="font-size:.65em;color:var(--text-dim)">Budget consommé</span>
-        <span style="font-size:.68em;font-weight:700;color:${pctColor}">${pct2}%</span>
-      </div>
-      <div style="height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden;margin-bottom:4px">
-        <div style="width:${Math.min(pct2,100)}%;height:100%;background:${pctColor};border-radius:3px;transition:width .5s"></div>
-      </div>`}
+    <div class="reel-tabs">
+      <button class="reel-tab on" data-pane="courbe" onclick="reelTab(this)">Courbe</button>
+      <button class="reel-tab" data-pane="reliees" onclick="reelTab(this)">Reliées <span class="cnt" id="reel-cnt-reliees">0</span></button>
+      <button class="reel-tab" data-pane="attendues" onclick="reelTab(this)">${recMode ? 'Recettes attendues' : 'Attendues'} <span class="cnt">${expectedLines.length + cas2Pending.length}</span>${(expectedLines.length + cas2Pending.length) > 0 ? '<span class="alert"></span>' : ''}</button>
     </div>
 
-    <!-- Transactions — will be populated async -->
-    <div class="drawer-section" id="reel-tx-section">
-      <div class="drawer-section-title">Transactions Qonto</div>
-      <div style="text-align:center;padding:20px;color:var(--text-dim);font-size:.78em">Chargement…</div>
+    <div class="reel-pane on" data-pane="courbe" id="reel-pane-courbe">${courbe({ points: [], ceiling: ttcEst, engage: ttcEngage, mode: recMode ? 'recette' : 'depense' })}</div>
+
+    <div class="reel-pane" data-pane="reliees">
+      <div class="drawer-section" id="reel-tx-section">
+        <div class="drawer-section-title">Transactions reliées</div>
+        <div style="text-align:center;padding:20px;color:var(--text-dim);font-size:.78em">Chargement…</div>
+      </div>
     </div>
 
-    <!-- Expected expenses -->
-    ${expectedLines.length > 0 ? `
+    <div class="reel-pane" data-pane="attendues">
+    <!-- Expected expenses — header always shown; data source (intra transactions, Case 2 §139) deferred, see CONTRACT_LEDGER -->
     <div class="drawer-section">
       <div class="drawer-section-title" style="display:flex;align-items:center;gap:8px">
-        Dépenses attendues dans cette section
-        <span style="font-size:.6em;padding:2px 7px;border-radius:4px;background:rgba(251,191,36,.1);color:var(--amber);font-weight:700">${expectedLines.length} ligne${expectedLines.length>1?'s':''}</span>
+        ${recMode ? 'Recettes attendues' : 'Dépenses attendues'}
+        <span style="font-size:.6em;padding:2px 7px;border-radius:4px;background:rgba(251,191,36,.1);color:var(--amber);font-weight:700">${expectedLines.length + cas2Pending.length} transaction${(expectedLines.length + cas2Pending.length)>1?'s':''}</span>
       </div>
-      ${expectedLines.map(l => {
+      ${cas2Pending.map((p, pi) => `<div style="background:var(--surface-2);border-radius:10px;margin-bottom:8px;border-left:2px solid #818cf8;overflow:hidden">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:11px 13px;gap:10px">
+          <div><div style="font-family:'Space Grotesk',sans-serif;font-size:.82em;font-weight:700;color:#fff;display:flex;align-items:center;gap:7px;flex-wrap:wrap">${p.fourn||'—'} <span style="display:inline-flex;align-items:center;gap:4px;font-size:.56em;font-weight:700;text-transform:uppercase;letter-spacing:.7px;padding:2px 7px;border-radius:5px;background:rgba(129,140,248,.12);color:#818cf8;border:1px solid rgba(129,140,248,.25)">intra · avec virement</span></div></div>
+          <div style="text-align:right;flex-shrink:0"><div style="font-family:var(--ff-num);font-variant-numeric:tabular-nums lining-nums;font-size:.85em;font-weight:700;color:#818cf8">+${fmtAmt(Math.abs(p.ttc||0))}</div><div style="font-size:.58em;color:var(--text-dim);margin-top:2px">virement attendu</div></div>
+        </div>
+        ${p.origin ? `<div style="font-size:.64em;color:var(--text-muted);padding:0 13px 8px;display:flex;align-items:center;gap:5px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg>Virement réel attendu depuis <b style="color:var(--text-muted)">${p.origin}</b></div>` : ''}
+        <div style="display:flex;align-items:center;gap:6px;font-size:.6em;color:var(--text-dim);background:rgba(255,255,255,.02);padding:7px 13px;border-top:1px solid rgba(255,255,255,.04)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Non comptabilisé — n'entre dans aucun total tant qu'il n'est pas lié au virement réel.</div>
+        <div style="padding:9px 13px;border-top:1px solid rgba(255,255,255,.04)"><button onclick="showToast('⏳ Bientôt','Marquer fait + lier au virement reçu — disponible prochainement.','amber')" style="width:100%;font-size:.64em;padding:7px 10px;border-radius:7px;cursor:pointer;font-family:inherit;font-weight:600;border:1px solid rgba(129,140,248,.3);background:rgba(129,140,248,.08);color:#818cf8">✓ Marquer fait + lier</button></div>
+        <div style="padding:0 13px 9px;display:flex;gap:7px"><button onclick="showToast('⏳ Bientôt','Convertir en Cas 1 (réallocation, sans virement) — disponible prochainement.','amber')" style="flex:1;font-size:.64em;padding:7px 10px;border-radius:7px;cursor:pointer;font-family:inherit;font-weight:600;border:1px solid rgba(129,140,248,.2);background:transparent;color:var(--text-muted)">→ Convertir en Cas 1</button><button onclick="showToast('⏳ Bientôt','Annuler — la transaction repart en non reliée sur le compte d&apos;origine.','amber')" style="flex:1;font-size:.64em;padding:7px 10px;border-radius:7px;cursor:pointer;font-family:inherit;font-weight:600;border:1px solid rgba(248,113,113,.22);background:rgba(248,113,113,.05);color:var(--red)">✕ Annuler</button></div>
+      </div>`).join('')}
+      ${expectedLines.length > 0 ? expectedLines.map(l => {
         const ttcL = typeof l.tva==='number'?(l.est||0)*(1+l.tva):(l.est||0);
         return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface-2);border-radius:8px;margin-bottom:6px;border-left:2px solid ${l.st==='DEVIS SIGNÉ'?'#818cf8':'var(--amber)'}">
           <div>
@@ -5025,29 +5994,50 @@ async function openReelDrawer(deptId, sectionIdx, lineIdx) {
             <div style="font-size:.6em;color:var(--text-dim)">HT estimé</div>
           </div>
         </div>`;
-      }).join('')}
-    </div>` : ''}
-
-    <!-- Future: invoice tracking -->
-    <div class="drawer-section">
-      <div class="drawer-section-title" style="display:flex;align-items:center;gap:8px">
-        Suivi des factures
-        <span class="future-badge">✦ Fonctionnalité future</span>
-      </div>
-      <div style="border:1px dashed rgba(99,102,241,.25);border-radius:10px;padding:16px;text-align:center;opacity:.75">
-        <div style="font-size:1.3em;margin-bottom:8px">🧾</div>
-        <div style="font-size:.75em;font-weight:600;color:#818cf8;margin-bottom:4px">Suivi factures & paiements</div>
-        <div style="font-size:.68em;color:var(--text-dim);line-height:1.5">Associez les factures PDF directement à chaque ligne. Statut de paiement, dates d'échéance et relances automatiques.</div>
-        <div style="margin-top:10px;font-size:.65em;padding:5px 12px;border-radius:6px;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);color:#818cf8;display:inline-block">Disponible prochainement</div>
-      </div>
+      }).join('') : (cas2Pending.length > 0 ? '' : `<div class="drawer-empty">
+        <div class="drawer-empty-icon">⏳</div>
+        Aucune dépense attendue pour le moment.<br>
+        <span style="font-size:.85em;color:var(--text-dim)">Les dépenses attendues alimenteront cette section.</span>
+      </div>`)}
+    </div>
     </div>
   `;
 
   document.getElementById('drawer-footer').style.display = 'flex';
   document.getElementById('drawer-footer').innerHTML = `
     <button class="drawer-btn" onclick="closeDrawer()">Fermer</button>
-    <button class="drawer-btn primary" onclick="closeDrawer();openEditLigne('${deptId}',${sectionIdx},${lineIdx})">Éditer la ligne</button>
   `;
+
+  // §v23a.2 shell re-base (A3): réelles adopts the rail chrome. POPULATE-THEN-SHOW — fill the rail
+  // header + the 4-KPI strip in the fixed hosts from the live line figures (a render-site move, not
+  // a recompute; mirrors edit's v21b lift). railKpis is rendered k3:false → the base 4-col .rail-kpis
+  // (L498), no new CSS. Wire the rail ✕, THEN add reel-mode (F-3: mode-class set only after populate).
+  (function _reelAdoptRail(){
+    const hHost = document.getElementById('rail-hdr-host');
+    if (hHost) {
+      hHost.innerHTML = railHdr({
+        icon: recMode
+          ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'
+          : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
+        title: recMode ? 'Recettes réelles' : 'Dépenses réelles',
+        subHTML: `<b>${line.l}</b> · ${section} · ${dept.name}`,
+        railXState: 'close'
+      });
+      const rx = hHost.querySelector('.rail-x'); if (rx) rx.onclick = closeDrawer;
+    }
+    const kHost = document.getElementById('rail-kpis-host');
+    if (kHost) {
+      // labels = parked intent (Prévu/Réel/Écart/Consommé); Écart maps to the Restant figure
+      // (Math.max(0,est−reel)); live values verbatim, "—" stays "—".
+      kHost.innerHTML = railKpis([
+        { label: 'Prévu',    value: fe(line.est || 0),                                   colorClass: 'prevu'  },
+        { label: 'Réel',     value: line.reel ? fe(line.reel) : '—',                     colorClass: 'reel'   },
+        { label: 'Écart',    value: fe((line.est || 0) - (line.reel || 0)), colorClass: 'engage' },
+        { label: 'Consommé', value: pct2 + '%',                                          colorClass: ''       }
+      ], { k3: false });
+    }
+    document.getElementById('drawer').classList.add('reel-mode');
+  })();
 
   document.getElementById('drawer-overlay').classList.add('open');
   document.getElementById('drawer').classList.add('open');
@@ -5058,7 +6048,7 @@ async function openReelDrawer(deptId, sectionIdx, lineIdx) {
   if (!txSection) return;
 
   if (!line.reel || line.reel === 0) {
-    txSection.innerHTML = `<div class="drawer-section-title">Transactions Qonto</div>
+    txSection.innerHTML = `<div class="drawer-section-title">Transactions reliées</div>
       <div class="drawer-empty">
         <div class="drawer-empty-icon">💳</div>
         Aucune transaction Qonto associée.<br>
@@ -5079,93 +6069,52 @@ async function openReelDrawer(deptId, sectionIdx, lineIdx) {
 
   if (matchLogTx.length > 0) {
     // Exact match from MATCH_LOG — card layout with full details
-    const total = matchLogTx.reduce((a,t) => a + Math.abs(t.ttc||0), 0);
+    // LOCK-11 (CL-35) sign-aware total: expenses sum abs; remboursement credits SUBTRACT their own
+    // amount (R1 cost-side credit to THIS line; R2 by the refund's own partial amount, never zeroing
+    // the matched expense). Degrades to the old abs-sum when no credit rows present (backend-fed, Phase-D).
+    // LOCK-13 re-pass Item 7: a PENDING refund (tx.refundPendingAssign) counts NOWHERE until its origin
+    // is assigned and the link resolves — so it is excluded from this total (Cas-2 "counts nowhere"
+    // invariant, CL-20). It only subtracts once resolved (Phase-D propagation, CL-38).
+    const total = matchLogTx.reduce((a,t) => t.refundPendingAssign ? a : (t.remboursement ? a - Math.abs(t.ttc||0) : a + Math.abs(t.ttc||0)), 0);
     const _deptId = deptId;
     const _lineL = line.l;
     const _si = sectionIdx;
     const _li = lineIdx;
-    const rows = matchLogTx.map((tx, txIdx) => {
-      const d = formatQontoDate(tx.date);
-      const amt = tx.ttc ? `−${fmtAmt(Math.abs(tx.ttc))}` : '—';
-      const amtHT = tx.ht ? `−${fmtAmt(Math.abs(tx.ht))} HT` : '';
-      const src = tx.source === 'manual' ? `<span style="font-size:.58em;padding:1px 6px;border-radius:3px;background:rgba(168,85,247,.1);color:#c4b5fd">assigné</span>` : `<span style="font-size:.58em;padding:1px 6px;border-radius:3px;background:rgba(99,102,241,.1);color:#818cf8">auto</span>`;
-      return `<div style="background:var(--surface);border-radius:8px;padding:12px 14px;border:1px solid rgba(255,255,255,.04);margin-bottom:6px">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
-          <div style="flex:1;min-width:0">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-              <span style="font-size:.78em;font-weight:600;color:#fff">${tx.fourn || '—'}</span>
-              ${src}
-            </div>
-            <div style="font-size:.68em;color:var(--text-muted);line-height:1.5;word-break:break-word">${tx.note || '—'}</div>
-          </div>
-          <div style="text-align:right;flex-shrink:0;margin-left:12px">
-            <div style="font-family:monospace;font-size:.88em;font-weight:700;color:var(--red)">${amt}</div>
-            ${amtHT ? `<div style="font-size:.6em;color:var(--text-dim);margin-top:1px">${amtHT}</div>` : ''}
-          </div>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:.62em;color:var(--text-dim)">${d}${tx.section ? ' · '+tx.section : ''}</span>
-          <button class="reassign-btn" data-dept="${tabName}" data-ligne="${_lineL.replace(/"/g,'&quot;')}" data-fourn="${(tx.fourn||'').replace(/"/g,'&quot;')}" data-note="${(tx.note||'').replace(/"/g,'&quot;')}" data-ht="${tx.ht||0}" data-ttc="${tx.ttc||0}"
-            style="font-size:.6em;padding:3px 8px;border-radius:4px;border:1px solid rgba(251,191,36,.25);background:rgba(251,191,36,.06);color:var(--amber);cursor:pointer;font-family:inherit;font-weight:600;transition:all .2s"
-            onmouseover="this.style.background='rgba(251,191,36,.15)'" onmouseout="this.style.background='rgba(251,191,36,.06)'">
-            ↻ Réattribuer
-          </button>
-          <button class="dissociate-btn" data-dept="${tabName}" data-ligne="${_lineL.replace(/"/g,'&quot;')}" data-fourn="${(tx.fourn||'').replace(/"/g,'&quot;')}" data-note="${(tx.note||'').replace(/"/g,'&quot;')}" data-ht="${tx.ht||0}" data-ttc="${tx.ttc||0}" data-deptid="${_deptId}" data-si="${_si}" data-li="${_li}"
-            style="font-size:.6em;padding:3px 8px;border-radius:4px;border:1px solid rgba(248,113,113,.25);background:rgba(248,113,113,.06);color:var(--red);cursor:pointer;font-family:inherit;font-weight:600;transition:all .2s"
-            onmouseover="this.style.background='rgba(248,113,113,.15)'" onmouseout="this.style.background='rgba(248,113,113,.06)'">
-            ✕ Dissocier
-          </button>
-        </div>
-      </div>`;
-    }).join('');
-
-    txSection.innerHTML = `<div class="drawer-section-title">Transactions Qonto</div>
-      <div style="background:var(--surface-2);border:1px solid rgba(99,102,241,.2);border-radius:8px;overflow:hidden">
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border)">
-          <span style="font-size:.65em;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#818cf8">${matchLogTx.length} transaction${matchLogTx.length > 1 ? 's' : ''} assignée${matchLogTx.length > 1 ? 's' : ''}</span>
-          <span style="font-family:monospace;font-size:.78em;font-weight:600;color:#fff">−${fmtAmt(total)} € TTC</span>
-        </div>
-        <div style="padding:10px 14px">
-          ${rows}
-        </div>
-      </div>`;
-
-    // Delegated click for dissociate and reassign buttons
-    txSection.addEventListener('click', function(e) {
-      const dissBtn = e.target.closest('.dissociate-btn');
-      if (dissBtn) {
-        dissociateTransaction(
-          dissBtn.dataset.dept, dissBtn.dataset.ligne, dissBtn.dataset.fourn, dissBtn.dataset.note,
-          parseFloat(dissBtn.dataset.ht)||0, parseFloat(dissBtn.dataset.ttc)||0,
-          dissBtn.dataset.deptid, parseInt(dissBtn.dataset.si), parseInt(dissBtn.dataset.li)
-        );
-        return;
-      }
-      const reassBtn = e.target.closest('.reassign-btn');
-      if (reassBtn) {
-        reattribuerTx(
-          reassBtn.dataset.dept, reassBtn.dataset.ligne, reassBtn.dataset.fourn, reassBtn.dataset.note,
-          parseFloat(reassBtn.dataset.ht)||0, parseFloat(reassBtn.dataset.ttc)||0
-        );
-      }
+    // ── v22b RENDER (engine above preserved verbatim) — réelles cards via the sealed
+    //    transactionCard in the .list role, + the burn-down courbe, both on live data.
+    const _cards = matchLogTx.map(tx => {
+      const _c = _reelTxToCard(tx, recMode);                        // frozen-leaf, called byte-identical
+      _c.optCtx = { dept: tabName, ligne: _lineL, fourn: tx.fourn || '', note: tx.note || '',
+                    ht: Math.abs(tx.ht || 0), ttc: (_reelCls(tx) === 'remb') ? Math.abs(tx.ttc || 0) : (recMode ? (tx.ttc || 0) : -Math.abs(tx.ttc || 0)),
+                    cas: tx.cas || null, tag: _reelCls(tx), societe: tx.societe || '' };  // §A3/§D foot reach
+      return transactionCard(_c, { role:'list', expanded:false });
     });
+    const _items = matchLogTx.map(tx => ({ cls: _reelCls(tx) }));
+    txSection.innerHTML =
+      txCountHeader({ items:_items, count: matchLogTx.length, title:'Transactions reliées' })
+      /* §v23a.3 §H — "Total assigné" .reel-total card dropped (figure lives in the rail KPI above). */
+      + `<div class="list reel-cards">${_cards.join('')}</div>`;
+    const _cntEl = document.getElementById('reel-cnt-reliees');
+    if (_cntEl) _cntEl.textContent = matchLogTx.length;
+    const _coPane = document.getElementById('reel-pane-courbe');
+    if (_coPane) _coPane.innerHTML = courbe({ points: _reelSerie(matchLogTx), ceiling: ttcEst, engage: ttcEngage, mode: recMode ? 'recette' : 'depense' });
     return;
   }
 
   // No match-log entries — clean empty state
   if (line.reel && line.reel > 0) {
-    txSection.innerHTML = `<div class="drawer-section-title">Transactions Qonto</div>
+    txSection.innerHTML = `<div class="drawer-section-title">Transactions reliées</div>
       <div style="background:var(--surface-2);border:1px solid rgba(99,102,241,.2);border-radius:8px;overflow:hidden">
         <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border)">
           <span style="font-size:.65em;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#818cf8">Réel cumulé Qonto</span>
-          <span style="font-family:monospace;font-size:.78em;font-weight:600;color:#fff">−${fe(line.reel)}</span>
+          <span style="font-family:var(--ff-num);font-variant-numeric:tabular-nums lining-nums;font-size:.78em;font-weight:600;color:#fff">−${fe(line.reel)}</span>
         </div>
         <div style="padding:14px;text-align:center;color:var(--text-dim);font-size:.75em">
           Détail des transactions non disponible. Réimportez le relevé Qonto pour reconstruire l'historique.
         </div>
       </div>`;
   } else {
-    txSection.innerHTML = `<div class="drawer-section-title">Transactions Qonto</div>
+    txSection.innerHTML = `<div class="drawer-section-title">Transactions reliées</div>
       <div class="drawer-empty">
         <div class="drawer-empty-icon">💳</div>
         Aucune transaction Qonto associée.<br>
@@ -5298,175 +6247,6 @@ function toggleRecDetail() {
     summary.style.display = '';
     expanded.style.display = 'none';
   }
-}
-
-function openRecCatDrawer(ci) {
-  const cat = REC[ci];
-  if (!cat) return;
-  const catEst = cat.rows.reduce((a,r)=>a+(r.ht||0),0);
-  const catReel = cat.rows.reduce((a,r)=>a+(r.reel||0),0);
-
-  document.getElementById('drawer-title').innerHTML = `<span style="color:var(--green)">📊</span> ${cat.cat}`;
-  document.getElementById('drawer-sub').innerHTML = `${cat.rows.length} ligne${cat.rows.length>1?'s':''} · Estimé ${fe(catEst)}`;
-
-  // All positive transactions
-  const posTx = (_releveAllTx||[]).filter(t => (t.ttc||0) > 0);
-
-  // Smart match: for each line, find tx where fournisseur fuzzy-matches the line name
-  const matchedTxIds = new Set();
-  const lineMatches = cat.rows.map((r, ri) => {
-    const lineName = normStr(r.l||'');
-    const matches = posTx.filter(t => {
-      if (matchedTxIds.has(t.ref||t.fourn+t.ttc)) return false;
-      const fourn = normStr(t.fourn||'');
-      const note = normStr(t.note||'');
-      return (lineName && fourn && fuzzyMatchClient(lineName, fourn))
-        || (lineName && note && note.includes(lineName))
-        || (fourn && lineName && fourn.includes(lineName));
-    });
-    matches.forEach(t => matchedTxIds.add(t.ref||t.fourn+t.ttc));
-    return { row: r, ri, matches };
-  });
-
-  // Also match by category name for tx not yet matched to a specific line
-  const catNorm = normStr(cat.cat);
-  const catMatched = posTx.filter(t => {
-    if (matchedTxIds.has(t.ref||t.fourn+t.ttc)) return false;
-    const fourn = normStr(t.fourn||'');
-    const note = normStr(t.note||'');
-    const txCat = normStr(t.cat||'');
-    return txCat === catNorm || (catNorm && fourn && fourn.includes(catNorm))
-      || (catNorm && note && note.includes(catNorm));
-  });
-  catMatched.forEach(t => matchedTxIds.add(t.ref||t.fourn+t.ttc));
-
-  const allMatched = [...lineMatches.flatMap(lm => lm.matches), ...catMatched];
-  const matchedTotal = allMatched.reduce((a,t) => a + (t.ttc||0), 0);
-
-  // Unmatched positive tx
-  const unmatched = posTx.filter(t => !matchedTxIds.has(t.ref||t.fourn+t.ttc));
-
-  // Line breakdown — compact 2-col for side panel (tx focus: show Encaissé)
-  const linesHtml = lineMatches.map(({row: r, ri, matches}) => {
-    const reeH = r.reel||0;
-    const matchBadge = matches.length > 0
-      ? `<span style="font-size:10px;color:var(--green);background:rgba(52,211,153,.08);padding:1px 5px;border-radius:3px;margin-left:6px">${matches.length} tx</span>`
-      : '';
-    const estNote = r.ht ? `<div style="font-size:10px;color:var(--text-dim);margin-top:1px">${fe(r.ht)} estimé</div>` : '';
-    return `<tr style="cursor:pointer" onclick="closeDrawer();openRecetteDrawer(${ci},${ri})">
-      <td><div style="font-weight:500;color:#fff">${r.l}${matchBadge}</div>${estNote}</td>
-      <td style="text-align:right;white-space:nowrap"><span class="cro" style="color:${reeH?'var(--green)':'var(--text-dim)'};font-weight:600">${reeH?fe(reeH):'—'}</span></td>
-    </tr>`;
-  }).join('');
-
-  // Matched transactions display — store tx data globally for onclick access
-  window._recDrawerTx = [];
-  const txIdx = (t) => { window._recDrawerTx.push(t); return window._recDrawerTx.length - 1; };
-
-  const txRow = (t, showLine, linkLigne) => {
-    const idx = txIdx(t);
-    const esc = (s) => (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-    const linkBtn = linkLigne
-      ? `<button onclick="event.stopPropagation();const t=window._recDrawerTx[${idx}];linkRecTx(t.fourn||'',t.note||'',t.date||'',t.ht||0,t.ttc||0,'${esc(linkLigne)}',${ci})" style="font-size:10px;padding:3px 10px;border-radius:5px;border:1px solid rgba(52,211,153,.3);background:rgba(52,211,153,.08);color:var(--green);cursor:pointer;white-space:nowrap;font-weight:600">Relier →</button>`
-      : '';
-    return `<div style="background:var(--surface);border-radius:8px;padding:10px 14px;border:1px solid rgba(255,255,255,.04);margin-bottom:6px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
-        <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
-            <span style="font-size:13px;font-weight:600;color:#fff">${t.fourn||'—'}</span>
-            ${showLine?`<span style="font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(255,255,255,.05);color:var(--text-dim)">${showLine}</span>`:''}
-          </div>
-          ${t.note?`<div style="font-size:11px;color:var(--text-muted);line-height:1.4;word-break:break-word;margin-bottom:2px">${t.note}</div>`:''}
-        </div>
-        <div style="text-align:right;flex-shrink:0;margin-left:10px">
-          <div style="font-family:monospace;font-size:13px;font-weight:700;color:var(--green)">+${fmtAmt(t.ttc)} €</div>
-          ${t.ht && t.ht !== t.ttc ? `<div style="font-size:10px;color:var(--text-dim)">+${fmtAmt(t.ht)} HT</div>` : ''}
-        </div>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-size:11px;color:var(--text-dim)">${(t.date||'').split(' ')[0]||'—'}${t.cat?' · '+t.cat:''}</span>
-        ${linkBtn}
-      </div>
-    </div>`;
-  };
-
-  // Unmatched tx row — card with line picker
-  const allCatLines = cat.rows.filter(r => r.l && !r.l.startsWith('(ligne')).map(r => r.l);
-  const txRowPicker = (t) => {
-    const idx = txIdx(t);
-    const opts = allCatLines.map(l => `<option value="${l.replace(/"/g,'&quot;')}">${l}</option>`).join('');
-    return `<div style="background:var(--surface);border-radius:8px;padding:10px 14px;border:1px dashed rgba(255,255,255,.06);margin-bottom:6px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:2px">${t.fourn||'—'}</div>
-          ${t.note?`<div style="font-size:11px;color:var(--text-muted);line-height:1.4;word-break:break-word;margin-bottom:2px">${t.note}</div>`:''}
-        </div>
-        <div style="font-family:monospace;font-size:13px;font-weight:700;color:var(--green);flex-shrink:0;margin-left:10px">+${fmtAmt(t.ttc)} €</div>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-        <span style="font-size:11px;color:var(--text-dim);flex-shrink:0">${(t.date||'').split(' ')[0]||'—'}</span>
-        <select id="rec-pick-${idx}" style="font-size:11px;padding:4px 8px;border-radius:5px;background:var(--surface-2);border:1px solid var(--border);color:#fff;flex:1;min-width:0">
-          <option value="">Ligne…</option>${opts}
-        </select>
-        <button onclick="event.stopPropagation();const t=window._recDrawerTx[${idx}],sel=document.getElementById('rec-pick-${idx}');if(!sel.value){showToast('⚠','Choisis une ligne','amber');return;}linkRecTx(t.fourn||'',t.note||'',t.date||'',t.ht||0,t.ttc||0,sel.value,${ci})" style="font-size:10px;padding:3px 10px;border-radius:5px;border:1px solid rgba(52,211,153,.3);background:rgba(52,211,153,.08);color:var(--green);cursor:pointer;white-space:nowrap;font-weight:600">Relier →</button>
-      </div>
-    </div>`;
-  };
-
-  let txHtml = '';
-  lineMatches.forEach(({row, matches}) => {
-    matches.forEach(t => { txHtml += txRow(t, row.l, row.l); });
-  });
-  catMatched.forEach(t => { txHtml += txRowPicker(t); });
-
-  if (!txHtml) txHtml = `<div style="font-size:12px;color:var(--text-dim);padding:12px 14px">Aucune transaction détectée</div>`;
-
-  document.getElementById('drawer-body').innerHTML = `
-    <div class="drawer-section">
-      <div class="drawer-section-title">Lignes de recettes</div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden">
-        <table class="tbl">
-          <thead><tr>
-            <th class="tl">Poste</th>
-            <th style="text-align:right">Encaissé HT</th>
-          </tr></thead>
-          <tbody>${linesHtml}</tbody>
-          <tr class="trow">
-            <td>TOTAL ENCAISSÉ</td>
-            <td style="text-align:right"><span class="cro" style="font-weight:700;color:${catReel?'var(--green)':'var(--text-dim)'}">${catReel?fe(catReel):'—'}</span></td>
-          </tr>
-        </table>
-      </div>
-    </div>
-
-    <div class="drawer-section">
-      <div class="drawer-section-title" style="display:flex;align-items:center;gap:8px">
-        Transactions détectées
-        ${allMatched.length ? `<span style="font-size:.6em;padding:2px 7px;border-radius:4px;background:rgba(52,211,153,.1);color:var(--green);font-weight:700">${allMatched.length} tx · +${fmtAmt(matchedTotal)} €</span>` : ''}
-      </div>
-      <div style="max-height:300px;overflow-y:auto">
-        ${txHtml}
-      </div>
-    </div>
-
-    ${unmatched.length > 0 ? `
-    <div class="drawer-section">
-      <div class="drawer-section-title" style="display:flex;align-items:center;gap:8px">
-        Autres recettes non reliées
-        <span style="font-size:.6em;padding:2px 7px;border-radius:4px;background:rgba(255,255,255,.05);color:var(--text-dim);font-weight:700">${unmatched.length} tx</span>
-      </div>
-      <div style="max-height:260px;overflow-y:auto">
-        ${unmatched.slice(0,8).map(t => txRowPicker(t)).join('')}
-        ${unmatched.length > 8 ? `<div style="font-size:11px;color:var(--text-dim);padding:8px 14px;text-align:center">+ ${unmatched.length-8} autres · voir Transactions</div>` : ''}
-      </div>
-    </div>` : ''}`;
-
-  document.getElementById('drawer-footer').style.display = 'flex';
-  document.getElementById('drawer-footer').innerHTML = `
-    <button class="drawer-btn" onclick="closeDrawer()">Fermer</button>`;
-
-  document.getElementById('drawer-overlay').classList.add('open');
-  document.getElementById('drawer').classList.add('open');
 }
 
 
@@ -5951,29 +6731,6 @@ async function reattribuerTx(dept, ligne, fourn, note, ht, ttc) {
   refreshBudgetData().catch(() => {});
 }
 
-// ── LINK RECETTE ↔ TRANSACTION ──
-async function linkRecTx(fourn, note, date, ht, ttc, ligne, ci) {
-  const btn = event?.target?.closest?.('button');
-  if (btn) { btn.textContent = '…'; btn.disabled = true; }
-  try {
-    const resp = await fetch(`${API}/api/assign-direct`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ session: SESSION, dept: 'RECETTES', ligne, fourn, note, date, ht: Math.abs(ht), ttc: Math.abs(ttc) }),
-    });
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      throw new Error(err.detail || `Erreur ${resp.status}`);
-    }
-    closeDrawer();
-    await refreshBudgetData();
-    showToast('✅ Recette reliée', `+${fmtAmt(Math.abs(ttc))} € → "${ligne}"`, 'green');
-    setTimeout(() => openRecCatDrawer(ci), 300);
-  } catch (e) {
-    if (btn) { btn.textContent = 'Relier →'; btn.disabled = false; }
-    showToast('⚠ Erreur', e.message, 'red');
-  }
-}
 
 // ════════════════════════════════════════════════════
 // TOAST

@@ -179,6 +179,18 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
    --fs-* and --ff-display inlined (general has no such tokens); only --ff-num-table added to :root.
    à-relier / expanded-slim / D·A badges omitted — no data source in general. */
 .pl-tbl .cro,.pl-tbl .cpos,.pl-tbl .cneg,.pl-tbl .cdim{font-family:var(--ff-num-table);font-variant-numeric:tabular-nums lining-nums}
+/* seam 27cs Item 41 — filter bar variation C (labels-above + visible chevron + indigo active rail).
+   Ported from filter-bar-optionA-variations.html .vC (renamed .rf-*). SVG data-URIs verbatim from the mock. */
+.rf-bar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px}
+.rf-field{display:flex;flex-direction:column;gap:7px}
+.rf-label{font-size:var(--fs-caption);letter-spacing:.2px;color:var(--text-dim);font-weight:500;line-height:1}
+.rf-ctl{background:var(--surface-2);border:1px solid var(--border);border-left-width:1px;border-radius:9px;padding:8px 32px 8px 13px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:var(--fs-strong);line-height:1.3;outline:none;cursor:pointer;transition:border-color .15s,color .15s;appearance:none;-webkit-appearance:none;-moz-appearance:none;background-repeat:no-repeat;background-position:right 11px center;background-size:13px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%23a0a0b0' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")}
+.rf-ctl:hover{border-color:var(--border-h)}
+.rf-search{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235a5a6a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 12px center;background-size:14px;padding:8px 13px 8px 34px;color:#fff;width:210px;cursor:text}
+.rf-search::placeholder{color:var(--text-dim)}
+.rf-search:focus{border-color:rgba(255,255,255,.2)}
+.rf-field.is-active .rf-ctl{border-left-width:2px;border-left-color:var(--intra);color:var(--text)}
+.rf-field.is-active .rf-label{color:var(--text-muted)}
 .pl-tbl td.tl{text-align:left;padding-left:16px}
 .pl-tbl td.obs{text-align:left}
 .pl-tbl th{font-family:'Space Grotesk',sans-serif}
@@ -264,6 +276,10 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   .btbl th,.btbl td{padding:5px 7px;font-size:.7em}
   .btbl th:nth-child(4),.btbl td:nth-child(4),
   .btbl th:nth-child(5),.btbl td:nth-child(5){display:none}
+  /* LOCK-13 re-pass Item 6: transactions-page (releve) dept column hidden on mobile — class-based
+     (table-layout:fixed + colgroup makes nth-child brittle); fournisseur gets the room. Different
+     surface from the Bilan .tbl Observations fix. */
+  .releve-dept{display:none}
   .ce{min-width:54px;font-size:.8em;padding:2px 4px}
 
   /* ── cards ── */
@@ -2108,6 +2124,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       <div style="font-size:2.5em;margin-bottom:12px">📂</div>
       <div style="color:var(--text-muted);font-size:.9em">Aucun relevé importé pour cette session.</div>
       <div style="color:var(--text-dim);font-size:.78em;margin-top:6px">Clique sur "Importer un relevé" pour charger ton relevé Qonto.</div>
+      <div style="color:var(--text-dim);font-size:.72em;margin-top:10px">⚠ Vérifie que le relevé provient bien du compte <b>MADAME LOYAL PRINCIPAL</b> avant d'importer.</div>
     </div>
 
     <!-- KPI chips -->
@@ -2133,23 +2150,37 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       </div>
     </div>
 
-    <!-- Filters row -->
-    <div id="releve-filters" style="display:none;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
-      <input id="releve-search" type="text" placeholder="Rechercher…" oninput="filterReleve()"
-        style="background:var(--surface-2);border:1px solid var(--border);border-radius:7px;padding:7px 12px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.78em;width:200px;outline:none"
-        onfocus="this.style.borderColor='rgba(255,255,255,.2)'" onblur="this.style.borderColor='var(--border)'">
-      <select id="releve-filter-cat" onchange="filterReleve()"
-        style="background:var(--surface-2);border:1px solid var(--border);border-radius:7px;padding:7px 10px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.78em;outline:none">
-        <option value="">Tous départements</option>
-      </select>
-      <select id="releve-filter-match" onchange="filterReleve()"
-        style="background:var(--surface-2);border:1px solid var(--border);border-radius:7px;padding:7px 10px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.78em;outline:none">
-        <option value="">Toutes</option>
-        <option value="unmatched">Non reliée</option>
-        <option value="a-relier">À relier</option>
-        <option value="matched">Reliée</option>
-        <option value="revenue">Recettes</option>
-      </select>
+    <!-- Filters row — seam 27cs Item 41: variation C (label above each control + visible chevron + indigo active rail) -->
+    <div id="releve-filters" class="rf-bar" style="display:none;margin-bottom:14px">
+      <div class="rf-field">
+        <label class="rf-label" for="releve-search">Rechercher</label>
+        <input id="releve-search" class="rf-ctl rf-search" type="text" placeholder="Fournisseur, note, département…" oninput="filterReleve()">
+      </div>
+      <div class="rf-field">
+        <label class="rf-label" for="releve-filter-cat">Département</label>
+        <select id="releve-filter-cat" class="rf-ctl" onchange="filterReleve()">
+          <option value="">Tous départements</option>
+        </select>
+      </div>
+      <div class="rf-field">
+        <label class="rf-label" for="releve-filter-match">Statut</label>
+        <select id="releve-filter-match" class="rf-ctl" onchange="filterReleve()">
+          <option value="">Toutes</option>
+          <option value="unmatched">Non reliée</option>
+          <option value="a-relier">À relier</option>
+          <option value="matched">Reliée</option>
+          <option value="revenue">Recettes</option>
+        </select>
+      </div>
+      <div class="rf-field">
+        <label class="rf-label" for="releve-filter-class">Classification</label>
+        <select id="releve-filter-class" class="rf-ctl" onchange="filterReleve()">
+          <option value="">Toutes les classifications</option>
+          <option value="inter">inter</option>
+          <option value="intra1">intra · sans virement</option>
+          <option value="intra2">intra · avec virement</option>
+        </select>
+      </div>
     </div>
 
     <!-- Transaction table -->
@@ -2157,20 +2188,18 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       <table style="width:100%;border-collapse:collapse;font-size:.78em;table-layout:fixed">
         <colgroup>
           <col style="width:88px">
-          <col style="width:14%">
-          <col style="width:auto">
-          <col style="width:12%">
-          <col style="width:105px">
-          <col style="width:95px">
+          <col style="width:22%">
+          <col style="width:32%">
+          <col style="width:108px">
+          <col class="releve-dept" style="width:18%">
         </colgroup>
         <thead>
           <tr style="border-bottom:1px solid var(--border)">
-            <th onclick="sortReleve('date')" style="padding:10px 14px;text-align:left;font-size:.65em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600;white-space:nowrap;cursor:pointer;user-select:none">Date <span id="sort-ind-date" style="opacity:.4">↕</span></th>
-            <th onclick="sortReleve('fourn')" style="padding:10px 14px;text-align:left;font-size:.65em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600;cursor:pointer;user-select:none">Fournisseur <span id="sort-ind-fourn" style="opacity:.4">↕</span></th>
-            <th onclick="sortReleve('note')" style="padding:10px 14px;text-align:left;font-size:.65em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600;cursor:pointer;user-select:none">Note <span id="sort-ind-note" style="opacity:.4">↕</span></th>
-            <th onclick="sortReleve('dept')" style="padding:10px 14px;text-align:left;font-size:.65em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600;cursor:pointer;user-select:none">Dept <span id="sort-ind-dept" style="opacity:.4">↕</span></th>
-            <th onclick="sortReleve('ttc')" style="padding:10px 14px;text-align:right;font-size:.65em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600;cursor:pointer;user-select:none">Montant <span id="sort-ind-ttc" style="opacity:.4">↕</span></th>
-            <th style="padding:10px 14px;text-align:center;font-size:.65em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600">Action</th>
+            <th onclick="sortReleve('date')" style="padding:10px 14px;text-align:left;font-size:.65em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600;white-space:nowrap;cursor:pointer;user-select:none">Date <span id="sort-ind-date" style="opacity:.4">&#x25BE;</span></th>
+            <th onclick="sortReleve('fourn')" style="padding:10px 14px;text-align:left;font-size:.65em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600;cursor:pointer;user-select:none">Fournisseur <span id="sort-ind-fourn" style="opacity:.4">&#x25BE;</span></th>
+            <th onclick="sortReleve('note')" style="padding:10px 14px;text-align:left;font-size:.65em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600;cursor:pointer;user-select:none">Note <span id="sort-ind-note" style="opacity:.4">&#x25BE;</span></th>
+            <th onclick="sortReleve('ttc')" style="padding:10px 14px;text-align:right;font-size:.65em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600;cursor:pointer;user-select:none">Montant <span id="sort-ind-ttc" style="opacity:.4">&#x25BE;</span></th>
+            <th onclick="sortReleve('dept')" class="releve-dept" style="padding:10px 14px;text-align:left;font-size:.65em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600;cursor:pointer;user-select:none">Département <span id="sort-ind-dept" style="opacity:.4">&#x25BE;</span></th>
           </tr>
         </thead>
         <tbody id="releve-body"></tbody>
@@ -2417,6 +2446,8 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 
 const API = 'https://web-production-4565a.up.railway.app';
 const SESSION = 'gen';
+// seam 27ez — general's Qonto account label (event derives from QONTO_ACCOUNTS[SESSION]; general is single-session 'gen').
+const QONTO_ACCOUNT = 'MADAME LOYAL PRINCIPAL';
 
 // ── Recettes data (loaded from RECETTES sheet tab via API) ──────────────
 let REC = [];
@@ -8564,6 +8595,7 @@ async function renderReleve() {
       empty.innerHTML = `<div style="font-size:2.5em;margin-bottom:12px">\uD83D\uDCC2</div>
         <div style="color:var(--text-muted);font-size:.9em">Aucun relev\u00E9 import\u00E9.</div>
         <div style="color:var(--text-dim);font-size:.78em;margin-top:6px">Clique sur "Import Qonto" en haut \u00E0 droite pour charger ton relev\u00E9 de compte.</div>
+        <div style="color:var(--text-dim);font-size:.72em;margin-top:10px">\u26A0 V\u00E9rifie que le relev\u00E9 provient bien du compte <b>${QONTO_ACCOUNT}</b> avant d'importer.</div>
         <button onclick="triggerImport()" style="margin-top:16px;padding:9px 20px;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.35);border-radius:8px;color:#818cf8;font-family:'DM Sans',sans-serif;font-size:.78em;font-weight:600;cursor:pointer">
           Importer un relev\u00E9 \u2192
         </button>`;
@@ -8649,6 +8681,8 @@ async function renderReleve() {
   if (matchEl && savedMatch) matchEl.value = savedMatch;
 
   filterReleve();
+  // §ITEM17 — autofocus the transactions-page search after the saved-filter restore
+  setTimeout(() => { const _rs = document.getElementById('releve-search'); if (_rs) { try { _rs.focus(); } catch(e){} } }, 90);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -8789,77 +8823,79 @@ function filterReleve() {
       deptHtml = `<span style="font-size:.72em;color:var(--text-dim);font-style:italic">non reli\u00e9</span>`;
     }
 
-    // Statut badge — DROPPED (R3 / event LOCK-10): match-state is now carried by the dept column (non relié / ligne à
-    // relier) + the 4-state filter; the statut column double-encoded it. Action column below is KEPT (general parity).
+    // Statut badge — DROPPED (R3 / event LOCK-10): match-state is carried by the dept column (non relié / ligne à
+    // relier) + the 4-state filter; the statut column double-encoded it.
+    // GOVERNING ROW RULE (R2): fournisseur chips + meta line adopted from the event's row template. general's tx rows
+    // carry no tag/method/initiator (0 refs) → tagChipRow/payPillRow/initiatorRow degrade to '' → metaRow/fournChips
+    // render EMPTY (dormant-capable, same class as tagChipRow). No new data source introduced.
+    let tagChipRow = '';
+    if (tx.tag === 'intra') {
+      tagChipRow = `<span style="font-size:.5em;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 6px;border-radius:5px;background:rgba(56,189,248,.12);color:var(--sky)">intra</span>`;
+    } else if (tx.tag === 'inter') {
+      tagChipRow = `<span style="font-size:.5em;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 6px;border-radius:5px;background:rgba(251,191,36,.12);color:var(--amber);border:1px solid rgba(251,191,36,.25)">inter${tx.societe ? ' \u00B7 '+tx.societe : ''}</span>${tx.cas ? `<span style="font-size:.46em;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 6px;border-radius:5px;background:rgba(251,191,36,.16);color:var(--amber);border:1px solid rgba(251,191,36,.4)">${tx.cas}</span>` : ''}`;
+    }
+    let payPillRow = '';
+    if (tx.method === 'wire') {
+      payPillRow = `<span style="padding:2px 8px;border-radius:5px;font-size:.62em;font-weight:600;display:inline-flex;align-items:center;gap:5px;background:rgba(160,160,176,.06);color:var(--text-muted);border:1px solid rgba(255,255,255,.06)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>Virement</span>`;
+    } else if (tx.method === 'card') {
+      payPillRow = `<span style="padding:2px 8px;border-radius:5px;font-size:.62em;font-weight:600;display:inline-flex;align-items:center;gap:5px;background:rgba(160,160,176,.06);color:var(--text-muted);border:1px solid rgba(255,255,255,.06)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Carte${tx.card ? ' \u00B7 '+tx.card : ''}</span>`;
+    }
+    const initiatorRow = tx.initiator ? `<span style="display:inline-flex;align-items:center;gap:5px;font-size:.62em;color:var(--text-muted)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>${tx.initiator}</span>` : '';
+    const metaRow = (payPillRow || initiatorRow) ? `<div style="display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap">${payPillRow}${initiatorRow}</div>` : '';
+    const fournChips = tagChipRow ? ` ${tagChipRow}` : '';
 
-    // Action column
-    let actionHtml = '';
+    // Row click-through — Action column dropped (row-parity PATCH §A). general's FIVE existing action payloads
+    // (ARGS UNCHANGED: reattribuerTx 6 / openOrphanAssign 6 / openAssignDrawer 5 — no false,date) are wrapped in
+    // assignReopen(fn,…) on the <tr onclick>. isZero rows get NO handler (non-clickable). Escaping context is the same
+    // double-quote-attr / single-quote-arg as the old inline button onclick.
+    let rowClick = '';
     if (isRec && isMatched) {
-      // Revenue already matched — show réattribuer
       const safeF = (tx.fourn||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
       const safeN = (tx.note||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-      actionHtml = `<button onclick="reattribuerTx('${matchInfo.dept}','${matchInfo.ligne?.replace(/'/g,"\\'")}','${safeF}','${safeN}',${Math.abs(tx.ht||0)},${Math.abs(tx.ttc||0)})"
-        style="font-size:.65em;padding:4px 10px;border-radius:5px;border:1px solid rgba(251,191,36,.3);background:rgba(251,191,36,.06);color:var(--amber);cursor:pointer;font-family:inherit;font-weight:600;white-space:nowrap"
-        onmouseover="this.style.background='rgba(251,191,36,.15)'" onmouseout="this.style.background='rgba(251,191,36,.06)'"
-        >R\u00E9attribuer</button>`;
+      rowClick = `assignReopen(reattribuerTx,'${matchInfo.dept}','${matchInfo.ligne?.replace(/'/g,"\\'")}','${safeF}','${safeN}',${Math.abs(tx.ht||0)},${Math.abs(tx.ttc||0)})`;
     } else if (isRec && !isMatched) {
-      // Unmatched revenue — assign to RECETTES or a dept
       const safeF = (tx.fourn||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
       const safeN = (tx.note||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
       const safeCat = (tx.cat||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-      actionHtml = `<button onclick="openOrphanAssign('${safeF}','${safeN}',${Math.abs(tx.ht||0)},${tx.ttc||0},'${safeCat}','${tx.date||''}')"
-        style="font-size:.65em;padding:4px 10px;border-radius:5px;border:1px solid rgba(99,102,241,.35);background:rgba(99,102,241,.08);color:#818cf8;cursor:pointer;font-family:inherit;font-weight:600;white-space:nowrap"
-        onmouseover="this.style.background='rgba(99,102,241,.18)'" onmouseout="this.style.background='rgba(99,102,241,.08)'"
-        >Assigner \u2192</button>`;
+      rowClick = `assignReopen(openOrphanAssign,'${safeF}','${safeN}',${Math.abs(tx.ht||0)},${tx.ttc||0},'${safeCat}','${tx.date||''}')`;
     } else if (!isZero) {
       if (isMatched) {
         const safeF = (tx.fourn||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
         const safeN = (tx.note||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-        actionHtml = `<div style="display:flex;flex-direction:column;align-items:center;gap:3px">
-          <button onclick="reattribuerTx('${matchInfo.dept}','${matchInfo.ligne?.replace(/'/g,"\\'")}','${safeF}','${safeN}',${Math.abs(tx.ht||0)},${Math.abs(tx.ttc||0)})"
-          style="font-size:.65em;padding:4px 10px;border-radius:5px;border:1px solid rgba(251,191,36,.3);background:rgba(251,191,36,.06);color:var(--amber);cursor:pointer;font-family:inherit;font-weight:600;white-space:nowrap"
-          onmouseover="this.style.background='rgba(251,191,36,.15)'" onmouseout="this.style.background='rgba(251,191,36,.06)'"
-          >R\u00E9attribuer</button>
-          <span style="font-size:.48em;color:var(--text-dim)" title="Bient\u00F4t : d\u00E9placer vers une autre session (PA, BDX, EPK\u2026)">\u21C4 autre session \u00B7 bient\u00F4t</span>
-        </div>`;
+        rowClick = `assignReopen(reattribuerTx,'${matchInfo.dept}','${matchInfo.ligne?.replace(/'/g,"\\'")}','${safeF}','${safeN}',${Math.abs(tx.ht||0)},${Math.abs(tx.ttc||0)})`;
       } else if (unmatchInfo) {
         const safeF2 = (tx.fourn||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
         const safeN2 = (tx.note||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
         const safeDept = (unmatchInfo.dept||tx.cat||deptFromNote(tx.note)||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-        actionHtml = `<div style="display:flex;flex-direction:column;align-items:center;gap:3px">
-          <button onclick="openAssignDrawer(${unmatchInfo.idx},'${safeF2}','${safeN2}',${tx.ttc||0},'${safeDept}')"
-          style="font-size:.65em;padding:4px 10px;border-radius:5px;border:1px solid rgba(99,102,241,.35);background:rgba(99,102,241,.08);color:#818cf8;cursor:pointer;font-family:inherit;font-weight:600;white-space:nowrap"
-          onmouseover="this.style.background='rgba(99,102,241,.18)'" onmouseout="this.style.background='rgba(99,102,241,.08)'"
-          >Assigner \u2192</button>
-          <span style="font-size:.48em;color:var(--text-dim)" title="Bient\u00F4t : d\u00E9placer vers une autre session (PA, BDX, EPK\u2026)">\u21C4 autre session \u00B7 bient\u00F4t</span>
-        </div>`;
+        rowClick = `assignReopen(openAssignDrawer,${unmatchInfo.idx},'${safeF2}','${safeN2}',${tx.ttc||0},'${safeDept}')`;
       } else {
-        // Orphan: in QONTO_RAW but not in MATCH_LOG or UNMATCHED — show manual assign
         const safeF3 = (tx.fourn||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
         const safeN3 = (tx.note||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
         const safeDept3 = (tx.cat||deptFromNote(tx.note)||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-        actionHtml = `<div style="display:flex;flex-direction:column;align-items:center;gap:3px">
-          <button onclick="openOrphanAssign('${safeF3}','${safeN3}',${tx.ht||0},${tx.ttc||0},'${safeDept3}','${tx.date||''}')"
-          style="font-size:.65em;padding:4px 10px;border-radius:5px;border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.06);color:var(--amber);cursor:pointer;font-family:inherit;font-weight:600;white-space:nowrap"
-          onmouseover="this.style.background='rgba(251,191,36,.15)'" onmouseout="this.style.background='rgba(251,191,36,.06)'"
-          >Assigner \u2192</button>
-          <span style="font-size:.48em;color:var(--text-dim)">orpheline</span>
-        </div>`;
+        rowClick = `assignReopen(openOrphanAssign,'${safeF3}','${safeN3}',${tx.ht||0},${tx.ttc||0},'${safeDept3}','${tx.date||''}')`;
       }
     }
 
-    return `<tr style="border-bottom:1px solid rgba(255,255,255,.03);transition:background .1s" onmouseover="this.style.background='rgba(255,255,255,.015)'" onmouseout="this.style.background=''">
-      <td style="padding:9px 14px;color:var(--text-dim);font-family:monospace;font-size:.82em;white-space:nowrap">${d}</td>
-      <td style="padding:9px 14px;font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.85em">${tx.fourn || '\u2014'}</td>
-      <td style="padding:9px 14px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.82em" title="${(tx.note||'').replace(/"/g,'&quot;')}">${tx.note || ''}</td>
-      <td style="padding:9px 14px;overflow:hidden">${deptHtml}</td>
-      <td style="padding:9px 14px;text-align:right;font-family:monospace;font-weight:700;color:${amtColor};white-space:nowrap;font-size:.85em">${amtVal}</td>
-      <td style="padding:9px 14px;text-align:center">${actionHtml}</td>
+    return `<tr style="border-bottom:1px solid rgba(255,255,255,.03);transition:background .1s${rowClick ? ';cursor:pointer' : ''}"${rowClick ? ` onclick="${rowClick}"` : ''} onmouseover="this.style.background='rgba(255,255,255,.015)'" onmouseout="this.style.background=''">
+      <td style="padding:9px 14px;vertical-align:top"><div style="color:var(--text-dim);font-family:var(--ff-num);font-size:.82em;white-space:nowrap">${d}</div>${metaRow}</td>
+      <td style="padding:9px 14px;font-size:.85em;vertical-align:top"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-weight:600;color:#fff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:100%">${tx.fourn || '\u2014'}</span>${fournChips}</div></td>
+      <td style="padding:9px 14px;color:var(--text-muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:.82em;vertical-align:top" title="${(tx.note||'').replace(/"/g,'&quot;')}">${tx.note || ''}</td>
+      <td style="padding:9px 14px;text-align:right;font-family:var(--ff-num);font-variant-numeric:tabular-nums lining-nums;font-weight:700;color:${amtColor};white-space:nowrap;font-size:.85em;vertical-align:top">${amtVal}</td>
+      <td class="releve-dept" style="padding:9px 14px;overflow:hidden;vertical-align:top">${deptHtml}</td>
     </tr>`;
-  }).join('') || `<tr><td colspan="6" style="padding:32px;text-align:center;color:var(--text-dim)">Aucun r\u00E9sultat</td></tr>`;
+  }).join('') || `<tr><td colspan="5" style="padding:32px;text-align:center;color:var(--text-dim)">Aucun r\u00E9sultat</td></tr>`;
 
   const count = document.getElementById('releve-count');
   if (count) count.textContent = `${filtered.length} transaction${filtered.length > 1 ? 's' : ''} affich\u00E9e${filtered.length > 1 ? 's' : ''}`;
+  rfSyncActive();   // seam 27cs — light the indigo active-rail on any filter with a non-default value (R3: render-side, M1-safe)
+}
+// seam 27cs Item 41 — toggle .is-active on each .rf-field whose control has a non-default value
+// (indigo left-rail + brightened label/text). Pure presentation; additive, no filter-logic change.
+function rfSyncActive(){
+  ['releve-search','releve-filter-cat','releve-filter-match','releve-filter-class'].forEach(id => {
+    const el = document.getElementById(id); if (!el) return;
+    const f = el.closest('.rf-field'); if (f) f.classList.toggle('is-active', !!el.value);
+  });
 }
 
 let _releveSortCol = 'date';
@@ -9342,39 +9378,5 @@ function _jsAttr(s){ return _esc(_optJs(s)); }   // B56: JS-string-escape first,
   window.addEventListener('scroll', function(){ document.querySelectorAll('.sw-wrap.open').forEach(placeFloat); }, true);
 })();
 </script>
-
-<!-- DEMO HARNESS (NOT FOR LANDING) — mocks tx + match-log so the month badges + 3 states render. Real build c359a817 untouched. -->
-<div id="_demoBanner" style="position:fixed;bottom:12px;right:12px;z-index:99999;max-width:320px;background:#0e7490;color:#fff;font:500 11px system-ui;padding:8px 30px 8px 10px;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.3);line-height:1.4">
-  <span id="_demoMsg">DEMO &mdash; 5-table. <b>Transactions</b> shows: AVRIL+&laquo;ligne à relier&raquo;, FÉVRIER+line, 2× non relié. Try the 4-state filter.</span>
-  <button onclick="document.getElementById('_demoBanner').remove()" style="position:absolute;top:4px;right:6px;background:none;border:none;color:#fff;font-size:15px;cursor:pointer;line-height:1">&times;</button>
-</div>
-<script>
-(function(){
-  // ttc<0 = dépense. matched tx (in match-log) show the month pill; unmatched show "non relié".
-  var ALLTX = [
-    {ref:'D1',date:'2026-03-15',fourn:'LOYER BUREAU SARL',note:'loyer',ht:-2000,ttc:-2000,cat:'',flow:'debit',matching_status:'MATCHED'},
-    {ref:'D2',date:'2026-03-22',fourn:'FREELANCE J. MARTIN',note:'design',ht:-1500,ttc:-1800,cat:'',flow:'debit',matching_status:'MATCHED'},
-    {ref:'D3',date:'2026-04-03',fourn:'URSSAF',note:'cotis',ht:-3200,ttc:-3200,cat:'',flow:'debit',matching_status:'UNMATCHED'},
-    {ref:'D4',date:'2026-04-11',fourn:'EDF',note:'elec',ht:-450,ttc:-450,cat:'ENERGIE',flow:'debit',matching_status:'UNMATCHED'}
-  ];
-  // match-log: D1 → avril, NO ligne (à-relier partial) ; D2 → fevrier + ligne (full)
-  var MATCHLOG = [
-    {fourn:'LOYER BUREAU SARL',ttc:-2000,date:'2026-03-15',dept:'avril',ligne:null,section:'LOCAUX',source:'user'},
-    {fourn:'FREELANCE J. MARTIN',ttc:-1800,date:'2026-03-22',dept:'fevrier',ligne:'Prestation design',section:'FREELANCES',source:'user'}
-  ];
-  var UNMATCHED = [
-    {idx:3,fourn:'URSSAF',ttc:-3200,date:'2026-04-03',dept:null,section:null},
-    {idx:4,fourn:'EDF',ttc:-450,date:'2026-04-11',dept:null,section:null}
-  ];
-  var _orig=(typeof window.fetch==='function')?window.fetch.bind(window):null;
-  function mock(o){return Promise.resolve({ok:true,status:200,headers:{get:function(){return 'application/json';}},json:function(){return Promise.resolve(o);},text:function(){return Promise.resolve(JSON.stringify(o));}});}
-  window.fetch=function(url){var u='';try{u=String(url);}catch(e){}
-    if(u.indexOf('/api/qonto-raw')>=0) return mock({data:ALLTX});
-    if(u.indexOf('/api/match-log')>=0) return mock({data:MATCHLOG});
-    if(u.indexOf('/api/unmatched')>=0) return mock({data:UNMATCHED});
-    return _orig?_orig.apply(this,arguments):mock({data:[]});};
-})();
-</script>
-
 </body>
 </html>

@@ -9350,29 +9350,5 @@ function _jsAttr(s){ return _esc(_optJs(s)); }   // B56: JS-string-escape first,
   window.addEventListener('scroll', function(){ document.querySelectorAll('.sw-wrap.open').forEach(placeFloat); }, true);
 })();
 </script>
-
-<!-- DEMO HARNESS (NOT FOR LANDING) — mocks /api tx endpoints. Real build 8e0d2e5f untouched. -->
-<div id="_demoBanner" style="position:fixed;bottom:12px;right:12px;z-index:99999;max-width:310px;background:#b45309;color:#fff;font:500 11px system-ui;padding:8px 30px 8px 10px;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.3);line-height:1.4">
-  <span id="_demoMsg">DEMO &mdash; month-label fix build. Pick a month &rarr; card shows <b>AVRIL</b>. Confirms won't persist.</span>
-  <button onclick="document.getElementById('_demoBanner').remove()" style="position:absolute;top:4px;right:6px;background:none;border:none;color:#fff;font-size:15px;cursor:pointer;line-height:1">&times;</button>
-</div>
-<script>
-(function(){
-  var DEMO_TX = [
-    {ref:'DEMO-1',id:'DEMO-1',date:'2026-03-15',fourn:'LOYER BUREAU SARL',label:'LOYER BUREAU SARL',note:'Virement loyer mars',ht:-2000,ttc:-2000,amount:-2000,cat:'',flow:'debit',cls:'',matching_status:'UNMATCHED',assigned:false},
-    {ref:'DEMO-2',id:'DEMO-2',date:'2026-03-22',fourn:'FREELANCE J. MARTIN',label:'FREELANCE J. MARTIN',note:'Prestation design',ht:-1500,ttc:-1800,amount:-1800,cat:'',flow:'debit',cls:'',matching_status:'UNMATCHED',assigned:false},
-    {ref:'DEMO-3',id:'DEMO-3',date:'2026-04-03',fourn:'URSSAF',label:'URSSAF',note:'Cotisations Q1',ht:-3200,ttc:-3200,amount:-3200,cat:'',flow:'debit',cls:'',matching_status:'UNMATCHED',assigned:false},
-    {ref:'DEMO-4',id:'DEMO-4',date:'2026-04-11',fourn:'CLIENT ACME',label:'CLIENT ACME',note:'Facture 2026-014 (recette)',ht:5000,ttc:6000,amount:6000,cat:'',flow:'credit',cls:'',matching_status:'UNMATCHED',assigned:false}
-  ];
-  var _orig = (typeof window.fetch === 'function') ? window.fetch.bind(window) : null;
-  function mock(o){ return Promise.resolve({ok:true,status:200,headers:{get:function(){return 'application/json';}},json:function(){return Promise.resolve(o);},text:function(){return Promise.resolve(JSON.stringify(o));}}); }
-  window.fetch = function(url){ var u=''; try{u=String(url);}catch(e){}
-    if(u.indexOf('/api/qonto-raw')>=0) return mock({data:DEMO_TX});
-    if(u.indexOf('/api/unmatched')>=0) return mock({data:DEMO_TX});
-    if(u.indexOf('/api/match-log')>=0) return mock({data:[]});
-    return _orig ? _orig.apply(this,arguments) : mock({data:[]}); };
-})();
-</script>
-
 </body>
 </html>

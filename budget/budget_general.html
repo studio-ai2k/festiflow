@@ -9348,9 +9348,10 @@ function _jsAttr(s){ return _esc(_optJs(s)); }   // B56: JS-string-escape first,
 })();
 </script>
 
-<!-- ============ DEMO HARNESS (NOT FOR LANDING) — seeds fake transactions so the step-5 assign/a-relier flow is clickable without a backend. Real build 1dd5fead is untouched. ============ -->
-<div id="_demoBanner" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#b45309;color:#fff;font:600 12px system-ui;padding:6px 12px;text-align:center">
-  DEMO HARNESS — 4 fake transactions seeded (no backend). Click a transaction &rarr; &laquo; A relier &raquo; to try the flow. NOT the build that lands.
+<!-- ============ DEMO HARNESS (NOT FOR LANDING) — seeds fake transactions. Real build 1dd5fead untouched. ============ -->
+<div id="_demoBanner" style="position:fixed;bottom:12px;right:12px;z-index:99999;max-width:300px;background:#b45309;color:#fff;font:500 11px system-ui;padding:8px 30px 8px 10px;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.3);line-height:1.35">
+  <span id="_demoMsg">DEMO &mdash; seeding 4 fake transactions&hellip;</span>
+  <button onclick="document.getElementById('_demoBanner').remove()" style="position:absolute;top:4px;right:6px;background:none;border:none;color:#fff;font-size:15px;cursor:pointer;line-height:1">&times;</button>
 </div>
 <script>
 (function(){
@@ -9365,10 +9366,9 @@ function _jsAttr(s){ return _esc(_optJs(s)); }   // B56: JS-string-escape first,
       if (typeof _releveAllTx !== 'undefined') { _releveAllTx = demo; }
       window._releveAllTx = demo;
       if (typeof renderReleve === 'function') renderReleve();
-      // try to surface the transactions view
-      ['releve','transactions','tx','banque'].forEach(function(id){ try{ if(typeof go==='function') go(id); }catch(e){} });
-      document.getElementById('_demoBanner').innerHTML += ' &nbsp;|&nbsp; seeded '+demo.length+' tx.';
-    }catch(e){ var b=document.getElementById('_demoBanner'); if(b) b.innerHTML='DEMO seed error: '+e.message; }
+      var m=document.getElementById('_demoMsg');
+      if(m) m.innerHTML='DEMO &mdash; '+demo.length+' fake tx seeded. Open <b>Transactions</b>, click a tx &rarr; <b>&laquo;&nbsp;A relier&nbsp;&raquo;</b>. Confirms won\'t persist (no backend).';
+    }catch(e){ var m=document.getElementById('_demoMsg'); if(m) m.textContent='DEMO seed error: '+e.message; }
   }
   if (document.readyState==='complete') setTimeout(boot,1200);
   else window.addEventListener('load', function(){ setTimeout(boot,1200); });

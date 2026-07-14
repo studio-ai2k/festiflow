@@ -9342,5 +9342,39 @@ function _jsAttr(s){ return _esc(_optJs(s)); }   // B56: JS-string-escape first,
   window.addEventListener('scroll', function(){ document.querySelectorAll('.sw-wrap.open').forEach(placeFloat); }, true);
 })();
 </script>
+
+<!-- DEMO HARNESS (NOT FOR LANDING) — mocks tx + match-log so the month badges + 3 states render. Real build c359a817 untouched. -->
+<div id="_demoBanner" style="position:fixed;bottom:12px;right:12px;z-index:99999;max-width:320px;background:#0e7490;color:#fff;font:500 11px system-ui;padding:8px 30px 8px 10px;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.3);line-height:1.4">
+  <span id="_demoMsg">DEMO &mdash; 5-table. <b>Transactions</b> shows: AVRIL+&laquo;ligne à relier&raquo;, FÉVRIER+line, 2× non relié. Try the 4-state filter.</span>
+  <button onclick="document.getElementById('_demoBanner').remove()" style="position:absolute;top:4px;right:6px;background:none;border:none;color:#fff;font-size:15px;cursor:pointer;line-height:1">&times;</button>
+</div>
+<script>
+(function(){
+  // ttc<0 = dépense. matched tx (in match-log) show the month pill; unmatched show "non relié".
+  var ALLTX = [
+    {ref:'D1',date:'2026-03-15',fourn:'LOYER BUREAU SARL',note:'loyer',ht:-2000,ttc:-2000,cat:'',flow:'debit',matching_status:'MATCHED'},
+    {ref:'D2',date:'2026-03-22',fourn:'FREELANCE J. MARTIN',note:'design',ht:-1500,ttc:-1800,cat:'',flow:'debit',matching_status:'MATCHED'},
+    {ref:'D3',date:'2026-04-03',fourn:'URSSAF',note:'cotis',ht:-3200,ttc:-3200,cat:'',flow:'debit',matching_status:'UNMATCHED'},
+    {ref:'D4',date:'2026-04-11',fourn:'EDF',note:'elec',ht:-450,ttc:-450,cat:'ENERGIE',flow:'debit',matching_status:'UNMATCHED'}
+  ];
+  // match-log: D1 → avril, NO ligne (à-relier partial) ; D2 → fevrier + ligne (full)
+  var MATCHLOG = [
+    {fourn:'LOYER BUREAU SARL',ttc:-2000,date:'2026-03-15',dept:'avril',ligne:null,section:'LOCAUX',source:'user'},
+    {fourn:'FREELANCE J. MARTIN',ttc:-1800,date:'2026-03-22',dept:'fevrier',ligne:'Prestation design',section:'FREELANCES',source:'user'}
+  ];
+  var UNMATCHED = [
+    {idx:3,fourn:'URSSAF',ttc:-3200,date:'2026-04-03',dept:null,section:null},
+    {idx:4,fourn:'EDF',ttc:-450,date:'2026-04-11',dept:null,section:null}
+  ];
+  var _orig=(typeof window.fetch==='function')?window.fetch.bind(window):null;
+  function mock(o){return Promise.resolve({ok:true,status:200,headers:{get:function(){return 'application/json';}},json:function(){return Promise.resolve(o);},text:function(){return Promise.resolve(JSON.stringify(o));}});}
+  window.fetch=function(url){var u='';try{u=String(url);}catch(e){}
+    if(u.indexOf('/api/qonto-raw')>=0) return mock({data:ALLTX});
+    if(u.indexOf('/api/match-log')>=0) return mock({data:MATCHLOG});
+    if(u.indexOf('/api/unmatched')>=0) return mock({data:UNMATCHED});
+    return _orig?_orig.apply(this,arguments):mock({data:[]});};
+})();
+</script>
+
 </body>
 </html>

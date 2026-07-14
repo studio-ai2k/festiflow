@@ -9347,5 +9347,33 @@ function _jsAttr(s){ return _esc(_optJs(s)); }   // B56: JS-string-escape first,
   window.addEventListener('scroll', function(){ document.querySelectorAll('.sw-wrap.open').forEach(placeFloat); }, true);
 })();
 </script>
+
+<!-- ============ DEMO HARNESS (NOT FOR LANDING) — seeds fake transactions so the step-5 assign/a-relier flow is clickable without a backend. Real build 1dd5fead is untouched. ============ -->
+<div id="_demoBanner" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#b45309;color:#fff;font:600 12px system-ui;padding:6px 12px;text-align:center">
+  DEMO HARNESS — 4 fake transactions seeded (no backend). Click a transaction &rarr; &laquo; A relier &raquo; to try the flow. NOT the build that lands.
+</div>
+<script>
+(function(){
+  function boot(){
+    try{
+      var demo = [
+        {ref:'DEMO-1',date:'2026-03-15',fourn:'LOYER BUREAU SARL',note:'Virement loyer mars',ht:2000,ttc:2000,cat:'',flow:'debit',cls:'',matching_status:'UNMATCHED',assigned:false},
+        {ref:'DEMO-2',date:'2026-03-22',fourn:'FREELANCE J. MARTIN',note:'Prestation design',ht:1500,ttc:1800,cat:'',flow:'debit',cls:'',matching_status:'UNMATCHED',assigned:false},
+        {ref:'DEMO-3',date:'2026-04-03',fourn:'URSSAF',note:'Cotisations Q1',ht:3200,ttc:3200,cat:'',flow:'debit',cls:'',matching_status:'UNMATCHED',assigned:false},
+        {ref:'DEMO-4',date:'2026-04-11',fourn:'CLIENT ACME',note:'Facture 2026-014',ht:5000,ttc:6000,cat:'',flow:'credit',cls:'',matching_status:'UNMATCHED',assigned:false}
+      ];
+      if (typeof _releveAllTx !== 'undefined') { _releveAllTx = demo; }
+      window._releveAllTx = demo;
+      if (typeof renderReleve === 'function') renderReleve();
+      // try to surface the transactions view
+      ['releve','transactions','tx','banque'].forEach(function(id){ try{ if(typeof go==='function') go(id); }catch(e){} });
+      document.getElementById('_demoBanner').innerHTML += ' &nbsp;|&nbsp; seeded '+demo.length+' tx.';
+    }catch(e){ var b=document.getElementById('_demoBanner'); if(b) b.innerHTML='DEMO seed error: '+e.message; }
+  }
+  if (document.readyState==='complete') setTimeout(boot,1200);
+  else window.addEventListener('load', function(){ setTimeout(boot,1200); });
+})();
+</script>
+
 </body>
 </html>

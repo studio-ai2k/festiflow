@@ -2145,11 +2145,9 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       <select id="releve-filter-match" onchange="filterReleve()"
         style="background:var(--surface-2);border:1px solid var(--border);border-radius:7px;padding:7px 10px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.78em;outline:none">
         <option value="">Toutes</option>
-        <option value="matched">✓ Reliées</option>
-        <option value="matched-noline">✓ Reliées — non affectées à une ligne</option>
-        <option value="unmatched">⚠ Non reliées (toutes)</option>
-        <option value="unmatched-nodept">⚠ Non reliées — sans département</option>
-        <option value="unmatched-noligne">⚠ Non reliées — dept identifié, sans ligne</option>
+        <option value="unmatched">Non reliée</option>
+        <option value="a-relier">À relier</option>
+        <option value="matched">Reliée</option>
         <option value="revenue">Recettes</option>
       </select>
     </div>
@@ -2163,7 +2161,6 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
           <col style="width:auto">
           <col style="width:12%">
           <col style="width:105px">
-          <col style="width:110px">
           <col style="width:95px">
         </colgroup>
         <thead>
@@ -2173,7 +2170,6 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
             <th onclick="sortReleve('note')" style="padding:10px 14px;text-align:left;font-size:.65em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600;cursor:pointer;user-select:none">Note <span id="sort-ind-note" style="opacity:.4">↕</span></th>
             <th onclick="sortReleve('dept')" style="padding:10px 14px;text-align:left;font-size:.65em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600;cursor:pointer;user-select:none">Dept <span id="sort-ind-dept" style="opacity:.4">↕</span></th>
             <th onclick="sortReleve('ttc')" style="padding:10px 14px;text-align:right;font-size:.65em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600;cursor:pointer;user-select:none">Montant <span id="sort-ind-ttc" style="opacity:.4">↕</span></th>
-            <th onclick="sortReleve('statut')" style="padding:10px 14px;text-align:center;font-size:.65em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600;cursor:pointer;user-select:none">Statut <span id="sort-ind-statut" style="opacity:.4">↕</span></th>
             <th style="padding:10px 14px;text-align:center;font-size:.65em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600">Action</th>
           </tr>
         </thead>
@@ -8729,17 +8725,23 @@ function filterReleve() {
 
   const filtered = _releveAllTx.filter(tx => {
     const key = _txKey(tx.fourn, tx.ttc, tx.date);
-    const isMatched = !!_releveMatchMap[key];
+    const mi = _releveMatchMap[key];
+    const isMatched = !!mi;
     const isRec = (tx.ttc||0) > 0;
-    const txDept = isMatched ? _releveMatchMap[key].dept : (tx.cat || '');
+    const txDept = isMatched ? mi.dept : (tx.cat || '');
+    const noLine = isMatched && (!mi.ligne || mi.ligne === '(non affecté)');
+    // R1 (required): auto-match DORMANT in general → force _hasDeptUnm=false so the FILTER agrees with the display.
+    // _aRelier then collapses to the matched-noLine case ONLY; an unmatched tx (even with tx.cat) → non relié → "Non reliée".
+    const _hasDeptUnm = false;
+    const _aRelier = !isRec && ((isMatched && noLine) || (!isMatched && _hasDeptUnm));
+    const _nonRelie = !isRec && !isMatched && !_hasDeptUnm;
 
     if (catFilter && txDept.toUpperCase() !== catFilter.toUpperCase()) return false;
-    if (matchFilter === 'matched' && !isMatched) return false;
-    if (matchFilter === 'matched-noline' && (!isMatched || !matchInfo || matchInfo.ligne !== '(non affecté)')) return false;
-    if (matchFilter === 'unmatched' && (isMatched || isRec)) return false;
-    if (matchFilter === 'unmatched-nodept' && (isMatched || isRec || txDept)) return false;
-    if (matchFilter === 'unmatched-noligne' && (isMatched || isRec || !txDept)) return false;
-    if (matchFilter === 'revenue' && !isRec) return false;
+    // 4 expense match-states (event parity — 7→4 collapse). Supersedes the old matched-noline/matchInfo bug.
+    if (matchFilter === 'unmatched' && !_nonRelie) return false;             // Non reliée = non relié only (no dept)
+    if (matchFilter === 'a-relier'  && !_aRelier)  return false;             // À relier = matched, ligne pending
+    if (matchFilter === 'matched' && (!isMatched || noLine)) return false;   // Reliée = dept + ligne
+    if (matchFilter === 'revenue' && !isRec) return false;                   // Recettes
     if (search) {
       const hay = `${tx.fourn} ${tx.note} ${tx.cat} ${tx.ref} ${txDept}`.toLowerCase();
       if (!hay.includes(search)) return false;
@@ -8761,43 +8763,34 @@ function filterReleve() {
     const amtColor = isRec ? 'var(--green)' : isZero ? 'var(--text-dim)' : 'var(--red)';
     const amtVal = isRec ? `+${fmtAmt(tx.ttc)}` : isZero ? '0' : `\u2212${fmtAmt(Math.abs(tx.ttc))}`;
 
-    // Département column
+    // Département column — event-verbatim dept-column block (deptPill grey via deptColorFor: months → null → grey),
+    // re-keyed so the month renders ALL-CAPS (canonical DISPLAY CONVENTION). Subtexts EVENT-VERBATIM: partial → "ligne à
+    // relier"; unmatched → "non relié". Replaces general's ad-hoc green-text + provenance-noise rendering (LOCK-10 single pill).
     let deptHtml = '';
-    const isAmenagement = (tx.cat||'').toUpperCase().replace(/[ÉÈÊË]/g,'E').includes('AMENAGEMENT');
+    const deptPill = (label) => {
+      const c = (typeof deptColorFor === 'function' ? deptColorFor(label) : null);   // #rrggbb or null (months → null → grey)
+      const bg = c ? `${c}22` : 'rgba(255,255,255,.05)';
+      const fg = c ? c : 'var(--text-muted)';
+      const bd = c ? `${c}55` : 'var(--border)';
+      return `<span style="font-size:.68em;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:4px;background:${bg};color:${fg};border:1px solid ${bd}">${label}</span>`;
+    };
+    const lineSub   = (txt) => `<div style="font-size:.7em;color:var(--text-muted);font-weight:500;margin-top:4px">${txt}</div>`;   // assigned line
+    const statusSub = (txt) => `<div style="font-size:.7em;color:var(--text-dim);font-style:italic;margin-top:4px">${txt}</div>`;   // pending status
+    // month key → ALL-CAPS label (accent-safe toUpperCase); non-months fall through. Pill fires only on matched tx.
+    const _deptLabel = (dept) => ((_OPT_MONTHS.find(m => m.key === dept) || {}).label || dept || '').toUpperCase();
     if (isMatched) {
-      const ligneDisplay = matchInfo.ligne === '(non affecté)' 
-        ? `<span style="color:var(--amber);font-style:italic">non affect\u00E9 \u00E0 une ligne</span>`
-        : (matchInfo.ligne||'');
-      deptHtml = `<div style="font-size:.78em;font-weight:600;color:var(--green)">${matchInfo.dept||''}</div>
-        <div style="font-size:.58em;color:var(--text-dim);margin-top:1px">${ligneDisplay}</div>`;
-      if (isAmenagement) {
-        deptHtml += `<div style="font-size:.52em;color:var(--amber);margin-top:2px">via Am\u00E9nagement</div>`;
-      }
-    } else if (tx.cat) {
-      deptHtml = `<span style="font-size:.68em;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,.04);color:var(--text-muted)">${tx.cat}</span>`;
-      if (isAmenagement) {
-        deptHtml += `<div style="font-size:.52em;color:var(--amber);margin-top:3px">\u2192 AMÉNAGEMENT par d\u00E9faut</div>`;
-      }
+      const noLineCell = (!matchInfo.ligne || matchInfo.ligne === '(non affecté)');
+      deptHtml = `${deptPill(_deptLabel(matchInfo.dept||''))}${ noLineCell ? statusSub('ligne \u00e0 relier') : lineSub(matchInfo.ligne) }`;
     } else {
-      const noteDept = deptFromNote(tx.note);
-      if (noteDept) {
-        deptHtml = `<span style="font-size:.68em;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:4px;background:rgba(99,102,241,.08);color:#818cf8">${noteDept}</span>
-          <div style="font-size:.52em;color:#818cf8;margin-top:3px">détecté via note</div>`;
-      } else {
-        deptHtml = `<span style="font-size:.68em;color:var(--text-dim)">\u2014</span>`;
-      }
+      // §C AUTO-MATCH DORMANT: general's tx.cat is a bank category (NOT a month departement) and note-detection is not
+      // promoted in V1, so the event's cat/note deptPill branches are held dormant here → unmatched renders "non relié"
+      // with NO pill (the R1 case: an unmatched tx WITH tx.cat still → "non relié", filed under "Non reliée", not "À relier").
+      // Reactivate deptPill(_deptLabel(tx.cat|noteDept)) + statusSub('ligne à relier') when auto-match is turned on.
+      deptHtml = `<span style="font-size:.72em;color:var(--text-dim);font-style:italic">non reli\u00e9</span>`;
     }
 
-    // Statut badge
-    let statutHtml = '';
-    if (isRec || isZero) {
-      statutHtml = `<span style="font-size:.62em;font-weight:700;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:rgba(99,102,241,.1);color:#818cf8">${isRec ? 'Recette' : 'Neutre'}</span>`;
-    } else if (isMatched) {
-      const srcLabel = matchInfo.source === 'auto' ? 'auto' : 'manuel';
-      statutHtml = `<span style="font-size:.62em;font-weight:700;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:rgba(52,211,153,.1);color:var(--green)">\u2713 Reli\u00E9e (${srcLabel})</span>`;
-    } else {
-      statutHtml = `<span style="font-size:.62em;font-weight:700;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:rgba(251,191,36,.08);color:var(--amber)">\u26A0 Non reli\u00E9e</span>`;
-    }
+    // Statut badge — DROPPED (R3 / event LOCK-10): match-state is now carried by the dept column (non relié / ligne à
+    // relier) + the 4-state filter; the statut column double-encoded it. Action column below is KEPT (general parity).
 
     // Action column
     let actionHtml = '';
@@ -8861,10 +8854,9 @@ function filterReleve() {
       <td style="padding:9px 14px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.82em" title="${(tx.note||'').replace(/"/g,'&quot;')}">${tx.note || ''}</td>
       <td style="padding:9px 14px;overflow:hidden">${deptHtml}</td>
       <td style="padding:9px 14px;text-align:right;font-family:monospace;font-weight:700;color:${amtColor};white-space:nowrap;font-size:.85em">${amtVal}</td>
-      <td style="padding:9px 14px;text-align:center">${statutHtml}</td>
       <td style="padding:9px 14px;text-align:center">${actionHtml}</td>
     </tr>`;
-  }).join('') || `<tr><td colspan="7" style="padding:32px;text-align:center;color:var(--text-dim)">Aucun r\u00E9sultat</td></tr>`;
+  }).join('') || `<tr><td colspan="6" style="padding:32px;text-align:center;color:var(--text-dim)">Aucun r\u00E9sultat</td></tr>`;
 
   const count = document.getElementById('releve-count');
   if (count) count.textContent = `${filtered.length} transaction${filtered.length > 1 ? 's' : ''} affich\u00E9e${filtered.length > 1 ? 's' : ''}`;

@@ -1161,7 +1161,50 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   <div style="width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--indigo);border-radius:50%;animation:spin 0.8s linear infinite"></div>
   <div style="color:var(--text-muted);font-size:.9em">Chargement des données…</div>
 </div>
-<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+<style>@keyframes spin{to{transform:rotate(360deg)}}
+/* ══ STEP 5 — M3 assign/Options chrome classes (additive; ported from event BUILD93) ══ */
+.relie-hint{font-size:var(--fs-body);color:var(--text-dim);line-height:1.45;margin-top:9px}
+.relie-hint b{color:#fff}
+/* Autres actions cards (mock .vtoggle — chevron action cards) */
+.opt-action-cards .optgrid{display:flex;flex-direction:column;gap:8px}
+.vtoggle{display:flex;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px 13px;cursor:pointer;transition:border-color .14s,background .14s}
+.vtoggle:hover{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.05)}
+.vtoggle.inert{opacity:.5;cursor:default}
+.vtoggle.inert:hover{border-color:var(--border);background:var(--surface-2)}
+.vt-body{flex:1;min-width:0}
+.vt-t{display:flex;align-items:center;gap:7px;font-size:var(--fs-strong);font-weight:700;color:#fff}
+.vt-t svg{color:#fff;flex-shrink:0}
+.vt-d{font-size:var(--fs-small);color:var(--text-muted);line-height:1.4;margin-top:3px}
+.vt-chev{color:var(--text-dim);flex-shrink:0}
+/* Type tab — classification + cas optgrid (mock .optrow/.optgrid/.radio/.obody) */
+.opt-pane .optgrid{display:flex;flex-direction:column;gap:8px}
+.optrow{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:9px;padding:11px 12px;cursor:pointer;transition:border-color .14s,background .14s}
+.optrow .radio{width:15px;height:15px;border-radius:50%;border:1.5px solid var(--text-dim);flex-shrink:0;margin-top:0;display:block;position:relative;transition:border-color .14s}
+.optrow.on .radio::after{content:"";position:absolute;inset:3px;border-radius:50%;background:currentColor}
+.optrow .obody{flex:1;min-width:0}
+.optrow .ot{font-size:var(--fs-strong);font-weight:700;color:#fff}
+.optrow .od{font-size:var(--fs-small);color:var(--text-muted);line-height:1.4;margin-top:2px}
+.optrow .ochip{margin-left:auto;flex-shrink:0}
+/* selection highlight, keyed by meaning (§14): externe/aucun → neutral, inter → amber, cas → teal */
+.optrow.on{background:rgba(255,255,255,.04)}
+.optrow.on.sel-neutral{border-color:var(--border-h)}
+.optrow.on.sel-neutral .radio{border-color:var(--text-muted);color:var(--text-muted)}
+.optrow.on.sel-amber{border-color:var(--amber);background:rgba(251,191,36,.06)}
+.optrow.on.sel-amber .radio{border-color:var(--amber);color:var(--amber)}
+/* v23a.1 — cas optgrid selected row is purple-family (mock L364-365), NOT teal. chip .ctag.cas already #e0a8ff (L863). */
+.optrow.on.sel-cas{border-color:rgba(217,128,250,.45);background:rgba(217,128,250,.08)}
+.optrow.on.sel-cas .radio{border-color:#e0a8ff;color:#e0a8ff}
+/* Item 36: selected intra Cas radio was white (no sel-* variant → radio stayed currentColor).
+   Give it intra colour so the radio matches the indigo card. */
+.optrow.on.sel-intra{border-color:rgba(129,140,248,.6);background:rgba(129,140,248,.08)}
+.optrow.on.sel-intra .radio{border-color:var(--intra);color:var(--intra)}
+.cas-example{font-size:var(--fs-small);color:var(--text-dim);line-height:1.5;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:8px;padding:9px 11px;margin-top:4px}
+/* settled lock banner — bottom-pinned (sticky), NOT min-height:100%+margin-top:auto (§12) */
+.lock-banner{display:flex;align-items:flex-start;gap:9px;position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 2px 2px;margin-top:14px;font-size:var(--fs-body);color:var(--text-muted);line-height:1.45}
+.lock-banner svg{width:15px;height:15px;color:var(--text-dim);flex-shrink:0;margin-top:1px}
+.lock-banner b{color:#fff}
+#drawer.opt-locked .lock-banner{margin-top:auto}
+</style>
 
 <!-- NAV -->
 <nav class="nav">
@@ -5706,15 +5749,15 @@ function _cardOptCtx(el){
   };
 }
 function optOpenFromCard(el){
-  // STEP-4 STUB (§D): real Options/Notes/Dissocier + 6->9-arg reattribuerTx land in STEP 5.
-  // No live opt-engine (openAssignDrawer) reachable from step 4 (event cas2Pending "Bientot" pattern).
-  showToast('\u23F3 Bient\u00F4t disponible');
+  const c = _cardOptCtx(el);
+  reattribuerTx(c.dept, c.ligne, c.fourn, c.note, c.ht, c.ttc, c.cas, c.tag, c.societe);
 }
 function optNotesFromCard(el){
-  showToast('\u23F3 Bient\u00F4t disponible');
+  const c = _cardOptCtx(el);
+  optDeepLinkNotes(c.dept, c.ligne, c.fourn, c.note, c.ht, c.ttc, c.cas, c.tag, c.societe);
 }
 function optDissocierFromCard(el){
-  showToast('\u23F3 Bient\u00F4t disponible');
+  optOpenFromCard(el);
 }
 
 /* ---- the component ---- */
@@ -6266,92 +6309,7 @@ function closeDrawer() {
 }
 let _drawerScrollY = 0;
 
-function openAssignDrawer(unmatchedIdx, fourn, note, ttc, cat, isReattribuer) {
-  window._currentAssignFourn = fourn || 'Transaction';
-  const deptOptions = Object.entries(DEPT_META).map(([tab, m]) => `<option value="${tab}">${m.name}</option>`).join('');
-
-  // Billetterie context: the À RELIER drawer is remapped — internal-account destination
-  // + recette-line target instead of département + budget-line (rule-31). Detected via the
-  // active page so the 10 expense depts keep the budget-line drawer unchanged.
-  const isBill = document.getElementById('page-billetterie')?.classList.contains('on') || cat === 'BILLETTERIE';
-  window._assignIsBill = isBill;
-  const acctOptions = (isBill && window.__BILL)
-    ? window.__BILL.accounts.filter(a => !a.is_general).map(a => `<option value="${a.id}">${a.qonto_name}</option>`).join('')
-      + `<option disabled>──────────</option><option value="__REMOVE__">⊘ Pas une distribution billetterie — retirer</option>`
-    : '';
-
-  // Pre-select dept based on catégorie if possible
-  const catNorm = (cat||'').toUpperCase();
-  const preselect = POLE_MAP_CLIENT[catNorm] || '';
-
-  document.getElementById('drawer-title').textContent = fourn || 'Transaction non associée';
-  document.getElementById('drawer-sub').textContent = isBill
-    ? 'Relier manuellement à un compte interne'
-    : 'Assigner manuellement à une ligne budgétaire';
-
-  document.getElementById('drawer-body').innerHTML = `
-    <div class="drawer-section">
-      <div class="drawer-section-title">Transaction</div>
-      <div style="background:var(--surface-2);border-radius:8px;padding:12px 14px;margin-bottom:18px;border:1px solid rgba(255,255,255,.04)">
-        <div style="font-size:.78em;font-weight:600;color:#fff;margin-bottom:4px">${fourn || '—'}</div>
-        ${note ? `<div style="font-size:.72em;color:var(--text-muted);margin-bottom:6px">${note}</div>` : ''}
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          ${cat ? `<span style="font-size:.65em;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,.05);color:var(--text-muted);text-transform:uppercase;font-weight:600">${cat}</span>` : ''}
-          <span style="font-family:monospace;font-size:.85em;font-weight:700;color:var(--red)">−${fmtAmt(Math.abs(ttc))}</span>
-        </div>
-      </div>
-
-      <div class="drawer-section-title">Destination</div>
-      <div style="margin-bottom:14px">
-        <label style="font-size:.7em;color:var(--text-dim);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">${isBill?'Compte interne':'Département'}</label>
-        <select id="assign-dept" style="width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:9px 10px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.85em;outline:none" onchange="populateAssignLines(this.value)">
-          <option value="">${isBill?'Choisir un compte interne…':'Choisir un département…'}</option>
-          ${isBill?acctOptions:deptOptions}
-        </select>
-      </div>
-      <div id="assign-ligne-wrap" style="margin-bottom:14px;display:none">
-        <label style="font-size:.7em;color:var(--text-dim);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">${isBill?'Ligne de recette *':'Ligne budgétaire *'}</label>
-        <select id="assign-ligne" style="width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:9px 10px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.85em;outline:none">
-          <option value="">${isBill?'Choisir une ligne de recette…':'Choisir une ligne…'}</option>
-        </select>
-      </div>
-      ${isBill?'':`<div id="assign-divers-wrap" style="display:none;margin-bottom:14px">
-        <button onclick="selectAssignDivers()" style="width:100%;padding:10px;border-radius:8px;border:1px dashed rgba(251,191,36,.25);background:rgba(251,191,36,.04);color:var(--amber);font-family:'DM Sans',sans-serif;font-size:.78em;font-weight:600;cursor:pointer;transition:all .15s" onmouseover="this.style.background='rgba(251,191,36,.08)'" onmouseout="this.style.background='rgba(251,191,36,.04)'">Pas sûr ? → À trier</button>
-      </div>`}
-    </div>
-    ${isBill?'':`<div class="drawer-section" style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border)">
-      <div style="font-size:.6em;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-weight:600;margin-bottom:8px">Déplacer vers une autre session</div>
-      <div style="display:flex;gap:8px">
-        ${SESSION!=='pa'?'<div style="flex:1;padding:8px 12px;border-radius:6px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);opacity:.45;cursor:default"><div style="font-size:.72em;font-weight:600;color:var(--text-muted)">Paris XXL</div><div style="font-size:.58em;color:var(--text-dim)">ML 130326</div></div>':''}
-        ${SESSION!=='bdx'?'<div style="flex:1;padding:8px 12px;border-radius:6px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);opacity:.45;cursor:default"><div style="font-size:.72em;font-weight:600;color:var(--text-muted)">Bordeaux</div><div style="font-size:.58em;color:var(--text-dim)">ML × SONORA</div></div>':''}
-        ${SESSION!=='epk'?'<div style="flex:1;padding:8px 12px;border-radius:6px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);opacity:.45;cursor:default"><div style="font-size:.72em;font-weight:600;color:var(--text-muted)">Paris EPK</div><div style="font-size:.58em;color:var(--text-dim)">ML × Elektric Park</div></div>':''}
-      </div>
-      <div style="font-size:.55em;color:var(--text-dim);margin-top:6px;text-align:center;font-style:italic">Bientôt disponible</div>
-    </div>`}
-  `;
-
-  // Pre-select dept if catégorie matches
-  if (preselect) {
-    setTimeout(() => {
-      const sel = document.getElementById('assign-dept');
-      if (sel) { sel.value = preselect; populateAssignLines(preselect); }
-    }, 0);
-  }
-
-  document.getElementById('drawer-footer').style.display = 'flex';
-  const dissBtn = document.getElementById('drawer-dissociate');
-  if (dissBtn) dissBtn.style.display = 'none';
-
-  document.getElementById('drawer-footer').innerHTML = `
-    <button class="drawer-btn" onclick="closeDrawer()">Annuler</button>
-    ${isReattribuer ? `<button class="drawer-btn" onclick="closeDrawer();refreshBudgetData().then(()=>renderReleve());showToast('✓ Dissociée','Transaction retirée et non réassignée.','green')" style="color:var(--amber);border-color:rgba(251,191,36,.25)">Juste dissocier</button>` : ''}
-    <button class="drawer-btn primary" onclick="confirmAssign(${unmatchedIdx})">Confirmer →</button>
-  `;
-
-  document.getElementById('drawer-overlay').classList.add('open');
-  document.getElementById('drawer').classList.add('open');
-  
-}
+/* [step5] general's old openAssignDrawer chrome REMOVED — event engine ported below (its __BILL isBill branch dies with it, §D) */
 
 function populateAssignLines(tabName) {
   const wrap = document.getElementById('assign-ligne-wrap');
@@ -6487,108 +6445,26 @@ function filterAssignList(q) {
 
 // Orphan assign — for transactions in QONTO_RAW but not in UNMATCHED or MATCH_LOG
 let _orphanData = null;
-function openOrphanAssign(fourn, note, ht, ttc, cat, date) {
-  _orphanData = { fourn, note, ht, ttc, cat, date };
-  window._currentAssignFourn = fourn || 'Transaction';
-  const isRevenue = ttc > 0;
+/* [step5] general's old openOrphanAssign chrome REMOVED — event engine ported below */
 
-  const deptOptions = Object.keys(DEPT_META).map(k =>
-    `<option value="${k}" ${k === POLE_MAP_CLIENT[cat?.toUpperCase()] ? 'selected' : ''}>${DEPT_META[k].name}</option>`
-  ).join('') + (isRevenue ? `<option value="RECETTES" selected>RECETTES</option>` : '');
-  const preselect = isRevenue ? 'RECETTES' : (POLE_MAP_CLIENT[cat?.toUpperCase()] || '');
-
-  const subtitle = isRevenue
-    ? `<span style="color:#818cf8">Recette</span> \u2014 +${fmtAmt(Math.abs(ttc))} \u20AC`
-    : `<span style="color:var(--amber)">Orpheline</span> \u2014 pas dans la liste non reli\u00E9es`;
-
-  document.getElementById('drawer-title').textContent = 'Assigner la transaction';
-  document.getElementById('drawer-sub').innerHTML = subtitle;
-  document.getElementById('drawer-body').innerHTML = `
-    <div class="drawer-section">
-      <div class="drawer-section-title">Transaction</div>
-      <div style="background:var(--surface-2);border-radius:8px;padding:12px 14px;margin-bottom:16px">
-        <div style="font-size:.8em;font-weight:600;color:#fff">${fourn || '\u2014'}</div>
-        <div style="font-size:.68em;color:var(--text-muted);margin-top:4px">${note || ''}</div>
-        <div style="font-size:.65em;color:var(--text-dim);margin-top:4px">${cat || ''} <span style="color:var(--red);font-weight:600">\u2212${fmtAmt(Math.abs(ttc))}</span></div>
-      </div>
-      <div class="drawer-section-title">Destination</div>
-      <div style="margin-bottom:14px">
-        <label style="font-size:.7em;color:var(--text-dim);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">D\u00E9partement</label>
-        <select id="assign-dept" style="width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:9px 10px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.85em;outline:none" onchange="populateAssignLines(this.value)">
-          <option value="">Choisir un d\u00E9partement\u2026</option>
-          ${deptOptions}
-        </select>
-      </div>
-      <div id="assign-ligne-wrap" style="margin-bottom:14px;display:none">
-        <label style="font-size:.7em;color:var(--text-dim);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Ligne budg\u00E9taire *</label>
-        <select id="assign-ligne" style="width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:9px 10px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.85em;outline:none">
-          <option value="">Choisir une ligne…</option>
-        </select>
-      </div>
-      <div id="assign-divers-wrap" style="display:none;margin-bottom:14px">
-        <button onclick="selectAssignDivers()" style="width:100%;padding:10px;border-radius:8px;border:1px dashed rgba(251,191,36,.25);background:rgba(251,191,36,.04);color:var(--amber);font-family:'DM Sans',sans-serif;font-size:.78em;font-weight:600;cursor:pointer;transition:all .15s" onmouseover="this.style.background='rgba(251,191,36,.08)'" onmouseout="this.style.background='rgba(251,191,36,.04)'">Pas sûr ? → À trier</button>
-      </div>
-    </div>
-  `;
-
-  if (preselect) {
-    setTimeout(() => {
-      const sel = document.getElementById('assign-dept');
-      if (sel) { sel.value = preselect; populateAssignLines(preselect); }
-    }, 0);
-  }
-
-  document.getElementById('drawer-footer').style.display = 'flex';
-  document.getElementById('drawer-footer').innerHTML = `
-    <button class="drawer-btn" onclick="closeDrawer()">Annuler</button>
-    <button class="drawer-btn primary" onclick="confirmOrphanAssign()">Confirmer \u2192</button>
-  `;
-  document.getElementById('drawer-overlay').classList.add('open');
-  document.getElementById('drawer').classList.add('open');
-  
-}
-
-async function ensureDiversLine(dept, ligneName) {
-  // Check if this line already exists in "À TRIER" section
-  const meta = DEPT_META[dept];
-  const deptData = meta ? DEPTS.find(d => d.id === meta.id) : null;
-  if (deptData) {
-    const aTrierSection = deptData.sections.find(s => s.s === 'À TRIER');
-    if (aTrierSection && aTrierSection.lines.some(l => l.l === ligneName)) return;
-  }
-  // Create À TRIER section (if needed) + line
-  try {
-    const resp = await fetch(`${API}/api/budget/add-ligne`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({session: SESSION, dept, section: 'À TRIER', ligne: ligneName, est_ht: 0, statut: 'ESTIMATION'})
-    });
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      showToast('⚠ À TRIER échoué', `${dept}: ${err.detail || resp.status}`, 'red');
-    }
-  } catch(e) { showToast('⚠ À TRIER échoué', `${dept}: ${e.message}`, 'red'); }
-}
+/* [step5] ensureDiversLine DELETED — À-TRIER fabrication retired (§C); was called only from the two confirms */
 
 async function confirmOrphanAssign() {
-  const dept = document.getElementById('assign-dept')?.value;
-  let ligne = document.getElementById('assign-ligne')?.value;
-  if (!dept) {
-    showToast('\u26A0 Champ manquant', 'S\u00E9lectionne un d\u00E9partement.', 'amber');
+  // STEP 5 §C — per-endpoint body sourced from _optState ONLY. À-relier carries categorie:null (NULL-GATE).
+  const departement = _optState ? _optState.dept : null;
+  const ligne       = (_optState && _optState.line) ? _optState.line : null;
+  const categorie   = (_optState && _optState.line) ? (_optState.cat || null) : null;   // NULL-GATE
+  if (!departement) {
+    showToast('\u26A0 Champ manquant', 'S\u00E9lectionne un mois.', 'amber');
     return;
-  }
-  if (!ligne) {
-    ligne = window._currentAssignFourn || 'Transaction';
-    window._isAtrier = true;
   }
   const btn = document.querySelector('#drawer-footer .primary');
   if (btn) { btn.textContent = 'En cours\u2026'; btn.disabled = true; }
-  if (window._isAtrier) await ensureDiversLine(dept, ligne);
   try {
     const resp = await fetch(`${API}/api/assign-direct`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ session: SESSION, dept, ligne, fourn: _orphanData.fourn, note: _orphanData.note, date: _orphanData.date, ht: Math.abs(_orphanData.ht), ttc: Math.abs(_orphanData.ttc) }),
+      body: JSON.stringify({ session: SESSION, departement, categorie, ligne, fourn: _orphanData.fourn, note: _orphanData.note, date: _orphanData.date, ht: Math.abs(_orphanData.ht), ttc: Math.abs(_orphanData.ttc) }),
     });
     if (!resp.ok) {
       const err = await resp.json().catch(() => ({}));
@@ -6599,7 +6475,8 @@ async function confirmOrphanAssign() {
     const activeTab = document.querySelector(".nm.on,.dt.on");
     if (activeTab && activeTab.textContent.includes("Transactions")) renderReleve();
     showToast('\u2713 Transaction assign\u00E9e',
-      ligne ? `\u2212${fmtAmt(Math.abs(_orphanData.ttc))} \u20AC ajout\u00E9s \u00E0 "${ligne}" dans ${dept}.` : `\u2212${fmtAmt(Math.abs(_orphanData.ttc))} \u20AC assign\u00E9s au d\u00E9partement ${dept}.`, 'green');
+      ligne ? `\u2212${fmtAmt(Math.abs(_orphanData.ttc))} \u20AC ajout\u00E9s \u00E0 "${ligne}" (${departement}).`
+            : `\u2212${fmtAmt(Math.abs(_orphanData.ttc))} \u20AC reli\u00E9s au mois ${departement}.`, 'green');
   } catch (e) {
     if (btn) { btn.textContent = 'Confirmer \u2192'; btn.disabled = false; }
     showToast('\u26A0 Erreur', e.message, 'red');
@@ -6607,56 +6484,1921 @@ async function confirmOrphanAssign() {
 }
 
 async function confirmAssign(unmatchedIdx) {
-  const dept = document.getElementById('assign-dept')?.value;
-  let ligne = document.getElementById('assign-ligne')?.value;
-
-  if (!dept) {
-    showToast('⚠ Champ manquant', 'Sélectionne un département.', 'amber');
+  // STEP 5 §C — tier path from _optState ONLY (NOT the DOM #assign-dept/#assign-ligne). departement =
+  // the user's MONTH (never from the ligne); ligne optional (à-relier); categorie NULL-GATED on
+  // ligne-presence so an à-relier POST carries categorie:null. À-TRIER fabrication retired.
+  const departement = _optState ? _optState.dept : null;
+  const ligne       = (_optState && _optState.line) ? _optState.line : null;
+  const categorie   = (_optState && _optState.line) ? (_optState.cat || null) : null;   // NULL-GATE
+  if (!departement) {
+    showToast('\u26A0 Champ manquant', 'S\u00E9lectionne un mois.', 'amber');
     return;
   }
-
-  // No ligne selected → auto-route to À TRIER with fournisseur name
-  if (!ligne) {
-    ligne = window._currentAssignFourn || 'Transaction';
-    window._isAtrier = true;
-  }
-
-  // Update button to loading state
   const btn = document.querySelector('#drawer-footer .primary');
-  if (btn) { btn.textContent = 'En cours…'; btn.disabled = true; }
-
-  if (window._isAtrier) await ensureDiversLine(dept, ligne);
-
+  if (btn) { btn.textContent = 'En cours\u2026'; btn.disabled = true; }
   try {
     const resp = await fetch(`${API}/api/assign`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ session: SESSION, unmatched_idx: unmatchedIdx, dept, ligne }),
+      body: JSON.stringify({ session: SESSION, unmatched_idx: unmatchedIdx, departement, categorie, ligne }),
     });
-
     if (!resp.ok) {
       const err = await resp.json().catch(() => ({}));
       throw new Error(err.detail || `Erreur ${resp.status}`);
     }
-
     const result = await resp.json();
     closeDrawer();
-
-    // Reload budget data and refresh transactions tab
     await refreshBudgetData();
-    // If we are on the transactions tab, refresh it
     const activeTab = document.querySelector(".nm.on,.dt.on");
     if (activeTab && activeTab.textContent.includes("Transactions")) renderReleve();
-
-
-
-    showToast('✅ Transaction assignée',
-      ligne ? `−${fmtAmt(result.ttc_added)} € ajoutés à "${ligne}" dans ${dept}.` : `−${fmtAmt(result.ttc_added)} € assignés au département ${dept}.`, 'green');
-
+    showToast('\u2705 Transaction assign\u00E9e',
+      ligne ? `\u2212${fmtAmt(result.ttc_added)} \u20AC ajout\u00E9s \u00E0 "${ligne}" (${departement}).`
+            : `\u2212${fmtAmt(result.ttc_added)} \u20AC reli\u00E9s au mois ${departement}.`, 'green');
   } catch (e) {
-    if (btn) { btn.textContent = 'Confirmer →'; btn.disabled = false; }
-    showToast('⚠ Erreur assignment', e.message, 'red');
+    if (btn) { btn.textContent = 'Confirmer \u2192'; btn.disabled = false; }
+    showToast('\u26A0 Erreur assignment', e.message, 'red');
   }
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════
+// STEP 5 — assign/Options ENGINE (ported from event BUILD93 baffb62d). Replaces general's old
+// openAssignDrawer/openOrphanAssign chrome. general KEEPS its live confirmAssign/confirmOrphanAssign
+// (→ /api/assign, /api/assign-direct); the ported foot is wired to them (NOT event's dead optFootPrimary).
+// ════════════════════════════════════════════════════════════════════════════════════════════
+// STEP 5 §B — general's tier-1 `departement` = the MONTH (canonical model). The à-relier dept axis
+// lists these; optAtrierPickDept writes _optState.dept = <month key>.
+const _OPT_MONTHS = [
+  {key:'janvier',label:'Janvier'},{key:'fevrier',label:'F\u00E9vrier'},{key:'mars',label:'Mars'},
+  {key:'avril',label:'Avril'},{key:'mai',label:'Mai'},{key:'juin',label:'Juin'},
+  {key:'juillet',label:'Juillet'},{key:'aout',label:'Ao\u00FBt'},{key:'septembre',label:'Septembre'},
+  {key:'octobre',label:'Octobre'},{key:'novembre',label:'Novembre'},{key:'decembre',label:'D\u00E9cembre'}
+];
+const _OPT_MONTH_KEYS = _OPT_MONTHS.map(m => m.key);
+
+// STEP 5 closure dep — isRembNote (event helper the ported engine calls on the recette path).
+function isRembNote(note) {
+  if (!note) return false;
+  const n = normStr(note);
+  return /\bremb|\brefund|remboursement/i.test(n);
+}
+
+let _optState = null;
+
+// CL-51 territory (§198 / ADR-0012 5d) — cas comptable example text, SIGN-KEYED:
+// CCA/FNP on dépense (−), PCA/FAE on recette (+). PCA/FAE adopted as a tag (Leo ruling).
+const CAS_EXAMPLE = {
+  CCA: "Assurance payée en décembre N couvrant N+1 — la charge est reportée sur l'exercice rattaché.",
+  FNP: "Prestation livrée en N, facture du fournisseur attendue en N+1 — la charge est engagée dès N.",
+  PCA: "Acompte encaissé en N pour une prestation rendue en N+1 — le produit est reporté sur N+1.",
+  FAE: "Prestation rendue en N, facture émise en N+1 — le produit est rattaché à N."
+};
+
+// ── CONTRACT_LEDGER stub logger (PROPOSED; NO POST). Same stub-at-the-boundary
+//    discipline as CL-31/35/41: the UI/state fires, the write is logged PROPOSED
+//    in-session; no real backend call is made. ────────────────────────────────
+window._contractLedgerProposed = window._contractLedgerProposed || [];
+function _optLogStub(cl, what, detail){
+  const e = { cl: cl, what: what, detail: detail || '', t: new Date().toISOString(), status: 'PROPOSED' };
+  window._contractLedgerProposed.push(e);
+  try { console.info('[CONTRACT_LEDGER PROPOSED] ' + cl + ' — ' + what + (detail ? (' · ' + detail) : '')); } catch (x) {}
+  return e;
+}
+
+function _optNorm(s){ return (s == null ? '' : String(s)).toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+// §SEARCH — multi-token AND match: every whitespace-separated token must appear in the combined
+// haystack (dept + line + cat). "prod" → all production lines; "prod secu" → production lines whose
+// line/cat also contains "secu". Tokens are accent/case-normalised via _optNorm.
+function _optTokMatch(q, parts){
+  const toks = _optNorm(q).trim().split(/\s+/).filter(Boolean);
+  if (!toks.length) return true;
+  const hay = parts.map(_optNorm).join(' ');
+  return toks.every(t => hay.includes(t));
+}
+function _optEsc(s){ return (s == null ? '' : String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+/* [step5] event copy skipped — general keeps its own */
+/* [step5] event copy skipped — general keeps its own */   // B56: JS-string-escape first, THEN HTML-attr-escape — composition of the two vetted escapers, zero new logic
+
+// preview-hero tx (fed to the SEALED transactionCard, role:'preview'). sign/colour
+// are derived by the sealed renderer; no figure is hardcoded.
+function _optBuildTx(s){
+  const mag = Math.abs(s.ttc || 0);
+  const isRemb = (s.cls === 'remb') || !!s.credit;            // remb/credit reads as a positive (teal) amount
+  const ttc = isRemb ? mag : (s.isRevenue ? mag : -mag);      // dépense → − ; recette/remb/credit → +
+  const ht  = (s.ht != null && s.ht !== '') ? (ttc < 0 ? -Math.abs(s.ht) : Math.abs(s.ht)) : null;
+  const tx = {
+    name: s.fourn || '\u2014',
+    cls:  s.cls || 'ext',
+    flow: s.isRevenue ? 'recette' : 'depense',
+    ttc:  ttc,
+    ht:   ht,
+    note: s.note || '',
+    date: s.date ? formatQontoDate(s.date) : '',
+    cas:  (s.cas && s.cas !== 'none') ? s.cas : null
+  };
+  // v23a.1 settled-read hydration → sealed transactionCard hooks (READ; render only; no POST).
+  // Each key is attached ONLY when its hydrated field is present, so the open/non hero is byte-identical.
+  if (s.societe) tx.societe = s.societe;
+  if (s.originIntra && s.originIntra.who){
+    const lbl = String(s.originIntra.lbl || '');
+    const dir = /vers/i.test(lbl) ? 'out' : (/re[\u00e7c]u|transf|depuis/i.test(lbl) ? 'in' : 'back');
+    tx.flowLine = { dir: dir, label: lbl + (lbl ? ' :' : ''), bold: s.originIntra.who, suffix: s.originIntra.tail || '' };
+  }
+  if (s.rembOrigin && s.rembOrigin.who){
+    tx.rembOrigin = { tone:'dim', icon:'back', label:'Remboursement \u2014', bold: s.rembOrigin.who, suffix: s.rembOrigin.tail || '' };
+  }
+  if (s.casMarker && s.casMarker.text){
+    tx.cas1 = { icon:'info', text: s.casMarker.text };
+  }
+  // §v23a.4 #3-Type: feed the sealed tcKv "Type" row (tcKv: `if (tx.typeRow) kv('Type', tx.typeRow)`).
+  // cls→label uses the mock's capitalized Type-tab labels (NOT the frozen lowercase chip CLS_LABEL).
+  // Set ONLY for a mapped cls on a dépense; omitted for recette/credit and unmapped cls. No tcKv edit.
+  const _TYPE_LABEL = { ext: 'Externe', inter: 'Inter-soci\u00E9t\u00E9', remb: 'Remboursement' };
+  if (!s.isRevenue && _TYPE_LABEL[tx.cls]) tx.typeRow = _TYPE_LABEL[tx.cls];
+  return tx;
+}
+
+// flattened dept→catégorie→ligne index from the live data (DEPTS for dépense,
+// REC for recette), dept-first ranked against the hinted dept. note-word match
+// is approximated as accent-insensitive substring (line / cat / dept label).
+function _optLineIndex(s){
+  const out = [];
+  // Item 39 P2 — remb no-origin mode imputes to an EXPENSE line (offsets a cost), never a RECETTES
+  // line. _rembLineMode forces the all-dept expense branch even when the tx is a recette (isRevenue).
+  if (s.isRevenue && !s._rembLineMode && !(typeof window !== 'undefined' && window._rembLineMode)) {
+    (typeof REC !== 'undefined' ? REC : []).forEach(c => {
+      (c.rows || []).filter(r => r.l).forEach(r => out.push({ dept: c.cat, deptLabel: c.cat, cat: c.cat, line: r.l }));
+    });
+  } else {
+    Object.entries(typeof DEPT_META !== 'undefined' ? DEPT_META : {}).forEach(([tab, m]) => {
+      const dept = (typeof DEPTS !== 'undefined' ? DEPTS : []).find(d => d.id === m.id);
+      if (!dept) return;
+      (dept.sections || []).filter(sec => sec.s !== 'À TRIER').forEach(sec => {
+        (sec.lines || []).filter(l => l.l && !l.l.startsWith('(ligne')).forEach(l =>
+          out.push({ dept: tab, deptLabel: m.name, cat: sec.s, line: l.l, reel: (l.reel || 0) }));   // reel = line's current real total (Item 39 effect-summary)
+      });
+    });
+  }
+  return out;
+}
+
+function optTab(el){
+  // accepts either the clicked .opt-tab element OR a string pane id (Notes deep-link → optTab('notes'))
+  const drawer = document.getElementById('drawer'); if (!drawer) return;
+  let pane, btn;
+  if (typeof el === 'string'){ pane = el; btn = drawer.querySelector('.opt-tab[data-pane="' + pane + '"]'); }
+  else { btn = el; pane = el.getAttribute('data-pane'); }
+  drawer.querySelectorAll('.opt-tab').forEach(t => t.classList.toggle('on', t === btn));
+  drawer.querySelectorAll('.opt-pane').forEach(p => p.classList.toggle('on', p.getAttribute('data-pane') === pane));
+}
+
+function optFilterLignes(){
+  const inp = document.getElementById('opt-ligne-input');
+  const res = document.getElementById('opt-ligne-res');
+  if (!inp || !res || !_optState) return;
+  const q = _optNorm(inp.value).trim();
+  // à-relier DEPT-mode: the search lists DEPARTMENTS (dépense), not lines.
+  if (_optState._atrierMode){
+    let depts = _OPT_MONTHS.map(m => ({ tab: m.key, name: m.label }));   // STEP 5 §B — dept axis = MONTHS
+    if (q) depts = depts.filter(d => _optTokMatch(q, [d.name, d.tab]));
+    res.classList.add('on');
+    res.innerHTML = depts.length
+      ? depts.map(d => `<div class="lr-row" onclick="optAtrierPickDept('${_optJs(d.tab)}')">
+          <div class="lr-dept"><span class="dpl-dot" style="background:${(typeof deptColorFor==='function'?deptColorFor(d.tab):null)||'#fbbf24'}"></span>${_optEsc(d.name)}</div>
+          <div class="lr-line">Relier \u00e0 ce mois</div></div>`).join('')
+      : '<div class="lr-empty">Aucun mois</div>';
+    return;
+  }
+  let rows = _optLineIndex(_optState);
+  const hint = _optState.dept || _optState.preselect || '';
+  if (q) rows = rows.filter(r => _optTokMatch(q, [r.deptLabel, r.line, r.cat]));
+  // dept-first ranking: hinted dept's lines float to the top
+  rows.sort((a, b) => (a.dept === hint ? 0 : 1) - (b.dept === hint ? 0 : 1));
+  rows = rows.slice(0, 40);
+  res.classList.toggle('on', !!inp.value || _optState._ligneFocusOpen === true);
+  res.innerHTML = rows.length
+    ? rows.map(r => `<div class="lr-row" onclick="optPickLigne('${_optJs(r.dept)}','${_optJs(r.line)}','${_optJs(r.cat)}')">
+        <div class="lr-dept"><span class="dpl-dot" style="background:${(typeof deptColorFor==='function'?deptColorFor(r.deptLabel):null)||'#fbbf24'}"></span>${_optEsc(r.deptLabel)}</div>
+        <div class="lr-line"><span class="lr-cat">${_optEsc(r.cat)}</span> ${_optEsc(r.line)}</div></div>`).join('')
+    : '<div class="lr-empty">Aucune ligne — ou utilisez « À relier » ci-dessous</div>';
+}
+
+// §SEARCH req4 — à-relier: focusing the search field opens the list with the known dept's lines as
+// default (no typing). Focus-open flag lets the empty-query render show; cleared on pick/clear.
+function optLigneFocus(){
+  if (!_optState || _optState._atrierMode) return;
+  // Item 38: auto-open the list on focus ONLY when the dept is already known;
+  // dept-unknown states await typing.
+  _optState._ligneFocusOpen = !!(_optState.dept || _optState.preselect);
+  optFilterLignes();
+}
+
+function _optAssignedCardHtml(s){
+  if (!(s.dept && (s.line || s.relier))) return '';
+  const label = s.isRevenue ? (s.cat || s.dept) : ((typeof DEPT_META !== 'undefined' && DEPT_META[s.dept]) ? DEPT_META[s.dept].name : s.dept);
+  const line  = s.line || (s.relier ? '\u0053\u00e9lectionner une ligne' : s.line);
+  // §v23a.2 (#4): the ✕ (vcard-rm) is gated in frozen assignedCard on onRemove. Omit onRemove when
+  // the foot is locked (settled/cas1recv — same predicate as optApplyLock) so the assigned card is
+  // inert in locked; editing/open still carry the live optClearLigne() ✕.
+  const st = _optFootState(s);
+  const locked = (st === 'settled') || (st === 'cas1recv');
+  return assignedCard(label, line, { cat: s.cat || '', onRemove: locked ? undefined : 'optClearLigne()' });
+}
+
+// v23a.1 — cas1recv amber #orient prompt (mock L1275). Renders ONLY when the foot state is
+// cas1recv (genuine intra Cas 1) → empty for open/settled, so the open face is unchanged.
+function _optOrientHtml(s){
+  if (_optFootState(s) !== 'cas1recv') return '';
+  return '<div class="opt-orient" id="orient"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span>R\u00e9ception intra \u00b7 Cas 1 \u2014 compt\u00e9e ici. <b>Dissocier</b> renvoie l\u2019origine en non reli\u00e9e.</span></div>';
+}
+
+// v23a.1 — committed-ventilation view (states ventile/ventchild). RENDER ONLY: the ventilation
+// is supplied by hydration (s.ventLines); the Ventiler INPUT stays inert/v23b. committedPie donut
+// (proportional, derived from the split amounts — no baked figure) + one assignedCard per split.
+// seam 27dl — ventilé-pie palette: base slice = dept brand colour (deptColorFor), siblings =
+// clearly-distinguishable hue-rotated colours (golden-angle), not near-identical shades.
+function _hexToHsl(hex){let c=String(hex||'').replace('#','');if(c.length===3)c=c.split('').map(x=>x+x).join('');
+  const r=parseInt(c.slice(0,2),16)/255,g=parseInt(c.slice(2,4),16)/255,b=parseInt(c.slice(4,6),16)/255;
+  const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h=0,s=0,l=(mx+mn)/2;
+  if(mx!==mn){const d=mx-mn;s=l>0.5?d/(2-mx-mn):d/(mx+mn);
+    h=mx===r?((g-b)/d+(g<b?6:0)):mx===g?((b-r)/d+2):((r-g)/d+4);h*=60;}return[h,s,l];}
+function _hslToHex(h,s,l){h=((h%360)+360)%360;const a=s*Math.min(l,1-l);
+  const f=n=>{const k=(n+h/30)%12,col=l-a*Math.max(Math.min(k-3,9-k,1),-1);return Math.round(255*col).toString(16).padStart(2,'0');};
+  return'#'+f(0)+f(8)+f(4);}
+function _ventPalette(n,base){const[h,s,l]=_hexToHsl(base);const sat=Math.max(0.5,Math.min(0.85,s||0.6));
+  const out=[base];for(let i=1;i<n;i++){const hh=h+i*137.508;const ll=Math.max(0.44,Math.min(0.72,(l||0.62)+(i%2?0.08:-0.08)));out.push(_hslToHex(hh,sat,ll));}return out;}
+function _optVentHtml(s){
+  const lines = s.ventLines || [];
+  if (!lines.length) return _optAssignedCardHtml(s);
+  const total = lines.reduce((a, l) => a + Math.abs(l.amt || 0), 0) || 1;
+  const COLORS = _ventPalette(lines.length, (typeof deptColorFor === 'function' ? deptColorFor(s.dept) : null) || '#818cf8');
+  const R = 15.9155, CIRC = 2 * Math.PI * R; let off = 0;
+  const segs = lines.map((l, i) => {
+    const len = (Math.abs(l.amt || 0) / total) * CIRC;
+    const seg = '<circle cx="18" cy="18" r="' + R + '" fill="none" stroke="' + COLORS[i % COLORS.length]
+              + '" stroke-width="5" stroke-dasharray="' + len.toFixed(2) + ' ' + (CIRC - len).toFixed(2)
+              + '" stroke-dashoffset="' + (-off).toFixed(2) + '" transform="rotate(-90 18 18)"></circle>';
+    off += len; return seg;
+  }).join('');
+  const ring = '<svg class="vp-ring" width="44" height="44" viewBox="0 0 36 36"><circle cx="18" cy="18" r="' + R
+             + '" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="5"></circle>' + segs + '</svg>';
+  const deptLabel = (typeof DEPT_META !== 'undefined' && DEPT_META[s.dept]) ? DEPT_META[s.dept].name : s.dept;
+  const splits = lines.map(l =>
+    assignedCard(deptLabel, l.name, { cat: l.cat || '', amt: '\u2212' + fmtAmt(Math.abs(l.amt || 0)) })
+  ).join('');
+  return '<div class="opt-vent-pie">' + ring + '<div class="vp-cap">Ventil\u00e9 \u00b7 ' + lines.length
+       + ' ligne' + (lines.length > 1 ? 's' : '') + '</div></div><div class="opt-vent-splits">' + splits + '</div>';
+}
+
+// pick a line → backfills dept, bridges the hidden #assign-dept/#assign-ligne so the
+// preserved orphan-remb machinery stays consistent, renders the shared assignedCard.
+// STEP 5 §C — NO-CLOBBER: a ligne pick sets ONLY the derived categorie (= section sec.s) + the line.
+// It does NOT touch _optState.dept (the user's MONTH) and does NOT bridge #assign-dept. relier is
+// cleared (a full assign is not partial). The `dept` arg (a category key from _optLineIndex) is IGNORED.
+function optPickLigne(dept, line, cat){
+  if (!_optState) return;
+  _optState.cat = cat || _optState.cat; _optState.line = line; _optState.atrier = false;
+  _optState.relier = false;
+  const l = document.getElementById('assign-ligne');
+  if (l) { l.innerHTML = '<option selected>' + _optEsc(line) + '</option>'; l.value = line; }
+  _optAfterPick();
+}
+
+// CL-50 — à-relier: picking a department tags the tx to that dept (relier:true; dept known,
+// ligne pending) so it surfaces in the dept's à-relier table via its `dept` tag on _unmatchedRows
+// and counts as à-relier expense. No fake À-TRIER line, no _isAtrier, no ensureDiversLine.
+// recette has no à-relier card.
+// The "à relier" action is dept-FIRST. Clicking it flips the search to DEPT-mode (the results
+// list DEPARTMENTS, not lines); picking a department sets relier:true (dept, ligne pending). The
+// WRITE stays STUBBED (CL-50 PROPOSED → _contractLedgerProposed, no POST); the flow + the settled
+// à-relier card render live. Live write = S3. (No "Département requis" gate now —
+// the inverted flow that demanded a dept up front is what Ruling 3 replaces.)
+function optPickAtrier(){
+  if (!_optState || _optState.isRevenue) return;            // dépense-only (recette has no à-trier card, §13)
+  // §SEARCH req5 — partly-assigned tx already knows its department; skip dept-mode + the search field,
+  // go straight to the à-trier card (badge) for the known dept.
+  // STEP 5 Finding 5 (dept-axis tier-guard) — general's month axis is USER-sourced; a category HINT
+  // in _optState.dept/preselect must NOT be treated as a known month (posting a category as a month).
+  // Shortcut ONLY when _optState.dept is already a real MONTH (a partly-assigned à-relier tx); else
+  // fall through to the month picker.
+  const _known = (_optState.dept && _OPT_MONTH_KEYS.indexOf(_optState.dept) !== -1) ? _optState.dept : '';
+  if (_known){ optAtrierPickDept(_known); return; }
+  _optState._atrierMode = true;                             // enter dept-mode (dept unknown → choose)
+  const inp = document.getElementById('opt-ligne-input');
+  if (inp){ inp.value = ''; inp.placeholder = '\u00C0 relier \u2014 choisir un d\u00E9partement\u2026'; try { inp.focus(); } catch (e) {} }
+  optFilterLignes();                                        // re-render results as the department list
+  // #3 — ensure the freshly-rendered dept list is in view on card-click (it renders + shows, but sits above the
+  // clicked card; without this the user may not see it until they scroll/type). Best-effort, guarded.
+  const _res = document.getElementById('opt-ligne-res');
+  if (_res && typeof _res.scrollIntoView === 'function') { try { _res.scrollIntoView({ block: 'nearest' }); } catch (e) {} }
+}
+
+// Confirm — a department was picked → à-relier (dept, ligne pending). Sets relier:true so the tx
+// surfaces in the dept à-relier table (via its `dept` tag on _unmatchedRows) and counts as à-relier
+// expense. STUBBED (proposed to _contractLedgerProposed, no POST; live write = S3). No fake
+// À-TRIER line.
+function optAtrierPickDept(dept){
+  if (!_optState) return;
+  _optState.dept = dept; _optState.relier = true; _optState.atrier = false; _optState.line = null; _optState._atrierMode = false;
+  window._isAtrier = false;   // à-relier: dept-only, NOT à-trier — no _isAtrier, no fake-line bridge
+  const inp = document.getElementById('opt-ligne-input'); if (inp) inp.placeholder = 'Rechercher un d\u00E9partement ou une ligne\u2026';
+  _optLogStub('CL-50', '\u00e0-relier dept assignment (no ligne)', (_optState.fourn || 'Transaction') + ' \u2192 \u00C0 RELIER \u00b7 ' + dept);
+  _optAfterPick();
+}
+
+function optClearLigne(){
+  if (!_optState) return;
+  _optState.dept = (_optState.preselect && !_optState.isRevenue) ? _optState.preselect : null;
+  _optState.line = null; _optState.atrier = false; _optState._atrierMode = false;
+  _optAfterPick();
+}
+
+// shared post-pick refresh (assigned card + hint + tab-check + hero + foot enable)
+function _optAfterPick(){
+  const s = _optState; if (!s) return;
+  const cur = document.getElementById('opt-ligne-cur'); if (cur) cur.innerHTML = _optAssignedCardHtml(s);
+  const hint = document.getElementById('relie-hint'); if (hint) hint.style.display = (s.dept && (s.line || s.relier) && !(s.relier && !s.line)) ? '' : 'none';
+  const chk = document.getElementById('opt-tab-check'); if (chk) { chk.style.display = (s.dept && (s.line || s.relier)) ? '' : 'none'; chk.classList.toggle('partial', !!(s.relier && !s.line)); }
+  const res = document.getElementById('opt-ligne-res'); if (res) { res.classList.remove('on'); } if (_optState) _optState._ligneFocusOpen = false;
+  const inp = document.getElementById('opt-ligne-input'); if (inp) inp.value = '';
+  const hero = document.getElementById('opt-hero'); if (hero) hero.innerHTML = transactionCard(_optBuildTx(s), { role: 'preview' });
+  document.getElementById('drawer-footer').innerHTML = _optRenderFoot(s);
+  // Item 39 #3 — in no-origin line-mode, a line pick fills the link card + renders the effect summary
+  // (and re-stages the footer to "Confirmer"). Guard uses window._rembLineMode (mirror) so a repaint
+  // that rebuilt _optState can't silently disable the hook (diagnosis (a)).
+  if ((s._rembLineMode || window._rembLineMode) && s.dept && s.line && typeof rembNoOriginPicked === 'function') rembNoOriginPicked();
+}
+
+// TYPE tab — pickCls: Externe / Inter-société ONLY (intra via the action card, §14).
+function optPickCls(el){
+  if (!_optState) return;
+  const cls = el.getAttribute('data-cls');
+  _optState.cls = cls; _optState.sub = null;        // picking a classification never pre-sets sub
+  const grid = el.parentElement;
+  grid.querySelectorAll('.optrow').forEach(r => {
+    const on = r === el; r.classList.toggle('on', on);
+    r.classList.toggle('sel-neutral', on && r.getAttribute('data-cls') === 'ext');
+    r.classList.toggle('sel-amber',   on && r.getAttribute('data-cls') === 'inter');
+  });
+  _optLogStub('CL-51', 'classification tag', (_optState.fourn || '') + ' \u2192 ' + cls);
+  const hero = document.getElementById('opt-hero'); if (hero) hero.innerHTML = transactionCard(_optBuildTx(_optState), { role: 'preview' });
+}
+
+// CL-51 — cas-tag write (CCA/FNP dépense · PCA/FAE recette), SIGN-KEYED, manual, optional
+// on any type. Adopted as a tag (Leo ruling). STUB: logged PROPOSED, no POST.
+function optPickCas(el){
+  if (!_optState) return;
+  const cas = el.getAttribute('data-cas');
+  _optState.cas = cas;
+  const grid = el.parentElement;
+  grid.querySelectorAll('.optrow').forEach(r => {
+    const on = r === el; r.classList.toggle('on', on);
+    r.classList.toggle('sel-cas',     on && r.getAttribute('data-cas') !== 'none');
+    r.classList.toggle('sel-neutral', on && r.getAttribute('data-cas') === 'none');
+  });
+  const ex = document.getElementById('cas-example');
+  if (ex) { if (cas && cas !== 'none' && CAS_EXAMPLE[cas]) { ex.style.display = ''; ex.textContent = CAS_EXAMPLE[cas]; } else ex.style.display = 'none'; }
+  if (cas && cas !== 'none') _optLogStub('CL-51', 'cas-tag write', (_optState.fourn || '') + ' \u2192 ' + cas);
+  const hero = document.getElementById('opt-hero'); if (hero) hero.innerHTML = transactionCard(_optBuildTx(_optState), { role: 'preview' });
+}
+
+// NOTES tab — note field + journal/audit log; provenance (auto/manuel) is a log LINE.
+function optRenderNotes(){
+  const tl = document.getElementById('opt-timeline'); const cnt = document.getElementById('notes-cnt');
+  if (!tl || !_optState) return;
+  const rows = [];
+  rows.push({ when: 'import', what: 'Transaction importée depuis Qonto', prov: 'auto' });
+  (window._contractLedgerProposed || []).filter(e => (e.detail || '').indexOf(_optState.fourn || '\u0000') !== -1).forEach(e =>
+    rows.push({ when: (e.t || '').slice(0, 10), what: e.what + ' (proposé · ' + e.cl + ')', prov: 'manuel' }));
+  tl.innerHTML = rows.map(r => `<div class="opt-tl-row"><span class="opt-tl-dot"></span><div class="opt-tl-body">
+      <span class="opt-tl-when">${_optEsc(r.when)}</span> <span class="opt-tl-what">${_optEsc(r.what)}</span>
+      <span class="opt-tl-prov">· ${_optEsc(r.prov)}</span></div></div>`).join('');
+  if (cnt) cnt.textContent = String(rows.length);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// §v23a.4 §I — MOUVEMENT INTRA subview, ported IN-RAIL from options-combined_v16.7.html
+//   (L1596+ openIntra…renderIntraSummary; renderSubview L1846). REPLACES the bounced
+//   standalone openIntraDrawer (which overwrote #drawer-body AND exited rail-mode →
+//   stripped the .opt-tabs shell to a generic page, Leo IMG_2081/2086). Mirrors the
+//   accepted §E Remboursement subview: keep opt-mode + .opt-tabs + the preview hero, and
+//   render the intra body into a CHILD HOST (#intra-subview) inside the relié pane, with a
+//   "‹ Options · Mouvement Intra" breadcrumb. Confirmer = frontend-preview only (Phase-D).
+//
+//   ADAPTATION NOTE (load-bearing): the mock's live.sub (cas1/cas2) maps to _optState.intraCas
+//   — NOT _optState.sub — because the _x overloads `sub` as the cas1recv foot trigger
+//   (_optFootState: s.sub==='cas1' → Dissocier). Reusing sub would flip the relié foot to
+//   Dissocier + lock the pane on intraBack(), regressing the carried set. intraCas /
+//   intraSession / intraLine are transient render-state, cleared by intraBack(); sub / lock /
+//   editing are never touched, so the relié foot restores byte-exact. The .opt-tabs row and
+//   the .opt-hero preview card are SIBLINGS of the relié pane and are never rewritten — the
+//   hero already routes through transactionCard(_optBuildTx(s),{role:'preview'}); no tc* edit.
+// ═══════════════════════════════════════════════════════════════════════════════
+// destinations = every session except the current one (mock SESSIONS, filtered as the old
+// openIntraDrawer did). SESSIONS_INTRA_ALL keeps the origin row so the current label resolves.
+const SESSIONS_INTRA_ALL = [
+  {v:'pa',  nm:'Paris XXL', ref:'ML 130326', sub:'EPISODE'},
+  {v:'bdx', nm:'Bordeaux',  ref:'ML 120626', sub:'ML \u00d7 SONORA'},
+  {v:'epk', nm:'Paris EPK', ref:'EPK 050926', sub:'ML \u00d7 Elektric Park'},
+  {v:'gen', nm:'G\u00e9n\u00e9rale',  ref:'\u2014',          sub:'Frais de structure'},
+];
+const SESSIONS_INTRA = SESSIONS_INTRA_ALL.filter(s => s.v !== SESSION);
+function _intraOriginLabel(){ const o = SESSIONS_INTRA_ALL.find(s => s.v === SESSION); return o ? o.nm : 'Cette session'; }
+
+// relié-pane child host accessor (creates #intra-subview INSIDE the relié pane).
+function _intraHost(){
+  const pane = document.querySelector('#drawer .opt-pane[data-pane="relie"]');
+  if (!pane) return null;
+  let host = document.getElementById('intra-subview');
+  if (!host){ host = document.createElement('div'); host.id = 'intra-subview'; pane.appendChild(host); }
+  return host;
+}
+
+// opener — render the intra subview IN-RAIL (no opt-mode exit, no #drawer-body wipe).
+function optOpenIntra(){
+  const s = _optState; if (!s) return;
+  s.intraCas = null; s.intraSession = null; s.intraLine = null;   // transient subview state
+  s._clsPrev = s.cls;                                            // #4 remember to restore on exit
+  s.cls = 'intra';                                               // #4 preview shows intra state (tcTop intra ctag)
+  const heroI = document.getElementById('opt-hero'); if (heroI) heroI.innerHTML = transactionCard(_optBuildTx(s), { role:'preview' });
+  const pane = document.querySelector('#drawer .opt-pane[data-pane="relie"]');
+  const host = _intraHost(); if (!pane || !host) return;
+  host.innerHTML =
+      '<div class="intra-subview">'
+    +   '<div class="drawer-section-title">Mouvement Intra</div>'
+    +   '<div class="intra-cas" id="intra-cas" style="display:flex;flex-direction:column;gap:10px">'
+    +     '<div class="optrow ic-opt" data-sub="cas1" onclick="pickIntraCas(\'cas1\')"><span class="radio"></span>'
+    +       '<div class="obody"><div class="ot">Cas 1 \u00b7 R\u00e9attribution <span class="ic-s" style="color:var(--intra);font-weight:600">sans virement</span></div>'
+    +       '<div class="od">Aucun cash Qonto ne bouge. Le co\u00fbt est \u00e9crit directement dans la ligne de l\u2019autre session et compt\u00e9 une fois c\u00f4t\u00e9 r\u00e9ception.</div></div></div>'
+    +     '<div class="optrow ic-opt" data-sub="cas2" onclick="pickIntraCas(\'cas2\')"><span class="radio"></span>'
+    +       '<div class="obody"><div class="ot">Cas 2 \u00b7 R\u00e9attribution <span class="ic-s" style="color:var(--intra);font-weight:600">avec virement</span></div>'
+    +       '<div class="od">La transaction part dans les \u00ab attendues \u00bb de l\u2019autre session. Elle n\u2019est compt\u00e9e nulle part tant que le virement r\u00e9el n\u2019a pas \u00e9t\u00e9 rapproch\u00e9 c\u00f4t\u00e9 session r\u00e9ceptrice.</div></div></div>'
+    +   '</div>'
+    +   '<div class="intra-detail" id="intra-detail" style="display:none;flex-direction:column;gap:14px;margin-top:16px">'
+    +     '<div class="id-field"><label class="id-lbl" style="font-size:.7em;color:var(--text-dim);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Session destinataire</label>'
+    +       '<select class="id-select" id="intra-session" onchange="pickIntraSession(this.value)" style="width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:9px 10px;color:#fff;font-family:\'DM Sans\',sans-serif;font-size:.85em;outline:none"><option value="">Choisir une session\u2026</option></select></div>'
+    +     '<div class="id-search" id="intra-line-wrap" style="display:none;flex-direction:column">'
+    +       '<label class="id-lbl" style="font-size:.7em;color:var(--text-dim);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Ligne de la session</label>'
+    +       '<div class="linefield"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="intra-line-input" placeholder="Rechercher une ligne\u2026" oninput="filterIntraLines()" onfocus="intraLineFocus()"></div>'
+    +       '<div class="lineres" id="intra-line-res"></div>'
+    +       '<div id="intra-line-card"></div>'
+    +     '</div>'
+    +     '<div id="intra-summary"></div>'
+    +   '</div>'
+    + '</div>';
+  pane.classList.add('intra-subview-active');
+  renderIntraCas();
+  // §FIX2 item B — the top-right SHELL control becomes the Retour for the subview (no in-block Retour).
+  // Reuses the imperative .rail-x wiring pattern (cf. L3212/L4754/L6063). intraBack() restores it.
+  (function(){ const rx = document.getElementById('rail-hdr-host') && document.getElementById('rail-hdr-host').querySelector('.rail-x');
+    if (rx){ rx.innerHTML = '\u2190 Retour'; rx.onclick = intraBack; } })();
+  // footer — Item 32-followup: MATCH the standard 2-button footer (mirror _optRenderFoot /
+  // vent foot): two .drawer-btn at flex:1, equal size, gap:8px. The "‹ Mouvement Intra"
+  // breadcrumb is DROPPED from between the buttons — Retour already lives top-right on the
+  // shell .rail-x, so the mid-footer crumb was redundant and broke the 2-btn symmetry.
+  const foot = document.getElementById('drawer-footer');
+  if (foot){
+    foot.style.display = 'flex';
+    foot.style.gap = '8px';
+    foot.innerHTML =
+        '<button class="drawer-btn" onclick="closeDrawer()">Fermer</button>'
+      + '<button class="drawer-btn primary" onclick="confirmIntraMove()">Confirmer</button>';
+  }
+}
+
+// back — clear the subview, restore the relié pane's normal content + foot (sub/lock/editing untouched).
+function intraBack(){
+  const s = _optState;
+  const pane = document.querySelector('#drawer .opt-pane[data-pane="relie"]');
+  if (pane){ pane.classList.remove('intra-subview-active'); const host = document.getElementById('intra-subview'); if (host) host.remove(); }
+  if (s){ s.intraCas = null; s.intraSession = null; s.intraLine = null; if (s.cls === 'intra') s.cls = (s._clsPrev || 'ext'); s._clsPrev = undefined; }
+  { const heroB = document.getElementById('opt-hero'); if (heroB && s) heroB.innerHTML = transactionCard(_optBuildTx(s), { role:'preview' }); }   // #4 restore preview cls
+  _syncTypeDisable();                                              // §ITEM34 release the live Type lock on exit
+  // §FIX2 item B — restore the shell top-right control to the normal close affordance.
+  (function(){ const rx = document.getElementById('rail-hdr-host') && document.getElementById('rail-hdr-host').querySelector('.rail-x');
+    if (rx){ rx.innerHTML = 'Fermer \u2715'; rx.onclick = closeDrawer; } })();
+  const foot = document.getElementById('drawer-footer');
+  if (foot && s) foot.innerHTML = _optRenderFoot(s);
+}
+
+// ═══ Item 39 Step 1 — Remboursement EMPTY subview shell (mirrors the intra subview pattern).
+//     This step is shell + entry ONLY: NO search/suggestions/summary/picker, NO remb logic
+//     fns wired. Body is a deliberate placeholder. All caller-side / off-leaf.
+// relié-pane child host accessor (mirrors _intraHost).
+function _rembHost(){
+  const pane = document.querySelector('#drawer .opt-pane[data-pane="relie"]');
+  if (!pane) return null;
+  let host = document.getElementById('remb-subview');
+  if (!host){ host = document.createElement('div'); host.id = 'remb-subview'; pane.appendChild(host); }
+  return host;
+}
+// opener — render the EMPTY remb subview IN-RAIL (mirrors optOpenIntra).
+function optOpenRemb(){
+  const s = _optState; if (!s) return;
+  const pane = document.querySelector('#drawer .opt-pane[data-pane="relie"]');
+  const host = _rembHost(); if (!pane || !host) return;
+  window._rembSel = null;   // no selection yet
+  window._rembPick = null;  // clear the suggestRemb/filterRemb/delegation guard so a re-opened
+                            // subview always starts in the unpicked suggestions state (else
+                            // suggestRemb blanks, search dies, and card-tap select early-returns).
+  window._rembStage = 'suggest';   // #3 two-stage Retour: 'suggest' (here) → 'summary' (after pick)
+  host.innerHTML =
+      '<div class="remb-subview">'
+    +   '<div class="drawer-section-title">Remboursement</div>'
+    +   '<div id="remb-noorigin-pin"></div>'   // pinned "no origin" active indicator (no-origin mode)
+    +   '<div class="dsec" id="remb-search-field">'
+    +     '<div class="linefield"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+    +       '<input id="remb-input" placeholder="Rechercher la transaction d\u2019origine\u2026" oninput="filterRemb()"></div>'
+    +   '</div>'
+      // #1 — no-origin card ABOVE the suggestions, SAME card design (icon + chevron) as a suggestion row.
+    +   '<div class="remb-pickrow" id="remb-noorigin-card" onclick="rembNoOrigin()" style="margin:6px 0 14px;cursor:pointer">'
+    +     '<div class="split-row clickable cls ext" style="display:flex;align-items:center;gap:10px">'
+    +       '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--text-muted)"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>'
+    +       '<div style="flex:1;min-width:0"><div class="sr-name" style="font-weight:600">Pas de transaction d\u2019origine\u00a0?</div>'
+    +       '<div style="font-size:11.5px;color:var(--text-dim);margin-top:3px">Imputer ce remboursement directement \u00e0 une ligne budg\u00e9taire.</div></div>'
+    +       '<svg class="vt-chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>'
+    +     '</div>'
+    +   '</div>'
+      // Item 39 auto-detect ESCAPE — "Recette" card: this tx is not a remboursement. Returns to the
+      // normal assign-recette landing (badge off) via rembBackToRecette. SAME chrome as the no-origin
+      // card above; recette-appropriate tag glyph (NOT the remb ↺). Reversible per-view switch.
+    +   '<div class="remb-pickrow" id="remb-recette-card" onclick="rembBackToRecette()" style="margin:6px 0 14px;cursor:pointer">'
+    +     '<div class="split-row clickable cls ext" style="display:flex;align-items:center;gap:10px">'
+    +       '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--text-muted)"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>'
+    +       '<div style="flex:1;min-width:0"><div class="sr-name" style="font-weight:600">Recette</div>'
+    +       '<div style="font-size:11.5px;color:var(--text-dim);margin-top:3px">Cette transaction n\u2019est pas un remboursement.</div></div>'
+    +       '<svg class="vt-chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>'
+    +     '</div>'
+    +   '</div>'
+    +   '<div class="lineres" id="remb-res"></div>'
+    +   '<div id="remb-suggest"></div>'
+    +   '<div id="remb-noorigin-body"></div>'   // no-origin mode: context title + link card + effect summary
+    +   '<div id="remb-body"></div>'   // with-origin summary on pick
+    + '</div>';
+  pane.classList.add('remb-subview-active');
+  // Part 2 — card-tap green-select via EVENT DELEGATION on the subview (covers #remb-suggest +
+  // #remb-res). The frozen card's onclick=expandRow still fires (expands); this only layers the
+  // green + records the pick id. One green at a time. Does NOT touch frozen expandRow/transactionCard.
+  const sub = host.querySelector('.remb-subview');
+  if (sub) sub.addEventListener('click', function(ev){
+    const row = ev.target.closest('.remb-pickrow'); if (!row || !sub.contains(row)) return;
+    if (row.id === 'remb-noorigin-card') return;   // P1 card has its own onclick=rembNoOrigin
+    if (row.id === 'remb-recette-card') return;   // Item 39 escape card has its own onclick=rembBackToRecette
+    if (window._rembPick) return;   // summary state: ignore taps
+    // #5 — one expanded at a time: collapse the OTHER pickrow cards (caller-side .expanded removal;
+    // expandRow stays frozen — it toggles the tapped row, we just clear the siblings).
+    sub.querySelectorAll('.remb-pickrow .split-row.expanded').forEach(el => { if (el !== row.querySelector('.split-row')) el.classList.remove('expanded'); });
+    sub.querySelectorAll('.remb-pickrow .split-row.remb-selected').forEach(el => el.classList.remove('remb-selected'));
+    const card = row.querySelector('.split-row'); if (card) card.classList.add('remb-selected');
+    window._rembSel = row.getAttribute('data-remb-id');
+    _rembRenderFoot('choisir');   // enable "Choisir"
+  });
+  // top-right SHELL control becomes Retour for the subview (mirrors optOpenIntra / .rail-x pattern).
+  (function(){ const rx = document.getElementById('rail-hdr-host') && document.getElementById('rail-hdr-host').querySelector('.rail-x');
+    if (rx){ rx.innerHTML = '\u2190 Retour'; rx.onclick = rembBack; } })();
+  suggestRemb();                 // render suggestion cards on open
+  _rembRenderFoot('choisir');    // Part 3 — footer enters "Choisir" (disabled until a card is picked)
+}
+// Part 3 — staged remb footer (reuses .drawer-btn classes; does NOT fork _optRenderFoot's system,
+// just sets the subview footer innerHTML, same as optOpenIntra does for its own footer).
+function _rembRenderFoot(stage){
+  const foot = document.getElementById('drawer-footer'); if (!foot) return;
+  foot.style.display = 'flex'; foot.style.gap = '8px';
+  const annuler = '<button class="drawer-btn" onclick="rembBack()">Annuler</button>';
+  if (stage === 'confirmer'){
+    foot.innerHTML = annuler + '<button class="drawer-btn primary" onclick="optFootPrimary()">Confirmer</button>';
+  } else {
+    const enabled = !!window._rembSel;
+    foot.innerHTML = annuler + '<button class="drawer-btn primary" onclick="rembChoisir()"'
+      + (enabled ? '' : ' disabled style="opacity:.45;cursor:not-allowed"') + '>Choisir</button>';
+  }
+}
+// Part 3 — "Choisir" commits the highlighted selection into the summary (Part 4) and stages "Confirmer".
+function rembChoisir(){
+  if (!window._rembSel) return;
+  pickRemb(window._rembSel);
+  window._rembStage = 'summary';   // #3
+  _rembRenderFoot('confirmer');
+}
+// P2 — no-origin mode: impute the refund directly to an EXPENSE line (no origin tx). REUSES the
+// existing line picker by MOVING its real DOM node (#opt-ligne-field block) into the subview — same
+// node, same optFilterLignes/optPickLigne/#assign-* bridge, no fork, no duplicate id. _rembLineMode
+// flips _optLineIndex to the all-dept expense set (see _optLineIndex).
+function rembNoOrigin(){
+  const s = _optState; if (!s) return;
+  window._rembStage = 'linemode';
+  s._rembLineMode = true;                       // scope flip → all-dept expense lines
+  window._rembLineMode = true;                  // (a) mirror on window — survives any _optState repaint
+  s.dept = null; s.line = null; s.cat = null;   // clear any prior pick so the placeholder shows first
+  s.cls = 'remb';                               // #1 — badge: tcTop renders REMBOURSEMENT from tx.cls==='remb'
+  s.rembOrigin = null; window._rembPick = null; window._rembSel = null; window._rembLineSel = null;
+  const hero0 = document.getElementById('opt-hero'); if (hero0) hero0.innerHTML = transactionCard(_optBuildTx(s), { role:'preview' });   // #1 re-render hero with badge
+  // hide suggestions + the no-origin card + the origin-search field + the bare "Remboursement" title
+  ['remb-suggest','remb-res','remb-noorigin-card','remb-recette-card','remb-search-field'].forEach(id => { const e = document.getElementById(id); if (e) e.style.display = 'none'; });
+  const wob = document.getElementById('remb-body'); if (wob) wob.innerHTML = '';   // #6 forward — clear stale with-origin summary
+  const titleEl = document.querySelector('#remb-subview .drawer-section-title'); if (titleEl) titleEl.style.display = 'none';   // #1 drop bare "Remboursement"
+  // #1 ORDER (top→bottom under the preview hero): context title + link card FIRST, THEN picker label + search.
+  const body = document.getElementById('remb-noorigin-body');
+  if (body) body.innerHTML =
+      '<div class="iflow-t" style="font-size:.62em;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin:4px 0 10px">Remboursement sans transaction d\u2019origine</div>'
+    + '<div id="remb-linkcard" style="margin-bottom:14px">'
+    +     assignedCard('D\u00c9PARTEMENT', 'Ligne budg\u00e9taire', { cat:'CAT\u00c9GORIE' })   // frozen assignedCard, placeholder
+    + '</div>'
+    + '<div id="remb-noorigin-summary" style="margin-bottom:14px"></div>'
+    + '<div id="remb-picker-mount"></div>';   // the moved picker lands HERE, below the link card/summary
+  // MOVE the existing line-picker block into remb-picker-mount (reuse; record original position).
+  const mount = document.getElementById('remb-picker-mount');
+  const lf = document.getElementById('opt-ligne-field');
+  const lr = document.getElementById('opt-ligne-res');
+  if (mount && lf){
+    window._rembLPrestore = { lf:lf, lfParent:lf.parentNode, lfNext:lf.nextSibling, lr:lr, lrParent:lr?lr.parentNode:null, lrNext:lr?lr.nextSibling:null };
+    mount.appendChild(lf); if (lr) mount.appendChild(lr); window._rembLPmoved = true;
+    // #2a — picker title must NOT say "Ligne de recette": it's a dépense imputation.
+    const t = lf.querySelector('.dsec-t'); if (t) t.textContent = 'Imputer \u00e0 une ligne (d\u00e9pense)';
+  }
+  s._ligneFocusOpen = true;
+  if (typeof optFilterLignes === 'function') optFilterLignes();   // render expense lines now (reused fn)
+  const li = document.getElementById('opt-ligne-input'); if (li){ try { li.focus(); } catch(e){} }
+  _rembRenderFoot('choisir');
+}
+// #3 — called after a line is picked in no-origin mode: fill the link card + render the effect summary.
+function rembNoOriginPicked(){
+  const s = _optState; if (!s || !(s._rembLineMode || window._rembLineMode) || !s.dept || !s.line) return;
+  // fmtSigned is function-local to renderRembSummary (L6835), not module-scoped — referencing it here
+  // threw ReferenceError and aborted the fill. Declare a local mirror; fmtAmt IS module-scoped (L1664).
+  const fmtSigned = x => (x < 0 ? '\u2212' : '+') + fmtAmt(Math.abs(x)) + ' \u20AC';
+  // current real total of the picked line (reel) from the enriched line-index
+  const row = _optLineIndex(s).find(r => r.dept === s.dept && r.line === s.line);
+  const curReel = row ? (row.reel || 0) : 0;
+  const credit = rembCreditAmt();
+  const net = curReel + credit;
+  window._rembLineSel = { dept:s.dept, line:s.line, cat:s.cat, reel:curReel };
+  // fill the placeholder link card with the real chosen line (frozen assignedCard, called)
+  const lc = document.getElementById('remb-linkcard');
+  if (lc) lc.innerHTML = assignedCard(s.dept, s.line, { cat:s.cat, amt:fmtSigned(net) });
+  // effect summary — reuses intra's .iflow container chrome; single-column horizontal rkv rows.
+  const sum = document.getElementById('remb-noorigin-summary');
+  if (sum) sum.innerHTML =
+      '<div class="iflow" style="margin-top:6px">'
+    + '<div class="iflow-t remb">D\u00e9tail du remboursement</div>'
+    + '<div class="iflow-body">'
+    +   '<div class="rkv"><span class="rkv-k">Ligne</span><span class="rkv-v">' + _optEsc(s.dept) + ' \u203a ' + _optEsc(s.line) + '</span></div>'
+    +   '<div class="rkv"><span class="rkv-k">Total actuel de la ligne</span><span class="rkv-v">' + fmtSigned(curReel) + '</span></div>'
+    +   '<div class="rkv"><span class="rkv-k">Remboursement</span><span class="rkv-v" style="color:var(--green)">' + fmtSigned(credit) + '</span></div>'
+    +   '<div class="rkv-div"></div>'
+    +   '<div class="rkv net"><span class="rkv-k">Nouveau net r\u00e9el de la ligne</span><span class="rkv-v" style="color:' + (net > 0 ? 'var(--green)' : net < 0 ? 'var(--red)' : 'var(--text)') + '">' + fmtSigned(net) + '</span></div>'
+    + '</div>'
+    + '</div>';
+  _rembRenderFoot('confirmer');
+}
+// P3 — leave line-mode back to suggestions: move the picker DOM back, clear the scope flag, restore.
+function _rembExitLineMode(){
+  const s = _optState;
+  if (window._rembLPmoved && window._rembLPrestore){
+    // return the moved picker block to its exact original position (recorded at move time)
+    const r = window._rembLPrestore;
+    // restore the picker's own title (it was relabelled to the dépense wording in no-origin mode)
+    const t = r.lf && r.lf.querySelector ? r.lf.querySelector('.dsec-t') : null;
+    if (t && s) t.textContent = s.isRevenue ? 'Cat\u00e9gorie \u2192 Ligne de recette' : 'D\u00e9partement \u2192 Ligne budg\u00e9taire';
+    if (r.lf && r.lfParent) r.lfParent.insertBefore(r.lf, r.lfNext);
+    if (r.lr && r.lrParent) r.lrParent.insertBefore(r.lr, r.lrNext);
+    window._rembLPmoved = false; window._rembLPrestore = null;
+  }
+  if (s){ s._rembLineMode = false; s._ligneFocusOpen = false; if (s.cls === 'remb') s.cls = 'ext'; } window._rembLineMode = false;
+  window._rembLineSel = null;
+  const pin = document.getElementById('remb-noorigin-pin'); if (pin) pin.innerHTML = '';
+  const nob = document.getElementById('remb-noorigin-body'); if (nob) nob.innerHTML = '';   // clear context title + link card + summary
+  const titleEl = document.querySelector('#remb-subview .drawer-section-title'); if (titleEl) titleEl.style.display = '';   // restore bare "Remboursement"
+  ['remb-suggest','remb-noorigin-card','remb-recette-card','remb-search-field'].forEach(id => { const e = document.getElementById(id); if (e) e.style.display = ''; });
+  const res = document.getElementById('remb-res'); if (res){ res.innerHTML = ''; res.style.display = 'none'; }
+  window._rembStage = 'suggest';
+  const heroE = document.getElementById('opt-hero'); if (heroE && s) heroE.innerHTML = transactionCard(_optBuildTx(s), { role:'preview' });   // badge cleared
+  suggestRemb();
+  _rembRenderFoot('choisir');
+}
+// #3 — summary → back to the SUGGESTIONS subview (still remb mode): clear the pick, re-render the
+// hero (addon disappears), restore search + suggestions, footer back to "Choisir", rail stays Retour.
+function _rembReturnToSuggest(){
+  const s = _optState;
+  window._rembPick = null; window._rembSel = null; window._rembStage = 'suggest';
+  if (s){ s.rembOrigin = null; if (s.cls === 'remb') s.cls = 'ext'; }
+  const hero = document.getElementById('opt-hero');
+  if (hero && s) hero.innerHTML = transactionCard(_optBuildTx(s), { role:'preview' });   // addon gone
+  const fld = document.getElementById('remb-search-field'); if (fld) fld.style.display = '';
+  const body = document.getElementById('remb-body'); if (body) body.innerHTML = '';
+  const res = document.getElementById('remb-res'); if (res){ res.innerHTML = ''; res.style.display = 'none'; }
+  const sg = document.getElementById('remb-suggest'); if (sg) sg.style.display = '';
+  suggestRemb();
+  (function(){ const rx = document.getElementById('rail-hdr-host') && document.getElementById('rail-hdr-host').querySelector('.rail-x');
+    if (rx){ rx.innerHTML = '\u2190 Retour'; rx.onclick = rembBack; } })();
+  _rembRenderFoot('choisir');
+}
+// #3/P3 — multi-stage Retour. 'linemode' → back to suggestions; 'summary' → back to suggestions;
+// 'suggest' → out of the subview.
+function rembBack(){
+  if (window._rembStage === 'linemode'){ _rembExitLineMode(); return; }
+  if (window._rembStage === 'summary'){ _rembReturnToSuggest(); return; }
+  const s = _optState;
+  window._rembPick = null; window._rembSel = null; window._rembStage = null;   // reset on exit
+  if (s) s._rembLineMode = false; window._rembLineMode = false;
+  // if the line picker was moved into the subview, restore it before tearing the host down
+  if (window._rembLPmoved && window._rembLPrestore){
+    const r = window._rembLPrestore;
+    if (r.lf && r.lfParent) r.lfParent.insertBefore(r.lf, r.lfNext);
+    if (r.lr && r.lrParent) r.lrParent.insertBefore(r.lr, r.lrNext);
+    window._rembLPmoved = false; window._rembLPrestore = null;
+  }
+  const pane = document.querySelector('#drawer .opt-pane[data-pane="relie"]');
+  if (pane){ pane.classList.remove('remb-subview-active'); const host = document.getElementById('remb-subview'); if (host) host.remove(); }
+  if (s){ s.rembOrigin = null; if (s.cls === 'remb') s.cls = 'ext'; }   // ensure addon cleared on full exit too
+  (function(){ const rx = document.getElementById('rail-hdr-host') && document.getElementById('rail-hdr-host').querySelector('.rail-x');
+    if (rx){ rx.innerHTML = 'Fermer \u2715'; rx.onclick = closeDrawer; } })();
+  const foot = document.getElementById('drawer-footer');
+  if (foot && s) foot.innerHTML = _optRenderFoot(s);
+}
+
+// Item 39 auto-detect ESCAPE — the "Recette" card in the remb subview returns to the NORMAL
+// assign-recette landing (the never-detected state). MIRRORS rembBack's full-exit clears exactly
+// (balanced #6-bleed-fix family): same _remb* clears, same guarded picker-DOM restore, same host
+// teardown + rail/foot restore. Adds an explicit #opt-hero repaint so the badge (cls==='remb')
+// visibly clears. Reversible, no commit — re-opening re-detects (no suppression flag).
+function rembBackToRecette(){
+  const s = _optState; if (!s) return;
+  window._rembPick = null; window._rembSel = null; window._rembStage = null;   // reset on exit (== rembBack)
+  if (s) s._rembLineMode = false; window._rembLineMode = false;
+  window._rembLineSel = null;
+  // if the line picker was moved into the subview (no-origin mode), restore it before teardown —
+  // same guarded idiom as rembBack / _rembExitLineMode (do NOT double-apply).
+  if (window._rembLPmoved && window._rembLPrestore){
+    const r = window._rembLPrestore;
+    const t = r.lf && r.lf.querySelector ? r.lf.querySelector('.dsec-t') : null;
+    if (t && s) t.textContent = s.isRevenue ? 'Cat\u00e9gorie \u2192 Ligne de recette' : 'D\u00e9partement \u2192 Ligne budg\u00e9taire';
+    if (r.lf && r.lfParent) r.lfParent.insertBefore(r.lf, r.lfNext);
+    if (r.lr && r.lrParent) r.lrParent.insertBefore(r.lr, r.lrNext);
+    window._rembLPmoved = false; window._rembLPrestore = null;
+  }
+  if (s){ s.rembOrigin = null; if (s.cls === 'remb') s.cls = 'ext'; }   // badge OFF — same restore the remb-exits use
+  const pane = document.querySelector('#drawer .opt-pane[data-pane="relie"]');
+  if (pane){ pane.classList.remove('remb-subview-active'); const host = document.getElementById('remb-subview'); if (host) host.remove(); }
+  const hero = document.getElementById('opt-hero'); if (hero && s) hero.innerHTML = transactionCard(_optBuildTx(s), { role:'preview' });   // badge cleared (frozen tcTop reads cls==='ext')
+  (function(){ const rx = document.getElementById('rail-hdr-host') && document.getElementById('rail-hdr-host').querySelector('.rail-x');
+    if (rx){ rx.innerHTML = 'Fermer \u2715'; rx.onclick = closeDrawer; } })();
+  const foot = document.getElementById('drawer-footer');
+  if (foot && s) foot.innerHTML = _optRenderFoot(s);
+}
+
+// Cas 1 / Cas 2 — selecting one hides the other; re-tapping deselects → both return.
+function pickIntraCas(sub){
+  const s = _optState; if (!s) return;
+  if (s.intraCas === sub){ s.intraCas = null; s.intraSession = null; s.intraLine = null; renderIntraCas(); renderIntraSummary(); _syncTypeDisable(); return; }
+  s.intraCas = sub;
+  renderIntraCas();
+  fillIntraSessions();
+  _syncTypeDisable();
+}
+// §ITEM34 (completes Item 28): the Type pane greys Externe/Inter + Cas grids when an
+// intra Cas is chosen, but that .ed-disabled class is only applied at RENDER time
+// (_typeDis, L5911). Picking the intra Cas LIVE (pickIntraCas) never re-rendered the
+// Type pane, so the lock didn't bite until a repaint. This toggles .ed-disabled on the
+// LIVE type-pane optgrids to match the render-time rule exactly — (_typeLocked || intra
+// chosen). Scoped to the type pane so the relié "Autres actions" optgrid (L5874) is never
+// touched. No full _optPaint (which would tear down the live intra subview the user is in).
+function _syncTypeDisable(){
+  const s = _optState; if (!s) return;
+  const drawer = document.getElementById('drawer'); if (!drawer) return;
+  const typeLocked = (function(){ const st = _optFootState(s); return (st === 'settled') || (st === 'cas1recv'); })();
+  const dis = typeLocked || !!s.intraCas;                                    // mirror _typeDis (L5911)
+  drawer.querySelectorAll('.opt-pane[data-pane="type"] .optgrid').forEach(g => g.classList.toggle('ed-disabled', dis));
+}
+function renderIntraCas(){
+  const s = _optState; if (!s) return;
+  document.querySelectorAll('#intra-cas .ic-opt').forEach(c => {
+    const isSel = s.intraCas === c.dataset.sub;
+    c.classList.toggle('on', isSel);
+    c.classList.toggle('sel-intra', isSel);                                 // Item 36: intra-coloured radio + card
+    c.style.display = (!s.intraCas || isSel) ? '' : 'none';                 // pick one → hide the other
+    c.style.borderColor = '';                                              // border/bg now owned by .sel-intra CSS
+    c.style.background  = '';
+  });
+  const det = document.getElementById('intra-detail');
+  if (det) det.style.display = s.intraCas ? 'flex' : 'none';
+  const wrap = document.getElementById('intra-line-wrap');
+  if (wrap) wrap.style.display = (s.intraCas && s.intraSession) ? 'flex' : 'none';
+}
+function fillIntraSessions(){
+  const sel = document.getElementById('intra-session'); if (!sel) return;
+  sel.innerHTML = '<option value="">Choisir une session\u2026</option>'
+    + SESSIONS_INTRA.map(o => '<option value="' + o.v + '">' + o.nm + ' \u00b7 ' + o.ref + ' \u2014 ' + o.sub + '</option>').join('');
+  const s = _optState; if (s && s.intraSession) sel.value = s.intraSession;
+}
+function pickIntraSession(id){
+  const s = _optState; if (!s) return;
+  s.intraSession = id || null; s.intraLine = null;
+  const sel = document.getElementById('intra-session'); if (sel && sel.value !== (id || '')) sel.value = id || '';
+  const wrap = document.getElementById('intra-line-wrap'); if (wrap) wrap.style.display = id ? 'flex' : 'none';
+  // §ITEM17 — autofocus the intra line search when the wrap is REVEALED (session picked), not while hidden
+  if (id) setTimeout(() => { const _il = document.getElementById('intra-line-input'); if (_il) { try { _il.focus(); } catch(e){} } }, 90);
+  const inp = document.getElementById('intra-line-input'); if (inp) inp.value = '';
+  const box = document.getElementById('intra-line-res'); if (box){ box.innerHTML = ''; box.classList.remove('on'); }
+  renderIntraLineCard(); renderIntraSummary();
+}
+// destination line pool — every department's lines (DEPT_META→DEPTS→sections→lines; cat = section name).
+function _intraLinePool(){
+  const out = [];
+  Object.entries(typeof DEPT_META !== 'undefined' ? DEPT_META : {}).forEach(([tab, m]) => {
+    const dept = (typeof DEPTS !== 'undefined' ? DEPTS : []).find(d => d.id === m.id);
+    if (!dept) return;
+    (dept.sections || []).filter(sec => sec.s !== '\u00c0 TRIER').forEach(sec => {
+      (sec.lines || []).filter(l => l.l && !l.l.startsWith('(ligne')).forEach(l =>
+        out.push({ tab: tab, dept: m.name, line: l.l, cat: sec.s }));
+    });
+  });
+  return out;
+}
+function intraLineFocus(){ const inp = document.getElementById('intra-line-input'); if (inp && inp.value.trim()) filterIntraLines(); }
+function filterIntraLines(){
+  const inp = document.getElementById('intra-line-input'), box = document.getElementById('intra-line-res');
+  if (!inp || !box) return;
+  const q = inp.value.trim().toLowerCase();
+  if (!q){ box.innerHTML = ''; box.classList.remove('on'); return; }
+  const pool = _intraLinePool().filter(x => _optTokMatch(q, [x.dept, x.line, x.cat])).slice(0, 12);
+  box.innerHTML = pool.length
+    ? pool.map(x => '<div class="lr-row" onclick="pickIntraLine(\'' + x.tab.replace(/'/g, "\\'") + '\',\'' + x.line.replace(/'/g, "\\'") + '\')">'
+        + '<div class="lr-dept"><span class="dpl-dot" style="background:' + ((typeof deptColorFor === 'function' ? deptColorFor(x.dept) : null) || '#fbbf24') + '"></span>' + x.dept + '</div><div class="lr-line">' + ((x.cat || '') ? '<span class="lr-cat">' + x.cat + '</span> ' : '') + x.line + '</div></div>').join('')
+    : '<div class="lr-empty">Aucune</div>';
+  box.classList.add('on');
+}
+function pickIntraLine(tab, line){
+  const s = _optState; if (!s) return;
+  const m = (typeof DEPT_META !== 'undefined') ? DEPT_META[tab] : null;
+  const deptLabel = m ? m.name : tab;
+  const hit = _intraLinePool().find(x => x.tab === tab && x.line === line);
+  s.intraLine = { tab: tab, dept: deptLabel, line: line, cat: hit ? (hit.cat || '') : '' };
+  const inp = document.getElementById('intra-line-input'); if (inp){ inp.value = ''; inp.blur(); }
+  const box = document.getElementById('intra-line-res'); if (box){ box.innerHTML = ''; box.classList.remove('on'); }
+  renderIntraLineCard(); renderIntraSummary();
+}
+function clearIntraLine(){
+  const s = _optState; if (!s) return;
+  s.intraLine = null;
+  renderIntraLineCard(); renderIntraSummary();
+}
+function renderIntraLineCard(){
+  const slot = document.getElementById('intra-line-card'); if (!slot) return;
+  const s = _optState; const il = s ? s.intraLine : null;
+  const wrap = document.getElementById('intra-line-wrap');
+  const fld = wrap ? wrap.querySelector('.linefield') : null;
+  const lbl = wrap ? wrap.querySelector('.id-lbl') : null;
+  if (il){
+    if (fld) fld.style.display = 'none'; if (lbl) lbl.style.display = 'none';
+    // REMOVABLE card = the FROZEN assignedCard (dept dot + CATEGORY + line + ✕). Never edited.
+    // §FIX5 — INTRA pill now sits INSIDE the card via assignedCard's intra slot (caller passes intra:true).
+    slot.innerHTML = '<div style="margin-top:9px">' + assignedCard(il.dept, il.line, { cat: il.cat, intra: true, onRemove: 'clearIntraLine()' }) + '</div>';
+  } else {
+    if (fld) fld.style.display = 'flex'; if (lbl) lbl.style.display = 'block';
+    slot.innerHTML = '';
+  }
+}
+function renderIntraSummary(){
+  const box = document.getElementById('intra-summary'); if (!box) return;
+  const s = _optState; if (!s){ box.innerHTML = ''; return; }
+  const il = s.intraLine, sess = SESSIONS_INTRA.find(o => o.v === s.intraSession);
+  if (!il || !sess){ box.innerHTML = ''; return; }                          // renders once session + line set
+  const payType = (s.pay && /carte/i.test(s.pay)) ? 'Carte' : 'Virement';
+  const amt = '\u2212' + fmtAmt(Math.abs(s.ttc || 0)) + ' \u20ac';
+  const kv = (k, v, isAmt) => '<div class="ikv"><span class="ikv-k">' + k + '</span><span class="ikv-v' + (isAmt ? ' ikv-amt' : '') + '">' + v + '</span></div>';
+  box.innerHTML =
+      '<div class="iflow">'
+    +   '<div class="iflow-t">R\u00e9attribution \u00b7 ' + (s.intraCas === 'cas1' ? 'sans virement' : 'avec virement') + '</div>'
+    +   '<div class="iflow-cols">'
+    +     '<div class="iflow-col">'
+    +       '<div class="iflow-bt">Origine</div>'
+    +       kv('Session', _intraOriginLabel()) + kv('Transaction', s.fourn || '\u2014') + kv('Type', payType) + kv('Montant', amt, true)
+    +     '</div>'
+    +     '<div class="iflow-arrow"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>'
+    +     '<div class="iflow-col">'
+    +       '<div class="iflow-bt">Destination</div>'
+    +       kv('Session', sess.nm) + kv('D\u00e9partement', il.dept) + kv('Cat\u00e9gorie', il.cat || '\u2014') + kv('Ligne', il.line) + kv('Montant', amt, true)
+    +     '</div>'
+    +   '</div>'
+    +   '<div class="iflow-foot">' + (s.intraCas === 'cas1'
+        ? 'Aucun cash Qonto. Le co\u00fbt est \u00e9crit c\u00f4t\u00e9 <b style="color:var(--text)">' + sess.nm + '</b> et compt\u00e9 une fois \u00e0 la r\u00e9ception.'
+        : 'La transaction part dans les \u00ab attendues \u00bb de <b style="color:var(--text)">' + sess.nm + '</b> \u2014 compt\u00e9e nulle part tant que le virement r\u00e9el n\u2019y est pas rapproch\u00e9.') + '</div>'
+    + '</div>';
+}
+
+// §v23a.3 §K — Ventiler split subview (seam 27ck — reshaped to options-combined_v16.7 mock parity).
+// Répartir the transaction across several lines of the SAME department; the LAST line is the
+// AUTO-REMAINDER (TOTAL − sum above). Confirmer writes the split LOCALLY (_optState.ventLines) as
+// {name,cat,amt} — the shape the committed view (_optVentHtml) + hydration fixtures already read.
+// Frontend-preview only, no backend (Phase-D). Inline line search (#vent-search-*), no pop-up.
+function optVentiler(){
+  const s = _optState; if (!s) return;
+  pushDrawerReturn(window._reopenAssignDrawer);
+  openVentiler();
+}
+// input-view donut palette — base = dept brand colour, siblings via _ventPalette (golden-angle),
+// so input + committed (_optVentHtml) read alike. _VENT_COLORS = per-dept fallback (no brand colour).
+var _VENT_COLORS = ['#818cf8', '#34d399', '#fbbf24', '#f472b6', '#38bdf8', '#a78bfa'];
+function ventTint(hex, i, n){
+  // seam 27dm — input-view slices reuse the committed-view palette (_ventPalette): base = dept
+  // colour, siblings = distinguishable golden-angle hues (was lightness-shift → green-on-green).
+  const p = _ventPalette(Math.max(n||1, 1), hex);
+  return p[((i||0) % p.length + p.length) % p.length];
+}
+function _ventTotal(s){ return Math.abs((s && s.ttc) || 0); }
+function _ventBaseColor(s){
+  // committed-view parity: dept BRAND colour first (deptColorFor), else stable palette-by-index fallback.
+  const dc = (typeof deptColorFor === 'function') ? deptColorFor(s && s.dept) : null;
+  if (dc) return dc;
+  const keys = (typeof DEPT_META !== 'undefined') ? Object.keys(DEPT_META) : [];
+  const idx = Math.max(0, keys.indexOf(s && s.dept));
+  return _VENT_COLORS[idx % _VENT_COLORS.length];
+}
+// relié-pane child host accessor (creates #vent-subview INSIDE the relié pane). Mirrors _intraHost / _rembHost.
+function _ventHost(){
+  const pane = document.querySelector('#drawer .opt-pane[data-pane="relie"]');
+  if (!pane) return null;
+  let host = document.getElementById('vent-subview');
+  if (!host){ host = document.createElement('div'); host.id = 'vent-subview'; pane.appendChild(host); }
+  return host;
+}
+
+function openVentiler(){
+  const s = (typeof _optState !== 'undefined' && _optState) ? _optState : (window._optState = (window._optState || {}));
+  // migrate any legacy {ligne,montant} seed/hydration to {name,cat,amt} (committed-view shape)
+  if (Array.isArray(s.ventLines) && s.ventLines.length){
+    s.ventLines = s.ventLines.map(l => ('amt' in l || 'name' in l)
+      ? { name: l.name != null ? l.name : (l.ligne || ''), cat: l.cat || '', amt: (l.amt != null ? l.amt : (parseFloat(l.montant) || 0)) }
+      : { name: l.ligne || '', cat: l.cat || '', amt: parseFloat(l.montant) || 0 });
+  } else {
+    s.ventLines = [];   // mock starts empty; user picks lines via the inline search
+  }
+  // HUNK 4 — VENTILÉ preview badge: remember prior cls, flip to 'ventile'. The subview hero below
+  // re-renders via transactionCard → frozen tcTop, which emits <span class="ctag ventile">ventilé</span>
+  // from CLS_LABEL.ventile (no tcTop edit). Restored on Annuler via ventCancel() (kept on Confirm).
+  if (s.cls !== 'ventile') s._clsPrevVent = s.cls;
+  s.cls = 'ventile';
+  const heroV = document.getElementById('opt-hero'); if (heroV) heroV.innerHTML = transactionCard(_optBuildTx(s), { role:'preview' });
+  const pane = document.querySelector('#drawer .opt-pane[data-pane="relie"]');
+  const host = _ventHost(); if (!pane || !host) return;
+  host.innerHTML =
+      '<div class="vent-subview"><div class="drawer-section-title">Ventiler la transaction</div>'
+    + '<div class="drawer-section" id="vent-sec">'
+    +   '<div class="vent-pie" id="vent-pie">'
+    +     '<div class="vent-pie-ring" id="vent-pie-ring"><div class="vent-pie-hole" id="vent-pie-hole"><span class="vph-amt" id="vent-pie-amt">\u2014</span><span class="vph-lbl">total</span></div></div>'
+    +     '<div class="vent-pie-side">'
+    +       '<div class="vent-pie-dept" id="vent-pie-dept">\u2014</div>'
+    +       '<div class="vent-pie-legend" id="vent-pie-legend"></div>'
+    +     '</div>'
+    +   '</div>'
+    +   '<div class="vent-cards" id="vent-cards"></div>'
+    +   '<div class="linefield" style="margin-top:4px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;color:var(--text-dim)"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+    +     '<input id="vent-search-input" placeholder="Rechercher une ligne \u00e0 ventiler\u2026" oninput="ventFilterLignes()" onfocus="ventSearchFocus()"><span class="vent-scope-chip" id="vent-scope" style="display:none"></span></div>'
+    +   '<div class="lineres" id="vent-search-res"></div>'
+    +   '<div id="vent-summary"></div>'
+    + '</div>'
+    + '</div>';
+  pane.classList.add('vent-subview-active');
+  // §Retour — the top-right SHELL control becomes Retour for the vent subview (mirrors optOpenIntra / .rail-x). ventBack restores it.
+  (function(){ const rx = document.getElementById('rail-hdr-host') && document.getElementById('rail-hdr-host').querySelector('.rail-x');
+    if (rx){ rx.innerHTML = '\u2190 Retour'; rx.onclick = ventBack; } })();
+  ventRender();
+  const foot = document.getElementById('drawer-footer');
+  if (foot){
+    foot.style.display = 'flex';
+    const diss = document.getElementById('drawer-dissociate'); if (diss) diss.style.display = 'none';
+    ventRenderFoot();
+  }
+  if (typeof updateDrawerCloseBtn === 'function') updateDrawerCloseBtn();
+}
+// recompute: the LAST line is always the auto-remainder of everything above it.
+function ventRecalc(){
+  const s = (typeof _optState !== 'undefined' && _optState) ? _optState : window._optState; if (!s) return;
+  const v = s.ventLines || []; const n = v.length; if (!n) return;
+  const TOTAL = _ventTotal(s);
+  let sumAbove = 0; for (let i=0;i<n-1;i++){ sumAbove += (v[i].amt || 0); }
+  v[n-1].amt = Math.round((TOTAL - sumAbove) * 100) / 100;   // last = remainder
+  v[n-1].auto = true; for (let i=0;i<n-1;i++){ v[i].auto = false; }
+}
+function ventOverflow(){
+  const s = (typeof _optState !== 'undefined' && _optState) ? _optState : window._optState; if (!s) return false;
+  const v = s.ventLines || []; const n = v.length; if (n<2) return false;
+  let sumAbove = 0; for (let i=0;i<n-1;i++) sumAbove += (v[i].amt || 0);
+  return sumAbove > _ventTotal(s) + 0.001;
+}
+function ventRender(){
+  const s = (typeof _optState !== 'undefined' && _optState) ? _optState : (window._optState || {});
+  const v = Array.isArray(s.ventLines) ? s.ventLines : [];
+  ventRecalc();
+  const base = _ventBaseColor(s);
+  const wrap = document.getElementById('vent-cards');
+  if (wrap){
+    wrap.innerHTML = v.map((ln, i) => {
+      const isLast = i === v.length - 1;
+      const auto = isLast && v.length >= 2;
+      return '<div class="vcard' + (auto ? ' auto' : '') + '" data-i="' + i + '">'
+        +   '<div class="vcard-l"><span class="vr-dot" style="background:' + ventTint(base, i, v.length) + '"></span>'
+        +     '<span class="vcard-nm">' + (ln.cat ? '<span class="vcard-cat">' + _optEsc(ln.cat) + '</span>' : '') + _optEsc(ln.name || '') + '</span>'
+        +     (auto ? '<span class="vcard-auto">auto</span>' : '') + '</div>'
+        +   '<div class="vcard-r">'
+        +     '<span class="vamt-sign">\u2212</span>'
+        +     '<input class="vamt" inputmode="decimal" data-i="' + i + '" value="' + (ln.amt == null ? '' : fmtAmt(ln.amt, 2)) + '" placeholder="0,00"' + (auto ? ' readonly' : '') + '>'
+        +     '<span class="vamt-cur">\u20ac</span>'
+        +     '<button class="vcard-rm" data-i="' + i + '" title="Retirer">\u2715</button>'
+        +   '</div>'
+        + '</div>';
+    }).join('');
+    wrap.querySelectorAll('.vamt').forEach(inp => {
+      inp.addEventListener('input', e => ventEdit(+e.target.dataset.i, e.target.value));
+      inp.addEventListener('blur', e => { const ln = (s.ventLines||[])[+e.target.dataset.i]; if (ln) e.target.value = ln.amt == null ? '' : fmtAmt(ln.amt, 2); });
+    });
+    wrap.querySelectorAll('.vcard-rm').forEach(b => b.addEventListener('click', () => ventRemoveLine(+b.dataset.i)));
+  }
+  const inp = document.getElementById('vent-search-input');
+  if (inp){ inp.placeholder = v.length ? ('Ajouter une ligne ' + (s.dept || '') + '\u2026') : 'Rechercher une ligne \u00e0 ventiler\u2026'; }
+  const scope = document.getElementById('vent-scope');
+  if (scope){ scope.textContent = v.length ? (s.dept || '') : ''; scope.style.display = v.length ? 'inline-flex' : 'none'; }
+  ventRenderState(); ventPie(); ventSummary(); ventRenderFoot();
+}
+// refresh amounts + warn states WITHOUT rebuilding inputs (keeps focus).
+function ventRenderState(){
+  const s = (typeof _optState !== 'undefined' && _optState) ? _optState : window._optState; if (!s) return;
+  const v = s.ventLines || []; const n = v.length; const over = ventOverflow();
+  v.forEach((ln, i) => {
+    const card = document.querySelector('.vcard[data-i="' + i + '"]'); if (!card) return;
+    const isLast = i === n-1, auto = isLast && n>=2;
+    const inp = card.querySelector('.vamt');
+    if (auto && document.activeElement !== inp){ inp.value = ln.amt == null ? '' : fmtAmt(ln.amt, 2); inp.setAttribute('readonly',''); }
+    card.classList.toggle('auto', auto);
+    card.classList.toggle('warn', over && !ln.edited);
+  });
+}
+// donut pie of the split (mock ventPie).
+function ventPie(){
+  const s = (typeof _optState !== 'undefined' && _optState) ? _optState : window._optState; if (!s) return;
+  const el = document.getElementById('vent-pie'); if (!el) return;
+  const ring = document.getElementById('vent-pie-ring');
+  const amtEl = document.getElementById('vent-pie-amt'), deptEl = document.getElementById('vent-pie-dept'), leg = document.getElementById('vent-pie-legend');
+  const v = s.ventLines || []; const TOTAL = _ventTotal(s); const base = _ventBaseColor(s);
+  if (amtEl) amtEl.textContent = TOTAL ? fmtEurShort(TOTAL) : '\u2014';
+  if (deptEl) deptEl.textContent = (v.length && s.dept) ? s.dept : 'D\u00e9partement \u00e0 choisir';
+  const n = v.length;
+  if (n<1 || !TOTAL){
+    if (ring){ ring.style.background = 'conic-gradient(rgba(255,255,255,.06) 0deg 360deg)'; ring.style.opacity = '1'; }
+    if (leg) leg.innerHTML = '<div class="vpl-row vpl-empty"><span class="vpl-nm">Ajoute une ligne pour ventiler</span></div>';
+    return;
+  }
+  const over = ventOverflow();
+  let acc = 0; const stops = [];
+  v.forEach((ln, i) => { const frac = Math.max(0, (ln.amt||0)) / TOTAL; const from = acc*360, to = (acc+frac)*360; acc += frac; stops.push(ventTint(base, i, n) + ' ' + from + 'deg ' + to + 'deg'); });
+  if (acc < 1){ stops.push('rgba(255,255,255,.06) ' + (acc*360) + 'deg 360deg'); }
+  if (ring){ ring.style.background = 'conic-gradient(' + stops.join(',') + ')'; ring.style.opacity = over ? '.5' : '1'; }
+  if (leg) leg.innerHTML = v.map((ln, i) => {
+    const pct = TOTAL ? Math.round((ln.amt||0)/TOTAL*100) : 0;
+    return '<div class="vpl-row"><span class="vr-dot" style="background:' + ventTint(base, i, n) + '"></span><span class="vpl-nm">' + _optEsc(ln.name||'') + '</span><span class="vpl-pct">' + pct + '%</span><span class="vpl-amt">' + fmtAmt(ln.amt||0, 0) + ' \u20ac</span></div>';
+  }).join('');
+}
+// HUNK 3 — pre-confirm "Détail de la ventilation" card. Mirrors renderRembSummary's .iflow chrome
+// (.iflow / .iflow-t / .iflow-body / .rkv rows). Lists each split (dept-color dot + line name + cat +
+// share amount); updates live as lines/amounts change. Input-side only (NOT the réelles-drawer card).
+function ventSummary(){
+  const s = (typeof _optState !== 'undefined' && _optState) ? _optState : window._optState;
+  const box = document.getElementById('vent-summary'); if (!box) return;
+  const v = (s && s.ventLines) || [];
+  if (v.length < 1){ box.innerHTML = ''; return; }
+  const TOTAL = _ventTotal(s);
+  const base = _ventBaseColor(s);
+  const over = ventOverflow();
+  // #5 — origin header: the original transaction that got split (fourn · date, note beneath).
+  const originName = _optEsc(s.fourn || 'Transaction');
+  const originDate = s.date ? _optEsc(formatQontoDate(s.date)) : '';
+  // #3 — note shown readable (wraps, not clipped to invisibility); mirrors the preview card's dim note.
+  const originNote = s.note
+    ? '<div style="font-size:12px;color:var(--text-muted);line-height:1.4;margin-top:3px">' + _optEsc(s.note) + '</div>'
+    : '';
+  const header = '<div class="rkv" style="display:block;padding:2px 0 8px">'
+    + '<div style="display:flex;align-items:baseline;gap:8px;min-width:0">'
+    +   '<span style="color:#fff;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">' + originName + '</span>'
+    +   (originDate ? '<span style="color:var(--text-dim);font-size:11px;flex-shrink:0">' + originDate + '</span>' : '')
+    + '</div>' + originNote
+    + '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-top:7px">ventil\u00e9 sur</div>'
+    + '</div><div class="rkv-div"></div>';
+  // #4 — per-split rows in the canonical dept/cat/line treatment (the .lr-row house pattern):
+  // dept as the .lr-dept label WITH the dept-color dot, cat as the .lr-cat monospace tag, line as
+  // plain text — visually distinct, consistent with the search results (post scope-miss sweep).
+  const rows = v.map((ln, i) => {
+    const pct = TOTAL ? Math.round((ln.amt || 0) / TOTAL * 100) : 0;
+    const deptLbl = (typeof DEPT_META !== 'undefined' && DEPT_META[s.dept]) ? DEPT_META[s.dept].name : (s.dept || '');
+    return '<div class="rkv" style="align-items:flex-start">'
+         + '<span class="rkv-k" style="display:flex;flex-direction:column;gap:2px;min-width:0">'
+         +   '<span class="lr-dept"><span class="dpl-dot" style="background:' + ventTint(base, i, v.length) + '"></span>' + _optEsc(deptLbl) + '</span>'
+         +   '<span class="lr-line"><span class="lr-cat">' + _optEsc(ln.cat || '') + '</span> ' + _optEsc(ln.name || '') + '</span>'
+         + '</span>'
+         + '<span class="rkv-v" style="color:#fff;flex-shrink:0">\u2212' + fmtAmt(Math.abs(ln.amt || 0)) + ' \u20ac <span style="color:var(--text-dim);font-weight:400">\u00b7 ' + pct + '%</span></span></div>';
+  }).join('');
+  box.innerHTML = '<div class="iflow" style="margin-top:10px">'
+    + '<div class="iflow-t ventile">D\u00e9tail de la ventilation</div>'
+    + '<div class="iflow-body">' + header + rows
+    + '</div>'
+    + '<div class="iflow-foot">' + (over
+      ? 'Le total r\u00e9parti d\u00e9passe le montant de la transaction \u2014 ajuste les lignes.'
+      : (v.length < 2
+        ? 'Ajoute au moins une seconde ligne \u2014 la derni\u00e8re s\u2019ajuste automatiquement au reste.'
+        : 'La derni\u00e8re ligne s\u2019ajuste automatiquement pour \u00e9quilibrer \u00e0 <b style="color:var(--text)">' + fmtAmt(TOTAL) + ' \u20ac</b> (aper\u00e7u \u2014 persistance Phase-D).'))
+    + '</div></div>';
+}
+// user typed into line i
+function ventEdit(i, val){
+  const s = (typeof _optState !== 'undefined' && _optState) ? _optState : window._optState;
+  if (!s || !Array.isArray(s.ventLines) || !s.ventLines[i]) return;
+  const v = parseFloat(String(val).replace(/\s/g,'').replace(',','.'));
+  s.ventLines[i].amt = isNaN(v) ? 0 : v; s.ventLines[i].edited = true;
+  ventRecalc(); ventRenderState(); ventPie(); ventSummary(); ventRenderFoot();
+}
+// add a line by name/cat/dept (called from the inline search pick)
+function ventAddLine(dept, name, cat){
+  const s = (typeof _optState !== 'undefined' && _optState) ? _optState : (window._optState = (window._optState || {}));
+  if (!Array.isArray(s.ventLines)) s.ventLines = [];
+  if (s.ventLines.length === 0 && dept){ s.dept = dept; }   // first pick locks the department
+  if (s.ventLines.some(x => x.name === name)) return;        // exclude already-picked
+  s.ventLines.push({ name: name, cat: cat || '', amt: null, edited: false });
+  const vi = document.getElementById('vent-search-input'); if (vi){ vi.value=''; vi.blur(); }
+  const vr = document.getElementById('vent-search-res'); if (vr) vr.innerHTML = '';
+  ventRecalc(); ventRender();
+}
+function ventRemoveLine(i){
+  const s = (typeof _optState !== 'undefined' && _optState) ? _optState : window._optState;
+  if (!s || !Array.isArray(s.ventLines)) return;
+  s.ventLines.splice(i, 1); ventRecalc(); ventRender();
+}
+function ventSearchFocus(){
+  const s = (typeof _optState !== 'undefined' && _optState) ? _optState : window._optState;
+  if (s && Array.isArray(s.ventLines) && s.ventLines.length > 0) ventFilterLignes();
+}
+// inline line search (NOT a pop-up). Same-dept lock: once a line is picked the dept is fixed and
+// the pool is that dept's lines minus the already-picked ones; first pick searches all depts.
+function ventFilterLignes(){
+  const s = (typeof _optState !== 'undefined' && _optState) ? _optState : window._optState; if (!s) return;
+  const inp = document.getElementById('vent-search-input');
+  const box = document.getElementById('vent-search-res');
+  if (!inp || !box) return;
+  const q = _optNorm(inp.value).trim();
+  const v = s.ventLines || [];
+  const lockDept = v.length > 0 ? s.dept : null;
+  const all = _optLineIndex(s);
+  let pool;
+  if (lockDept){
+    const used = v.map(x => x.name);
+    pool = all.filter(r => r.dept === lockDept && used.indexOf(r.line) === -1);
+    const lastCat = v.length ? v[v.length-1].cat : null;
+    if (!q && lastCat){ pool = pool.filter(r => r.cat === lastCat); }
+  } else {
+    pool = all.slice();
+  }
+  if (q) pool = pool.filter(r => _optTokMatch(q, [r.line, r.dept, r.cat]));
+  if (!q && !lockDept){ box.classList.remove('on'); box.innerHTML = ''; return; }
+  const cap = (lockDept && !q) ? 40 : 12;
+  const list = pool.slice(0, cap);
+  box.classList.add('on');
+  let html = list.length
+    ? list.map(r => '<div class="lr-row" onclick="ventAddLine(\'' + _optJs(r.dept) + '\',\'' + _optJs(r.line) + '\',\'' + _optJs(r.cat || '') + '\')">'
+        + '<div class="lr-dept"><span class="dpl-dot" style="background:' + ((typeof deptColorFor === 'function' ? deptColorFor(r.deptLabel || r.dept) : null) || '#fbbf24') + '"></span>' + _optEsc(r.deptLabel || r.dept) + '</div>'
+        + '<div class="lr-line"><span class="lr-cat">' + _optEsc(r.cat || '') + '</span> ' + _optEsc(r.line) + '</div></div>').join('')
+    : '<div class="lr-empty">Aucune ligne</div>';
+  if (lockDept && !q){ html += '<div class="lr-hint">ou tapez le nom d\u2019une ligne du d\u00e9partement ' + _optEsc(lockDept) + '</div>'; }
+  box.innerHTML = html;
+}
+// foot: Confirmer disabled until balanced (≥2 lines, no overflow, sum==TOTAL); .ready when balanced.
+function ventRenderFoot(){
+  const s = (typeof _optState !== 'undefined' && _optState) ? _optState : window._optState;
+  const foot = document.getElementById('drawer-footer'); if (!foot) return;
+  const v = (s && s.ventLines) || [];
+  const used = v.reduce((a, x) => a + (x.amt || 0), 0);
+  const balanced = v.length >= 2 && !ventOverflow() && Math.abs(used - _ventTotal(s)) < 0.005;
+  foot.style.display = 'flex';
+  foot.innerHTML = '<button class="drawer-btn" onclick="ventCancel()">Annuler</button>'
+    + '<button class="drawer-btn primary' + (balanced ? ' ready' : '') + '" onclick="ventConfirm()"'
+    + (balanced ? '' : ' disabled style="opacity:.45;cursor:not-allowed"') + '>Confirmer</button>';
+}
+// back — clear the vent subview, restore the relié pane's normal content + hero + rail-x + foot (mirrors intraBack).
+function ventBack(){
+  const s = _optState;
+  const pane = document.querySelector('#drawer .opt-pane[data-pane="relie"]');
+  if (pane){ pane.classList.remove('vent-subview-active'); const host = document.getElementById('vent-subview'); if (host) host.remove(); }
+  if (s && s.cls === 'ventile'){ s.cls = (s._clsPrevVent || 'ext'); s._clsPrevVent = undefined; }
+  { const heroB = document.getElementById('opt-hero'); if (heroB && s) heroB.innerHTML = transactionCard(_optBuildTx(s), { role:'preview' }); }
+  (function(){ const rx = document.getElementById('rail-hdr-host') && document.getElementById('rail-hdr-host').querySelector('.rail-x');
+    if (rx){ rx.innerHTML = 'Fermer \u2715'; rx.onclick = closeDrawer; } })();
+  const foot = document.getElementById('drawer-footer');
+  if (foot && s) foot.innerHTML = _optRenderFoot(s);
+}
+
+// HUNK 4 — abandon path: restore the pre-ventilation cls (badge off) so 'ventile' never leaks into
+// a normal open, then close. Mirrors remb's rembBack cls-restore idiom. Confirm KEEPS the badge.
+function ventCancel(){
+  const s = (typeof _optState !== 'undefined' && _optState) ? _optState : window._optState;
+  if (s && s.cls === 'ventile'){ s.cls = (s._clsPrevVent || 'ext'); s._clsPrevVent = undefined; }
+  { const pane = document.querySelector('#drawer .opt-pane[data-pane="relie"]'); if (pane) pane.classList.remove('vent-subview-active'); const host = document.getElementById('vent-subview'); if (host) host.remove(); }
+  if (typeof closeDrawer === 'function') closeDrawer();
+}
+function ventConfirm(){
+  // §K — FRONTEND-PREVIEW local split. Write {name,cat,amt} (committed-view shape). No backend, no Bientôt.
+  const s = (typeof _optState !== 'undefined' && _optState) ? _optState : (window._optState = (window._optState || {}));
+  if (!Array.isArray(s.ventLines)) s.ventLines = [];
+  ventRecalc();
+  if (!(s.ventLines.length >= 2 && !ventOverflow() && Math.abs(s.ventLines.reduce((a,x)=>a+(x.amt||0),0) - _ventTotal(s)) < 0.005)) return;   // gate
+  s.ventLines = s.ventLines.map(ln => ({ name: ln.name || '', cat: ln.cat || '', amt: Math.round((ln.amt || 0) * 100) / 100 }));
+  s.relier = true;
+  s._clsPrevVent = undefined;   // HUNK 4 — committed: keep cls='ventile' (tx is now ventilated); drop the saved prior
+  window._ventPreview = { lines: s.ventLines.slice(), ts: Date.now() };
+  { const pane = document.querySelector('#drawer .opt-pane[data-pane="relie"]'); if (pane) pane.classList.remove('vent-subview-active'); const host = document.getElementById('vent-subview'); if (host) host.remove(); }
+  try { if (typeof drawerBack === 'function') drawerBack(); } catch (e) {}
+  if (typeof showToast === 'function')
+    showToast('\u2713 Ventilation enregistr\u00e9e (aper\u00e7u)', s.ventLines.length + ' ligne' + (s.ventLines.length > 1 ? 's' : ''), 'green');
+}
+
+// ── foot state machine (§4): open → Confirmer· / settled → Modifier· / editing →
+//    Enregistrer· / cas1recv → Dissocier(danger)· . Replaces the old src-split footer,
+//    preserving the isReattribuer Dissocier semantics, on BOTH arms. ─────────────
+function _optFootState(s){
+  // v23a.1 §1c — cas1recv derives from the HYDRATED intra-Cas-1 lock, NOT from isReattribuer.
+  // A plain reliée opened via "Options" → settled/Modifier; only a genuine intra Cas 1 → Dissocier.
+  // (Rendered cas1recv FACE below is unchanged — only this routing condition narrows.)
+  if ((s.sub === 'cas1' || s.lock === 'cas1recv') && !s.editing) return 'cas1recv';
+  if (s.lock === 'settled' && !s.editing) return 'settled';
+  if (s.editing) return 'editing';
+  return 'open';
+}
+function _optRenderFoot(s){
+  const st = _optFootState(s);
+  let primary, secondary;
+  if (st === 'open') {
+    const ready = !!(s.dept && (s.line || s.relier));
+    secondary = '<button class="drawer-btn" onclick="closeDrawer()">Annuler</button>';
+    primary = '<button class="drawer-btn primary" onclick="optFootPrimary()"' + (ready ? '' : ' disabled style="opacity:.45;cursor:not-allowed"') + '>Confirmer</button>';
+  } else if (st === 'settled') {
+    secondary = '<button class="drawer-btn" onclick="closeDrawer()">Fermer</button>';
+    primary = '<button class="drawer-btn primary" onclick="optFootPrimary()">Modifier</button>';
+  } else if (st === 'editing') {
+    secondary = '<button class="drawer-btn" onclick="optFootSecondary()">Annuler</button>';
+    primary = '<button class="drawer-btn primary" onclick="optFootPrimary()">Enregistrer</button>';
+  } else { // cas1recv — primary slot is the danger Dissocier
+    secondary = '<button class="drawer-btn" onclick="closeDrawer()">Fermer</button>';
+    primary = '<button class="drawer-btn" onclick="optFootDissocier()" style="color:var(--amber);border-color:rgba(251,191,36,.25)">Dissocier</button>';
+  }
+  return secondary + primary;
+}
+function optFootPrimary(){
+  const s = _optState; if (!s) return;
+  const st = _optFootState(s);
+  if (st === 'open' || st === 'editing') {
+    if (!(s.dept && (s.line || s.relier))) return;            // Confirmer needs dept + line/à-trier/à-relier
+    _optLogStub('CL-48', 'assign-commit (' + (st === 'open' ? 'open' : 'edit') + '\u2192settled)',
+      (s.fourn || '') + ' \u2192 ' + s.dept + (s.line ? ' · ' + s.line : (s.relier ? ' · \u00C0 RELIER' : '')) + (s.cas && s.cas !== 'none' ? ' [' + s.cas + ']' : ''));
+    s.lock = 'settled'; s.editing = false;
+    // Item 39 #5 — clear remb subview state on commit so the post-commit back-stack is coherent
+    // (_optPaint regenerates the relié pane, discarding the moved picker node; just reset the flags).
+    if (s._rembLineMode || window._rembStage){
+      s._rembLineMode = false; s._ligneFocusOpen = false; window._rembLineMode = false;
+      window._rembStage = null; window._rembPick = null; window._rembSel = null;
+      window._rembLineSel = null; window._rembLPmoved = false; window._rembLPrestore = null;
+    }
+    _optPaint();
+  } else if (st === 'settled') {
+    s.editing = true; _optPaint();                            // Modifier → editing (live)
+  }
+}
+function optFootSecondary(){
+  const s = _optState; if (!s) return;
+  if (s.editing) { s.editing = false; s.lock = 'settled'; _optPaint(); }   // editing Annuler → back to settled
+  else closeDrawer();
+}
+// CL-53 — dissociate cascade (cas1recv → origine non reliée). STUB: logged PROPOSED,
+// then the existing confirmOptionsDissocier (already a no-POST stub) carries the semantics.
+function optFootDissocier(){
+  _optLogStub('CL-53', 'dissociate cascade (cas1recv \u2192 origine non reli\u00E9e)', (_optState && _optState.fourn) || '');
+  if (typeof confirmOptionsDissocier === 'function') confirmOptionsDissocier();
+}
+
+// applyLock (settled-hide, §12): toggle #drawer.opt-locked → CSS hides the search field,
+// results, action cards, relie-hint, and the hidden bridge; KEEPS the .dsec-t title + the
+// assigned card(s) + the bottom-pinned lock banner. cas1recv keeps its OWN top prompt (no hide).
+function optApplyLock(){
+  const s = _optState; if (!s) return;
+  const drawer = document.getElementById('drawer'); if (!drawer) return;
+  const st = _optFootState(s);
+  const locked = (st === 'settled') || (st === 'cas1recv');
+  drawer.classList.toggle('opt-locked', locked);
+  const banner = document.getElementById('lock-banner'); if (banner) banner.style.display = (st === 'settled') ? '' : 'none';
+}
+
+// re-paint body+foot from the current _optState WITHOUT re-running the src data-prep
+// (so lock/editing survive). Re-establishes the hidden bridge to match the picked line.
+function _optPaint(){
+  const s = _optState; if (!s) return;
+  document.getElementById('drawer-body').innerHTML = _optRenderBody(s);
+  // re-establish the hidden bridge to the current selection (no POST; for the preserved orphan machinery)
+  if (s.dept) { const d = document.getElementById('assign-dept'); if (d) { d.value = s.dept; if (typeof populateAssignLines === 'function') populateAssignLines(s.dept); } }
+  if (s.line) { const l = document.getElementById('assign-ligne'); if (l) { l.innerHTML = '<option selected>' + _optEsc(s.line) + '</option>'; l.value = s.line; } }
+  document.getElementById('drawer-footer').innerHTML = _optRenderFoot(s);
+  optApplyLock();
+  optRenderNotes();
+}
+
+// ── the three-tab body builder (emitted for BOTH src arms) ────────────────────
+function _optRenderBody(s){
+  const tx = _optBuildTx(s);
+  const picked = !!(s.dept && (s.line || s.relier));
+  // hidden bridge (#assign-dept/#assign-ligne/divers) so the sealed line engine + the
+  // preserved orphan-remb machinery keep working; the new search drives it.
+  const bridge = '<div id="opt-bridge" style="display:none">' + (s._picker || '') + '</div>';
+
+  // TAB: RELIER
+  const casLabel = s.isRevenue ? 'Cat\u00E9gorie \u2192 Ligne de recette' : 'D\u00E9partement \u2192 Ligne budg\u00E9taire';
+  // §v23a.2 (#5): state-aware relie-hint. The verb tracks _optFootState so an EDITING hint never
+  // says "Confirmer" (the #5 mismatch). settled/cas1recv hints are hidden by the locked !important
+  // rule, but their text is kept coherent here for completeness.
+  const _hintMsg = {
+    open:     'Cliquez sur <b>Confirmer</b> pour relier cette transaction.',
+    editing:  'Cliquez sur <b>Enregistrer</b> pour mettre \u00e0 jour cette transaction.',
+    settled:  'Cliquez sur <b>Modifier</b> pour changer cette transaction.',
+    cas1recv: 'Cliquez sur <b>Dissocier</b> pour renvoyer l\u2019origine en non reli\u00e9e.'
+  }[_optFootState(s)] || 'Cliquez sur <b>Confirmer</b> pour relier cette transaction.';
+  const atrierCard = s.isRevenue ? '' :
+    `<div class="vtoggle" onclick="event.stopPropagation();optPickAtrier()"><div class="vt-body"><div class="vt-t">
+       <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h12"/></svg>\u00C0 relier</div>
+       <div class="vt-d">Assigne la transaction \u00E0 un d\u00E9partement ; ligne \u00E0 assigner plus tard.</div></div>
+       <svg class="vt-chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>`;
+  // Item 39 Step 1.5 — the OLD recette-drawer remb entry (Remboursement title + dashed
+  // `recette ✎` chip + #orphan-amt + the hidden inline scaffold) is REMOVED now that the
+  // Step-1 Remboursement action card is the single entry. Neutralised to '' (not deleted)
+  // for a minimal, trivially-reversible diff.
+  const orphanRemb = '';
+
+  const relie = `<div class="opt-pane on" data-pane="relie">${_optOrientHtml(s)}
+      <div class="dsec" id="opt-ligne-field"><div class="dsec-t">${casLabel}</div>
+        <div class="linefield"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="opt-ligne-input" placeholder="Rechercher un d\u00E9partement ou une ligne\u2026" oninput="optFilterLignes()" onfocus="optLigneFocus()"></div>
+      </div>
+      <div class="lineres" id="opt-ligne-res"></div>
+      <div id="opt-ligne-cur">${(s.ventLines && s.ventLines.length) ? _optVentHtml(s) : _optAssignedCardHtml(s)}</div>
+      <div class="relie-hint" id="relie-hint" style="display:${(picked && !(s.relier && !s.line)) ? '' : 'none'}">${_hintMsg}</div>
+      ${orphanRemb}
+      <div class="opt-action-cards dsec" style="margin-top:28px"><div class="dsec-t">Autres actions</div><div class="optgrid">
+        ${atrierCard}
+        ${s.isRevenue ? `<div class="vtoggle" onclick="optOpenRemb()"><div class="vt-body"><div class="vt-t">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Remboursement</div>
+          <div class="vt-d">Cr\u00E9dit qui rembourse une d\u00E9pense d\u2019origine.</div></div>
+          <svg class="vt-chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>` : ''}
+        <div class="vtoggle" onclick="optOpenIntra()"><div class="vt-body"><div class="vt-t">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>Mouvement Intra</div>
+          <div class="vt-d">R\u00E9attribuer cette transaction \u00E0 une autre session.</div></div>
+          <svg class="vt-chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        <div class="vtoggle" onclick="optVentiler()"><div class="vt-body"><div class="vt-t">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="9" y2="12"/><line x1="3" y1="6" x2="13" y2="6"/><line x1="3" y1="18" x2="13" y2="18"/><circle cx="17" cy="12" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="19" cy="18" r="2"/></svg>Ventiler</div>
+          <div class="vt-d">R\u00E9partir sur plusieurs lignes du m\u00EAme d\u00E9partement.</div></div>
+          <svg class="vt-chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div></div>
+      <div class="lock-banner" id="lock-banner" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>Transaction reli\u00E9e et fig\u00E9e. <b>Modifier</b> pour changer ${s.isRevenue ? 'la cat\u00E9gorie, la ligne ou le type' : 'le d\u00E9partement, la ligne ou le type'}.</span></div>
+      ${bridge}
+    </div>`;
+
+  // TAB: TYPE — Externe / Inter-société (intra via action card); cas optgrid (sign-keyed)
+  const clsRow = (val, t, d, chip, sel) =>
+    `<div class="optrow${_optState.cls === val ? ' on ' + sel : ''}" data-cls="${val}" onclick="optPickCls(this)"><span class="radio"></span><div class="obody"><div class="ot">${t}</div><div class="od">${d}</div></div><span class="ctag ${chip} ochip">${chip}</span></div>`;
+  const casRows = (s.isRevenue
+      ? [['none','Aucun','Rattach\u00E9 \u00E0 l\u2019exercice de l\u2019op\u00E9ration.',''],
+         ['PCA','PCA','Produit encaiss\u00E9 en N, rendu en N+1.','PCA'],
+         ['FAE','FAE','Produit rendu en N, factur\u00E9 en N+1.','FAE']]
+      : [['none','Aucun','Rattach\u00E9 \u00E0 l\u2019exercice de l\u2019op\u00E9ration.',''],
+         ['CCA','CCA','Pay\u00E9 en N, rattach\u00E9 \u00E0 N+1.','CCA'],
+         ['FNP','FNP','Engag\u00E9 en N, facture \u00E0 venir.','FNP']])
+    .map(([val, t, d, chip]) => {
+      const on = _optState.cas === val || (val === 'none' && (!_optState.cas || _optState.cas === 'none'));
+      const sel = (val === 'none') ? 'sel-neutral' : 'sel-cas';
+      return `<div class="optrow${on ? ' on ' + sel : ''}" data-cas="${val}" onclick="optPickCas(this)"><span class="radio"></span><div class="obody"><div class="ot">${t}</div><div class="od">${d}</div></div>${chip ? `<span class="ctag cas ochip">${chip}</span>` : ''}</div>`;
+    }).join('');
+  // §Group-E — Type-tab controls are READ-ONLY in the locked foot state (settled/cas1recv); they
+  // become live only after "Modifier" flips to editing. Reuses the sanctioned .ed-disabled pattern
+  // (opacity:.5;pointer-events:none), matching the locked-dept-select precedent — no new style.
+  // §ITEM28 — when an intra Cas (1/2) is selected, the transaction IS intra → Externe/Inter are invalid;
+  // grey them out (reuse the sanctioned .ed-disabled pattern, same as the locked foot state).
+  const _typeLocked = (function(){ const st = _optFootState(s); return (st === 'settled') || (st === 'cas1recv'); })();
+  const _intraChosen = !!s.intraCas;
+  const _typeDis = (_typeLocked || _intraChosen) ? ' ed-disabled' : '';
+  const type = `<div class="opt-pane" data-pane="type">
+      <div class="dsec"><div class="dsec-t">Classification</div><div class="optgrid${s.ibanLocked ? ' iban-locked' : ''}${_typeDis}">
+        ${clsRow('ext','Externe','Tiers hors structure. D\u00E9faut si IBAN inconnu.','ext','sel-neutral')}
+        ${clsRow('inter','Inter-soci\u00E9t\u00E9','Autre soci\u00E9t\u00E9 du registre (IBAN), toujours un virement r\u00E9el.','inter','sel-amber')}
+      </div>${s.ibanLocked ? '<div class="opt-iban-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Type verrouill\u00e9 \u2014 IBAN inter-soci\u00e9t\u00e9 reconnu.</div>' : ''}</div>
+      <div class="dsec"><div class="dsec-t">Cas comptable <span style="margin-left:auto;font-weight:500;letter-spacing:0;text-transform:none;color:var(--text-dim);font-size:10.5px">${s.isRevenue ? 'recette' : 'd\u00E9pense'} \u00B7 optionnel</span></div><div class="optgrid${_typeDis}">
+        ${casRows}
+        <div class="cas-example" id="cas-example" style="display:none"></div>
+      </div></div>
+    </div>`;
+
+  // TAB: NOTES — note field on top, journal beneath
+  const notes = `<div class="opt-pane" data-pane="notes">
+      <div class="dsec"><div class="dsec-t">Note</div>
+        <textarea class="opt-note-field" id="opt-note" placeholder="Ajouter une note sur cette transaction\u2026"></textarea></div>
+      <div class="opt-notes-log-t">Journal de la transaction</div>
+      <div class="opt-timeline" id="opt-timeline"></div>
+    </div>`;
+
+  // tab bar + hero + panes
+  return `<div class="opt-tabs">
+      <button class="opt-tab on" data-pane="relie" onclick="optTab(this)">Relier <span class="tab-check${(_optState.relier && !_optState.line) ? ' partial' : ''}" id="opt-tab-check" style="display:${picked ? '' : 'none'}">\u2713</span></button>
+      <button class="opt-tab" data-pane="type" onclick="optTab(this)">Type</button>
+      <button class="opt-tab" data-pane="notes" onclick="optTab(this)">Notes <span class="cnt" id="notes-cnt">0</span></button>
+    </div>
+    <div class="opt-hero preview"><div id="opt-hero">${transactionCard(tx, { role: 'preview' })}</div></div>
+    ${relie}${type}${notes}`;
+}
+
+function _openAssignDrawerCore(src, c) {
+  // (iii-b) fold-in. Unified open/render core for the destination-picker shared by
+  // openAssignDrawer ('unmatched') and openOrphanAssign ('orphan'). The src discriminant
+  // controls ONLY what differs: tx-data source, title/sub, tx-card (incl. the assign-only
+  // tag-editor), the orphan-only remboursement-candidates block, the assign-only Cas 1/2
+  // session block, the per-src deptOptions construction, and WHICH confirm handler the footer
+  // wires. confirmAssign / confirmOrphanAssign are untouched, stay separate, and stay wired
+  // exactly as today. Render/open path only -- no write path lives here.
+  const { unmatchedIdx, fourn, note, ht, ttc, cat, isReattribuer, date } = c;
+  let isRevenue, deptOptions, preselect;
+  if (src === 'unmatched') {
+    window._currentAssignFourn = fourn || 'Transaction';
+    // LOCK-15 Item 8: capture this drawer's reconstruct-thunk so a nested open (Cas 1/2 → openIntraDrawer)
+    // can push it for back-nav. Re-calling openAssignDrawer with the same args re-renders the parent.
+    window._reopenAssignDrawer = () => openAssignDrawer(unmatchedIdx, fourn, note, ttc, cat, isReattribuer, date);
+    // LOCK-13 CLOSE (supersedes the re-pass flat single-RECETTES): a plain positive recette routes
+    // ONLY to recette lines. The Département dropdown lists the recette CATEGORIES (REC[].cat) + a
+    // default RECETTES option — NEVER expense departments. Default RECETTES → all recette lines flat;
+    // picking a category → that category's lines (populateAssignLines middle branch). Identical to
+    // openOrphanAssign. Expense depts are offered only for a real spend (negative).
+    isRevenue = (ttc||0) > 0;
+    deptOptions = isRevenue
+      ? `<option value="RECETTES" selected>RECETTES</option>` + REC.map(c => `<option value="${c.cat.replace(/"/g,'&quot;')}">${c.cat}</option>`).join('')
+      : Object.entries(DEPT_META).map(([tab, m]) => `<option value="${tab}">${m.name}</option>`).join('');
+
+    // Pre-select dept based on catégorie if possible (recette → RECETTES, populates flat recette lines)
+    const catNorm = normStr(cat||'');
+    preselect = isRevenue ? 'RECETTES' : (POLE_MAP_CLIENT[catNorm] || '');
+  } else {
+    _orphanData = { fourn, note, ht, ttc, cat, date };
+    window._currentAssignFourn = fourn || 'Transaction';
+    isRevenue = ttc > 0;
+
+    // LOCK-13 CLOSE: a revenue/recette transaction's Département dropdown lists the recette
+    // CATEGORIES (REC[].cat) + a default RECETTES option — NEVER expense departments (the prior
+    // expense-depts-for-a-recette was a bug, the screenshot Leo flagged). Default RECETTES →
+    // all recette lines flat; picking a category → that category's lines. Identical to
+    // openAssignDrawer. A non-revenue orphan keeps the expense-dept dropdown byte-unchanged.
+    deptOptions = isRevenue
+      ? `<option value="RECETTES" selected>RECETTES</option>` + REC.map(c => `<option value="${c.cat.replace(/"/g,'&quot;')}">${c.cat}</option>`).join('')
+      : Object.keys(DEPT_META).map(k =>
+          `<option value="${k}" ${k === POLE_MAP_CLIENT[normStr(cat||'')] ? 'selected' : ''}>${DEPT_META[k].name}</option>`
+        ).join('');
+    preselect = isRevenue ? 'RECETTES' : (POLE_MAP_CLIENT[normStr(cat||'')] || '');
+  }
+
+  // shared destination-picker render core (written once; ${deptOptions} is the per-src value)
+  const _picker = `      <div class="drawer-section-title">Destination</div>
+      <div style="margin-bottom:14px">
+        <label style="font-size:.7em;color:var(--text-dim);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Département</label>
+        <select id="assign-dept" style="width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:9px 10px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.85em;outline:none" onchange="populateAssignLines(this.value)">
+          <option value="">Choisir un département…</option>
+          ${deptOptions}
+        </select>
+      </div>
+      <div id="assign-ligne-wrap" style="margin-bottom:14px;display:none">
+        <label style="font-size:.7em;color:var(--text-dim);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Ligne budgétaire *</label>
+        <select id="assign-ligne" style="width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:9px 10px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.85em;outline:none">
+          <option value="">Choisir une ligne…</option>
+        </select>
+      </div>
+      <div id="assign-divers-wrap" style="display:none;margin-bottom:14px">
+      </div>`;
+  // ── v23a OPTIONS FOLD — body+foot no longer src-split ─────────────────────
+  // Both arms ('unmatched' + 'orphan') now render the SAME three-tab face (Relier /
+  // Type / Notes) from the unified _optState, via the UNCONDITIONAL shared renders
+  // _optRenderBody / _optRenderFoot. The old _bodyPre / _bodyPost / footer src-splits
+  // are GONE — re-expressing only _bodyPre would ship a half-new orphan face (★ gate).
+  // The sealed write-bridge `_picker` (built above, byte-identical) is rendered HIDDEN
+  // inside the new Relier pane (#opt-bridge) so populateAssignLines / selectAssignDivers
+  // keep working byte-behaviour-preserved.
+  // WRITES ARE STUBBED (CL-48 commit / CL-50 à-trier / CL-51 cas-tag / CL-53 dissociate)
+  // → window._contractLedgerProposed (PROPOSED); no live POST engine (confirmAssign /
+  // confirmOrphanAssign / ensureDiversLine) is wired from the new face.
+  _optState = {
+    src: src,
+    fourn: fourn || 'Transaction',
+    note: note || '',
+    ttc: ttc || 0,
+    ht: (ht != null ? ht : null),
+    date: date || '',
+    cat: cat || '',
+    isRevenue: isRevenue,
+    cls: 'ext',
+    cas: null,
+    dept: null,   // STEP 5 Finding 5 — month is a per-tx USER-sourced axis; never seeded from the category hint (preselect stays a line-ranking hint only)
+    line: null,
+    relier: false,   // à-relier discriminant (relier action) — distinct from genuine à-trier
+    preselect: preselect || '',
+    isReattribuer: !!isReattribuer,
+    lock: 'open',
+    editing: false,
+    // ⊕ v23a.1 NEW carried fields (no slot in v23a) — defaults keep the open face identical
+    sub: null,            // intra story: 'cas1' | 'cas2' (drives the cas1recv TRIGGER, §1c)
+    originIntra: null,    // {lbl,who,tail} → "Vers…/Transférée depuis…/Reçu de…" flow-line
+    casMarker: null,      // {cls,text} → hero cas-1 marker
+    rembOrigin: null,     // {who,tail} → REMBOURSEMENT chip + .remb-origin line
+    ventLines: null,      // [{name,cat,amt}] → committedPie + per-split assigned cards
+    ibanLocked: false,    // recette inter recognized-IBAN → lock the Type axis (render only)
+    societe: '',          // inter société label
+    credit: false,        // remb/credit → positive (teal) amount
+    _atrierMode: false,   // à-trier dept-mode (Ruling 3): search lists departments
+    _picker: _picker
+  };
+  // The orphan arm now carries the Mouvement-Intra action card too (unified face), so it
+  // needs a reopen-thunk for the openIntraDrawer back-stack. The unmatched arm already set
+  // window._reopenAssignDrawer at its data-prep arm (byte-identical); set the orphan one here.
+  if (src === 'orphan') {
+    window._reopenAssignDrawer = () => openOrphanAssign(fourn, note, ht, ttc, cat, date);
+  }
+
+  // ── v23a.1 SETTLED-READ HYDRATION (the P0 fix) ──────────────────────────────
+  // Overlay an EXISTING assignment onto _optState so an already-reliée transaction
+  // opened via "Options" renders its type-appropriate SETTLED/Modifier face — instead
+  // of v23a's blanket cas1recv/Dissocier. This is a READ of state already in hand:
+  //   • live path: reattribuerTx stashes the linked assignment on window._optionsLinked
+  //   • fixture/test path: window._optSettledHydrate carries an artifact-A field set
+  // NO write is fired here (CL-48/50/51/53 stay PROPOSED). lock derives the foot:
+  // genuine intra Cas 1 → 'cas1recv' (Dissocier); every other reliée → 'settled' (Modifier).
+  const _hyd = (isReattribuer ? (window._optionsLinked || null) : null) || window._optSettledHydrate || null;
+  if (_hyd) {
+    const ln = (_hyd.line != null) ? _hyd.line : _hyd.ligne;
+    if (_hyd.dept != null)        _optState.dept       = _hyd.dept;
+    if (ln != null)               _optState.line       = ln;
+    if (_hyd.cat != null)         _optState.cat        = _hyd.cat;
+    if (_hyd.cas != null)         _optState.cas        = _hyd.cas;
+    if (_hyd.cls != null)         _optState.cls        = _hyd.cls;
+    if (_hyd.relier != null)      _optState.relier     = !!_hyd.relier;
+    if (_hyd.sub != null)         _optState.sub        = _hyd.sub;
+    if (_hyd.originIntra != null) _optState.originIntra = _hyd.originIntra;
+    if (_hyd.casMarker != null)   _optState.casMarker  = _hyd.casMarker;
+    if (_hyd.rembOrigin != null)  _optState.rembOrigin = _hyd.rembOrigin;
+    if (_hyd.ventLines != null)   _optState.ventLines  = _hyd.ventLines;
+    if (_hyd.ibanLocked != null)  _optState.ibanLocked = !!_hyd.ibanLocked;
+    if (_hyd.societe != null)     _optState.societe    = _hyd.societe;
+    if (_hyd.credit != null)      _optState.credit     = !!_hyd.credit;
+    // à-relier (relier) is a FRESH relier action: open in the 'open' foot state so the user picks a
+    // line and Confirmer-commits — NOT 'settled' (which is for re-opening an already-linked tx via
+    // Options, and which previously rendered the spurious À TRIER settled card from the à-relier path).
+    _optState.lock    = _hyd.relier ? null : ((_hyd.lock === 'cas1recv' || _hyd.sub === 'cas1') ? 'cas1recv' : 'settled');
+    _optState.editing = false;
+    window._optSettledHydrate = null;   // one-shot; never persists, never POSTs
+  }
+
+  // §v23a.4 — discriminated assign-drawer title, SINGLE source of truth (post-hydration so
+  // _optState.atrier reflects _hyd.atrier; before _optAdoptRail, which lifts title/sub into the rail).
+  // reattribuer (settled/Options) keeps its prior title/sub byte-identical. Everything else is keyed
+  // on the relier/atrier discriminants: à-relier table (hydrate relier:true) → partially assigned →
+  // "Relier à une ligne"; transaction page / guessed dept (neither) → fully unassigned → "Assigner la
+  // transaction". The action now sets relier (à-relier: dept, ligne pending); atrier is RETIRED pending
+  // its data-model removal in the next build (S2) — no longer set true anywhere, so the `_optState.atrier ||`
+  // in the title expression (L7629) is transitional dead code, removed in S2.
+  if (isReattribuer) {
+    document.getElementById('drawer-title').textContent = fourn || 'Transaction non associée';
+    document.getElementById('drawer-sub').textContent = 'Assigner manuellement à une ligne budgétaire';
+  } else {
+    document.getElementById('drawer-title').textContent = (_optState.relier) ? 'Relier \u00E0 une ligne' : 'Assigner la transaction';
+    // Item 39 Step 2 EDIT 1 — recette subtitle now matches the dépense arm ("<tx> · à relier")
+    // instead of the "Recette — +X €" face. fourn destructured from c (L6020), in scope here.
+    document.getElementById('drawer-sub').innerHTML = `<b>${_esc(fourn)}</b> \u00B7 \u00E0 relier`;
+  }
+
+  // body + foot — UNCONDITIONAL shared renders (both src arms emit the new face)
+  document.getElementById('drawer-body').innerHTML = _optRenderBody(_optState);
+  document.getElementById('drawer-footer').innerHTML = _optRenderFoot(_optState);
+
+  // re-establish the hidden write-bridge to the preselected dept (the old L4980 setTimeout,
+  // byte-preserved — drives the sealed #assign-dept select + the preserved remb machinery).
+  if (preselect) {
+    setTimeout(() => {
+      const sel = document.getElementById('assign-dept');
+      if (sel) { sel.value = preselect; populateAssignLines(preselect); }
+    }, 0);
+  }
+  // §ITEM17 — autofocus the line search on OPEN (not _optPaint: that repaints per pick/tab and would steal the cursor)
+  setTimeout(() => { const _si = document.getElementById('opt-ligne-input'); if (_si) { try { _si.focus(); } catch(e){} } }, 90);
+  // §v23a.3 §E.4 — the orphan auto-pre-flip to remboursement (LOCK-11 ss3) is REMOVED: it made the
+  // drawer open already in "remboursement" state (Leo Images 2/3 — the weird default title). The drawer
+  // now stays in the default recette state ("Assigner la transaction" / "Recette — +X €") until the user
+  // explicitly opens the remboursement subview.
+
+  document.getElementById('drawer-footer').style.display = 'flex';
+  if (src === 'unmatched') {
+    const dissBtn = document.getElementById('drawer-dissociate');
+    if (dissBtn) dissBtn.style.display = 'none';
+  }
+
+  // post-paint: settled-hide lock state + notes journal (helpers, not call-site discipline §12)
+  optApplyLock();
+  optRenderNotes();
+
+  // §v23a.2 shell re-base (A2): options adopts the rail chrome. POPULATE-THEN-SHOW — fill the
+  // rail-hdr-host from the title/sub the generic header already carries, wire the rail ✕ to
+  // closeDrawer, THEN add the opt-mode class. (F-3 invariant: the mode-class is only ever added
+  // here / in réelles, after the host is populated — never on a plain-drawer open path.)
+  (function _optAdoptRail(){
+    const host = document.getElementById('rail-hdr-host');
+    if (host) {
+      const t   = document.getElementById('drawer-title');
+      const sub = document.getElementById('drawer-sub');
+      host.innerHTML = railHdr({
+        icon: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>',
+        title:   t ? t.textContent : 'Options',
+        subHTML: sub ? sub.innerHTML : '',
+        railXState: 'close'
+      });
+      const rx = host.querySelector('.rail-x'); if (rx) rx.onclick = closeDrawer;
+    }
+    document.getElementById('drawer').classList.add('opt-mode');
+  })();
+
+  document.getElementById('drawer-overlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+  // seam 27cx — assign flow is NON-modal: flag both the overlay (→ transparent/click-through) and the drawer
+  // (→ excluded from the :has() scroll-lock). closeDrawer clears both. Only this assign core sets it, so every
+  // other drawer stays modal.
+  document.getElementById('drawer-overlay').classList.add('assign-nonmodal');
+  document.getElementById('drawer').classList.add('assign-nonmodal');
+
+  // Item 39 auto-detect: a refund-noted POSITIVE/recette tx opens straight into the remb subview.
+  // Detection picks the ENTRY VIEW only — no commit, no auto-select, fully reversible via the
+  // "Recette" escape card (rembBackToRecette). Gated on isRevenue (positives only — negatives never
+  // auto-open) and !_hyd (an already-reliée tx opened via Options keeps its settled/Modifier face).
+  // optOpenRemb is idempotent on re-entry (nulls _rembSel/_rembPick/_rembStage at its head), so a
+  // re-open re-detects every time — no suppression flag. optOpenRemb lands in the suggestions state
+  // but does NOT itself set cls; set the badge here (caller-side) via the SAME idiom the remb entries
+  // use (s.cls='remb' + frozen transactionCard/_optBuildTx hero repaint — tcTop reads tx.cls). The
+  // escape reverses exactly this (cls→'ext' + repaint).
+  if (_optState && _optState.isRevenue && isRembNote(_optState.note) && !_hyd) {
+    optOpenRemb();
+    _optState.cls = 'remb';
+    const _heroAD = document.getElementById('opt-hero');
+    if (_heroAD) _heroAD.innerHTML = transactionCard(_optBuildTx(_optState), { role:'preview' });
+  }
+}
+
+function openAssignDrawer(unmatchedIdx, fourn, note, ttc, cat, isReattribuer, date) {
+  _openAssignDrawerCore('unmatched', { unmatchedIdx, fourn, note, ttc, cat, isReattribuer, date });
+}
+
+// ── §v23a.4 §I — the standalone openIntraDrawer body (which overwrote #drawer-body and exited
+//    opt-mode) is REMOVED. Mouvement Intra now renders IN-RAIL via optOpenIntra() above
+//    (relié-pane child host #intra-subview; .opt-tabs + hero kept). setIntraCas removed with it.
+
+// §v23a.3 §I.3 — intra confirm = FRONTEND-PREVIEW reallocation (no backend; Phase-D persists).
+// Records the destination session + Cas (1 sans-virement / 2 avec-virement) locally; the tx leaves
+// this session's view for the session. No "⏳ Bientôt" deferral. Hoisted so the footer onclick
+// (`confirmIntraMove()`) resolves directly.
+function confirmIntraMove(){
+  // §v23a.4 §I — reads the in-rail subview state off _optState (intraCas / intraSession / intraLine).
+  // Falls back to the #intra-session <select> label. Frontend-preview only: records _intraPreview
+  // locally; NO backend write, NO "\u23f3 Bient\u00f4t" deferral (Phase-D persists the reallocation).
+  const s = (typeof _optState !== 'undefined' && _optState) ? _optState : null;
+  const sess = s ? SESSIONS_INTRA.find(o => o.v === s.intraSession) : null;
+  const sessEl = document.getElementById('intra-session');
+  const dest = (sess && sess.nm)
+    || (sessEl && sessEl.options[sessEl.selectedIndex] ? sessEl.options[sessEl.selectedIndex].textContent : null)
+    || null;
+  const cas = (s && s.intraCas === 'cas2') ? 2 : 1;
+  const line = (s && s.intraLine) ? (s.intraLine.dept + ' \u203a ' + s.intraLine.line) : null;
+  window._intraPreview = { dest: dest, cas: cas, line: line, ts: Date.now() };
+  closeDrawer();
+  if (typeof showToast === 'function')
+    showToast('\u2713 R\u00e9attribu\u00e9 (aper\u00e7u)',
+              'Cas ' + cas + (cas === 2 ? ' \u00b7 avec virement' : ' \u00b7 sans virement') + (dest ? ' \u2192 ' + dest : ''),
+              'green');
+}
+
+/* [step5] event copy skipped — general keeps its own */
+
+/* [step5] event copy skipped — general keeps its own */
+
+/* [step5] event copy skipped — general keeps its own */
+
+/* [step5] event copy skipped — general keeps its own */
+
+// Orphan assign — for transactions in QONTO_RAW but not in UNMATCHED or MATCH_LOG
+/* [step5] _orphanData: general already declares it */
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// §v23a.3 §E — REMBOURSEMENT subview (ported from options-combined_v16.7.html).
+//   KEY RULING (§E.1, card-single-source): each candidate
+//   renders as the UNIFIED transactionCard (compact default, expandable) with a "Sélectionner
+//   cette dépense" select button appended — NOT a parallel remb-cand card. On select (§E.2) the
+//   preview hero is re-rendered through transactionCard/_optBuildTx (the frozen tcRembOrigin
+//   formatter emits the "Remboursement —" line; it is NOT edited). renderRembSummary computes
+//   "Net réel de la ligne" = origin + credit. Frontend-preview only — persistence is Phase-D.
+// ═══════════════════════════════════════════════════════════════════════════════
+// Candidate pool = the negative-tx pool (live unmatched negatives; mock pool fallback so the
+// picker always renders in preview).
+const REMB_ORIGINS = [
+  { id:'amzn',  name:'AMAZON PAYMENTS', dept:'PRODUCTION',   ligne:'Matériel régie', n:1240.00, ht:1033.33, date:'14/03/26', compte:'PRINCIPAL • Madame Loyal', init:'Tom S.',   note:'AMZN Mktp · matériel régie', statut:'assignée' },
+  { id:'leroy', name:'LEROY MERLIN',    dept:'TECHNIQUE',    ligne:'Structures bar', n:800.00,  ht:666.67,  date:'12/03/26', compte:'EPISODE • ML 130326',    init:'Lisa L.',  note:'ML.13MARS.REGIEBAR · bois', statut:'assignée' },
+  { id:'fnac',  name:'FNAC PRO',        dept:'TECHNIQUE',    ligne:'Son & lumière',  n:1240.00, ht:1033.33, date:'02/03/26', compte:'PRINCIPAL • Madame Loyal', init:'Tom S.',   note:'FNAC PRO · matériel son',   statut:'assignée' },
+  { id:'sncf',  name:'SNCF CONNECT',    dept:'RH / COMPTA',  ligne:null,             n:210.40,  ht:175.33,  date:'05/03/26', compte:'PRINCIPAL • Madame Loyal', init:'Chloé A.', note:'SNCF · déplacement équipe',  statut:'non assignée' },
+  { id:'casto', name:'CASTORAMA',       dept:'EXPLOITATION', ligne:null,             n:455.00,  ht:379.17,  date:'28/02/26', compte:'EPISODE • ML 130326',    init:'Lisa L.',  note:'CASTORAMA · consommables',  statut:'non assignée' }
+];
+function _rembPool(){
+  const live = (typeof _unmatchedRows !== 'undefined' && Array.isArray(_unmatchedRows))
+    ? _unmatchedRows.filter(r => (r.ttc||0) < 0).map((r, i) => ({
+        id:'u'+(r.idx != null ? r.idx : i), name:r.fourn||'\u2014', dept:r.dept||'', ligne:r.ligne||null,
+        n:Math.abs(r.ttc||0), ht:Math.abs(r.ht||0), date:r.date||'', note:r.note||'',
+        compte:r.account||'', init:r.initiator||'', statut:(r.ligne?'assign\u00e9e':'non assign\u00e9e')
+      }))
+    : [];
+  return live.length ? live : REMB_ORIGINS;
+}
+function rembCreditAmt(){
+  const s = (typeof _optState !== 'undefined' && _optState) ? _optState : null;
+  if (s && (s.credit || s.cls === 'remb')) return Math.abs(s.ttc || 0);
+  if (typeof _orphanData !== 'undefined' && _orphanData) return Math.abs(_orphanData.ttc || 0);
+  return 0;
+}
+function rembScore(o){
+  // Item 39 P4 — DISCRETE 3-tier (replaces the summed +100/+80/+30 point-score) so "exact amount
+  // AND name" can never be out-ranked by an accidental high partial:
+  //   3 = exact amount AND name · 2 = name only · 1 = exact amount only · 0 = no signal.
+  // Name kept as rembScore so suggestRemb's call site is unchanged. Negatives-only stays in _rembPool.
+  const credit = rembCreditAmt();
+  const fn = String((typeof _orphanData !== 'undefined' && _orphanData ? _orphanData.fourn : '') ||
+                    (typeof _optState !== 'undefined' && _optState ? _optState.fourn : '') || '').toLowerCase();
+  const oName = String(o.name||'').toLowerCase();
+  const nameMatch = !!(fn && (oName.includes(fn.split(' ')[0]) || fn.includes(oName.split(' ')[0])));
+  const amtMatch  = !!(credit && o.n && Math.abs(o.n - credit) < 0.01);   // EXACT only
+  if (amtMatch && nameMatch) return 3;
+  if (nameMatch)             return 2;
+  if (amtMatch)              return 1;
+  return 0;
+}
+// adapt a pool entry to the UNIFIED transactionCard tx (negative expense → red, sign-keyed by the sealed renderer)
+function _rembCandTx(o){
+  return { cls:'ext', name:o.name, fourn:o.name, ttc:-Math.abs(o.n||0), ht:(o.ht!=null?-Math.abs(o.ht):null),
+           note:o.note||'', date:o.date||'', account:o.compte||'', initiator:o.init||'' };
+}
+function _rembActiveOrigin(){
+  const s = (typeof _optState !== 'undefined' && _optState) ? _optState : null;
+  if (s && s.rembOrigin && s.rembOrigin.who) return s.rembOrigin;
+  if (window._optState && window._optState.rembOrigin && window._optState.rembOrigin.who) return window._optState.rembOrigin;
+  if (window._rembPick){ const o = window._rembPick; return { who:o.name, n:o.n, dept:o.dept, ligne:o.ligne, statut:o.statut, tail:(o.n!=null?' \u2212'+fmtAmt(Math.abs(o.n)):'')+(o.dept?' \u00b7 '+o.dept:'') }; }
+  return null;
+}
+function _rembEnsureSlot(id){
+  let el = document.getElementById(id);
+  if (!el){ const host = document.getElementById('drawer-body'); if (!host) return null; el = document.createElement('div'); el.id = id; host.appendChild(el); }
+  return el;
+}
+function suggestRemb(){
+  // §E.1 — top-3 by rembScore; each the UNIFIED transactionCard (FROZEN: called, not edited).
+  // data-remb-id is the STABLE string id (o.id), consistent with filterRemb — NOT the array index.
+  if (window._rembPick){ const sg = document.getElementById('remb-suggest'); if (sg) sg.innerHTML = ''; return; }
+  const box = document.getElementById('remb-suggest') || document.getElementById('drawer-body');
+  if (!box) return;
+  const pool = _rembPool();
+  let ranked = pool.map((o, idx) => ({ o, idx, sc: rembScore(o) })).sort((a, b) => b.sc - a.sc);
+  if (!ranked.some(x => x.sc > 0)) ranked = pool.map((o, idx) => ({ o, idx, sc: 0 }));   // ensure cards render
+  ranked = ranked.slice(0, 3);
+  box.innerHTML =
+      '<div class="remb-suggest-t" style="font-size:.62em;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin:4px 0 8px">Suggestions</div>'
+    + ranked.map(x =>
+        '<div class="remb-pickrow" data-remb-id="' + x.o.id + '" style="margin-bottom:8px">'
+        + transactionCard(_rembCandTx(x.o), { role:'preview' })
+        + '</div>').join('');
+}
+function filterRemb(){
+  // §E.1 / #1+#2 — search the negative-tx pool; stable o.id; CARDS ONLY. #remb-res carries .lineres
+  // which is display:none by default — set display explicitly so results are visible, and hide it
+  // (+ restore suggestions) when the query clears.
+  const inp = document.getElementById('remb-input'), box = document.getElementById('remb-res'), sug = document.getElementById('remb-suggest');
+  if (!inp || !box) return;
+  const q = inp.value.trim().toLowerCase();
+  if (!q){ box.innerHTML = ''; box.style.display = 'none'; if (sug){ sug.style.display = ''; suggestRemb(); } return; }
+  if (sug){ sug.innerHTML = ''; sug.style.display = 'none'; }
+  const pool = _rembPool().filter(o => String(o.name).toLowerCase().includes(q) || String(o.dept).toLowerCase().includes(q)).slice(0, 8);
+  box.style.display = 'block';
+  box.innerHTML = pool.length
+    ? pool.map(o =>
+        '<div class="remb-pickrow" data-remb-id="' + o.id + '" style="margin-bottom:8px">'
+        + transactionCard(_rembCandTx(o), { role:'preview' })
+        + '</div>').join('')
+    : '<div style="color:var(--text-dim);padding:8px">Aucune</div>';
+}
+function pickRemb(i){
+  // §E.2 / Step 3R Part 4 — SUMMARY view, single card (duplicate-hero fix):
+  //   (a) set s.rembOrigin (data the frozen tcRembOrigin leaf reads via _optBuildTx L5201);
+  //   (b) re-render the EXISTING top #opt-hero (NOT a second hero) → shows the ↵ "Remboursement —
+  //       <origin> · <amt>" bent-arrow addon;
+  //   (c) render renderRembSummary below into #remb-body.
+  // STRIPS: no "Lier" button, no "Changer" card (renderRembCard NOT called), no search
+  // (#remb-search-field/#remb-res/#remb-suggest hidden). transactionCard/tcRembOrigin FROZEN.
+  const pool = _rembPool();
+  // #1 — resolve PURELY by stable string id (data-remb-id is now o.id everywhere). No pool[0]
+  // fallback: a wrong-but-silent pick is worse than a no-op.
+  const o = pool.find(x => String(x.id) === String(i));
+  if (!o) return;
+  const s = (typeof _optState !== 'undefined' && _optState) ? _optState : (window._optState = (window._optState || {}));
+  // #6 reverse — switching INTO the with-origin flow clears the no-origin flow's output + state, so no
+  // stale link card/summary bleeds and the picker DOM-move / _rembLineMode don't double-apply on ping-pong.
+  const nob = document.getElementById('remb-noorigin-body'); if (nob) nob.innerHTML = '';
+  if (window._rembLPmoved && window._rembLPrestore){
+    const r = window._rembLPrestore;
+    if (r.lf && r.lfParent) r.lfParent.insertBefore(r.lf, r.lfNext);
+    if (r.lr && r.lrParent) r.lrParent.insertBefore(r.lr, r.lrNext);
+    window._rembLPmoved = false; window._rembLPrestore = null;
+  }
+  s._rembLineMode = false; window._rembLineMode = false; window._rembLineSel = null;
+  const tail = (o.n != null ? ' \u2212' + fmtAmt(Math.abs(o.n)) : '') + (o.dept ? ' \u00b7 ' + o.dept : '');
+  s.rembOrigin = { who:o.name, tail:tail, n:o.n, dept:o.dept, ligne:o.ligne, statut:o.statut };
+  s.cls = 'remb'; window._rembPick = o;
+  // (b) re-render the EXISTING top preview hero in place (idiom matches L5395/5411/5429).
+  const hero = document.getElementById('opt-hero');
+  if (hero) hero.innerHTML = transactionCard(_optBuildTx(s), { role:'preview' });
+  // hide search field + live results + suggestions (origin chosen)
+  const fld = document.getElementById('remb-search-field'); if (fld) fld.style.display = 'none';
+  const res = document.getElementById('remb-res'); if (res) res.innerHTML = '';
+  const sg  = document.getElementById('remb-suggest'); if (sg) sg.innerHTML = '';
+  // (c) summary block ONLY into #remb-body — NO second hero, NO #remb-origin-card.
+  const body = document.getElementById('remb-body');
+  if (body) body.innerHTML = '<div id="remb-summary"></div>';
+  renderRembSummary();   // §E.2 — summary only; the "Changer" affordance was retired (seam 27cm).
+}
+function renderRembSummary(){
+  // §E.2 — REMBOURSEMENT breakdown: Dépense d'origine / Montant d'origine / Remboursement / Net réel de la ligne.
+  const box = _rembEnsureSlot('remb-summary'); if (!box) return;
+  const o = _rembActiveOrigin();
+  if (!o || !o.who){ box.innerHTML = ''; return; }
+  const orig = -(Math.abs(o.n || 0));
+  const credit = rembCreditAmt();
+  const net = orig + credit;
+  const fmtSigned = x => (x < 0 ? '\u2212' : '+') + fmtAmt(Math.abs(x)) + ' \u20AC';
+  const netColor = net < 0 ? 'var(--red)' : net > 0 ? 'var(--green)' : 'var(--text)';
+  const assigned = (o.statut === 'assign\u00e9e') || (o.dept && o.ligne);
+  const lineLabel = assigned ? (o.dept + ' \u203A ' + (o.ligne || '')) : ((o.dept || '') + ' \u00b7 ligne \u00e0 assigner');
+  box.innerHTML = `<div class="iflow" style="margin-top:10px">
+    <div class="iflow-t remb">D\u00e9tail du remboursement</div>
+    <div class="iflow-body">
+    <div class="rkv"><span class="rkv-k">Dépense d'origine</span><span class="rkv-v" style="color:#fff">${o.who}</span></div>
+    <div class="rkv"><span class="rkv-k">Montant d'origine</span><span class="rkv-v" style="color:var(--red)">${fmtSigned(orig)}</span></div>
+    <div class="rkv"><span class="rkv-k">Remboursement</span><span class="rkv-v" style="color:var(--green)">${fmtSigned(credit)}</span></div>
+    <div class="rkv-div"></div>
+    <div class="rkv net"><span class="rkv-k">Net réel de la ligne</span><span class="rkv-v" style="color:${netColor}">${fmtSigned(net)}</span></div>
+    </div>
+    <div class="iflow-foot">${assigned
+      ? 'Le remboursement est rattaché à <b style="color:var(--text)">' + lineLabel + '</b>. Le net réel imputé à cette ligne passe à <b style="color:var(--text)">' + fmtSigned(net) + '</b>.'
+      : 'La dépense d\'origine <b style="color:var(--text)">' + o.who + '</b> n\'est pas encore assignée — le remboursement lui est tout de même lié (frontend-preview). Phase-D persiste l\'imputation.'}</div>
+  </div>`;
+}
+function linkRembOrigin(){ /* frontend-preview: would open the origin's own assign flow (Phase-D). */ }
+
+// seam 27cx — one-click re-target. When a row is clicked while an assign drawer is already open, tear the
+// current one down first (the proven closeDrawer path — resets _optState/_drawerStack/mode-classes), then open
+// the new tx. Prefer close-then-open over trusting _openAssignDrawerCore to be idempotent (it adds mode-classes
+// without clearing prior state on re-entry). No-op close when nothing is open, so first-click behaviour is unchanged.
+function assignReopen(openFn, ...args){
+  const d = document.getElementById('drawer');
+  if (d && d.classList.contains('open')) closeDrawer();
+  openFn(...args);
+}
+function openOrphanAssign(fourn, note, ht, ttc, cat, date) {
+  _openAssignDrawerCore('orphan', { fourn, note, ht, ttc, cat, date });
+}
+
+/* [step5] event copy skipped — general keeps its own */
+
+// LOCK-07 (CL-31): explicit "Dissocier" action from the Options drawer. STUBBED at the boundary —
+// the real /api/dissociate POST is the Phase-D contract (CONTRACT_LEDGER CL-31). No write here.
+function confirmOptionsDissocier() {
+  const ctx = window._optionsLinked;
+  closeDrawer();
+  showToast('\u23F3 Bient\u00F4t', `Dissociation de \u00AB ${ctx?.fourn || 'la transaction'} \u00BB \u2014 \u00E9criture backend \u00E0 venir (Phase-D).`, 'amber');
+  window._optionsLinked = null;
+}
+
+/* [step5] event copy skipped — general keeps its own */
+
+/* [step5] event copy skipped — general keeps its own */
+
+// ── RÉATTRIBUER (dissociate + assign in one flow) ──
+/* [step5] event copy skipped — general keeps its own */
+
+// v23a.1 — relevé-table Notes deep-link: open the reliée in its SETTLED Options drawer, then
+// switch to the Notes tab (parity with the wired "Options" button). READ path; no POST.
+function optDeepLinkNotes(dept, ligne, fourn, note, ht, ttc, cas, tag, societe){
+  reattribuerTx(dept, ligne, fourn, note, ht, ttc, cas, tag, societe);
+  setTimeout(() => { try { optTab('notes'); } catch (e) {} }, 60);
 }
 
 async function dissociateTransaction(dept, ligne, fourn, note, ht, ttc, deptId, si, li) {
@@ -6686,7 +8428,7 @@ async function dissociateTransaction(dept, ligne, fourn, note, ht, ttc, deptId, 
 }
 
 // ── RÉATTRIBUER (dissociate + assign in one flow) ──
-async function reattribuerTx(dept, ligne, fourn, note, ht, ttc) {
+async function reattribuerTx(dept, ligne, fourn, note, ht, ttc, cas, tag, societe) {   // STEP 5 §E — DEF widened 6->9 (crash-safe; +cas,tag,societe from _cardOptCtx). Frozen call-sites in filterReleve untouched.
   // Close current drawer and show loading
   closeDrawer();
   showToast('\u23F3 Dissociation...', `${fourn} \u2014 en cours`, 'amber');

@@ -3927,6 +3927,7 @@ function openLigneDevis(id, si, li){
 function fillMonthKPIs(monthId, N){
   const row=document.getElementById('month-kpi-'+monthId);
   if(!row) return;
+  row.style.display='block';  // #2 fix: container was 4-col grid (old cards) → block so the single band spans full width
   // ── DÉPENSE #2 (seam 27fb): the 4 bchip cards are REPLACED, 1:1, by the event's dept dkpi-band,
   //    aggregated at MONTH scope. 1:1 = the "Part charges annuelles" card is DROPPED. ──
 
@@ -9613,5 +9614,6 @@ function _jsAttr(s){ return _esc(_optJs(s)); }   // B56: JS-string-escape first,
   window.addEventListener('scroll', function(){ document.querySelectorAll('.sw-wrap.open').forEach(placeFloat); }, true);
 })();
 </script>
+<div id="_demoBanner" style="position:fixed;bottom:12px;right:12px;z-index:99999;max-width:320px;background:#7c2d92;color:#fff;font:500 11px system-ui;padding:8px 30px 8px 10px;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.3);line-height:1.45"><span>DEMO &mdash; open a <b>month tab</b>: the KPI band should now span the <b>full width</b> (grid-reset fix). BUDGET/RÉEL live; ENGAGÉ &amp; À-RELIER at 0 (deferred). Synthèse table below untouched.</span><button onclick="document.getElementById(&#39;_demoBanner&#39;).remove()" style="position:absolute;top:4px;right:6px;background:none;border:none;color:#fff;font-size:15px;cursor:pointer;line-height:1">&times;</button></div>
 </body>
 </html>

@@ -331,6 +331,13 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   .btbl th,.btbl td{padding:5px 7px;font-size:.7em}
   .btbl th:nth-child(4),.btbl td:nth-child(4),
   .btbl th:nth-child(5),.btbl td:nth-child(5){display:none}
+  /* A1 — SYNTHÈSE-scoped override (6-col table). The global .btbl nth-child hides above are SHARED with
+     the 7-col factures + 6-col Bilan tables — do NOT retune them. Higher specificity via the
+     #month-summary-<month> ancestor (the Synthèse .btbl is the only .btbl inside those containers).
+     Intent: keep the money group (Budget/Dépensé/Devis engagé) visible, hide Écart(5)+Consommé(6). */
+  [id^="month-summary-"] .btbl th:nth-child(4),[id^="month-summary-"] .btbl td:nth-child(4){display:table-cell}
+  [id^="month-summary-"] .btbl th:nth-child(5),[id^="month-summary-"] .btbl td:nth-child(5),
+  [id^="month-summary-"] .btbl th:nth-child(6),[id^="month-summary-"] .btbl td:nth-child(6){display:none}
   /* LOCK-13 re-pass Item 6: transactions-page (releve) dept column hidden on mobile — class-based
      (table-layout:fixed + colgroup makes nth-child brittle); fournisseur gets the room. Different
      surface from the Bilan .tbl Observations fix. */
@@ -385,6 +392,12 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   /* ── P&L result table ── */
   .btbl th,.btbl td{padding:5px 6px;font-size:.68em}
   .btbl th:nth-child(4),.btbl td:nth-child(4){display:none}
+  /* A1 — SYNTHÈSE-scoped override (6-col table); narrowest breakpoint. Global rule above hides only
+     nth-child(4) and is SHARED — leave it. Higher specificity via #month-summary-<month>: show
+     Département/Budget/Dépensé only → hide Devis engagé(4)+Écart(5)+Consommé(6). */
+  [id^="month-summary-"] .btbl th:nth-child(4),[id^="month-summary-"] .btbl td:nth-child(4),
+  [id^="month-summary-"] .btbl th:nth-child(5),[id^="month-summary-"] .btbl td:nth-child(5),
+  [id^="month-summary-"] .btbl th:nth-child(6),[id^="month-summary-"] .btbl td:nth-child(6){display:none}
 
   /* ── dept tables ── */
   .tbl th,.tbl td{padding:5px 6px;font-size:.68em}
@@ -1307,7 +1320,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     </div>
     <button class="nm" onclick="go('bilan',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Bilan annuel</button>
     <button class="nm" onclick="go('releve',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Transactions</button>
-    <button class="nm" onclick="go('billetterie',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>Billetterie encaissée</button>
+    <button class="nm" onclick="go('billetterie',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>Cashflow</button>
     <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
       <!-- MODULE SWITCHER (sw-* verbatim from v5.12.0; to the LEFT of the avatar) -->
       <div class="sw-wrap" style="position:relative" aria-label="Changer de module">
@@ -2698,18 +2711,22 @@ function monthReel(N){
   })));
   return r;
 }
-// Per-DEPT month-scoped budget/réel for month N (1-12) — the SAME M/A/P per-line walk as
-// monthBudget/monthReel, scoped to one dept's lines. The écart-stays-valid invariant lives in
-// this walk (budget+dépensé spread into the same month under lissé); do NOT re-derive the spread.
-// By construction Σ over DEPTS of deptMonth(d,N) === monthBudget(N)/monthReel(N) in both lissé states.
+// Per-DEPT month-scoped budget/réel/engagé for month N (1-12) — the SAME M/A/P per-line walk as
+// monthBudget/monthReel (and, for eng, monthEngage), scoped to one dept's lines. The écart-stays-valid
+// invariant lives in this walk (budget+dépensé+engagé spread into the same month under lissé); do NOT
+// re-derive the spread. eng uses the SAME NON-vivifying UPPERCASE-DEPT_META-tab devis bridge as monthEngage
+// (_edDevisStore[key]||[] → computeEngage; NEVER _edDevisGet, which write-vivifies). By construction Σ over
+// DEPTS of deptMonth(d,N) === monthBudget(N)/monthReel(N)/monthEngage(N) in both lissé states.
 function deptMonth(d, N){
-  let est=0, reel=0;
+  let est=0, reel=0, eng=0;
+  const TAB = Object.entries(DEPT_META).find(([,m]) => m.id === d.id)?.[0] || d.id.toUpperCase();
   d.sections.forEach(s=>s.lines.forEach(l=>{
-    if(l.rec==='M'){ est+=(l.est||0); reel+=(l.reel||0); }
-    else if(l.rec==='A'){ if(_lisse){ est+=(l.est||0)/12; reel+=(l.reel||0)/12; } else if(l.am===N){ est+=(l.est||0); reel+=(l.reel||0); } }
-    else if(l.rec==='P'){ if(l.am===N){ est+=(l.est||0); reel+=(l.reel||0); } }  // ponctuel: assigned month only, NEVER lissé
+    const le = computeEngage(_edDevisStore[_edDevisKey(TAB, s.s, l.l)] || []);  // non-vivifying per-line engagé
+    if(l.rec==='M'){ est+=(l.est||0); reel+=(l.reel||0); eng+=le; }
+    else if(l.rec==='A'){ if(_lisse){ est+=(l.est||0)/12; reel+=(l.reel||0)/12; eng+=le/12; } else if(l.am===N){ est+=(l.est||0); reel+=(l.reel||0); eng+=le; } }
+    else if(l.rec==='P'){ if(l.am===N){ est+=(l.est||0); reel+=(l.reel||0); eng+=le; } }  // ponctuel: assigned month only, NEVER lissé
   }));
-  return {est, reel};
+  return {est, reel, eng};
 }
 // Card-4 source: annual-line (rec==='A') REEL contribution to month N — same walk as monthReel
 // but accumulating ONLY annual lines. Lumpy = full lump in assigned month; lissé = lump÷12.
@@ -2730,23 +2747,15 @@ function computeEngage(devis){
     a + (( d.statut === 'Validé' || d.statut === 'Signé' ||
           (d.statut === 'Payé' && !d.matched_transaction_id) ) ? (d.montant_ht || 0) : 0), 0);
 }
-// Per-month ENGAGÉ for month index N (1-12), model (a)/lissé. Mirrors monthBudget's M/A/P + _lisse walk
-// EXACTLY (Lift C), with computeEngage(devis) in place of l.est. Own NON-vivifying per-line devis bridge
-// (Lift B): rebuild the UPPERCASE DEPT_META tab per dept, then read _edDevisStore[key]||[] directly —
-// never _edDevisGet (write-vivifies) and never the raw lowercase id (auto-vivifies [] → silent 0 forever).
-// By construction Σ over depts === the same spread as monthBudget/monthReel; écart-stays-valid holds.
+// Per-month ENGAGÉ for month index N (1-12), model (a)/lissé. SINGLE-SOURCED through deptMonth(d,N).eng
+// (A1 refactor): the per-line UPPERCASE-DEPT_META-tab devis bridge + M/A/P + _lisse walk now lives ONCE,
+// inside deptMonth (own NON-vivifying read: _edDevisStore[key]||[], never _edDevisGet). This reduce
+// reassociates the former flat accumulator into per-dept subtotals → the result is MATHEMATICALLY EQUAL
+// + DISPLAY-IDENTICAL (fe()=Math.round rounds sub-euro deltas away), NOT bit-identical: only the eng/12
+// lissé-annual branch can differ by ≤~1 ULP (today _edDevisStore empty → both exactly 0). By construction
+// the Synthèse TOTAL and the D2 band both flow through Σ deptMonth().eng → equal to each other.
 function monthEngage(N){
-  let e = 0;
-  EXP_DEPTS().forEach(d => {
-    const TAB = Object.entries(DEPT_META).find(([,m]) => m.id === d.id)?.[0] || d.id.toUpperCase();
-    d.sections.forEach(s => s.lines.forEach(l => {
-      const eng = computeEngage(_edDevisStore[_edDevisKey(TAB, s.s, l.l)] || []);
-      if      (l.rec === 'M') e += eng;                                  // monthly: every month
-      else if (l.rec === 'A') e += _lisse ? eng/12 : ((l.am === N) ? eng : 0);  // annual: ÷12 lissé | lump in am
-      else if (l.rec === 'P') e += ((l.am === N) ? eng : 0);            // ponctuel: assigned month only
-    }));
-  });
-  return e;
+  return EXP_DEPTS().reduce((a, d) => a + deptMonth(d, N).eng, 0);
 }
 let _monthlyReelCache = null; // { month: 'YYYY-MM', byDept: { HUMAIN: 1234, ... } }
 
@@ -4079,12 +4088,13 @@ function renderMonthSummary(monthId){
       <td><span style="display:inline-flex;align-items:center;gap:7px"><span style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0"></span>${d.name}</span></td>
       <td class="b-ht-col">${fe(t.est)}</td>
       <td class="b-ht-col">${t.reel?fe(t.reel):'—'}</td>
+      <td class="b-ht-col">${t.eng?fe(t.eng):'—'}</td>
       <td>${ecH(ec4,false,t.reel>0)}</td>
       <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden"><div style="width:${Math.min(p3,100)}%;height:100%;background:${col};opacity:.8;border-radius:2px"></div></div><span style="font-size:13px;font-weight:700;color:${p3>=100?'var(--red)':p3>=75?'var(--amber)':col};white-space:nowrap">${p3}%</span></div></td>
     </tr>`;
   });
-  rows+=`<tr class="btot"><td style="font-size:13px">TOTAL MOIS</td><td class="b-ht-col">${fe(ge)}</td><td class="b-ht-col">${fe(gr)}</td><td>${ecH(ge-gr,false,gr>0)}</td><td></td></tr>`;
-  target.innerHTML=`<div class="card"><div class="twrap"><table class="btbl"><thead><tr><th class="tl">Département</th><th class="b-ht-col">Budget HT</th><th class="b-ht-col">Dépensé HT</th><th>Écart HT</th><th>Consommé</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  rows+=`<tr class="btot"><td style="font-size:13px">TOTAL MOIS</td><td class="b-ht-col">${fe(ge)}</td><td class="b-ht-col">${fe(gr)}</td><td class="b-ht-col">${fe(monthEngage(N))}</td><td>${ecH(ge-gr,false,gr>0)}</td><td></td></tr>`;
+  target.innerHTML=`<div class="card"><div class="twrap"><table class="btbl"><thead><tr><th class="tl">Département</th><th class="b-ht-col">Budget HT</th><th class="b-ht-col">Dépensé HT</th><th class="b-ht-col">Devis engagé HT</th><th>Écart HT</th><th>Consommé</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
 
   // ── Imprévus strip (per-dept), below the summary table ──
   const imp=EXP_DEPTS().map((d,i)=>{

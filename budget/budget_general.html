@@ -265,6 +265,9 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .dkpi-devis-row .dv-name{font-size:var(--fs-caption);font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dkpi-devis-row .dv-ligne{font-size:var(--fs-caption);color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px}
 .dkpi-devis-row .dv-ht{font-family:var(--ff-num-table);font-size:var(--fs-caption);font-weight:600;color:var(--amber);font-variant-numeric:tabular-nums lining-nums;white-space:nowrap}
+/* A2 (seam 27fe) — the 2 event #bilan-chips action-row dept-swatch rules, ported verbatim (already #bilan-chips-scoped = this container's id → zero re-scope). Needed by the all-pôles Bilan action card's <span class="dv-dept"><span class="sw">…</span></span>. */
+#bilan-chips .dv-name .dv-dept{display:inline-flex;align-items:center;gap:5px;margin-right:8px;font-size:var(--fs-micro);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-muted)}
+#bilan-chips .dv-name .dv-dept .sw{width:7px;height:7px;border-radius:2px;display:inline-block}
 /* responsive (≤860 / ≤520) — plain band/trio/v2 rules only; #bilan-chips variants dropped */
 @media(max-width:860px){ .dkpi-band{grid-template-columns:1fr 1fr} .dkpi-band.dkpi-band--noav{grid-template-columns:1fr 1fr} .dkpi-v2{grid-column:1/-1} .dkpi-trio{grid-template-columns:repeat(3,1fr)} }
 @media(max-width:520px){
@@ -1389,13 +1392,8 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 
   <!-- (top Mensuel/Annuel toggle removed — replaced by the VUE toggle inside Dépenses par mois) -->
 
-  <!-- ── ROW 1: hub-shape KPI chips — cost-structure axis only (throughput / spend / remaining / risk); no profit/résultat-net card, Générale is profit-inert per brief §3 per-session-type KPI block ── -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;margin-top:18px" id="bilan-chips">
-    <div class="bchip" style="cursor:pointer" onclick="go('billetterie',this)"><div class="bchip-label">Billetterie encaissé</div><div class="bchip-val" id="kpi-bill-val">—</div><div class="bchip-sub" id="kpi-bill-sub">transit · voir page →</div></div>
-    <div class="bchip"><div class="bchip-label">Dépenses de structure</div><div class="bchip-val" id="kpi-dep-val">—</div><div class="bchip-sub" id="kpi-dep-sub">à définir</div></div>
-    <div class="bchip"><div class="bchip-label">Écart budget</div><div class="bchip-val" id="kpi-ecart-val">—</div><div class="bchip-sub" id="kpi-ecart-sub">restant sur l'enveloppe</div></div>
-    <div class="bchip"><div class="bchip-label">Imprévus</div><div class="bchip-val" id="kpi-imp-val">—</div><div class="bchip-sub" id="kpi-imp-sub">à définir</div></div>
-  </div>
+  <!-- ── ROW 1 (A2, seam 27fe): the event Bilan dkpi-band, VARIANT A (budget-consommé, NO profit), built via renderBilan → el('bilan-chips').innerHTML (event approach). Replaces the 4 static bchip cards. H1: container grid neutralised → block (a single .dkpi-band in a 4-col grid rendered at quarter-width; the ≤720 repeat(2,1fr)!important rule goes inert on block). The band does its own internal dkpi-v2 layout. ── -->
+  <div style="margin-bottom:14px;margin-top:18px" id="bilan-chips"></div>
 
   <!-- P&L Recettes — two event-style tables (seam 27es): hors-billetterie + billetterie encaissé -->
   <!-- ── Mount 1: Recettes (hors billetterie) ← REC ── -->
@@ -3176,32 +3174,104 @@ function renderBilan(){
       </div>`;
   }
 
-  // ── ROW 1 KPI fills — cost-structure axis only (throughput / spend / remaining / risk); profit-inert, no résultat-net ──
-  // Card 1: Billetterie encaissé (ticketing throughput in transit — counted on its own page, surfaced here only)
-  if(el('kpi-bill-val')){
-    const enc = (window.__BILL && window.__BILL.tx) ? window.__BILL.tx.filter(t=>t.primitive_type==='RECETTE').reduce((a,t)=>a+t.montant_ht,0) : 0;
-    el('kpi-bill-val').textContent = fe(enc);
-    el('kpi-bill-sub').textContent = 'transit · voir page →';
-  }
-  // Card 2: Dépenses de structure (engagé vs budgété + burn)
-  if(el('kpi-dep-val')){
-    el('kpi-dep-val').textContent = fe(gr);
-    el('kpi-dep-sub').textContent = `${fe(ge)} budgété · ${depBurnPct}% consommé`;
-    el('kpi-dep-sub').style.color = depBurnColor;
-  }
-  // Card 3: Écart budget (remaining on the envelope; signed)
-  if(el('kpi-ecart-val')){
-    const ecart = ge - gr;
-    el('kpi-ecart-val').textContent = fe(ecart);
-    el('kpi-ecart-val').style.color = ecart>=0 ? 'var(--green)' : 'var(--red)';
-    el('kpi-ecart-sub').textContent = "restant sur l'enveloppe";
-  }
-  // Card 4: Imprévus (annual imprévu total + dept count) — annualImp is the real total (totalImprevus var is unpopulated)
-  if(el('kpi-imp-val')){
-    const impDeptCount = EXP_DEPTS().reduce((a,d)=>{const sec=d.sections.find(x=>x.s==='DÉPENSES IMPRÉVUES');const r=sec?sec.lines.reduce((b,l)=>b+(l.reel||0),0):0;const e=sec?sec.lines.reduce((b,l)=>b+(l.est||0),0):0;return a+((r>0||e>0)?1:0);},0);
-    el('kpi-imp-val').textContent = fe(annualImp);
-    el('kpi-imp-val').style.color = annualImp>0 ? 'var(--red)' : 'var(--text-dim)';
-    el('kpi-imp-sub').textContent = `${impDeptCount} département${impDeptCount>1?'s':''}`;
+  // ── ROW 1 (A2, seam 27fe) — event Bilan dkpi-band, VARIANT A (budget-consommé, NO profit). ──
+  //   Replaces the 4 static bchip cards + their 8 el('kpi-*') fills (removed). Binding block is
+  //   general's resident D2 band (fillMonthKPIs) block, with A=0 (general has no à-relier axis on
+  //   the Bilan) so the à-relier burn segment + meta % are omitted (NaN-safe: peak=max(B,spent)||1).
+  //   NOTE (M2): depBurnPct/depBurnColor + annualImp declarations are KEPT above — the FROZEN A3
+  //   dep-table reads depBurnPct/Color; annualImp is now card-only/unused-but-harmless.
+  if(el('bilan-chips')) {
+    // burn inputs — B=budget, R=réel, E=engagé, A=0
+    const _B = tE, _R = tR, _A = 0, _E = gEng;
+    const _spent = _R + _A + _E;
+    const _peak  = Math.max(_B, _spent) || 1;
+    const _over  = Math.max(0, _spent - _B);
+    const _c1 = Math.min(_R, _B), _c3 = Math.min(_spent, _B);   // _c2===_c1 at A=0
+    const segReel  = _c1        / _peak * 100;
+    const segDevis = (_c3 - _c1) / _peak * 100;
+    const segOver  = _over      / _peak * 100;
+    const segLibre = Math.max(0, _B - _spent) / _peak * 100;
+    const tickPct  = _over > 0 ? _B / _peak * 100 : null;
+    const _pctOf = v => _B > 0 ? v / _B * 100 : 0;
+    const pEng = Math.round(_pctOf(_spent));                    // the one independent rounding
+    const _raw = [_pctOf(_R), _pctOf(_E)];                      // à-relier omitted (A=0)
+    const _fl  = _raw.map(Math.floor);
+    let   _rem = pEng - _fl.reduce((a,b)=>a+b,0);               // largest-remainder split → pRe+pDev===pEng
+    _raw.map((v,i)=>[v-Math.floor(v),i]).sort((a,b)=>b[0]-a[0]).slice(0,_rem).forEach(([,i])=>_fl[i]++);
+    const [pRe, pDev] = _fl;
+    const burnSegs = `<i class="reel" style="width:${segReel}%"></i><i class="devis" style="width:${segDevis}%"></i>`
+      + (_over > 0 ? `<i class="over" style="width:${segOver}%"></i>` : `<i class="libre" style="width:${segLibre}%"></i>`)
+      + (tickPct != null ? `<span class="tick" style="left:${tickPct}%"></span>` : ``);
+
+    // TRIO recettes split — B1: REC .reel encaissé (__BILL is DEAD → not used). REC entry = {cat, rows:[{ht,reel}]}.
+    const billEnc  = REC.filter(c =>  TICKETING_CATS.includes(c.cat)).flatMap(c => c.rows).reduce((a,r) => a + (r.reel||0), 0);
+    const horsBill = REC.filter(c => !TICKETING_CATS.includes(c.cat)).flatMap(c => c.rows).reduce((a,r) => a + (r.reel||0), 0);
+
+    // à-valider (ALL pôles) — M3: _edDevisStore bridge (NOT l.devis), no inMonth filter; colour by EXP_DEPTS index.
+    const aValiderList = [];
+    let overN = 0, overN10 = 0;
+    EXP_DEPTS().forEach((d, di) => {
+      const TAB = Object.entries(DEPT_META).find(([,m]) => m.id === d.id)?.[0] || d.id.toUpperCase();
+      const col = DEPT_COLORS[di] || 'var(--indigo)';
+      d.sections.forEach((sec, si) => {
+        sec.lines.forEach((l, li) => {
+          if (!(l && l.l && !l.l.startsWith('(ligne'))) return;                 // isReal (placeholder guard)
+          const devis = _edDevisStore[_edDevisKey(TAB, sec.s, l.l)] || [];       // own bridge — non-vivifying
+          devis.forEach(dv => {
+            if (dv.statut === 'à valider')
+              aValiderList.push({ deptId: d.id, pole: d.name, color: col, origIdx: si, li, ligne: l.l, fournisseur: dv.fournisseur || '—', ht: dv.montant_ht || 0 });
+          });
+          const eng = computeEngage(devis), est = l.est || 0, reel = l.reel || 0;
+          if ((est - reel - eng) < 0){ overN++; const ov = reel + eng - est; if (est > 0 && (ov/est) >= 0.10) overN10++; }
+        });
+      });
+    });
+    aValiderList.sort((a,b) => (b.ht||0) - (a.ht||0));                           // HT desc
+    const aValiderN = aValiderList.length;
+
+    const actionsCard = aValiderN > 0 ? `
+      <div class="dkpi-card dkpi-actions">
+        <div class="dkpi-k dkpi-k-row">Actions — tous pôles
+          <span class="dkpi-verdict av"><span class="d"></span>Devis à valider</span>
+        </div>
+        ${aValiderList.map(r => `
+        <div class="dkpi-devis-row" role="button" tabindex="0"
+             onclick="openLigneDevis('${r.deptId}',${r.origIdx},${r.li})"
+             onkeydown="if(event.key==='Enter')openLigneDevis('${r.deptId}',${r.origIdx},${r.li})">
+          <span class="dv-name"><span class="dv-dept"><span class="sw" style="background:${r.color}"></span>${_esc(r.pole)}</span>${_esc(r.fournisseur)}</span>
+          <span class="dv-ligne">${_esc(r.ligne)}</span>
+          <span class="dv-ht">${fe(r.ht)}</span>
+        </div>`).join('')}
+      </div>` : ``;
+
+    el('bilan-chips').innerHTML = `
+      <div class="dkpi-band${aValiderN > 0 ? '' : ' dkpi-band--noav'}">
+        <div class="dkpi-v2">
+          <div class="dkpi-hero">
+            <div class="dkpi-k">Budget · consommé 2026</div>
+            <div class="dkpi-hero-val">${fe(tR)}</div>
+            <div class="hero-note" style="font-size:var(--fs-caption);color:var(--text-muted);margin-top:7px">réel · sur ${fe(tE)} de budget</div>
+            <div class="dkpi-burn cat-burn">${burnSegs}</div>
+            <div class="dkpi-meta cat-meta">
+              <span class="m-pct"><b>${pEng}%</b> total engagé</span>
+              <span class="dot"></span>
+              <span class="m-pct"><b>${pRe}%</b> réel</span>
+              <span class="dot"></span>
+              <span class="m-pct"><b>${pDev}%</b> devis engagé</span>
+            </div>
+            <div class="dkpi-strip">
+              ${overN > 0 ? `<span class="ct"><i class="badge x">!</i>${overN} ligne${overN>1?'s':''} en dépassement${overN10 > 0 ? `, dont ${overN10} >10%` : ``}</span>` : ``}
+              ${aValiderN > 0 ? `<span class="ct"><i class="badge d">D</i>${aValiderN} devis à valider</span>` : ``}
+            </div>
+          </div>
+          <div class="dkpi-trio dkpi-trio--4">
+            <div class="dkpi-cell"><div class="dkpi-k">Billetterie</div><div class="dkpi-v">${billEnc?fe(billEnc):'—'}</div></div>
+            <div class="dkpi-cell"><div class="dkpi-k">Recettes h. bill.</div><div class="dkpi-v">${horsBill?fe(horsBill):'—'}</div></div>
+            <div class="dkpi-cell"><div class="dkpi-k">Coûts réels</div><div class="dkpi-v">${tR?fe(tR):'—'}</div></div>
+            <div class="dkpi-cell"><div class="dkpi-k">Devis engagé</div><div class="dkpi-v">${gEng?fe(gEng):'—'}</div></div>
+          </div>
+        </div>${actionsCard}
+      </div>`;
   }
 
   // ── Recettes — one card per category ────────────────────────────

@@ -336,6 +336,13 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   .tbl th:nth-child(6),.tbl td:nth-child(6){display:none}
 }
 
+/* ── API ERROR BANNER (non-blocking) ── */
+#api-error-banner{position:fixed;left:16px;right:16px;bottom:16px;max-width:620px;margin:0 auto;z-index:9998;display:none;align-items:center;gap:14px;padding:13px 18px;background:rgba(24,10,12,0.94);border:1px solid rgba(248,113,113,0.4);border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-size:.85em}
+#api-error-banner .aeb-icon{color:var(--red);font-size:1.15em;flex:none;line-height:1}
+#api-error-banner .aeb-msg{flex:1;min-width:0;line-height:1.35;color:var(--text-muted)}
+#api-error-banner .aeb-retry{flex:none;padding:7px 16px;background:var(--indigo);border:none;border-radius:6px;color:#fff;font-size:.95em;cursor:pointer}
+#api-error-banner .aeb-dismiss{flex:none;background:none;border:none;color:var(--text-muted);font-size:1.35em;line-height:1;cursor:pointer;padding:0 2px}
+
 /* ── BILAN STAT CHIPS ── */
 /* ── Q1 résultat card RETIRED in BUILD75 (seam 27ec): the Bilan hero now uses the department
    .dkpi-* card grammar at global scope — see the #bilan-chips additions just after .dkpi-trio--4
@@ -1497,6 +1504,12 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
   <div style="width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--indigo);border-radius:50%;animation:spin 0.8s linear infinite"></div>
   <div style="color:var(--text-muted);font-size:.9em">Chargement des données…</div>
 </div>
+<div id="api-error-banner">
+  <span class="aeb-icon">⚠</span>
+  <span class="aeb-msg" id="aeb-msg"></span>
+  <button class="aeb-retry" onclick="loadBudgetData()">Réessayer</button>
+  <button class="aeb-dismiss" onclick="document.getElementById('api-error-banner').style.display='none'" aria-label="Fermer">×</button>
+</div>
 <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 
 <!-- NAV -->
@@ -2023,13 +2036,10 @@ function hideLoadingOverlay() {
   if (el) el.style.display = 'none';
 }
 function showLoadError(msg) {
-  const el = document.getElementById('loading-overlay');
-  if (el) el.innerHTML = `
-    <div style="text-align:center">
-      <div style="color:var(--red);font-size:1.1em;margin-bottom:8px">⚠ Erreur de chargement</div>
-      <div style="color:var(--text-muted);font-size:.85em;max-width:320px">${msg}</div>
-      <button onclick="loadBudgetData()" style="margin-top:16px;padding:8px 20px;background:var(--indigo);border:none;border-radius:6px;color:#fff;cursor:pointer">Réessayer</button>
-    </div>`;
+  const banner = document.getElementById('api-error-banner');
+  const el = document.getElementById('aeb-msg');
+  if (el) el.innerHTML = msg;
+  if (banner) banner.style.display = 'flex';
 }
 
 async function loadBudgetData() {
@@ -2044,6 +2054,9 @@ async function loadBudgetData() {
     hideLoadingOverlay();
     initApp();
   } catch(e) {
+    DEPTS = [];
+    hideLoadingOverlay();
+    initApp();
     showLoadError(`Impossible de contacter l'API.<br><small>${e.message}</small>`);
   }
 }

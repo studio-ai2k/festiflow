@@ -2773,16 +2773,24 @@ function adjustedEst(line) {
 function dtotAdj(d) {
   const lines = d.sections.flatMap(s => s.lines);
   const est = lines.reduce((a, l) => a + adjustedEst(l), 0);
+  const TAB = Object.keys(DEPT_META).find(k => DEPT_META[k].id === d.id) || d.id.toUpperCase();
   let reel;
   if (_bilanView === 'mensuel' && _monthlyReelCache) {
     // Use monthly réel from match-log cache
-    const tabName = Object.keys(DEPT_META).find(k => DEPT_META[k].id === d.id) || d.id.toUpperCase();
-    reel = _monthlyReelCache.byDept[tabName] || 0;
+    reel = _monthlyReelCache.byDept[TAB] || 0;
   } else {
     // Use YTD réel from sheet (pre-computed)
     reel = lines.reduce((a, l) => a + (l.reel || 0), 0);
   }
-  return { est, reel };
+  // A3 · Devis engagé — RAW ANNUAL Σ computeEngage over this dept's lines, via the NON-vivifying
+  // UPPERCASE-DEPT_META-tab devis bridge (_edDevisStore[key]||[], never _edDevisGet). The flatMap
+  // above loses s.s, so re-walk sections here to build _edDevisKey(TAB,s.s,l.l). NOT view-scaled
+  // (no monthly-engagé source exists — reel's mensuel-cache path is unrelated); 0/— until devis land.
+  let eng = 0;
+  d.sections.forEach(s => s.lines.forEach(l => {
+    eng += computeEngage(_edDevisStore[_edDevisKey(TAB, s.s, l.l)] || []);
+  }));
+  return { est, reel, eng };
 }
 
 // Fetch match-log for a specific month and build per-dept réel totals
@@ -3069,8 +3077,8 @@ function renderBilan(){
   }
 
   // ── Dept rows (P&L table) — match recettes card style ────────────
-  let ge=0, gr=0;
-  EXP_DEPTS().forEach(d=>{ const t=dtotAdj(d); ge+=t.est; gr+=t.reel; });
+  let ge=0, gr=0, gEng=0;
+  EXP_DEPTS().forEach(d=>{ const t=dtotAdj(d); ge+=t.est; gr+=t.reel; gEng+=t.eng; }); // gEng = Σ dtotAdj(d).eng (Guardrail C — NOT Σ monthEngage)
   const depBurnPct = ge>0 ? Math.round(gr/ge*100) : 0;
   const depBurnColor = depBurnPct>=100?'var(--red)':depBurnPct>=75?'var(--amber)':'var(--green)';
 
@@ -3082,7 +3090,6 @@ function renderBilan(){
     ['septembre','Septembre'],['octobre','Octobre'],['novembre','Novembre'],['decembre','Décembre']];
   // annual imprévus total + per-month placeholder spread (real month-scoping deferred to wiring)
   const annualImp = EXP_DEPTS().reduce((a,d)=>{const sec=d.sections.find(x=>x.s==='DÉPENSES IMPRÉVUES');return a+(sec?sec.lines.reduce((b,l)=>b+(l.reel||0),0):0);},0);
-  const mImp = annualImp/12;
   const mEst = ge/12, mReel = gr/12;
   let depRows = '';
   let totalImprevus = 0;
@@ -3092,28 +3099,26 @@ function renderBilan(){
     EXP_DEPTS().forEach((d,i)=>{
       const t=dtotAdj(d); const ec4=t.est-t.reel; const p3=pct(t.reel,t.est);
       const col=DEPT_COLORS[i]||'var(--indigo)';
-      const sec=d.sections.find(x=>x.s==='DÉPENSES IMPRÉVUES');
-      const dImp=sec?sec.lines.reduce((a,l)=>a+(l.reel||0),0):0;
       depRows+=`<tr style="cursor:pointer" onclick="scrollToDept('${d.id}')">
         <td><span style="display:inline-flex;align-items:center;gap:7px"><span style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0"></span>${d.name}</span></td>
         <td class="b-ht-col">${fe(t.est)}</td>
         <td class="b-ht-col">${t.reel?fe(t.reel):'—'}</td>
+        <td class="b-ht-col">${t.eng?fe(t.eng):'—'}</td>
         <td>${ecH(ec4,false,t.reel>0)}</td>
-        <td style="color:${dImp>0?'var(--red)':'var(--text-dim)'};font-weight:600">${dImp>0?fe(dImp):'—'}</td>
         <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden"><div style="width:${Math.min(p3,100)}%;height:100%;background:${col};opacity:.8;border-radius:2px"></div></div><span style="font-size:13px;font-weight:700;color:${p3>=100?'var(--red)':p3>=75?'var(--amber)':col};white-space:nowrap">${p3}%</span></div></td>
       </tr>`;
     });
   } else {
     // BY MONTH — temporal. Real per-month values from model (a) / lissé (assigned_month-driven; see monthBudget/monthReel).
     MONTHS_BILAN.forEach(([mid,mname],mi)=>{
-      const N=mi+1; const mB=monthBudget(N); const mR=monthReel(N);
+      const N=mi+1; const mB=monthBudget(N); const mR=monthReel(N); const mEng=monthEngage(N);
       const ec4=mB-mR; const p3=pct(mR,mB);
       depRows+=`<tr style="cursor:pointer" onclick="goMonth('${mid}', document.querySelector('.dt:nth-child(${N})'))">
         <td><span style="display:inline-flex;align-items:center;gap:7px;flex-wrap:wrap"><span style="width:7px;height:7px;border-radius:50%;background:var(--indigo);flex-shrink:0"></span>${mname}</span></td>
         <td class="b-ht-col">${fe(mB)}</td>
         <td class="b-ht-col">${mR?fe(mR):'—'}</td>
+        <td class="b-ht-col">${mEng?fe(mEng):'—'}</td>
         <td>${ecH(ec4,false,mR>0)}</td>
-        <td style="color:${mImp>0?'var(--red)':'var(--text-dim)'};font-weight:600;white-space:nowrap">${mImp>0?fe(mImp):'—'}</td>
         <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden"><div style="width:${Math.min(p3,100)}%;height:100%;background:var(--indigo);opacity:.8;border-radius:2px"></div></div><span style="font-size:13px;font-weight:700;color:${p3>=100?'var(--red)':p3>=75?'var(--amber)':'var(--indigo)'};white-space:nowrap">${p3}%</span></div></td>
       </tr>`;
     });
@@ -3122,8 +3127,8 @@ function renderBilan(){
     <td style="font-size:13px">TOTAL ANNUEL</td>
     <td class="b-ht-col">${fe(ge)}</td>
     <td class="b-ht-col">${fe(gr)}</td>
+    <td class="b-ht-col">${gEng?fe(gEng):'—'}</td>
     <td>${ecH(ge-gr,false,gr>0)}</td>
-    <td style="color:${annualImp>0?'var(--red)':'var(--text-dim)'};font-weight:700">${annualImp>0?fe(annualImp):'—'}</td>
     <td></td>
   </tr>`;
   if (totalImprevus > 0) {
@@ -3161,9 +3166,9 @@ function renderBilan(){
           <table class="btbl" id="dep-table">
             <thead><tr>
               <th class="tl">${_depView==='departement'?'Département':'Mois'}</th>
-              <th class="b-ht-col">${_depView==='mensuel' ? (_lisse?'Budget lissé HT':'Budget mensuel HT') : 'Budget annuel HT'}</th>
-              <th class="b-ht-col">${_depView==='mensuel' ? (_lisse?'Dépensé lissé HT':'Dépensé ce mois') : 'Dépensé YTD'}</th>
-              <th>Écart HT</th><th>Imprévus</th><th>Consommé</th>
+              <th class="b-ht-col">${_depView==='mensuel' ? (_lisse?'Budget lissé':'Budget mensuel') : 'Budget annuel'}</th>
+              <th class="b-ht-col">${_depView==='mensuel' ? (_lisse?'Dépensé lissé':'Dépensé ce mois') : 'Dépensé YTD'}</th>
+              <th class="b-ht-col">Devis engagé</th><th>Écart</th><th>Consommé</th>
             </tr></thead>
             <tbody>${depRows}</tbody>
           </table>
@@ -3233,8 +3238,8 @@ function renderBilan(){
         <table class="tbl">
           <thead><tr>
             <th class="tl" style="min-width:180px">Résultat</th>
-            <th>Estimé HT</th>
-            <th>Réel HT</th>
+            <th>Estimé</th>
+            <th>Réel</th>
             <th>Écart</th>
           </tr></thead>
           <tbody>

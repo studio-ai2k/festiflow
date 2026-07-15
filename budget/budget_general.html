@@ -209,11 +209,8 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .dkpi-strip .badge{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:4px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:10px;line-height:1;font-style:normal;border-width:1px;border-style:solid;margin-right:6px}
 .dkpi-strip .badge.x{background:rgba(248,113,113,.15);border-color:rgba(248,113,113,.4);color:var(--red)}
 .dkpi-strip .ct.ov{color:var(--red)}
-/* row-level badges — ! (over) + D (devis à valider). D-badge rule added for DÉPENSE #1
-   (devis read-back now supplies the data source the original port lacked); mirrors event L366.
-   Scoped to .dep-tbl → cannot reach renderBilan/recette/résultat. */
+/* row-level over badge (!) */
 .dep-tbl .row-badge{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:none;border:none;border-style:none;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;line-height:1;font-style:normal;background-color:transparent}
-.dep-tbl .row-badge.d{color:var(--amber)}
 .dep-tbl .row-badge.x{color:var(--red)}
 /* meta ratio row */
 .dkpi-meta{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:var(--fs-caption);color:var(--text-muted)}
@@ -3200,45 +3197,24 @@ function renderDept(id){
     return `<span class="${v > 0 ? 'cpos' : 'cneg'}">${v > 0 ? '+' : ''}${fe(v)}</span>`;
   };
 
-  // ── DÉPENSE #1: devis read-back (computeEngage). Doctrine A-out: computeEngage is defined INSIDE
-  //    renderDept — cannot leak. Ported VERBATIM from the event (L2641-2643). ADR-0025 §4 gate:
-  //    engagé = Σ {Validé, Signé} + Σ {Payé ∧ no matched_transaction_id}. ──
-  const computeEngage = devis => (devis || []).reduce((a, d) =>
-    a + (( d.statut === 'Validé' || d.statut === 'Signé' ||
-          (d.statut === 'Payé' && !d.matched_transaction_id) ) ? (d.montant_ht || 0) : 0), 0);
-  // Bridge key (B2): reconstruct the UPPERCASE DEPT_META tab EXACTLY as buildEditDrawer's write path
-  //   (L4390) — NOT renderDept's raw lowercase `id` (raw id → auto-vivified [] → engagé silently 0 forever).
-  const TAB = Object.entries(DEPT_META).find(([,m]) => m.id === id)?.[0] || id.toUpperCase();
-
   const secHTML=_vis.map((sec,si)=>{
     const origIdx = dept.sections.indexOf(sec);
     const sid=`s${id}${origIdx}`;
-    // DÉPENSE #1 · B/N1 — bridge devis onto each line ONCE, keyed by the UPPERCASE tab (TAB above).
-    //   NON-VIVIFYING read of the session store (`_edDevisStore[key] || []`) — never `_edDevisGet`,
-    //   which write-vivifies []; the devis-engine write path is frozen READ-only this step.
-    //   Placeholders resolve to [] (no key is ever written for an unnamed line).
-    sec.lines.forEach(l => { l.devis = _edDevisStore[_edDevisKey(TAB, sec.s, l.l)] || []; });
     const sE=sec.lines.reduce((a,l)=>a+(l.est||0),0);
     const sR=sec.lines.reduce((a,l)=>a+(l.reel||0),0);
-    // DÉPENSE #1 · C(B1) — sEng walks general's OWN set (sec.lines; general has no réel-filtered set).
-    const sEng=sec.lines.reduce((a,l)=>a+computeEngage(l.devis),0);
-    const sEc=sE-sR-sEng;   // DÉPENSE #1 · C — écart contract: est − reel − engagé
-    // DÉPENSE #1 · S2 — the !-pill over-count folds engagé (est − reel − engagé < 0), matching event L2820.
-    const sX=sec.lines.filter(l => l.l && !l.l.startsWith('(ligne') && ((l.est||0)-(l.reel||0)-computeEngage(l.devis))<0).length;
-    // DÉPENSE #1 · S3/R1 — section-burn geometry ADOPTED VERBATIM from the event (L2833-2839) with sEng real,
-    //   so the over-via-engagé regime (sR<sE but sR+sEng>sE) draws a real over segment + tick and the devis
-    //   segment is clamped off sPeak (no >100% overflow). à-relier EXCLUDED — there is no section-level
-    //   à-relier (dept-band only, #2/#3) → exclusion is automatic, NOT a subtracted term.
-    const sPeak  = Math.max(sE, sR + sEng) || 1;
-    const sOver  = Math.max(0, (sR + sEng) - sE);
-    const sReelW = Math.min(sR, sE) / sPeak * 100;
-    const sDevW  = sOver > 0 ? Math.max(0, Math.min(sEng, sE - sR)) / sPeak * 100 : sEng / sPeak * 100;
-    const sOverW = sOver > 0 ? sOver / sPeak * 100 : 0;
-    const sLibW  = sOver > 0 ? 0 : Math.max(0, sE - sR - sEng) / sPeak * 100;
-    const sTick  = sOver > 0 ? sE / sPeak * 100 : null;
+    const sEc=sE-sR;
+    // deptable-port: section-header mini-dashboard math. General has no devis → engagé=0, so the
+    // burn bar reduces to reel · (over|libre) · tick and the devis segment renders zero-width.
+    const sEng=0;
+    const sX=sec.lines.filter(l => l.l && !l.l.startsWith('(ligne') && ((l.est||0)-(l.reel||0))<0).length;
+    const sPeak=Math.max(sE,sR)||1;
+    const sOver=Math.max(0,sR-sE);
+    const sReelW=Math.min(sR,sE)/sPeak*100;
+    const sOverW=sOver>0?sOver/sPeak*100:0;
+    const sLibW=sOver>0?0:Math.max(0,sE-sR)/sPeak*100;
+    const sTick=sOver>0?sE/sPeak*100:null;
     const sPct=(r,e)=>e>0?Math.round(r/e*100):0;
-    // DÉPENSE #1 · S3/R1 — meta ratios per event L2843-2846 (pDev now real: sPct(sEng,sE)).
-    const pEng=sPct(sR+sEng,sE), pRe=sPct(sR,sE), pDev=sPct(sEng,sE), pRest=sPct(Math.abs(sEc),sE);
+    const pEng=sPct(sR,sE), pRe=sPct(sR,sE), pDev=0, pRest=sPct(Math.abs(sEc),sE);
     const sStrip = sX>0 ? `<span class="ct ov"><i class="badge x">!</i>${sX} ligne${sX>1?'s':''} en dépassement</span>` : '';
     const sSoldeLab = sEc>=0 ? 'RESTANT' : 'DÉPASSEMENT';
     const sSoldeCls = sEc>=0 ? 'pos' : 'neg';
@@ -3246,18 +3222,11 @@ function renderDept(id){
     const rows=sec.lines.map((line,li)=>{
       const isPlaceholder = !line.l || line.l.startsWith('(ligne');
       if (isPlaceholder) return '';
-      // DÉPENSE #1 · C — per-ligne engagé, computed ONCE (used by écart, the Devis-engagé cell, and badges).
-      const lineEng = computeEngage(line.devis);
-      const e=(line.est||0)-(line.reel||0)-lineEng;   // écart = est − reel − engagé
+      const e=(line.est||0)-(line.reel||0);   // deptable-port (C.3): écart = est − reel (general has no engagé)
       const obsVal=line.obs||'';
-      // DÉPENSE #1 · badges — D (a devis with statut 'à valider') + ! (réel + devis engagé > budget), as the
-      //   event. A (cas2Pending) stays OUT: assign-owned, no devis source (correctly omitted).
-      const hasD = (line.devis||[]).some(d => d.statut === 'à valider');
-      const hasX = e < 0;
-      const badges = [
-        hasX ? '<span class="row-badge x" title="Ligne en dépassement — réelle + devis engagé > budget">!</span>' : '',
-        hasD ? '<span class="row-badge d" title="Devis à valider">D</span>' : '',
-      ].join('');
+      // deptable-port: badge cluster in the freed typchip slot — !-only. D (devis à valider) and
+      // A (cas2Pending) have no data source in general, so they are never emitted.
+      const badges = (e < 0) ? '<span class="row-badge x" title="Ligne en dépassement — réelle > budget">!</span>' : '';
       return `<tr style="cursor:pointer" onclick="openReelDrawer('${id}',${origIdx},${li})">
         <td class="tl"><div style="display:flex;align-items:center;gap:6px">
           <span class="ligne-label" style="flex:1">${line.l}</span>
@@ -3272,7 +3241,7 @@ function renderDept(id){
         <td class="clickable-cell" title="Voir transactions Qonto">
           <span class="cro">${line.reel?fe(line.reel):'<span style="color:var(--text-dim)">—</span>'}</span>
         </td>
-        <td><span class="cro">${lineEng ? fe(lineEng) : '<span style="color:var(--text-dim)">—</span>'}</span></td>
+        <td><span class="cro"><span style="color:var(--text-dim)">—</span></span></td>
         <td>${ecTable(e)}</td>
         <td class="obs"><span class="obs-label" style="color:var(--text-dim);font-size:.78em">${obsVal}</span></td>
       </tr>`;
@@ -3312,7 +3281,7 @@ function renderDept(id){
                 </div>
                 <div class="dkpi-burn cat-burn">
                   <i class="reel"  style="width:${sReelW}%"></i>
-                  <i class="devis" style="width:${sDevW}%"></i>
+                  <i class="devis" style="width:0%"></i>
                   ${sOver>0 ? `<i class="over" style="width:${sOverW}%"></i>`
                             : `<i class="libre" style="width:${sLibW}%"></i>`}
                   ${sTick!=null ? `<span class="tick" style="left:${sTick}%"></span>` : ``}

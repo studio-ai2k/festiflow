@@ -439,17 +439,12 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   .tbl th:nth-child(6),.tbl td:nth-child(6){display:none}
 }
 
-/* ── PASSWORD GATE ── */
-.db-overlay{position:fixed;inset:0;background:rgba(4,4,10,0.45);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:10000}
-.db-modal{position:relative;z-index:1;background:rgba(12,6,24,0.3);border:1px solid rgba(168,85,247,0.15);border-radius:20px;padding:32px 28px;width:320px;box-shadow:0 32px 80px rgba(0,0,0,0.2);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);text-align:center}
-.db-modal-logo{width:72px;height:72px;border-radius:50%;object-fit:cover;margin:0 auto 16px;display:block}
-.db-modal-title{font-family:'Space Grotesk','DM Sans',sans-serif;font-size:18px;font-weight:700;color:#fff;margin-bottom:4px}
-.db-modal-sub{font-size:12px;color:#a0a0b0;margin-bottom:24px}
-.db-pw-field{width:100%;padding:13px 16px;background:linear-gradient(135deg,rgba(168,85,247,0.12),rgba(99,102,241,0.12));border:1px solid rgba(168,85,247,0.3);border-radius:10px;margin-bottom:10px;cursor:text;position:relative;min-height:46px;display:flex;align-items:center;box-sizing:border-box;text-align:left;transition:border-color 0.2s,box-shadow 0.2s}
-.db-pw-field:hover{border-color:rgba(168,85,247,0.6);box-shadow:0 0 16px rgba(168,85,247,0.2)}
-.db-pw-dots{color:#fff;font-size:18px;letter-spacing:4px;line-height:1}
-.db-pw-placeholder{color:#4a4a6a;font-size:14px}
-.db-pw-error{font-size:11px;color:#e17055;margin-bottom:8px;min-height:14px;text-align:left}
+/* ── API ERROR BANNER (non-blocking) ── */
+#api-error-banner{position:fixed;left:16px;right:16px;bottom:16px;max-width:620px;margin:0 auto;z-index:9998;display:none;align-items:center;gap:14px;padding:13px 18px;background:rgba(24,10,12,0.94);border:1px solid rgba(248,113,113,0.4);border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-size:.85em}
+#api-error-banner .aeb-icon{color:var(--red);font-size:1.15em;flex:none;line-height:1}
+#api-error-banner .aeb-msg{flex:1;min-width:0;line-height:1.35;color:var(--text-muted)}
+#api-error-banner .aeb-retry{flex:none;padding:7px 16px;background:var(--indigo);border:none;border-radius:6px;color:#fff;font-size:.95em;cursor:pointer}
+#api-error-banner .aeb-dismiss{flex:none;background:none;border:none;color:var(--text-muted);font-size:1.35em;line-height:1;cursor:pointer;padding:0 2px}
 
 /* ── BILAN STAT CHIPS ── */
 .bilan-toggle-btn.active,.dep-view-btn.active,.lisse-toggle-btn.active{background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.4);color:#818cf8}
@@ -1221,32 +1216,15 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 </style>
 </head>
 <body>
-<!-- PASSWORD GATE -->
-<div class="db-overlay" id="pw-gate">
-  <!-- Background image -->
-  <div style="position:fixed;inset:0;background:#0a0612;z-index:0"></div>
-  <div class="db-modal">
-    <div class="db-modal-logo"></div>
-    <div class="db-modal-title">Festiflow: Budget</div>
-    <div class="db-modal-sub">Générale 2026 · Madame Loyal</div>
-    <div class="db-pw-field" id="db-pw-field" onclick="document.getElementById('pw-input').focus()">
-      <input type="password" id="pw-input" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;font-size:16px;cursor:pointer;z-index:2" onkeydown="if(event.key==='Enter')checkPassword()" oninput="dbUpdateDots(this.value)">
-      <span class="db-pw-placeholder" id="db-pw-display">Mot de passe</span>
-    </div>
-    <div class="db-pw-error" id="pw-error"></div>
-    <button onclick="checkPassword()"
-      onmouseover="this.style.borderColor='rgba(168,85,247,0.6)';this.style.boxShadow='0 0 16px rgba(168,85,247,0.2)'"
-      onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.boxShadow='none'"
-      style="-webkit-appearance:none;appearance:none;width:100%;padding:14px;background:rgba(12,6,24,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:0.5px;transition:border-color 0.2s,box-shadow 0.2s;display:block;">
-      Accéder →
-    </button>
-    <div style="margin-top:16px;font-size:.65em;color:rgba(255,255,255,.3)">Accès réservé à l'équipe Madame Loyal</div>
-  </div>
-</div>
-
 <div id="loading-overlay" style="position:fixed;inset:0;background:var(--bg);z-index:9999;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px">
   <div style="width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--indigo);border-radius:50%;animation:spin 0.8s linear infinite"></div>
   <div style="color:var(--text-muted);font-size:.9em">Chargement des données…</div>
+</div>
+<div id="api-error-banner">
+  <span class="aeb-icon">⚠</span>
+  <span class="aeb-msg" id="aeb-msg"></span>
+  <button class="aeb-retry" onclick="loadBudgetData()">Réessayer</button>
+  <button class="aeb-dismiss" onclick="document.getElementById('api-error-banner').style.display='none'" aria-label="Fermer">×</button>
 </div>
 <style>@keyframes spin{to{transform:rotate(360deg)}}
 /* ══ STEP 5 — M3 assign/Options chrome classes (additive; ported from event BUILD93) ══ */
@@ -2620,13 +2598,10 @@ function hideLoadingOverlay() {
   if (el) el.style.display = 'none';
 }
 function showLoadError(msg) {
-  const el = document.getElementById('loading-overlay');
-  if (el) el.innerHTML = `
-    <div style="text-align:center">
-      <div style="color:var(--red);font-size:1.1em;margin-bottom:8px">⚠ Erreur de chargement</div>
-      <div style="color:var(--text-muted);font-size:.85em;max-width:320px">${msg}</div>
-      <button onclick="loadBudgetData()" style="margin-top:16px;padding:8px 20px;background:var(--indigo);border:none;border-radius:6px;color:#fff;cursor:pointer">Réessayer</button>
-    </div>`;
+  const banner = document.getElementById('api-error-banner');
+  const el = document.getElementById('aeb-msg');
+  if (el) el.innerHTML = msg;
+  if (banner) banner.style.display = 'flex';
 }
 
 async function loadBudgetData() {
@@ -2641,6 +2616,9 @@ async function loadBudgetData() {
     hideLoadingOverlay();
     initApp();
   } catch(e) {
+    DEPTS = [];
+    hideLoadingOverlay();
+    initApp();
     showLoadError(`Impossible de contacter l'API.<br><small>${e.message}</small>`);
   }
 }
@@ -9324,39 +9302,6 @@ if (document.readyState === 'loading') {
   restoreSyncTimestamp();
 }
 
-const PASSWORD = 'festipass';
-const SESSION_KEY = 'bf_auth';
-
-// New login UI helpers
-document.getElementById('db-pw-field').addEventListener('click', function(){
-  document.getElementById('pw-input').focus();
-});
-function dbUpdateDots(val) {
-  const d = document.getElementById('db-pw-display');
-  d.className = val.length ? 'db-pw-dots' : 'db-pw-placeholder';
-  d.textContent = val.length ? '●'.repeat(val.length) : 'Mot de passe';
-}
-
-function checkPassword() {
-  const val = document.getElementById('pw-input').value.trim();
-  const error = document.getElementById('pw-error');
-  if (!val) return;
-  if (val === PASSWORD) {
-    sessionStorage.setItem(SESSION_KEY, '1');
-    const gate = document.getElementById('pw-gate');
-    gate.style.opacity = '0';
-    gate.style.transition = 'opacity .3s';
-    setTimeout(() => { gate.style.display = 'none'; }, 300);
-    showLoadingOverlay();
-    loadBudgetData();
-  } else {
-    error.textContent = 'Mot de passe incorrect';
-    document.getElementById('pw-input').value = '';
-    dbUpdateDots('');
-    setTimeout(() => { error.textContent = ''; }, 2000);
-  }
-}
-
 // Boot to Bilan landing — the router owns initial page+nav state, killing the
 // multi-page-stack bug class (two pages shipped active at boot). Authoritative call
 // is from initApp() AFTER DEPTS is populated, so renderBilan() runs against real data
@@ -9364,10 +9309,8 @@ function checkPassword() {
 // empty DEPTS). Defined in this block (alongside go/initApp) so it always exists.
 function bootLanding(){ if (typeof go === 'function') go('bilan'); }
 
-// On load — check if already authenticated
+// On load — boot
 (function() {
-  /* PREVIEW: gate bypassed */
-  var g=document.getElementById('pw-gate'); if(g) g.style.display='none';
   showLoadingOverlay(); loadBudgetData();
 })();
 

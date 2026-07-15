@@ -225,6 +225,58 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .dkpi-v{font-family:var(--ff-num-table);font-size:var(--fs-strong);font-weight:600;color:#fff;margin-top:5px;white-space:nowrap;font-variant-numeric:tabular-nums lining-nums}
 .dkpi-v.pos{color:var(--green)}
 .dkpi-v.neg{color:var(--red)}
+/* ════════ DÉPENSE #2: MONTH KPI band chrome — ported from the event dkpi-band (seam 27fb).
+   Resident-from-D1 classes (.dkpi-burn/.dkpi-meta/.dkpi-strip/.dkpi-v/.cat-*) are REUSED, not re-ported.
+   #bilan-chips-scoped rules + the dead .dkpi-big/.dkpi-sub/.dkpi-act verdict chrome are DROPPED. ════════ */
+.dkpi-band{display:grid;grid-template-columns:2fr 1fr;gap:10px;align-items:stretch;margin:18px 0 14px}
+.dkpi-band.dkpi-band--noav{grid-template-columns:1fr}   /* no à-valider devis → hero full-width */
+.dkpi-v2{display:flex;flex-direction:column;gap:10px}
+.dkpi-hero{background:linear-gradient(180deg,var(--surface),#0d0d15);border:1px solid var(--border-h);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;flex:1}
+.dkpi-hero-val{font-family:var(--ff-num-table);font-size:var(--fs-hero);font-weight:700;color:#fff;letter-spacing:-.4px;line-height:1.1;margin-top:6px;font-variant-numeric:tabular-nums lining-nums}
+/* à-relier burn segment (inert while aRelierT=0 — 0-width; ported per adopt-structure doctrine) */
+.dkpi-burn.cat-burn .arelier{background:var(--indigo)}
+/* strip pill badges the band adds over D1's resident .badge.x */
+.dkpi-strip .badge.a{background:rgba(129,140,248,.15);border-color:rgba(129,140,248,.38);color:#a5b4fc}
+.dkpi-strip .badge.d{background:rgba(251,191,36,.14);border-color:rgba(251,191,36,.36);color:var(--amber)}
+/* F3 — pill-LABEL colour keyed off the badge child (the band emits a bare .ct, no att/av/ov modifier) */
+.dkpi-strip .ct:has(.badge.a){color:#a5b4fc}
+.dkpi-strip .ct:has(.badge.d){color:var(--amber)}
+.dkpi-strip .ct:has(.badge.x){color:var(--red)}
+/* trio value cells */
+.dkpi-trio{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.dkpi-trio.dkpi-trio--4{grid-template-columns:repeat(4,1fr)!important}
+.dkpi-cell{background:var(--surface);padding:13px 15px}
+.dkpi-v.arelier{color:var(--indigo)}
+.dkpi-cell .dkpi-k .unit{font-style:normal;font-size:var(--fs-micro);font-weight:700;letter-spacing:.06em;color:var(--text-dim);border:1px solid var(--border-h);border-radius:3px;padding:0 3px;line-height:1.4}
+/* key labels (BUDGET / RÉEL / ENGAGÉ / RESTANT / Actions) */
+.dkpi-k{font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:.09em;color:var(--text-dim);font-weight:700;display:flex;align-items:center;gap:5px}
+.dkpi-cell .dkpi-k{font-size:var(--fs-micro);letter-spacing:.08em}
+.dkpi-k-row{justify-content:space-between}
+/* Actions card — Devis-à-valider CTA */
+.dkpi-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column}
+.dkpi-verdict{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-micro);font-weight:700;letter-spacing:.5px;text-transform:uppercase;border-radius:999px;padding:4px 9px;border:1px solid;white-space:nowrap}
+.dkpi-verdict .d{width:6px;height:6px;border-radius:50%}
+.dkpi-verdict.av{color:var(--amber);background:rgba(251,191,36,.10);border-color:rgba(251,191,36,.26)}
+.dkpi-verdict.av .d{background:var(--amber)}
+.dkpi-devis-row{display:grid;grid-template-columns:1fr auto auto;align-items:baseline;gap:6px 12px;padding:8px 0;border-top:1px solid var(--border);cursor:pointer;transition:opacity .12s}
+.dkpi-k-row + .dkpi-devis-row{margin-top:14px}
+.dkpi-devis-row:hover{opacity:.72}
+.dkpi-devis-row:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;border-radius:4px}
+.dkpi-devis-row .dv-name{font-size:var(--fs-caption);font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dkpi-devis-row .dv-ligne{font-size:var(--fs-caption);color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px}
+.dkpi-devis-row .dv-ht{font-family:var(--ff-num-table);font-size:var(--fs-caption);font-weight:600;color:var(--amber);font-variant-numeric:tabular-nums lining-nums;white-space:nowrap}
+/* responsive (≤860 / ≤520) — plain band/trio/v2 rules only; #bilan-chips variants dropped */
+@media(max-width:860px){ .dkpi-band{grid-template-columns:1fr 1fr} .dkpi-band.dkpi-band--noav{grid-template-columns:1fr 1fr} .dkpi-v2{grid-column:1/-1} .dkpi-trio{grid-template-columns:repeat(3,1fr)} }
+@media(max-width:520px){
+  .dkpi-band{grid-template-columns:1fr;gap:8px}
+  .dkpi-band.dkpi-band--noav{grid-template-columns:1fr}
+  .dkpi-trio{grid-template-columns:repeat(3,1fr)!important}
+  .dkpi-cell{padding:9px 7px}
+  .dkpi-card{padding:12px 13px}
+  .dkpi-hero{padding:13px 14px}
+  .dkpi-cell .dkpi-k{font-size:var(--fs-micro);letter-spacing:.04em}
+  .dkpi-cell .dkpi-v{font-size:var(--fs-body)}
+}
 /* compact section header (.cat-head), single-state (wired to general tog/toggleAllSections) */
 .cat-head{padding:14px 16px}
 .cat-title-row{display:flex;align-items:center;gap:11px;min-width:0}
@@ -591,7 +643,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
      general's existing --ff-num-table. — */
 :root{
   --ff-display:'Space Grotesk',sans-serif;
-  --fs-display:22px; --fs-heading:16px; --fs-micro:9px; --fs-title:18px;
+  --fs-display:22px; --fs-heading:16px; --fs-micro:9px; --fs-title:18px; --fs-hero:26px;
   --fw-bold:700;
   --rb:#5eead4;
   --ff-num:var(--ff-num-table);
@@ -599,7 +651,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 /* mobile rescale for the 4 --fs-* tokens introduced above (event L36-37 subset;
    general already rescales caption/small/body/strong so those are left untouched). */
 @media(max-width:720px){ :root{
-  --fs-micro:8px; --fs-heading:13px; --fs-title:14px; --fs-display:17px; } }
+  --fs-micro:8px; --fs-heading:13px; --fs-title:14px; --fs-display:17px; --fs-hero:21px; } }
 
 /* — pane fade keyframes (ported panes animate these; general has neither) — */
 @keyframes edFade{from{opacity:0}to{opacity:1}}
@@ -2669,6 +2721,33 @@ function monthAnnualShare(N){
   })));
   return a;
 }
+// ── DÉPENSE #2 (MONTH KPI band) · Lift A — computeEngage HOISTED to module scope ──
+// Was a renderDept-local const (Doctrine A-out) → moved here so renderDept AND monthEngage share ONE
+// definition. FORMULA unchanged (ADR-0025 §4): engagé = Σ {Validé, Signé} + Σ {Payé ∧ no
+// matched_transaction_id} of montant_ht. renderDept's usage is behaviour-identical (only the def relocated).
+function computeEngage(devis){
+  return (devis || []).reduce((a, d) =>
+    a + (( d.statut === 'Validé' || d.statut === 'Signé' ||
+          (d.statut === 'Payé' && !d.matched_transaction_id) ) ? (d.montant_ht || 0) : 0), 0);
+}
+// Per-month ENGAGÉ for month index N (1-12), model (a)/lissé. Mirrors monthBudget's M/A/P + _lisse walk
+// EXACTLY (Lift C), with computeEngage(devis) in place of l.est. Own NON-vivifying per-line devis bridge
+// (Lift B): rebuild the UPPERCASE DEPT_META tab per dept, then read _edDevisStore[key]||[] directly —
+// never _edDevisGet (write-vivifies) and never the raw lowercase id (auto-vivifies [] → silent 0 forever).
+// By construction Σ over depts === the same spread as monthBudget/monthReel; écart-stays-valid holds.
+function monthEngage(N){
+  let e = 0;
+  EXP_DEPTS().forEach(d => {
+    const TAB = Object.entries(DEPT_META).find(([,m]) => m.id === d.id)?.[0] || d.id.toUpperCase();
+    d.sections.forEach(s => s.lines.forEach(l => {
+      const eng = computeEngage(_edDevisStore[_edDevisKey(TAB, s.s, l.l)] || []);
+      if      (l.rec === 'M') e += eng;                                  // monthly: every month
+      else if (l.rec === 'A') e += _lisse ? eng/12 : ((l.am === N) ? eng : 0);  // annual: ÷12 lissé | lump in am
+      else if (l.rec === 'P') e += ((l.am === N) ? eng : 0);            // ponctuel: assigned month only
+    }));
+  });
+  return e;
+}
 let _monthlyReelCache = null; // { month: 'YYYY-MM', byDept: { HUMAIN: 1234, ... } }
 
 // Adjust a line's estimate based on recurrence and current view
@@ -3200,12 +3279,10 @@ function renderDept(id){
     return `<span class="${v > 0 ? 'cpos' : 'cneg'}">${v > 0 ? '+' : ''}${fe(v)}</span>`;
   };
 
-  // ── DÉPENSE #1: devis read-back (computeEngage). Doctrine A-out: computeEngage is defined INSIDE
-  //    renderDept — cannot leak. Ported VERBATIM from the event (L2641-2643). ADR-0025 §4 gate:
-  //    engagé = Σ {Validé, Signé} + Σ {Payé ∧ no matched_transaction_id}. ──
-  const computeEngage = devis => (devis || []).reduce((a, d) =>
-    a + (( d.statut === 'Validé' || d.statut === 'Signé' ||
-          (d.statut === 'Payé' && !d.matched_transaction_id) ) ? (d.montant_ht || 0) : 0), 0);
+  // ── DÉPENSE #1/#2: devis read-back via computeEngage — HOISTED to module scope (DÉPENSE #2, Lift A)
+  //    so renderDept AND monthEngage share ONE definition. FORMULA unchanged (ADR-0025 §4:
+  //    engagé = Σ {Validé, Signé} + Σ {Payé ∧ no matched_transaction_id}). The usage below is
+  //    behaviour-identical — only the definition relocated (see module scope, near monthEngage). ──
   // Bridge key (B2): reconstruct the UPPERCASE DEPT_META tab EXACTLY as buildEditDrawer's write path
   //   (L4390) — NOT renderDept's raw lowercase `id` (raw id → auto-vivified [] → engagé silently 0 forever).
   const TAB = Object.entries(DEPT_META).find(([,m]) => m.id === id)?.[0] || id.toUpperCase();
@@ -3839,22 +3916,149 @@ function monthIndexOf(monthId){ return MONTH_KEYS_ORDER.indexOf(monthId)+1; }
 // ── Item 7b — fill a month page's 4 KPI cards (lissé-aware) ──
 // Cards: 1 Dépensé ce mois (réel) · 2 Budget du mois · 3 Écart du mois (signed+coloured) ·
 // 4 Part des charges annuelles dans le mois. All read monthBudget/monthReel/monthAnnualShare.
+// DÉPENSE #2 — open a specific ligne's edit drawer and land on the Devis pane (ported from event L2590).
+// Deps present in general: openEditLigne (L4745), edTab, the .ed-tab[data-edpane="devis"] button (EXPENSE
+// mode = the month-band case). Only CALLS existing drawer fns — no drawer-internals edit.
+function openLigneDevis(id, si, li){
+  openEditLigne(id, si, li);
+  const t = document.querySelector('.ed-tab[data-edpane="devis"]');
+  if (t) edTab(t);
+}
 function fillMonthKPIs(monthId, N){
   const row=document.getElementById('month-kpi-'+monthId);
   if(!row) return;
-  const mB=monthBudget(N), mR=monthReel(N), ec=mB-mR, ann=monthAnnualShare(N);
-  const lensSub=_lisse?'lissé':'réel';
-  const sharePct = mR>0 ? Math.round(ann/mR*100)+'\u00a0%' : '—';
-  const shareSub = _lisse ? 'charges annuelles ÷12' : 'charges annuelles (lump)';
-  // Card 3 écart — emitted directly as a .bchip-val string (sign + inline colour), matching cards 1/2/4 sizing.
-  // NOT routed through ecH: ecH returns a .cpos/.cneg span whose 13px/right-align CSS overrode .bchip-val (v5.16.4).
-  const ecCell = (mR<=0 || Math.abs(ec)<1) ? '<span style="color:var(--text-dim)">—</span>'
-    : `<span style="color:var(--${ec>0?'green':'red'})">${ec>0?'+':''}${fe(ec)}</span>`;
+  // ── DÉPENSE #2 (seam 27fb): the 4 bchip cards are REPLACED, 1:1, by the event's dept dkpi-band,
+  //    aggregated at MONTH scope. 1:1 = the "Part charges annuelles" card is DROPPED. ──
+
+  // THE 4 MONTH TOTALS — everything below derives from these (event binding block, verbatim).
+  const budgetT  = monthBudget(N);   // _lisse-aware (L2631)
+  const depenseT = monthReel(N);     // _lisse-aware (L2640)
+  const engageT  = monthEngage(N);   // BUILD (§A) — reads 0 until devis data lands
+  // aRelierT DEFERRED to 0: general has NO month axis on any transaction (unmatchedForDept is
+  // category-keyed + out of reach from here; the à-relier→month write contract is unbuilt — the assign
+  // engine is FROZEN). Un-defer needs that write contract + a month-keyed unmatched source (both out of
+  // scope) + a lissage×à-relier ruling. At 0 the burn is coherent + NaN-free. See D2MAP §4.
+  const aRelierT = 0;
+  // F1 (BLOCKING) — HARDCODE labels. The event keys kBudget/kSpent off the dept `id`
+  // (id==='technique'?…), which is ABSENT at fillMonthKPIs scope; a month is never "technique".
+  const kBudget = 'BUDGET';
+  const kSpent  = 'RÉEL';
+
+  // ── MONTH-SCOPED counts + à-valider CTA list · own NON-vivifying devis bridge (Lift B) ──
+  // Count rule (Leo-confirmed, F2/§C): rec==='M' always + rec∈{A,P} where l.am===N — an annual item
+  // counts in its ASSIGNED month, never ÷12 or duplicated (counts can't be fractional; both _lisse states).
+  // over iff (est−reel−computeEngage)<0; overN10 = ≥10% over. Each à-valider CTA carries the line's OWN
+  // category-dept id (F4: a month spans MULTIPLE categories, not a single id) + its section/raw-line index.
+  const aValiderList = [];
+  let attenduesN = 0, overN = 0, overN10 = 0;
+  EXP_DEPTS().forEach(d => {
+    const TAB = Object.entries(DEPT_META).find(([,m]) => m.id === d.id)?.[0] || d.id.toUpperCase();
+    d.sections.forEach((sec, si) => {
+      sec.lines.forEach((l, li) => {
+        if (!(l && l.l && !l.l.startsWith('(ligne'))) return;                 // isReal (inline placeholder guard)
+        const inMonth = l.rec === 'M' || ((l.rec === 'A' || l.rec === 'P') && l.am === N);
+        if (!inMonth) return;
+        const devis = _edDevisStore[_edDevisKey(TAB, sec.s, l.l)] || [];      // own bridge — non-vivifying
+        devis.forEach(dv => {
+          if (dv.statut === 'à valider')
+            aValiderList.push({ deptId: d.id, origIdx: si, li, ligne: l.l, fournisseur: dv.fournisseur || '—', ht: dv.montant_ht || 0 });
+        });
+        if (Array.isArray(l.cas2Pending) && l.cas2Pending.length > 0) attenduesN++;
+        const eng = computeEngage(devis), est = l.est || 0, reel = l.reel || 0;
+        if ((est - reel - eng) < 0){
+          overN++;
+          const over = reel + eng - est;
+          if (est > 0 && (over / est) >= 0.10) overN10++;
+        }
+      });
+    });
+  });
+  const aValiderN = aValiderList.length;
+
+  // ── DERIVED bindings — the event's block VERBATIM (no month twist). B/R/A/E → segments/%/solde ──
+  const B = budgetT, R = depenseT, A = aRelierT, E = engageT;
+  const spent   = R + A + E;
+  const peakT   = Math.max(B, spent) || 1;
+  const overT   = Math.max(0, spent - B);
+  const c1 = Math.min(R,     B);
+  const c2 = Math.min(R + A, B);
+  const c3 = Math.min(spent, B);
+  const segReelT  = c1        / peakT * 100;
+  const segARelT  = (c2 - c1) / peakT * 100;   // 0 while aRelierT=0 → zero-width blue segment
+  const segDevisT = (c3 - c2) / peakT * 100;
+  const segOverT  = overT     / peakT * 100;
+  const segLibreT = Math.max(0, B - spent) / peakT * 100;
+  const tickPctT  = overT > 0 ? B / peakT * 100 : null;
+  const pctOf = v => B > 0 ? v / B * 100 : 0;
+  const pEng  = Math.round(pctOf(spent));                 // the ONE independent rounding
+  const rawP  = [pctOf(R), pctOf(A), pctOf(E)];
+  const fl    = rawP.map(Math.floor);
+  let   rem   = pEng - fl.reduce((a, b) => a + b, 0);     // largest-remainder split
+  rawP.map((v, i) => [v - Math.floor(v), i])
+      .sort((a, b) => b[0] - a[0])
+      .slice(0, rem)
+      .forEach(([, i]) => fl[i]++);
+  const [pRe, pARel, pDev] = fl;
+  const soldeT = B - R - A - E;                           // unclamped; label flips on sign
+  const pRest  = (B === 0) ? 0 : (soldeT >= 0 ? 100 - pEng : pEng - 100);
+  const soldeLabel = soldeT >= 0 ? 'Restant' : 'Dépassement';
+  const soldeCls   = soldeT >= 0 ? 'pos' : 'neg';
+
   row.innerHTML=`
-    <div class="bchip"><div class="bchip-label">Dépensé ce mois</div><div class="bchip-val">${fe(mR)}</div><div class="bchip-sub">${lensSub}</div></div>
-    <div class="bchip"><div class="bchip-label">Budget du mois</div><div class="bchip-val">${fe(mB)}</div><div class="bchip-sub">${lensSub}</div></div>
-    <div class="bchip"><div class="bchip-label">Écart du mois</div><div class="bchip-val">${ecCell}</div><div class="bchip-sub">budget − dépensé</div></div>
-    <div class="bchip"><div class="bchip-label">Part charges annuelles</div><div class="bchip-val">${sharePct}</div><div class="bchip-sub">${shareSub}</div></div>`;
+    <div class="dkpi-band${aValiderN > 0 ? '' : ' dkpi-band--noav'}">
+      <div class="dkpi-v2">
+        <div class="dkpi-hero">
+          <div class="dkpi-k">${kBudget}</div>
+          <div class="dkpi-hero-val">${fe(budgetT)}</div>
+          <div class="dkpi-burn cat-burn">
+            <i class="reel"    style="width:${segReelT}%"></i>
+            <i class="arelier" style="width:${segARelT}%"></i>
+            <i class="devis"   style="width:${segDevisT}%"></i>
+            ${overT>0 ? `<i class="over" style="width:${segOverT}%"></i>`
+                      : `<i class="libre" style="width:${segLibreT}%"></i>`}
+            ${tickPctT!=null ? `<span class="tick" style="left:${tickPctT}%"></span>` : ``}
+          </div>
+          <div class="dkpi-meta cat-meta">
+            <span class="m-pct"><b>${pEng}%</b> total engagé</span>
+            <span class="dot"></span>
+            <span class="m-pct"><b>${pRe}%</b> réelle</span>
+            ${aRelierT > 0 ? `
+            <span class="dot"></span>
+            <span class="m-pct"><b>${pARel}%</b> à relier</span>` : ``}
+            <span class="dot"></span>
+            <span class="m-pct"><b>${pDev}%</b> devis validé</span>
+            <span class="dot"></span>
+            <span class="m-pct"><b>${pRest}%</b> ${soldeT >= 0 ? 'restant' : 'dépassement'}</span>
+          </div>
+          <div class="dkpi-strip">
+            ${attenduesN > 0 ? `<span class="ct"><i class="badge a">A</i>${attenduesN} attendue${attenduesN>1?'s':''}</span>` : ''}
+            ${aValiderN > 0 ? `<span class="ct"><i class="badge d">D</i>${aValiderN} devis à valider</span>` : ''}
+            ${overN > 0 ? `<span class="ct"><i class="badge x">!</i>${overN} ligne${overN>1?'s':''} en dépassement${overN10 > 0 ? `, dont ${overN10} >10%` : ''}</span>` : ''}
+          </div>
+        </div>
+        <div class="dkpi-trio${aRelierT > 0 ? ' dkpi-trio--4' : ''}">
+          <div class="dkpi-cell"><div class="dkpi-k">${kSpent}</div><div class="dkpi-v">${depenseT?fe(depenseT):'—'}</div></div>
+          ${aRelierT > 0 ? `
+          <div class="dkpi-cell"><div class="dkpi-k">À RELIER<i class="unit">TTC</i></div><div class="dkpi-v arelier">${fe(aRelierT)}</div></div>` : ``}
+          <div class="dkpi-cell"><div class="dkpi-k">ENGAGÉ</div><div class="dkpi-v">${engageT?fe(engageT):'—'}</div></div>
+          <div class="dkpi-cell"><div class="dkpi-k">${soldeLabel}</div><div class="dkpi-v ${soldeCls}">${fe(Math.abs(soldeT))}</div></div>
+        </div>
+      </div>
+      ${aValiderN > 0 ? `
+      <div class="dkpi-card dkpi-actions">
+        <div class="dkpi-k dkpi-k-row">Actions
+          <span class="dkpi-verdict av"><span class="d"></span>Devis à valider</span>
+        </div>
+        ${aValiderList.map(dv => `
+        <div class="dkpi-devis-row" role="button" tabindex="0"
+             onclick="openLigneDevis('${dv.deptId}',${dv.origIdx},${dv.li})"
+             onkeydown="if(event.key==='Enter')openLigneDevis('${dv.deptId}',${dv.origIdx},${dv.li})">
+          <span class="dv-name">${_esc(dv.fournisseur)}</span>
+          <span class="dv-ligne">${_esc(dv.ligne)}</span>
+          <span class="dv-ht">${fe(dv.ht)}</span>
+        </div>`).join('')}
+      </div>` : ''}
+    </div>`;
 }
 function renderMonthSummary(monthId){
   // Month-page summary = per-DEPARTMENT roll-up (distinct from the Bilan page, which is per-MONTH).

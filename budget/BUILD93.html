@@ -57,6 +57,29 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .dt{padding:8px 12px;font-size:var(--fs-small);font-weight:500;color:var(--text-dim);white-space:nowrap;border:none;border-bottom:2px solid transparent;background:none;font-family:inherit;cursor:pointer;transition:color .15s}
 .dt:hover{color:var(--text-muted)}
 .dt.on{color:#fff;font-weight:600}
+/* ── SESSION SWITCHER DROPDOWN (sw-* ported verbatim from general d0c56306; nav-sw-name/sub/dot + nav-user canonical per ADR-0011). Module-switcher rules (.sw-item.disabled/.sw-ico/.mod-*/.pill*) intentionally NOT ported — out of B scope. ── */
+.sw-wrap{position:relative}
+.sw-trigger{display:flex;align-items:center;gap:7px;cursor:pointer}
+.sw-chev{flex-shrink:0;transition:transform .2s}
+.sw-wrap.open .sw-chev{transform:rotate(180deg)}
+.sw-menu{position:absolute;top:calc(100% + 8px);min-width:230px;background:var(--surface-2);border:1px solid var(--border-h);border-radius:12px;padding:6px;box-shadow:0 20px 60px rgba(0,0,0,0.45);z-index:200;display:none}
+.sw-menu.sw-float{position:fixed;display:block;z-index:1000;top:var(--sw-top);left:var(--sw-left)}
+.sw-menu.sw-float.right{left:auto;right:var(--sw-right)}
+.sw-menu.sw-float.left{left:var(--sw-left)}
+.sw-wrap.open .sw-menu{display:block}
+.sw-menu.left{left:0}
+.sw-menu.right{right:0}
+.sw-item{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:8px;font-size:13px;color:var(--text-muted);cursor:pointer;white-space:nowrap;text-decoration:none}
+.sw-item:hover{background:var(--surface);color:var(--text)}
+.sw-item.active{background:var(--surface);color:var(--text);font-weight:600}
+.sw-check{margin-left:auto;color:var(--green);flex-shrink:0}
+.sw-label{display:flex;flex-direction:column;gap:1px}
+.sw-sub{font-size:10px;color:var(--text-dim)}
+.nav-sw-name{font-size:13px;font-weight:600;color:#fff;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.nav-sw-name .dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0}
+.nav-sw-sub{font-size:10px;color:var(--text-dim);margin-top:3px;white-space:nowrap}
+.nav-user{margin-left:auto;width:36px;height:36px;border-radius:50%;background:var(--surface-2);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);transition:opacity .15s;flex-shrink:0}
+.nav-user:hover{opacity:.8}
 
 /* ── HEADER ──────────────────────────── */
 .badge{font-size:var(--fs-caption);font-weight:600;text-transform:uppercase;letter-spacing:1px;padding:4px 10px;border-radius:5px;white-space:nowrap}
@@ -260,9 +283,11 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
   .nav{position:-webkit-sticky;position:sticky;top:0;z-index:100;background:var(--surface)}
   .nav-sw{padding:6px 10px 6px 0;margin-right:4px}
   .nav-sw-av{width:30px;height:30px}
+  .nav-user{width:30px;height:30px}
   .nm{font-size:var(--fs-small);padding:8px 10px}
   .nav-top{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;mask-image:linear-gradient(to right,#000 85%,transparent);-webkit-mask-image:linear-gradient(to right,#000 85%,transparent)}
   .nav-top::-webkit-scrollbar{display:none}
+  .nav-top:has(.nav-sw.sw-wrap.open){overflow:visible;-webkit-mask-image:none;mask-image:none}
   .dt{font-size:var(--fs-body);padding:10px 14px}
   .dept-tabs{mask-image:linear-gradient(to right,#000 85%,transparent);-webkit-mask-image:linear-gradient(to right,#000 85%,transparent)}
 
@@ -1477,27 +1502,37 @@ html:has(#drawer.open:not(.assign-nonmodal)), html:has(#evt-drawer.open), body:h
 <!-- NAV -->
 <nav class="nav">
   <div class="nav-top">
-    <div class="nav-sw" style="position:relative">
-      <div class="nav-sw-av"><img src="LOGO_ROND_JAUNE.png" alt="PA" style="width:100%;height:100%;object-fit:cover"></div>
-      <div>
-        <div style="display:flex;align-items:center;gap:5px">
-          <span style="font-size:13px;font-weight:600;color:#fff">Paris XXL</span>
-          <div style="width:5px;height:5px;border-radius:50%;background:var(--green)"></div>
+    <div class="nav-sw sw-wrap" style="position:relative">
+      <div class="sw-trigger" data-sw-trigger>
+        <div class="nav-sw-av"><img src="LOGO_ROND_JAUNE.png" alt="PA" style="width:100%;height:100%;object-fit:cover"></div>
+        <div>
+          <div class="nav-sw-name">Paris XXL<span class="dot"></span></div>
+          <div class="nav-sw-sub">ML 130326 · 13-14 mars</div>
         </div>
-        <div style="font-size:10px;color:var(--text-dim);margin-top:3px">ML 130326 · 13-14 mars</div>
+        <svg class="sw-chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2.5" style="margin-left:2px"><path d="M6 9l6 6 6-6"/></svg>
       </div>
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2.5" style="margin-left:2px"><path d="M6 9l6 6 6-6"/></svg>
-      <select class="session-sw" style="position:absolute;inset:0;width:100%;height:100%;opacity:0.01;cursor:pointer;z-index:2;font-size:16px" onchange="if(this.value && !this.options[this.selectedIndex].dataset.soon){window.location.href=this.value}">
-        <option value="" disabled>Changer session</option>
-        <option value="budget_pa.html" selected>ML 130326 — Paris XXL</option>
-        <option value="budget_bdx.html">ML 120626 — Bordeaux</option>
-        <option value="budget_epk.html">EPK 050926 — Paris</option>
-        <option value="budget_general.html">Générale — Frais de structure</option>
-      </select>
+      <div class="sw-menu left" role="menu" aria-label="Changer de session">
+        <a class="sw-item" role="menuitem" href="budget_general.html">
+          <span class="sw-label">Générale<span class="sw-sub">Frais de structure</span></span>
+        </a>
+        <a class="sw-item active" role="menuitem" href="budget_pa.html">
+          <span class="sw-label">ML 130326 — Paris XXL<span class="sw-sub">Événement</span></span>
+          <svg class="sw-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+        </a>
+        <a class="sw-item" role="menuitem" href="budget_bdx.html">
+          <span class="sw-label">ML 120626 — Bordeaux<span class="sw-sub">Événement</span></span>
+        </a>
+        <a class="sw-item" role="menuitem" href="budget_epk.html">
+          <span class="sw-label">EPK 050926 — Paris<span class="sw-sub">Événement</span></span>
+        </a>
+      </div>
     </div>
     <button class="nm on" onclick="go('bilan',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Bilan P&L</button>
     <button class="nm" onclick="go('releve',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Transactions</button>
     <button class="nm" onclick="go('fiche',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Fiche événement</button>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+      <div class="nav-user" title="Compte" style="margin-left:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+    </div>
   </div>
   <div class="dept-tabs-bg">
   <div id="dept-tabs" class="dept-tabs">
@@ -8886,6 +8921,62 @@ function closeEventDrawer(){
     if(el) el.textContent='Sync '+new Date().toLocaleString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
     return r;
   };
+})();
+</script>
+<script>
+/* sw-* switcher toggle. On open: re-parent the menu to <body> as a fixed overlay so it escapes
+   .nav's backdrop-filter compositing context (Safari traps z-index/isolation/position:fixed
+   inside a backdrop-filter ancestor — the menu must physically leave the .nav subtree). */
+(function(){
+  function placeFloat(wrap){
+    var menu = wrap._swMenu, trig = wrap.querySelector('[data-sw-trigger]');
+    if(!menu || !trig) return;
+    var r = trig.getBoundingClientRect();
+    menu.style.setProperty('--sw-top', (r.bottom + 8) + 'px');
+    if(menu.classList.contains('right')){
+      menu.style.setProperty('--sw-right', (window.innerWidth - r.right) + 'px');
+    } else {
+      menu.style.setProperty('--sw-left', r.left + 'px');
+    }
+  }
+  function openWrap(wrap){
+    var menu = wrap.querySelector('.sw-menu');
+    if(!menu) return;
+    wrap._swMenu = menu;
+    wrap._swHome = menu.parentNode;          // remember where it lives
+    wrap._swNext = menu.nextSibling;
+    document.body.appendChild(menu);          // escape .nav subtree
+    menu.classList.add('sw-float');
+    wrap.classList.add('open');
+    placeFloat(wrap);
+  }
+  function closeWrap(wrap){
+    var menu = wrap._swMenu;
+    if(menu){
+      menu.classList.remove('sw-float');
+      menu.style.cssText = '';                // clear fixed coords
+      if(wrap._swHome) wrap._swHome.insertBefore(menu, wrap._swNext || null); // put it back
+    }
+    wrap.classList.remove('open');
+    wrap._swMenu = wrap._swHome = wrap._swNext = null;
+  }
+  function closeAll(){ document.querySelectorAll('.sw-wrap.open').forEach(closeWrap); }
+
+  document.addEventListener('click', function(e){
+    var trig = e.target.closest('[data-sw-trigger]');
+    if(trig){
+      var wrap = trig.closest('.sw-wrap');
+      var wasOpen = wrap.classList.contains('open');
+      closeAll();
+      if(!wasOpen) openWrap(wrap);
+      e.stopPropagation();
+      return;
+    }
+    if(!e.target.closest('.sw-menu')) closeAll();   // menu now lives on body, so this still matches
+  });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeAll(); });
+  window.addEventListener('resize', function(){ document.querySelectorAll('.sw-wrap.open').forEach(placeFloat); });
+  window.addEventListener('scroll', function(){ document.querySelectorAll('.sw-wrap.open').forEach(placeFloat); }, true);
 })();
 </script>
 </body>

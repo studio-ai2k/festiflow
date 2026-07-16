@@ -174,7 +174,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .obs{min-width:120px;max-width:200px;color:var(--text-dim)!important;font-size:var(--fs-small)!important;font-weight:400!important}
 .twrap{overflow-x:auto}
 
-/* ══ deptable-port: dépense-table shape lifted from event 0f1a3ebc (renderDept). ══
+/* ══ deptable-port: dépense-table shape lifted from event 0f1a3ebc (renderCategorie). ══
    Scoped to .pl-tbl/.dep-tbl/.cat-*/.row-badge → cannot reach renderBilan/recette/résultat
    (plain .tbl). Base .tbl/.cro/.ec-col/.clickable-cell already in general (not re-lifted).
    --fs-* and --ff-display inlined (general has no such tokens); only --ff-num-table added to :root.
@@ -1434,8 +1434,8 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
       <button id="lisse-btn" class="lisse-toggle-btn" onclick="setLisse(!_lisse)" title="Lisser les charges annuelles sur 12 mois (budget + dépensé ensemble)" style="padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Lisser sur l'année</button>
     </span>
     <span style="font-size:.65em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-right:6px">Vue</span>
-    <button class="dep-view-btn" data-depview="mensuel" onclick="setDepView('mensuel')" style="padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Mensuel</button>
-    <button class="dep-view-btn" data-depview="departement" onclick="setDepView('departement')" style="padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Département</button>
+    <button class="dep-view-btn" data-depview="mensuel" onclick="setCatView('mensuel')" style="padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Mensuel</button>
+    <button class="dep-view-btn" data-depview="departement" onclick="setCatView('departement')" style="padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s">Département</button>
   </div>
   <div id="b-dep-wrapper" class="mb"></div>
 
@@ -2538,11 +2538,11 @@ async function loadRecettes() {
   }
 }
 
-// ── DEPTS will be populated from API ──────────────────────────────────
-let DEPTS = [];
-function EXP_DEPTS(){ return DEPTS.filter(d=>d.id!=='billetterie'); } // expense-walk view: billetterie is throughput, never an expense dept (v5.16.4)
+// ── CATEGORIES will be populated from API ──────────────────────────────────
+let CATEGORIES = [];
+function EXP_CATEGORIES(){ return CATEGORIES.filter(d=>d.id!=='billetterie'); } // expense-walk view: billetterie is throughput, never an expense dept (v5.16.4)
 
-const DEPT_META = {
+const CATEGORIE_META = {
   'HUMAIN':          {id:'humain',          name:'HUMAIN'},
   'CHARGES_SOCIALES':{id:'charges_sociales',name:'CHARGES SOCIALES'},
   'LOCAUX':          {id:'locaux',          name:'LOCAUX'},
@@ -2555,8 +2555,8 @@ const DEPT_META = {
   'DIVERS':          {id:'divers',          name:'DIVERS'},
 };
 
-function apiRowsToDept(tabName, rows) {
-  const meta = DEPT_META[tabName] || {id: tabName.toLowerCase(), name: tabName};
+function apiRowsToCategorie(tabName, rows) {
+  const meta = CATEGORIE_META[tabName] || {id: tabName.toLowerCase(), name: tabName};
   const sectionsMap = {};
   const sectionsOrder = [];
   for (const row of rows) {
@@ -2619,11 +2619,11 @@ async function loadBudgetData() {
     });
     if (!resp.ok) throw new Error(`API error ${resp.status}`);
     const json = await resp.json();
-    DEPTS = Object.entries(json.data).map(([tab, rows]) => apiRowsToDept(tab, rows));
+    CATEGORIES = Object.entries(json.data).map(([tab, rows]) => apiRowsToCategorie(tab, rows));
     hideLoadingOverlay();
     initApp();
   } catch(e) {
-    DEPTS = [];
+    CATEGORIES = [];
     hideLoadingOverlay();
     initApp();
     showLoadError(`Impossible de contacter l'API.<br><small>${e.message}</small>`);
@@ -2651,14 +2651,14 @@ const fmtAmt = (n, decimals=2) => {
 };
 const ftva = v => v==null?'—':typeof v==='number'?(v*100).toFixed(1).replace('.0','')+'%':v;
 const fttc = (ht,tva) => { if(!ht) return null; if(typeof tva==='number') return ht*(1+tva); return ht; };
-const dtot = d => d.sections.flatMap(s=>s.lines).reduce((a,l)=>({est:a.est+(l.est||0),reel:a.reel+(l.reel||0)}),{est:0,reel:0});
+const ctot = d => d.sections.flatMap(s=>s.lines).reduce((a,l)=>({est:a.est+(l.est||0),reel:a.reel+(l.reel||0)}),{est:0,reel:0});
 const pct = (r,e) => !e?0:Math.min(Math.round(r/e*100),999);
 
 // ── Mensuel / Annuel toggle (Générale session only) ──────────────────
 let _bilanView = 'annuel'; // 'annuel' or 'mensuel'
 let _depView = 'mensuel'; // Dépenses section grouping: 'mensuel' (by month) | 'departement' (by dept, cumulated)
 let _lisse = false; // Bilan Mensuel-only modifier: false = model (a) lumpy (annual lump in assigned month); true = annual lines spread ÷12 across all months (budget+dépensé together, écart stays valid)
-function setDepView(v){ if(v===_depView) return; _depView=v; renderBilan(); }
+function setCatView(v){ if(v===_depView) return; _depView=v; renderBilan(); }
 function setLisse(on){ if(on===_lisse) return; _lisse=on; repaintActive(); }
 // Repaint whichever surface is active so the lissé flip lands everywhere it shows.
 // Bilan active → renderBilan(); a month tab active → re-render that month's blocks + Synthèse + 4 KPIs
@@ -2670,7 +2670,7 @@ function repaintActive(){
   const mid=active.id.replace(/^page-/,'');
   const MONTH_KEYS=['janvier','fevrier','mars','avril','mai','juin','juillet','aout','septembre','octobre','novembre','decembre'];
   if(MONTH_KEYS.includes(mid)){
-    renderMonth(mid);          // renderDept-then-clone (idempotent; repopulates source page first, no double-blank)
+    renderMonth(mid);          // renderCategorie-then-clone (idempotent; repopulates source page first, no double-blank)
     renderMonthSummary(mid);   // Synthèse table + imprévus strip, month-scoped + lissé-aware
     fillMonthKPIs(mid, MONTH_KEYS.indexOf(mid)+1); // 4 month KPIs (item 7b)
   } else { renderBilan(); }
@@ -2684,7 +2684,7 @@ function syncMonthLisseBtns(){
 // Monthly lines count every month; annual lines: lumpy = in assigned month only; lissé = whole annual pool ÷12.
 function monthBudget(N){
   let b=0;
-  EXP_DEPTS().forEach(d=>d.sections.forEach(s=>s.lines.forEach(l=>{
+  EXP_CATEGORIES().forEach(d=>d.sections.forEach(s=>s.lines.forEach(l=>{
     if(l.rec==='M'){ b+=(l.est||0); }
     else if(l.rec==='A'){ b+= _lisse ? (l.est||0)/12 : ((l.am===N)?(l.est||0):0); }
     else if(l.rec==='P'){ b+= (l.am===N)?(l.est||0):0; }   // ponctuel: assigned month only, NEVER lissé
@@ -2693,7 +2693,7 @@ function monthBudget(N){
 }
 function monthReel(N){
   let r=0;
-  EXP_DEPTS().forEach(d=>d.sections.forEach(s=>s.lines.forEach(l=>{
+  EXP_CATEGORIES().forEach(d=>d.sections.forEach(s=>s.lines.forEach(l=>{
     if(l.rec==='M'){ r+=(l.reel||0); }
     else if(l.rec==='A'){ r+= _lisse ? (l.reel||0)/12 : ((l.am===N)?(l.reel||0):0); }
     else if(l.rec==='P'){ r+= (l.am===N)?(l.reel||0):0; }   // ponctuel: assigned month only, NEVER lissé
@@ -2703,12 +2703,12 @@ function monthReel(N){
 // Per-DEPT month-scoped budget/réel/engagé for month N (1-12) — the SAME M/A/P per-line walk as
 // monthBudget/monthReel (and, for eng, monthEngage), scoped to one dept's lines. The écart-stays-valid
 // invariant lives in this walk (budget+dépensé+engagé spread into the same month under lissé); do NOT
-// re-derive the spread. eng uses the SAME NON-vivifying UPPERCASE-DEPT_META-tab devis bridge as monthEngage
+// re-derive the spread. eng uses the SAME NON-vivifying UPPERCASE-CATEGORIE_META-tab devis bridge as monthEngage
 // (_edDevisStore[key]||[] → computeEngage; NEVER _edDevisGet, which write-vivifies). By construction Σ over
-// DEPTS of deptMonth(d,N) === monthBudget(N)/monthReel(N)/monthEngage(N) in both lissé states.
+// CATEGORIES of deptMonth(d,N) === monthBudget(N)/monthReel(N)/monthEngage(N) in both lissé states.
 function deptMonth(d, N){
   let est=0, reel=0, eng=0;
-  const TAB = Object.entries(DEPT_META).find(([,m]) => m.id === d.id)?.[0] || d.id.toUpperCase();
+  const TAB = Object.entries(CATEGORIE_META).find(([,m]) => m.id === d.id)?.[0] || d.id.toUpperCase();
   d.sections.forEach(s=>s.lines.forEach(l=>{
     const le = computeEngage(_edDevisStore[_edDevisKey(TAB, s.s, l.l)] || []);  // non-vivifying per-line engagé
     if(l.rec==='M'){ est+=(l.est||0); reel+=(l.reel||0); eng+=le; }
@@ -2719,25 +2719,25 @@ function deptMonth(d, N){
 }
 // C2: monthAnnualShare(N) removed — orphaned, 0 call sites. Formula preserved for E re-authoring
 // (annual-line rec==='A' REEL contribution to month N; lumpy = full lump in assigned month, lissé = ÷12):
-//   A-lines: _lisse ? (l.reel||0)/12 : (l.am===N ? (l.reel||0) : 0)   over EXP_DEPTS() lines.
+//   A-lines: _lisse ? (l.reel||0)/12 : (l.am===N ? (l.reel||0) : 0)   over EXP_CATEGORIES() lines.
 // ── DÉPENSE #2 (MONTH KPI band) · Lift A — computeEngage HOISTED to module scope ──
-// Was a renderDept-local const (Doctrine A-out) → moved here so renderDept AND monthEngage share ONE
+// Was a renderCategorie-local const (Doctrine A-out) → moved here so renderCategorie AND monthEngage share ONE
 // definition. FORMULA unchanged (ADR-0025 §4): engagé = Σ {Validé, Signé} + Σ {Payé ∧ no
-// matched_transaction_id} of montant_ht. renderDept's usage is behaviour-identical (only the def relocated).
+// matched_transaction_id} of montant_ht. renderCategorie's usage is behaviour-identical (only the def relocated).
 function computeEngage(devis){
   return (devis || []).reduce((a, d) =>
     a + (( d.statut === 'Validé' || d.statut === 'Signé' ||
           (d.statut === 'Payé' && !d.matched_transaction_id) ) ? (d.montant_ht || 0) : 0), 0);
 }
 // Per-month ENGAGÉ for month index N (1-12), model (a)/lissé. SINGLE-SOURCED through deptMonth(d,N).eng
-// (A1 refactor): the per-line UPPERCASE-DEPT_META-tab devis bridge + M/A/P + _lisse walk now lives ONCE,
+// (A1 refactor): the per-line UPPERCASE-CATEGORIE_META-tab devis bridge + M/A/P + _lisse walk now lives ONCE,
 // inside deptMonth (own NON-vivifying read: _edDevisStore[key]||[], never _edDevisGet). This reduce
 // reassociates the former flat accumulator into per-dept subtotals → the result is MATHEMATICALLY EQUAL
 // + DISPLAY-IDENTICAL (fe()=Math.round rounds sub-euro deltas away), NOT bit-identical: only the eng/12
 // lissé-annual branch can differ by ≤~1 ULP (today _edDevisStore empty → both exactly 0). By construction
 // the Synthèse TOTAL and the D2 band both flow through Σ deptMonth().eng → equal to each other.
 function monthEngage(N){
-  return EXP_DEPTS().reduce((a, d) => a + deptMonth(d, N).eng, 0);
+  return EXP_CATEGORIES().reduce((a, d) => a + deptMonth(d, N).eng, 0);
 }
 let _monthlyReelCache = null; // { month: 'YYYY-MM', byDept: { HUMAIN: 1234, ... } }
 
@@ -2752,10 +2752,10 @@ function adjustedEst(line) {
 }
 
 // Adjusted dept totals using recurrence logic
-function dtotAdj(d) {
+function ctotAdj(d) {
   const lines = d.sections.flatMap(s => s.lines);
   const est = lines.reduce((a, l) => a + adjustedEst(l), 0);
-  const TAB = Object.keys(DEPT_META).find(k => DEPT_META[k].id === d.id) || d.id.toUpperCase();
+  const TAB = Object.keys(CATEGORIE_META).find(k => CATEGORIE_META[k].id === d.id) || d.id.toUpperCase();
   let reel;
   if (_bilanView === 'mensuel' && _monthlyReelCache) {
     // Use monthly réel from match-log cache
@@ -2765,7 +2765,7 @@ function dtotAdj(d) {
     reel = lines.reduce((a, l) => a + (l.reel || 0), 0);
   }
   // A3 · Devis engagé — RAW ANNUAL Σ computeEngage over this dept's lines, via the NON-vivifying
-  // UPPERCASE-DEPT_META-tab devis bridge (_edDevisStore[key]||[], never _edDevisGet). The flatMap
+  // UPPERCASE-CATEGORIE_META-tab devis bridge (_edDevisStore[key]||[], never _edDevisGet). The flatMap
   // above loses s.s, so re-walk sections here to build _edDevisKey(TAB,s.s,l.l). NOT view-scaled
   // (no monthly-engagé source exists — reel's mensuel-cache path is unrelated); 0/— until devis land.
   let eng = 0;
@@ -2828,7 +2828,7 @@ const rhchip  = r => !r?'':r==='C'?'<span class="chip chip-c">C</span>':'<span c
 
 /* ═══ CHARTS ═══ */
 // Unique color per department — warm to cool spectrum
-const DEPT_COLORS = [
+const CATEGORIE_COLORS = [
   '#60a5fa', // blue      — HUMAIN
   '#818cf8', // indigo    — CHARGES SOCIALES
   '#a78bfa', // violet    — LOCAUX
@@ -2997,12 +2997,12 @@ function renderRecetteTable(containerId, data, opts){
 /* ═══ BILAN (render) ═══ */
 function renderBilan(){
   const viewLabel = _bilanView === 'mensuel' ? 'Mensuel' : 'Annuel';
-  const tE=EXP_DEPTS().reduce((a,d)=>a+dtotAdj(d).est,0);
-  const tR=EXP_DEPTS().reduce((a,d)=>a+dtotAdj(d).reel,0);
+  const tE=EXP_CATEGORIES().reduce((a,d)=>a+ctotAdj(d).est,0);
+  const tR=EXP_CATEGORIES().reduce((a,d)=>a+ctotAdj(d).reel,0);
   const rawRecHT=REC.flatMap(c=>c.rows).reduce((a,r)=>a+r.ht,0);
   const recHT = _bilanView === 'mensuel' ? rawRecHT / 12 : rawRecHT;
   const p=pct(tR,tE);
-  const allL=EXP_DEPTS().flatMap(d=>d.sections.flatMap(s=>s.lines));
+  const allL=EXP_CATEGORIES().flatMap(d=>d.sections.flatMap(s=>s.lines));
   const STORDER=['ESTIMATION','EN COURS','DEVIS SIGNÉ','VALIDÉ','PAYÉ'];
   const STCOL={'ESTIMATION':'var(--text-dim)','EN COURS':'var(--amber)','DEVIS SIGNÉ':'#818cf8','VALIDÉ':'var(--green)','PAYÉ':'var(--green)'};
   const STCHIP={'ESTIMATION':'chip-est','EN COURS':'chip-ec','DEVIS SIGNÉ':'chip-ds','VALIDÉ':'chip-val','PAYÉ':'chip-pay'};
@@ -3016,25 +3016,25 @@ function renderBilan(){
 
   // ── Dépenses imprévues par pôle ──────────────────────────
   if(el('b-imp-total')) {
-    const impData = EXP_DEPTS().map((d,i) => {
+    const impData = EXP_CATEGORIES().map((d,i) => {
       const impSection = d.sections.find(s => s.s === 'DÉPENSES IMPRÉVUES');
       const impEst = impSection ? impSection.lines.reduce((a,l) => a + (l.est||0), 0) : 0;
       const impReel = impSection ? impSection.lines.reduce((a,l) => a + (l.reel||0), 0) : 0;
       const impLines = impSection ? impSection.lines.filter(l => l.l && !l.l.startsWith('(ligne') && ((l.est||0) > 0 || (l.reel||0) > 0)).length : 0;
-      return { dept: d, idx: i, est: impEst, reel: impReel, lines: impLines, hasSpend: impReel > 0 || impEst > 0 };
+      return { categorie: d, idx: i, est: impEst, reel: impReel, lines: impLines, hasSpend: impReel > 0 || impEst > 0 };
     });
     const totalImp = impData.reduce((a,d) => a + d.reel, 0);
     const totalImpEst = impData.reduce((a,d) => a + d.est, 0);
-    const deptsWithImp = impData.filter(d => d.hasSpend).length;
+    const categoriesWithImp = impData.filter(d => d.hasSpend).length;
 
     el('b-imp-total').textContent = totalImp > 0 ? fe(totalImp) : (totalImpEst > 0 ? fe(totalImpEst) + ' budgeté' : '0 €');
     el('b-imp-total').style.color = totalImp > 0 ? 'var(--red)' : 'var(--text-dim)';
-    el('b-imp-detail').textContent = deptsWithImp > 0 ? `${deptsWithImp} département${deptsWithImp>1?'s':''} concerné${deptsWithImp>1?'s':''}` : 'Aucune dépense imprévue';
+    el('b-imp-detail').textContent = categoriesWithImp > 0 ? `${categoriesWithImp} département${categoriesWithImp>1?'s':''} concerné${categoriesWithImp>1?'s':''}` : 'Aucune dépense imprévue';
 
     el('b-imp-bars').innerHTML = impData.map(d => {
       const hasSpend = d.reel > 0;
       const hasBudget = d.est > 0 && !hasSpend;
-      const col = DEPT_COLORS[d.idx] || 'var(--indigo)';
+      const col = CATEGORIE_COLORS[d.idx] || 'var(--indigo)';
       let boxBg, boxBorder, boxColor, boxText;
       if (hasSpend) {
         boxBg = col+'15'; boxBorder = col+'44'; boxColor = 'var(--red)'; boxText = fe(d.reel);
@@ -3046,13 +3046,13 @@ function renderBilan(){
       const nameColor = hasSpend || hasBudget ? 'var(--text-muted)' : 'var(--text-dim)';
       const nameWeight = hasSpend || hasBudget ? '600' : '400';
       const clickable = hasSpend || hasBudget;
-      return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;${clickable?'cursor:pointer':''}" ${clickable?`onclick="openImprevuesDrawer('${d.dept.id}')" title="${d.dept.name} · Dépenses imprévues"`:''}>
+      return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;${clickable?'cursor:pointer':''}" ${clickable?`onclick="openImprevuesDrawer('${d.categorie.id}')" title="${d.categorie.name} · Dépenses imprévues"`:''}>
         <div style="width:100%;height:36px;border-radius:7px;background:${boxBg};border:1px solid ${boxBorder};display:flex;align-items:center;justify-content:center;font-size:.6em;font-weight:700;color:${boxColor}">
           ${boxText}
         </div>
         <div style="display:flex;align-items:center;gap:3px">
           <span style="width:5px;height:5px;border-radius:50%;background:${col};flex-shrink:0;opacity:${hasSpend||hasBudget?'1':'.3'}"></span>
-          <span style="font-size:.52em;color:${nameColor};text-align:center;white-space:nowrap;overflow:hidden;max-width:60px;text-overflow:ellipsis;font-weight:${nameWeight}">${d.dept.name.split(' ')[0].slice(0,8)}</span>
+          <span style="font-size:.52em;color:${nameColor};text-align:center;white-space:nowrap;overflow:hidden;max-width:60px;text-overflow:ellipsis;font-weight:${nameWeight}">${d.categorie.name.split(' ')[0].slice(0,8)}</span>
         </div>
       </div>`;
     }).join('');
@@ -3060,7 +3060,7 @@ function renderBilan(){
 
   // ── Dept rows (P&L table) — match recettes card style ────────────
   let ge=0, gr=0, gEng=0;
-  EXP_DEPTS().forEach(d=>{ const t=dtotAdj(d); ge+=t.est; gr+=t.reel; gEng+=t.eng; }); // gEng = Σ dtotAdj(d).eng (Guardrail C — NOT Σ monthEngage)
+  EXP_CATEGORIES().forEach(d=>{ const t=ctotAdj(d); ge+=t.est; gr+=t.reel; gEng+=t.eng; }); // gEng = Σ ctotAdj(d).eng (Guardrail C — NOT Σ monthEngage)
   const depBurnPct = ge>0 ? Math.round(gr/ge*100) : 0;
   const depBurnColor = depBurnPct>=100?'var(--red)':depBurnPct>=75?'var(--amber)':'var(--green)';
 
@@ -3071,17 +3071,17 @@ function renderBilan(){
     ['mai','Mai'],['juin','Juin'],['juillet','Juillet'],['aout','Août'],
     ['septembre','Septembre'],['octobre','Octobre'],['novembre','Novembre'],['decembre','Décembre']];
   // annual imprévus total + per-month placeholder spread (real month-scoping deferred to wiring)
-  const annualImp = EXP_DEPTS().reduce((a,d)=>{const sec=d.sections.find(x=>x.s==='DÉPENSES IMPRÉVUES');return a+(sec?sec.lines.reduce((b,l)=>b+(l.reel||0),0):0);},0);
+  const annualImp = EXP_CATEGORIES().reduce((a,d)=>{const sec=d.sections.find(x=>x.s==='DÉPENSES IMPRÉVUES');return a+(sec?sec.lines.reduce((b,l)=>b+(l.reel||0),0):0);},0);
   const mEst = ge/12, mReel = gr/12;
   let depRows = '';
   let totalImprevus = 0;
-  let deptsWithImprevus = 0;
+  let categoriesWithImprevus = 0;
   if(_depView==='departement'){
     // BY DEPARTMENT — cumulated across all 12 months (each dept's full-year budget vs spend)
-    EXP_DEPTS().forEach((d,i)=>{
-      const t=dtotAdj(d); const ec4=t.est-t.reel; const p3=pct(t.reel,t.est);
-      const col=DEPT_COLORS[i]||'var(--indigo)';
-      depRows+=`<tr style="cursor:pointer" onclick="scrollToDept('${d.id}')">
+    EXP_CATEGORIES().forEach((d,i)=>{
+      const t=ctotAdj(d); const ec4=t.est-t.reel; const p3=pct(t.reel,t.est);
+      const col=CATEGORIE_COLORS[i]||'var(--indigo)';
+      depRows+=`<tr style="cursor:pointer" onclick="scrollToCategorie('${d.id}')">
         <td><span style="display:inline-flex;align-items:center;gap:7px"><span style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0"></span>${d.name}</span></td>
         <td class="b-ht-col">${fe(t.est)}</td>
         <td class="b-ht-col">${t.reel?fe(t.reel):'—'}</td>
@@ -3118,7 +3118,7 @@ function renderBilan(){
       <td colspan="6" style="padding:6px 14px;font-size:12px;color:var(--red);font-style:italic;border-top:1px solid rgba(255,255,255,.04)">
         <span style="display:inline-flex;align-items:center;gap:6px">
           <span style="width:8px;height:8px;border-radius:2px;background:rgba(248,113,113,.5);flex-shrink:0"></span>
-          dont ${fe(totalImprevus)} imprévus · ${deptsWithImprevus} département${deptsWithImprevus>1?'s':''}
+          dont ${fe(totalImprevus)} imprévus · ${categoriesWithImprevus} département${categoriesWithImprevus>1?'s':''}
         </span>
       </td>
     </tr>`;
@@ -3142,7 +3142,7 @@ function renderBilan(){
           </span>
         </div>
         <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-bottom:14px;display:flex;box-shadow:inset 0 1px 2px rgba(0,0,0,.2)">
-          ${EXP_DEPTS().map((d,i)=>{const dR=dtotAdj(d).reel;if(dR<=0||ge<=0)return'';return`<div title="${d.name}: ${fe(dR)}" style="height:100%;width:${(dR/ge*100).toFixed(2)}%;background:${DEPT_COLORS[i]||'var(--indigo)'};flex-shrink:0"></div>`;}).join('')}
+          ${EXP_CATEGORIES().map((d,i)=>{const dR=ctotAdj(d).reel;if(dR<=0||ge<=0)return'';return`<div title="${d.name}: ${fe(dR)}" style="height:100%;width:${(dR/ge*100).toFixed(2)}%;background:${CATEGORIE_COLORS[i]||'var(--indigo)'};flex-shrink:0"></div>`;}).join('')}
         </div>`:''}
         <div class="twrap">
           <table class="btbl" id="dep-table">
@@ -3191,19 +3191,19 @@ function renderBilan(){
     const billEnc  = REC.filter(c =>  TICKETING_CATS.includes(c.cat)).flatMap(c => c.rows).reduce((a,r) => a + (r.reel||0), 0);
     const horsBill = REC.filter(c => !TICKETING_CATS.includes(c.cat)).flatMap(c => c.rows).reduce((a,r) => a + (r.reel||0), 0);
 
-    // à-valider (ALL pôles) — M3: _edDevisStore bridge (NOT l.devis), no inMonth filter; colour by EXP_DEPTS index.
+    // à-valider (ALL pôles) — M3: _edDevisStore bridge (NOT l.devis), no inMonth filter; colour by EXP_CATEGORIES index.
     const aValiderList = [];
     let overN = 0, overN10 = 0;
-    EXP_DEPTS().forEach((d, di) => {
-      const TAB = Object.entries(DEPT_META).find(([,m]) => m.id === d.id)?.[0] || d.id.toUpperCase();
-      const col = DEPT_COLORS[di] || 'var(--indigo)';
+    EXP_CATEGORIES().forEach((d, di) => {
+      const TAB = Object.entries(CATEGORIE_META).find(([,m]) => m.id === d.id)?.[0] || d.id.toUpperCase();
+      const col = CATEGORIE_COLORS[di] || 'var(--indigo)';
       d.sections.forEach((sec, si) => {
         sec.lines.forEach((l, li) => {
           if (!(l && l.l && !l.l.startsWith('(ligne'))) return;                 // isReal (placeholder guard)
           const devis = _edDevisStore[_edDevisKey(TAB, sec.s, l.l)] || [];       // own bridge — non-vivifying
           devis.forEach(dv => {
             if (dv.statut === 'à valider')
-              aValiderList.push({ deptId: d.id, pole: d.name, color: col, origIdx: si, li, ligne: l.l, fournisseur: dv.fournisseur || '—', ht: dv.montant_ht || 0 });
+              aValiderList.push({ categorieId: d.id, pole: d.name, color: col, origIdx: si, li, ligne: l.l, fournisseur: dv.fournisseur || '—', ht: dv.montant_ht || 0 });
           });
           const eng = computeEngage(devis), est = l.est || 0, reel = l.reel || 0;
           if ((est - reel - eng) < 0){ overN++; const ov = reel + eng - est; if (est > 0 && (ov/est) >= 0.10) overN10++; }
@@ -3220,8 +3220,8 @@ function renderBilan(){
         </div>
         ${aValiderList.map(r => `
         <div class="dkpi-devis-row" role="button" tabindex="0"
-             onclick="openLigneDevis('${r.deptId}',${r.origIdx},${r.li})"
-             onkeydown="if(event.key==='Enter')openLigneDevis('${r.deptId}',${r.origIdx},${r.li})">
+             onclick="openLigneDevis('${r.categorieId}',${r.origIdx},${r.li})"
+             onkeydown="if(event.key==='Enter')openLigneDevis('${r.categorieId}',${r.origIdx},${r.li})">
           <span class="dv-name"><span class="dv-dept"><span class="sw" style="background:${r.color}"></span>${_esc(r.pole)}</span>${_esc(r.fournisseur)}</span>
           <span class="dv-ligne">${_esc(r.ligne)}</span>
           <span class="dv-ht">${fe(r.ht)}</span>
@@ -3281,12 +3281,12 @@ function renderBilan(){
 
 }
 /* ═══ DEPT PAGES ═══ */
-function renderDept(id){
-  const dept=DEPTS.find(d=>d.id===id);
+function renderCategorie(id){
+  const dept=CATEGORIES.find(d=>d.id===id);
   const cont=document.getElementById('page-'+id);
   if(!dept||!cont) return;
 
-  const tot=dtot(dept);
+  const tot=ctot(dept);
   const p=pct(tot.reel,tot.est);
   const ec=tot.est-tot.reel;
   const allL=dept.sections.flatMap(s=>s.lines);
@@ -3307,12 +3307,12 @@ function renderDept(id){
   };
 
   // ── DÉPENSE #1/#2: devis read-back via computeEngage — HOISTED to module scope (DÉPENSE #2, Lift A)
-  //    so renderDept AND monthEngage share ONE definition. FORMULA unchanged (ADR-0025 §4:
+  //    so renderCategorie AND monthEngage share ONE definition. FORMULA unchanged (ADR-0025 §4:
   //    engagé = Σ {Validé, Signé} + Σ {Payé ∧ no matched_transaction_id}). The usage below is
   //    behaviour-identical — only the definition relocated (see module scope, near monthEngage). ──
-  // Bridge key (B2): reconstruct the UPPERCASE DEPT_META tab EXACTLY as buildEditDrawer's write path
-  //   (L4390) — NOT renderDept's raw lowercase `id` (raw id → auto-vivified [] → engagé silently 0 forever).
-  const TAB = Object.entries(DEPT_META).find(([,m]) => m.id === id)?.[0] || id.toUpperCase();
+  // Bridge key (B2): reconstruct the UPPERCASE CATEGORIE_META tab EXACTLY as buildEditDrawer's write path
+  //   (L4390) — NOT renderCategorie's raw lowercase `id` (raw id → auto-vivified [] → engagé silently 0 forever).
+  const TAB = Object.entries(CATEGORIE_META).find(([,m]) => m.id === id)?.[0] || id.toUpperCase();
 
   const secHTML=_vis.map((sec,si)=>{
     const origIdx = dept.sections.indexOf(sec);
@@ -3516,7 +3516,7 @@ function renderDept(id){
       <div class="sdl"></div>
     </div>
     <div class="mb">
-      ${buildDeptG3Cards(id, dept, tot, allL, p)}
+      ${buildCategorieG3Cards(id, dept, tot, allL, p)}
     </div>
 
     <div class="sdiv" style="align-items:center">
@@ -3528,7 +3528,7 @@ function renderDept(id){
     ${techniqueNote}
 
     <div class="dept-hdr">
-      <div class="dept-hdr-rail" style="background:${DEPT_COLORS[DEPTS.findIndex(d=>d.id===id)]||'var(--indigo)'}"></div>
+      <div class="dept-hdr-rail" style="background:${CATEGORIE_COLORS[CATEGORIES.findIndex(d=>d.id===id)]||'var(--indigo)'}"></div>
       <div class="dept-hdr-body">
         <div class="dept-hdr-top">
           <span class="dept-hdr-name">${dept.name}</span>
@@ -3554,13 +3554,13 @@ function renderDept(id){
 // Col 2: solid card (padding:20px)
 // Col 3: 3 stacked dashed cards (flex:1), last = Comparaison
 // ════════════════════════════════════════════════════
-function buildDeptG3Cards(id, dept, tot, allL, p) {
+function buildCategorieG3Cards(id, dept, tot, allL, p) {
 
   // ── Transactions non reliées card — dashed, shows dept unmatched count ─────
   // Build set of Qonto categories that map to this dept
-  const deptQontoCats = (deptId) => {
-    // Find the tab name (uppercase) for this deptId
-    const tabName = Object.keys(DEPT_META).find(k => DEPT_META[k].id === deptId) || deptId.toUpperCase();
+  const categorieQontoCats = (categorieId) => {
+    // Find the tab name (uppercase) for this categorieId
+    const tabName = Object.keys(CATEGORIE_META).find(k => CATEGORIE_META[k].id === categorieId) || categorieId.toUpperCase();
     // Collect all Qonto categories that map to this tab name
     const cats = new Set();
     cats.add(tabName); // always include the tab name itself
@@ -3569,32 +3569,32 @@ function buildDeptG3Cards(id, dept, tot, allL, p) {
     });
     return cats;
   };
-  const unmatchedForDept = (deptId) => {
-    const cats = deptQontoCats(deptId);
-    const tabName = Object.keys(DEPT_META).find(k => DEPT_META[k].id === deptId) || deptId.toUpperCase();
+  const unmatchedForDept = (categorieId) => {
+    const cats = categorieQontoCats(categorieId);
+    const tabName = Object.keys(CATEGORIE_META).find(k => CATEGORIE_META[k].id === categorieId) || categorieId.toUpperCase();
     return _unmatchedRows.filter(r => {
       const rCat = normStr(r.dept||'');
       // 1. Match by Qonto category (existing)
       if ([...cats].some(c => normStr(c) === rCat)) { r._matchSource = 'category'; return true; }
       // 2. Fallback: if category is empty, scan note for dept name
       if (!rCat || rCat === '—') {
-        const noteDept = deptFromNote(r.note);
-        if (noteDept && normStr(noteDept) === normStr(tabName)) { r._matchSource = 'note'; return true; }
+        const noteCategorie = categorieFromNote(r.note);
+        if (noteCategorie && normStr(noteCategorie) === normStr(tabName)) { r._matchSource = 'note'; return true; }
       }
       return false;
     });
   };
 
-  const unmatchedCard = (deptId) => {
-    const deptRows = unmatchedForDept(deptId);
-    const count = deptRows.length;
-    const unmTabName = Object.keys(DEPT_META).find(k => DEPT_META[k].id === deptId) || deptId.toUpperCase();
-    const rowsHtml = deptRows.length ? `
+  const unmatchedCard = (categorieId) => {
+    const categorieRows = unmatchedForDept(categorieId);
+    const count = categorieRows.length;
+    const unmTabName = Object.keys(CATEGORIE_META).find(k => CATEGORIE_META[k].id === categorieId) || categorieId.toUpperCase();
+    const rowsHtml = categorieRows.length ? `
       <div class="unm-grid" style="display:grid;grid-template-columns:90px 1.2fr 1fr 90px 64px;gap:0 16px;font-size:12px;padding:8px 14px;color:var(--text-dim);font-weight:600;text-transform:uppercase;letter-spacing:1.2px;border-bottom:1px solid var(--border)">
         <span>Date</span><span style="padding-left:8px">Fournisseur</span><span class="unm-note">Note</span><span style="text-align:right">Montant</span><span></span>
       </div>
       <div style="max-height:260px;overflow-y:auto">
-        ${deptRows.map(r => {
+        ${categorieRows.map(r => {
           let dateRaw = r.date || '';
           if (!dateRaw && typeof _releveAllTx !== 'undefined' && _releveAllTx.length) {
             const match = _releveAllTx.find(t => t.fourn === r.fourn && Math.abs((t.ttc||0) - (r.ttc||0)) < 0.01);
@@ -3790,12 +3790,12 @@ async function deleteLigne(dept, row, ligneName, returnTo) {
 
 function upSt(sel){
   const {id,si,li}=sel.dataset;
-  const dept=DEPTS.find(d=>d.id===id);
+  const dept=CATEGORIES.find(d=>d.id===id);
   const line=dept.sections[si].lines[li];
   line.st=sel.value;
   sel.className='ss '+stcls(sel.value);
   if(line._row){
-    const tabName=Object.entries(DEPT_META).find(([,m])=>m.id===id)?.[0];
+    const tabName=Object.entries(CATEGORIE_META).find(([,m])=>m.id===id)?.[0];
     if(tabName) fetch(`${API}/api/budget/update`,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({session:SESSION,dept:tabName,row:line._row,field:'statut',value:sel.value})
@@ -3811,14 +3811,14 @@ function tog(sid){
   hd.style.display=vis?'none':'';
   if(ar) ar.style.transform=vis?'rotate(0)':'rotate(90deg)';
 }
-function toggleAllSections(deptId, btn){
-  const dept=DEPTS.find(d=>d.id===deptId);
+function toggleAllSections(categorieId, btn){
+  const dept=CATEGORIES.find(d=>d.id===categorieId);
   if(!dept) return;
-  const firstSid='s'+deptId+'0';
+  const firstSid='s'+categorieId+'0';
   const firstTb=document.getElementById(firstSid);
   const anyCollapsed=!firstTb||firstTb.style.display==='none';
   dept.sections.forEach((s,si)=>{
-    const sid='s'+deptId+si;
+    const sid='s'+categorieId+si;
     const tb=document.getElementById(sid);
     const hd=document.getElementById('hdr-'+sid);
     const ar=document.getElementById('arr-'+sid);
@@ -3841,14 +3841,14 @@ function toggleAllSections(deptId, btn){
     if(label) label.textContent='TOUT DÉPLIER';
   }
 }
-function setAllSections(deptId, open){
+function setAllSections(categorieId, open){
   // DEPV2 FIX 2 — explicit open/close for the sec-view-toggle pair.
   // Mirrors the open/close branch of toggleAllSections (same DOM ids, same display/transform),
   // so it stays consistent with tog() and the per-section headers. No button-label mutation (these are actions, not state).
-  const dept=DEPTS.find(d=>d.id===deptId);
+  const dept=CATEGORIES.find(d=>d.id===categorieId);
   if(!dept) return;
   dept.sections.forEach((s,si)=>{
-    const sid='s'+deptId+si;
+    const sid='s'+categorieId+si;
     const tb=document.getElementById(sid);
     const hd=document.getElementById('hdr-'+sid);
     const ar=document.getElementById('arr-'+sid);
@@ -3858,14 +3858,14 @@ function setAllSections(deptId, open){
     if(ar) ar.style.transform = open ? 'rotate(90deg)' : 'rotate(0deg)';
   });
 }
-function applyDeptTabColor(){
+function applyCategorieTabColor(){
   document.querySelectorAll('.dt').forEach(d=>{
     // v5.13.7: only dept tabs carry data-idx. Month tabs (no data-idx) opt out of
     // inline dept-coloring so the CSS .dept-tabs .dt.on white-underline rule governs them.
     if(Number.isNaN(parseInt(d.dataset.idx))) return;
     if(d.classList.contains('on')){
       const idx=parseInt(d.dataset.idx);
-      const col=DEPT_COLORS[idx]||'#fff';
+      const col=CATEGORIE_COLORS[idx]||'#fff';
       d.style.borderBottomColor=col;
       d.style.color=col;
     } else {
@@ -3892,27 +3892,27 @@ function go(id,tabEl){
   } else if(id==='billetterie') {
     if(!tabEl) { const b=[...document.querySelectorAll('.nm')].find(l=>(l.getAttribute('onclick')||'').includes("'billetterie'")); if(b) b.classList.add('on'); }
     /* C2 nav-stub: Cashflow retired to a static placeholder page. Branch retained (do NOT drop —
-       falling through to the terminal else → renderDept('billetterie') would throw). No renderer. */
+       falling through to the terminal else → renderCategorie('billetterie') would throw). No renderer. */
   } else if(id==='factures') {
     if(!tabEl) { const b=[...document.querySelectorAll('.nm')].find(l=>(l.getAttribute('onclick')||'').includes("'factures'")); if(b) b.classList.add('on'); }
   } else {
     // Dept navigation — highlight matching tab strip button
     const dtMatch = [...document.querySelectorAll('.dt')].find(d=>(d.getAttribute('onclick')||'').includes(`'${id}'`));
     if(dtMatch) dtMatch.classList.add('on');
-    renderDept(id);
+    renderCategorie(id);
   }
   if(isTabChange) window.scrollTo({top:0,behavior:'smooth'});
-  applyDeptTabColor();
+  applyCategorieTabColor();
 }
 
-/* ── PREVIEW SCAFFOLDING: month page stacks dept blocks (reuses renderDept output) ── */
+/* ── PREVIEW SCAFFOLDING: month page stacks dept blocks (reuses renderCategorie output) ── */
 const MONTH_CATS=['humain','charges_sociales','locaux','assurances','honoraires','deplacements','abonnements','impots_taxes','restauration','divers'];
 function renderMonth(monthId){
   MONTH_CATS.forEach(catId=>{
     const target=document.getElementById('month-block-'+monthId+'-'+catId);
     const deptPage=document.getElementById('page-'+catId);
     if(!target||!deptPage) return;
-    renderDept(catId);                   // renderDept writes full dept page into #page-<id>
+    renderCategorie(catId);                   // renderCategorie writes full dept page into #page-<id>
     const kids=Array.from(deptPage.children);
     const hdrIdx=kids.findIndex(el=>el.classList && el.classList.contains('dept-hdr'));
     if(hdrIdx>=0){
@@ -3922,11 +3922,11 @@ function renderMonth(monthId){
     deptPage.innerHTML='';
   });
 }
-function scrollToDept(deptId){
+function scrollToCategorie(categorieId){
   const activePage=document.querySelector('.page.on');
   if(!activePage) return;
-  // dept detail blocks live in #month-block-<monthId>-<deptId>; find the wrapping .month-cat by data-cat
-  const cat=activePage.querySelector('.month-cat[data-cat="'+deptId+'"]');
+  // dept detail blocks live in #month-block-<monthId>-<categorieId>; find the wrapping .month-cat by data-cat
+  const cat=activePage.querySelector('.month-cat[data-cat="'+categorieId+'"]');
   if(cat){ cat.scrollIntoView({behavior:'smooth',block:'start'}); 
     // brief highlight so the eye lands
     const head=cat.querySelector('.month-cat-head');
@@ -3977,8 +3977,8 @@ function fillMonthKPIs(monthId, N){
   // category-dept id (F4: a month spans MULTIPLE categories, not a single id) + its section/raw-line index.
   const aValiderList = [];
   let attenduesN = 0, overN = 0, overN10 = 0;
-  EXP_DEPTS().forEach(d => {
-    const TAB = Object.entries(DEPT_META).find(([,m]) => m.id === d.id)?.[0] || d.id.toUpperCase();
+  EXP_CATEGORIES().forEach(d => {
+    const TAB = Object.entries(CATEGORIE_META).find(([,m]) => m.id === d.id)?.[0] || d.id.toUpperCase();
     d.sections.forEach((sec, si) => {
       sec.lines.forEach((l, li) => {
         if (!(l && l.l && !l.l.startsWith('(ligne'))) return;                 // isReal (inline placeholder guard)
@@ -3987,7 +3987,7 @@ function fillMonthKPIs(monthId, N){
         const devis = _edDevisStore[_edDevisKey(TAB, sec.s, l.l)] || [];      // own bridge — non-vivifying
         devis.forEach(dv => {
           if (dv.statut === 'à valider')
-            aValiderList.push({ deptId: d.id, origIdx: si, li, ligne: l.l, fournisseur: dv.fournisseur || '—', ht: dv.montant_ht || 0 });
+            aValiderList.push({ categorieId: d.id, origIdx: si, li, ligne: l.l, fournisseur: dv.fournisseur || '—', ht: dv.montant_ht || 0 });
         });
         if (Array.isArray(l.cas2Pending) && l.cas2Pending.length > 0) attenduesN++;
         const eng = computeEngage(devis), est = l.est || 0, reel = l.reel || 0;
@@ -4077,8 +4077,8 @@ function fillMonthKPIs(monthId, N){
         </div>
         ${aValiderList.map(dv => `
         <div class="dkpi-devis-row" role="button" tabindex="0"
-             onclick="openLigneDevis('${dv.deptId}',${dv.origIdx},${dv.li})"
-             onkeydown="if(event.key==='Enter')openLigneDevis('${dv.deptId}',${dv.origIdx},${dv.li})">
+             onclick="openLigneDevis('${dv.categorieId}',${dv.origIdx},${dv.li})"
+             onkeydown="if(event.key==='Enter')openLigneDevis('${dv.categorieId}',${dv.origIdx},${dv.li})">
           <span class="dv-name">${_esc(dv.fournisseur)}</span>
           <span class="dv-ligne">${_esc(dv.ligne)}</span>
           <span class="dv-ht">${fe(dv.ht)}</span>
@@ -4088,19 +4088,19 @@ function fillMonthKPIs(monthId, N){
 }
 function renderMonthSummary(monthId){
   // Month-page summary = per-DEPARTMENT roll-up (distinct from the Bilan page, which is per-MONTH).
-  // Built independently here so the two tables don't share render. Click a dept row → scrollToDept.
+  // Built independently here so the two tables don't share render. Click a dept row → scrollToCategorie.
   // Month-scoped + lissé-aware via deptMonth(d,N) — the SAME M/A/P walk as monthBudget/monthReel
   // (Σ over depts === monthBudget(N)/monthReel(N) in both lissé states; écart-stays-valid invariant preserved).
   const target=document.getElementById('month-summary-'+monthId);
   if(!target) return;
   const N=monthIndexOf(monthId);
   let ge=0,gr=0;
-  EXP_DEPTS().forEach(d=>{const t=deptMonth(d,N);ge+=t.est;gr+=t.reel;});
+  EXP_CATEGORIES().forEach(d=>{const t=deptMonth(d,N);ge+=t.est;gr+=t.reel;});
   let rows='';
-  EXP_DEPTS().forEach((d,i)=>{
+  EXP_CATEGORIES().forEach((d,i)=>{
     const t=deptMonth(d,N);const ec4=t.est-t.reel;const p3=pct(t.reel,t.est);
-    const col=DEPT_COLORS[i]||'var(--indigo)';
-    rows+=`<tr style="cursor:pointer" onclick="scrollToDept('${d.id}')">
+    const col=CATEGORIE_COLORS[i]||'var(--indigo)';
+    rows+=`<tr style="cursor:pointer" onclick="scrollToCategorie('${d.id}')">
       <td><span style="display:inline-flex;align-items:center;gap:7px"><span style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0"></span>${d.name}</span></td>
       <td class="b-ht-col">${fe(t.est)}</td>
       <td class="b-ht-col">${t.reel?fe(t.reel):'—'}</td>
@@ -4113,20 +4113,20 @@ function renderMonthSummary(monthId){
   target.innerHTML=`<div class="card"><div class="twrap"><table class="btbl"><thead><tr><th class="tl">Département</th><th class="b-ht-col">Budget HT</th><th class="b-ht-col">Dépensé HT</th><th class="b-ht-col">Devis engagé HT</th><th>Écart HT</th><th>Consommé</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
 
   // ── Imprévus strip (per-dept), below the summary table ──
-  const imp=EXP_DEPTS().map((d,i)=>{
+  const imp=EXP_CATEGORIES().map((d,i)=>{
     const sec=d.sections.find(x=>x.s==='DÉPENSES IMPRÉVUES');
     const est=sec?sec.lines.reduce((a,l)=>a+(l.est||0),0):0;
     const reel=sec?sec.lines.reduce((a,l)=>a+(l.reel||0),0):0;
-    return {dept:d,idx:i,est,reel,hasSpend:reel>0||est>0};
+    return {categorie:d,idx:i,est,reel,hasSpend:reel>0||est>0};
   });
   const totImp=imp.reduce((a,d)=>a+d.reel,0);
   const totImpEst=imp.reduce((a,d)=>a+d.est,0);
-  const nDept=imp.filter(d=>d.hasSpend).length;
+  const nCategorie=imp.filter(d=>d.hasSpend).length;
   const totText=totImp>0?fe(totImp):(totImpEst>0?fe(totImpEst)+' budgeté':'0 €');
-  const detText=nDept>0?`${nDept} département${nDept>1?'s':''} concerné${nDept>1?'s':''}`:'Aucune dépense imprévue';
+  const detText=nCategorie>0?`${nCategorie} département${nCategorie>1?'s':''} concerné${nCategorie>1?'s':''}`:'Aucune dépense imprévue';
   const boxes=imp.map(d=>{
     const hasSpend=d.reel>0; const hasBudget=d.est>0&&!hasSpend;
-    const col=DEPT_COLORS[d.idx]||'var(--indigo)';
+    const col=CATEGORIE_COLORS[d.idx]||'var(--indigo)';
     let bg,bd,c,t;
     if(hasSpend){bg=col+'15';bd=col+'44';c='var(--red)';t=fe(d.reel);}
     else if(hasBudget){bg=col+'10';bd=col+'30';c='var(--amber)';t=fe(d.est);}
@@ -4134,11 +4134,11 @@ function renderMonthSummary(monthId){
     const nc=(hasSpend||hasBudget)?'var(--text-muted)':'var(--text-dim)';
     const nw=(hasSpend||hasBudget)?'600':'400';
     const clk=hasSpend||hasBudget;
-    return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;${clk?'cursor:pointer':''}" ${clk?`onclick="scrollToDept('${d.dept.id}')" title="${d.dept.name} · Dépenses imprévues"`:''}>
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;${clk?'cursor:pointer':''}" ${clk?`onclick="scrollToCategorie('${d.categorie.id}')" title="${d.categorie.name} · Dépenses imprévues"`:''}>
       <div style="width:100%;height:36px;border-radius:7px;background:${bg};border:1px solid ${bd};display:flex;align-items:center;justify-content:center;font-size:.6em;font-weight:700;color:${c}">${t}</div>
       <div style="display:flex;align-items:center;gap:3px">
         <span style="width:5px;height:5px;border-radius:50%;background:${col};flex-shrink:0;opacity:${hasSpend||hasBudget?'1':'.3'}"></span>
-        <span style="font-size:.52em;color:${nc};text-align:center;white-space:nowrap;overflow:hidden;max-width:60px;text-overflow:ellipsis;font-weight:${nw}">${d.dept.name.split(' ')[0].slice(0,8)}</span>
+        <span style="font-size:.52em;color:${nc};text-align:center;white-space:nowrap;overflow:hidden;max-width:60px;text-overflow:ellipsis;font-weight:${nw}">${d.categorie.name.split(' ')[0].slice(0,8)}</span>
       </div>
     </div>`;
   }).join('');
@@ -4176,8 +4176,8 @@ function goDeptTab(id, tabEl){
   const page=document.getElementById('page-'+id);
   if(!page) return;
   page.classList.add('on');
-  renderDept(id);
-  applyDeptTabColor();
+  renderCategorie(id);
+  applyCategorieTabColor();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -4196,7 +4196,7 @@ async function initApp(){
   // stack where Bilan and Janvier both shipped as active pages at boot). The call
   // below clears all page/nav/month-tab highlights, activates the Bilan page,
   // highlights the Bilan nav, and runs renderBilan() against the now-populated
-  // DEPTS. Lands on Bilan, Bilan nav highlighted, NO month pre-selected.
+  // CATEGORIES. Lands on Bilan, Bilan nav highlighted, NO month pre-selected.
   bootLanding();
   // Load QONTO_RAW and rebuild match map on init
   loadAndMatchQontoRaw();
@@ -4220,7 +4220,7 @@ async function loadAndMatchQontoRaw() {
       const normCat = normStr(tx.cat||'');
       const tabName = POLE_MAP_CLIENT[normCat];
       if (!tabName) return;
-      const dept = DEPTS.find(d => d.id === tabName.toLowerCase());
+      const dept = CATEGORIES.find(d => d.id === tabName.toLowerCase());
       if (!dept) return;
       const allLines = dept.sections.flatMap(s => s.lines).filter(l => l.l && !l.l.match(/^\(ligne/i));
       const noteDesc = extractDesc(tx.note);
@@ -4317,7 +4317,7 @@ function storeQontoTransactions(csvData) {
     const normCat = normStr(tx.cat);
     const tabName = POLE_MAP_CLIENT[normCat];
     if (!tabName) return;
-    const dept = DEPTS.find(d => d.id === tabName.toLowerCase());
+    const dept = CATEGORIES.find(d => d.id === tabName.toLowerCase());
     if (!dept) return;
     const allLines = dept.sections.flatMap(s => s.lines).filter(l => l.l && !l.l.match(/^\(ligne/i));
     const noteDesc = extractDesc(tx.note);
@@ -4368,7 +4368,7 @@ function fuzzyMatchClient(a, b) {
   return m / wb.length >= 0.6;
 }
 
-const NOTE_DEPT_MAP = {
+const NOTE_CATEGORIE_MAP = {
   'HUMAIN':'HUMAIN','SALAIRE':'HUMAIN','PERSONNEL':'HUMAIN',
   'URSSAF':'CHARGES_SOCIALES','COTISATION':'CHARGES_SOCIALES','MUTUELLE':'CHARGES_SOCIALES','PREVOYANCE':'CHARGES_SOCIALES','CHARGES SOCIALES':'CHARGES_SOCIALES',
   'LOYER':'LOCAUX','BUREAUX':'LOCAUX','ATELIER':'LOCAUX','BUREAU':'LOCAUX','NETTOYAGE':'LOCAUX','FLUIDE':'LOCAUX','ALARME':'LOCAUX','IMMOBILIER':'LOCAUX',
@@ -4380,33 +4380,33 @@ const NOTE_DEPT_MAP = {
   'RESTAURATION':'RESTAURATION','REPAS':'RESTAURATION',
   'DIVERS':'DIVERS'
 };
-function deptFromNote(note) {
+function categorieFromNote(note) {
   if (!note) return null;
   const n = normStr(note);
   // Pattern 1: "DEPT - MLxxxxxx - DESCRIPTION"
   const parts = note.split(' - ');
   if (parts.length >= 2 && parts[1].toUpperCase().includes('ML')) {
     const c = normStr(parts[0]);
-    if (NOTE_DEPT_MAP[c]) return NOTE_DEPT_MAP[c];
+    if (NOTE_CATEGORIE_MAP[c]) return NOTE_CATEGORIE_MAP[c];
   }
   // Pattern 2: "Ml 130326 / dept / detail"
   const slashParts = note.split('/');
   if (slashParts.length >= 2) {
     for (const sp of slashParts.slice(1)) {
       const c = normStr(sp.trim());
-      if (NOTE_DEPT_MAP[c]) return NOTE_DEPT_MAP[c];
+      if (NOTE_CATEGORIE_MAP[c]) return NOTE_CATEGORIE_MAP[c];
     }
   }
   // Pattern 3: dot-separated "ML.13&14MARS.PARIS.AMENAGEMENT.PEINTURE"
   if (note.toUpperCase().includes('ML') && note.includes('.')) {
     for (const dp of note.toUpperCase().replace(/&/g,'.').split('.')) {
       const c = normStr(dp.trim());
-      if (NOTE_DEPT_MAP[c]) return NOTE_DEPT_MAP[c];
+      if (NOTE_CATEGORIE_MAP[c]) return NOTE_CATEGORIE_MAP[c];
     }
   }
   // Pattern 4: scan all words for known dept (>= 3 chars to catch CFE, TVA etc)
   for (const w of n.split(/\s+/)) {
-    if (w.length >= 3 && NOTE_DEPT_MAP[w]) return NOTE_DEPT_MAP[w];
+    if (w.length >= 3 && NOTE_CATEGORIE_MAP[w]) return NOTE_CATEGORIE_MAP[w];
   }
   return null;
 }
@@ -4482,7 +4482,7 @@ async function handleQontoFile(event) {
     const importResult = await importResp.json();
 
     await refreshBudgetData();
-    // Re-run client-side matching with updated DEPTS
+    // Re-run client-side matching with updated CATEGORIES
     storeQontoTransactions(csvData);
     setSyncTimestamp();
     // Refresh transactions tab immediately
@@ -4551,7 +4551,7 @@ async function refreshBudgetData() {
     const resp = await fetch(`${API}/api/budget?session=${SESSION}`, { headers: { 'Accept': 'application/json' } });
     if (!resp.ok) return;
     const json = await resp.json();
-    DEPTS = Object.entries(json.data).map(([tab, rows]) => apiRowsToDept(tab, rows));
+    CATEGORIES = Object.entries(json.data).map(([tab, rows]) => apiRowsToCategorie(tab, rows));
     renderBilan();
     // Re-render active dept page if one is open
     const activeNl = document.querySelector('.nm.on,.dt.on');
@@ -4559,7 +4559,7 @@ async function refreshBudgetData() {
       const onclick = activeNl.getAttribute('onclick') || '';
       const match = onclick.match(/'([^']+)'/);
       if (match && match[1] !== 'bilan') {
-        renderDept(match[1]);
+        renderCategorie(match[1]);
       }
     }
   } catch (e) {
@@ -4597,8 +4597,8 @@ function tvaOpts(current) {
   ).join('');
 }
 
-function getSections(deptId) {
-  const dept = DEPTS.find(d => d.id === deptId);
+function getSections(categorieId) {
+  const dept = CATEGORIES.find(d => d.id === categorieId);
   if (!dept) return [];
   return [...new Set(dept.sections.map(s => s.s))];
 }
@@ -4613,12 +4613,12 @@ function getSections(deptId) {
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
-function buildEditDrawer(deptId, sectionIdx, lineIdx, isNew, recRef) {
+function buildEditDrawer(categorieId, sectionIdx, lineIdx, isNew, recRef) {
   // LOCK-12 (CL-36): recette fit (approach A, confirmed). recRef = {ci, ri} present → recette
   // mode (resolve from REC[ci].rows[ri], supply display values, omit dépense-only fields, save via
   // saveRecFromEdit). recRef absent → dépense path BYTE-IDENTICAL (every existing caller).
   const recMode = !!recRef;
-  let dept, line, tabName, sections, currentSection, allDeptOptions;
+  let dept, line, tabName, sections, currentSection, allCategorieOptions;
   if (recMode) {
     const cat = (recRef.ci != null) ? REC[recRef.ci] : null;
     if (!isNew && !cat) return;
@@ -4638,9 +4638,9 @@ function buildEditDrawer(deptId, sectionIdx, lineIdx, isNew, recRef) {
     tabName = 'RECETTES';
     sections = [];
     currentSection = catName;
-    allDeptOptions = '';
+    allCategorieOptions = '';
   } else {
-  const dept_ = DEPTS.find(d => d.id === deptId);
+  const dept_ = CATEGORIES.find(d => d.id === categorieId);
   if (!dept_) return;
   dept = dept_;
 
@@ -4649,10 +4649,10 @@ function buildEditDrawer(deptId, sectionIdx, lineIdx, isNew, recRef) {
     : dept.sections[sectionIdx]?.lines[lineIdx];
   if (!line) return;
 
-  tabName = Object.entries(DEPT_META).find(([,m]) => m.id === deptId)?.[0] || deptId.toUpperCase();
-  sections = getSections(deptId);
+  tabName = Object.entries(CATEGORIE_META).find(([,m]) => m.id === categorieId)?.[0] || categorieId.toUpperCase();
+  sections = getSections(categorieId);
   currentSection = dept.sections[sectionIdx]?.s || '';
-  allDeptOptions = Object.entries(DEPT_META).map(([tab, m]) =>
+  allCategorieOptions = Object.entries(CATEGORIE_META).map(([tab, m]) =>
     `<option value="${tab}" ${tab === tabName ? 'selected' : ''}>${m.name}</option>`
   ).join('');
   }
@@ -4682,7 +4682,7 @@ function buildEditDrawer(deptId, sectionIdx, lineIdx, isNew, recRef) {
       const _recTot = (typeof REC !== 'undefined' && REC) ? REC.flatMap(c => c.rows || []).reduce((a, r) => a + (r.est ?? r.ht ?? 0), 0) : 0;  // FIX1(b) est<-ht: all-rows sum, normalize can't reach here
       _partPct = _recTot > 0 ? Math.round(_estV / _recTot * 100) : null;
     } else if (dept && dept.sections) {
-      const _dEst = dtot(dept).est;
+      const _dEst = ctot(dept).est;
       _partPct = _dEst > 0 ? Math.round(_estV / _dEst * 100) : null;
     }
   } catch (e) { _partPct = null; }
@@ -4935,14 +4935,14 @@ function buildEditDrawer(deptId, sectionIdx, lineIdx, isNew, recRef) {
 
           ${recMode ? '' : `<div class="df-group">
             <label class="df-label">Département</label>
-            <select class="df-select ed-disabled" disabled aria-disabled="true" tabindex="-1">${allDeptOptions}</select>
+            <select class="df-select ed-disabled" disabled aria-disabled="true" tabindex="-1">${allCategorieOptions}</select>
             <div class="ed-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Déplacer une ligne est désactivé (V1).</span></div>
           </div>`}
         </div>
 
         ${!isNew && line._row ? `<div class="ed-sec">
           <div class="ed-sec-t">Zone sensible</div>
-          <div class="ed-delcard" onclick="deleteLigne('${tabName}',${line._row},'${_nameEsc}','${deptId}')">
+          <div class="ed-delcard" onclick="deleteLigne('${tabName}',${line._row},'${_nameEsc}','${categorieId}')">
             <div class="ed-delcard-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div>
             <div class="ed-delcard-b"><div class="t">Supprimer la ligne budgétaire</div><div class="d">${recMode ? 'Retire la recette du budget. Les transactions reliées seront déliées.' : 'Retire la ligne du budget. Les transactions reliées seront déliées.'}</div></div>
           </div>
@@ -4965,7 +4965,7 @@ function buildEditDrawer(deptId, sectionIdx, lineIdx, isNew, recRef) {
     <button class="drawer-btn" onclick="closeDrawer()">Annuler</button>
     ${recMode
       ? `<button class="drawer-btn primary" id="ef-save-btn" onclick="saveRecFromEdit(${recRef.ci},${recRef.ri},${isNew})">${isNew ? '+ Créer' : 'Enregistrer'}</button>`
-      : `<button class="drawer-btn primary" id="ef-save-btn" onclick="saveLigne('${deptId}',${sectionIdx},${lineIdx},${isNew})">${isNew ? '+ Créer' : 'Enregistrer'}</button>`}
+      : `<button class="drawer-btn primary" id="ef-save-btn" onclick="saveLigne('${categorieId}',${sectionIdx},${lineIdx},${isNew})">${isNew ? '+ Créer' : 'Enregistrer'}</button>`}
   `;
 
   // Focus name field
@@ -4973,25 +4973,25 @@ function buildEditDrawer(deptId, sectionIdx, lineIdx, isNew, recRef) {
   if (document.querySelector('.encsrc')) encsrcRestore();   // seam 27db — restore saved recette encaissé source
 }
 
-function openEditLigne(deptId, sectionIdx, lineIdx, recRef) {
+function openEditLigne(categorieId, sectionIdx, lineIdx, recRef) {
   _editLigneActive = true;
-  buildEditDrawer(deptId, sectionIdx, lineIdx, false, recRef);
+  buildEditDrawer(categorieId, sectionIdx, lineIdx, false, recRef);
   document.getElementById('drawer-overlay').classList.add('open');
   document.getElementById('drawer').classList.add('open');
   
   setTimeout(() => { _editLigneActive = false; }, 300);
 }
 
-function openAddLigne(deptId, sectionIdx) {
+function openAddLigne(categorieId, sectionIdx) {
   _editLigneActive = true;
-  buildEditDrawer(deptId, sectionIdx, -1, true);
+  buildEditDrawer(categorieId, sectionIdx, -1, true);
   document.getElementById('drawer-overlay').classList.add('open');
   document.getElementById('drawer').classList.add('open');
   
   setTimeout(() => { _editLigneActive = false; }, 300);
 }
 
-async function saveLigne(deptId, sectionIdx, lineIdx, isNew) {
+async function saveLigne(categorieId, sectionIdx, lineIdx, isNew) {
   const nom     = document.getElementById('ef-nom')?.value.trim();
   const section = document.getElementById('ef-section')?.value.trim();
   const tva     = document.getElementById('ef-tva')?.value;
@@ -5000,11 +5000,11 @@ async function saveLigne(deptId, sectionIdx, lineIdx, isNew) {
   const obs        = document.getElementById('ef-obs')?.value.trim();
   const qonto_ref  = document.getElementById('ef-qonto-ref')?.value.trim();
   // Read dept from dropdown (user may have changed it)
-  const selectedDept = document.getElementById('ef-dept')?.value || null;
-  const effectiveDeptId = selectedDept
-    ? (DEPT_META[selectedDept]?.id || deptId)
-    : deptId;
-  const effectiveTabName = selectedDept || Object.entries(DEPT_META).find(([,m]) => m.id === deptId)?.[0];
+  const selectedCategorie = document.getElementById('ef-dept')?.value || null;
+  const effectiveCategorieId = selectedCategorie
+    ? (CATEGORIE_META[selectedCategorie]?.id || categorieId)
+    : categorieId;
+  const effectiveTabName = selectedCategorie || Object.entries(CATEGORIE_META).find(([,m]) => m.id === categorieId)?.[0];
 
   if (!nom) {
     document.getElementById('ef-nom').style.borderColor = 'rgba(248,113,113,.6)';
@@ -5015,7 +5015,7 @@ async function saveLigne(deptId, sectionIdx, lineIdx, isNew) {
   const btn = document.getElementById('ef-save-btn');
   if (btn) { btn.classList.add('saving'); btn.textContent = 'Enregistrement…'; }
 
-  const dept = DEPTS.find(d => d.id === effectiveDeptId);
+  const dept = CATEGORIES.find(d => d.id === effectiveCategorieId);
   const tabName = effectiveTabName;
   if (!tabName) { showToast('⚠ Erreur', 'Département introuvable', 'red'); return; }
 
@@ -5040,13 +5040,13 @@ async function saveLigne(deptId, sectionIdx, lineIdx, isNew) {
         throw new Error(err.detail || `Erreur ${resp.status}`);
       }
     } else {
-      // Resolve the ORIGINAL line against the ORIGINAL dept (the param deptId, baked into the drawer
+      // Resolve the ORIGINAL line against the ORIGINAL dept (the param categorieId, baked into the drawer
       // at build time) — NOT the effective/target dept — so line.l is the true pre-edit name and the
       // move detection compares original→target correctly even when ef-dept was changed.
-      const origDept = DEPTS.find(d => d.id === deptId);
+      const origDept = CATEGORIES.find(d => d.id === categorieId);
       const line = origDept?.sections[sectionIdx]?.lines[lineIdx];
       if (!line?._row) throw new Error('Numéro de ligne introuvable');
-      const originalTabName = Object.entries(DEPT_META).find(([,m]) => m.id === deptId)?.[0] || (deptId||'').toUpperCase();
+      const originalTabName = Object.entries(CATEGORIE_META).find(([,m]) => m.id === categorieId)?.[0] || (categorieId||'').toUpperCase();
       const tvaNum = parseFloat(tva);
       const estTTC = est && !isNaN(tvaNum) ? Math.round(est * (1 + tvaNum)) : est;
 
@@ -5085,7 +5085,7 @@ async function saveLigne(deptId, sectionIdx, lineIdx, isNew) {
     closeDrawer();
     _monthlyReelCache = null;   // step-2 Δ1: invalidate monthly cache so lissé re-balances after a recurrence change (was general's toggleRecurrence)
     await refreshBudgetData();
-    go(effectiveDeptId, null);
+    go(effectiveCategorieId, null);
     showToast(
       isNew ? '✅ Ligne créée' : '✅ Ligne mise à jour',
       `"${nom}" ${isNew ? 'ajoutée à' : 'mise à jour dans'} ${effectiveTabName}`,
@@ -5212,8 +5212,8 @@ function _devisRowHTML(d, idx){
     </div>`;
 }
 
-/* ==== _devisDeptHTML (ev L4630) ==== */
-function _devisDeptHTML(tabName){
+/* ==== _devisCategorieHTML (ev L4630) ==== */
+function _devisCategorieHTML(tabName){
   // honest aggregate: every line of this département that has client devis, grouped by section.
   const prefix = tabName + '\u241F';
   const groups = {};
@@ -5261,12 +5261,12 @@ function edDevisPaneHTML(key, est, tabName){
     <div class="dsec">
       <div class="dsec-t dv-line-only">Devis enregistrés</div>
       <div class="edit dv-line-only">${lineRows}</div>
-      <div class="dv-dept-only" style="display:none">${_devisDeptHTML(tabName)}</div>
+      <div class="dv-dept-only" style="display:none">${_devisCategorieHTML(tabName)}</div>
     </div>`;
   const actions = `
     <div class="dsec dv-line-only" style="margin-top:6px">
       <div class="dsec-t">Actions</div>
-      <div class="add-card" onclick="showDeptDevis(this)" style="border-style:solid">
+      <div class="add-card" onclick="showCategorieDevis(this)" style="border-style:solid">
         <div class="ac-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
         <div class="ac-body"><div class="ac-t">Tous les devis du département</div><div class="ac-d">Voir l'ensemble des devis de ${_esc(tabName)}, toutes lignes confondues.</div></div>
         <svg class="ac-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
@@ -5353,19 +5353,19 @@ function edDevisCancel(btn){
   _applyDevisState(row, 'annule');
 }
 
-/* ==== showDeptDevis (ev L4760) ==== */
-function showDeptDevis(el){
+/* ==== showCategorieDevis (ev L4760) ==== */
+function showCategorieDevis(el){
   const pane = el.closest('.ed-pane[data-edpane="devis"]');
   pane.classList.add('dep-devis-deptview');
   pane.querySelectorAll('.dv-dept-only').forEach(n => n.style.display='');
   pane.querySelectorAll('.devis-row.expanded').forEach(r => r.classList.remove('expanded'));
-  // §Retour — the top-right SHELL control becomes Retour for the dept-devis view (mirrors openVentiler / .rail-x). hideDeptDevis restores it.
+  // §Retour — the top-right SHELL control becomes Retour for the dept-devis view (mirrors openVentiler / .rail-x). hideCategorieDevis restores it.
   (function(){ const rx = document.getElementById('rail-hdr-host') && document.getElementById('rail-hdr-host').querySelector('.rail-x');
-    if (rx){ rx.innerHTML = '\u2190 Retour'; rx.onclick = () => hideDeptDevis(pane); } })();
+    if (rx){ rx.innerHTML = '\u2190 Retour'; rx.onclick = () => hideCategorieDevis(pane); } })();
 }
 
-/* ==== hideDeptDevis (ev L4769) ==== */
-function hideDeptDevis(el){
+/* ==== hideCategorieDevis (ev L4769) ==== */
+function hideCategorieDevis(el){
   const pane = (el && el.closest && el.closest('.ed-pane[data-edpane="devis"]')) || document.querySelector('#drawer .ed-pane[data-edpane="devis"]');
   if (!pane) return;
   pane.classList.remove('dep-devis-deptview');
@@ -5472,8 +5472,8 @@ function edRecalcTTC(el) {
   out.textContent = !isNaN(tvaNum) ? fmt(ht * (1 + tvaNum)) + '\u00a0€' : fmt(ht) + '\u00a0€ (sans TVA)';
 }
 
-function openEstDrawer(deptId, sectionIdx, lineIdx) {  // step-2 C4: general's estimation drawer
-  return openEditLigne(deptId, sectionIdx, lineIdx);    // shimmed onto the ported edit drawer
+function openEstDrawer(categorieId, sectionIdx, lineIdx) {  // step-2 C4: general's estimation drawer
+  return openEditLigne(categorieId, sectionIdx, lineIdx);    // shimmed onto the ported edit drawer
 }
 
 
@@ -5498,21 +5498,21 @@ let _bilanRecTTC = false;
 // ════════════════════════════════════════════════════
 // PANEL 3 — DÉPENSÉ (Qonto transactions + expected)
 // ════════════════════════════════════════════════════
-/* ════════ STEP-4: deptColorFor (courbe dep, ported from event md5 baffb62d) ════════ */
-function deptColorFor(label) {
+/* ════════ STEP-4: categorieColorFor (courbe dep, ported from event md5 baffb62d) ════════ */
+function categorieColorFor(label) {
   if (!label) return null;
   const key = String(label).trim();
-  // tab-key path (DEPT_META key, e.g. "TECHNIQUE") → its .id → index in DEPTS
-  const meta = DEPT_META[key] || DEPT_META[key.toUpperCase()];
+  // tab-key path (CATEGORIE_META key, e.g. "TECHNIQUE") → its .id → index in CATEGORIES
+  const meta = CATEGORIE_META[key] || CATEGORIE_META[key.toUpperCase()];
   let id = meta ? meta.id : null;
   if (!id) {
-    // name path: match a DEPTS entry by name (case-insensitive)
-    const byName = DEPTS.find(d => (d.name||'').toUpperCase() === key.toUpperCase());
+    // name path: match a CATEGORIES entry by name (case-insensitive)
+    const byName = CATEGORIES.find(d => (d.name||'').toUpperCase() === key.toUpperCase());
     if (byName) id = byName.id;
   }
   if (!id) return null;
-  const idx = DEPTS.findIndex(d => d.id === id);
-  return idx >= 0 ? (DEPT_COLORS[idx] || null) : null;
+  const idx = CATEGORIES.findIndex(d => d.id === id);
+  return idx >= 0 ? (CATEGORIE_COLORS[idx] || null) : null;
 }
 
 /* ════════ STEP-4: sealed reelles-components + v22b wiring + line-based openReelDrawer (ported from event md5 baffb62d; 3 opt-wrappers stubbed §D) ════════ */
@@ -5813,15 +5813,15 @@ function rythme(points, ceiling, mode){
    Authored byte-for-byte compatible with the canonical options impl
    (options mock L1789-1800); the signature must NOT change (v23 calls it).
      assignedCard(dept, line, { cat, amt, atrier, onRemove })
-   The dot is coloured by DEPARTMENT brand colour (deptColorFor(dept)) — NOT by
+   The dot is coloured by DEPARTMENT brand colour (categorieColorFor(dept)) — NOT by
    transaction type. (See state-back: spec vectors conflate the dept dot with
-   the réelles type palette; the harness exercises the dot via a demo DEPTS
+   the réelles type palette; the harness exercises the dot via a demo CATEGORIES
    whose entries carry the enumerated palette colours.)
    opts.onRemove falsy (read surfaces pass null) -> no remove affordance.
    ---------------------------------------------------------------------------- */
 function assignedCard(dept, line, opts){
   opts = opts || {};
-  const c = (typeof deptColorFor === 'function' ? deptColorFor(dept) : null) || '#fbbf24';
+  const c = (typeof categorieColorFor === 'function' ? categorieColorFor(dept) : null) || '#fbbf24';
   const cat = opts.cat || (typeof lineCat === 'function' ? lineCat(dept, line) : '');
   const intra  = opts.intra  ? '<span class="vcard-cat" style="color:var(--indigo)">INTRA</span>' : '';
   const amt = opts.amt ? '<span class="vcard-amt">' + opts.amt + '</span>' : '';
@@ -6227,7 +6227,7 @@ function reelTab(btn){
 }
 
 
-async function openReelDrawer(deptId, sectionIdx, lineIdx, recRef) {
+async function openReelDrawer(categorieId, sectionIdx, lineIdx, recRef) {
   // LOCK-12 (CL-36): recette fit (approach A). recRef={ci,ri} → recette mode (resolve from REC, supply
   // display values, cas2Pending stays intra-only). recRef absent → dépense path BYTE-IDENTICAL.
   const recMode = !!recRef;
@@ -6241,18 +6241,18 @@ async function openReelDrawer(deptId, sectionIdx, lineIdx, recRef) {
     section = cat.cat || '';
     tabName = 'RECETTES';
   } else {
-  const dept_ = DEPTS.find(d => d.id === deptId);
+  const dept_ = CATEGORIES.find(d => d.id === categorieId);
   if (!dept_) return;
   dept = dept_;
   line = dept.sections[sectionIdx]?.lines[lineIdx];
   if (!line) return;
   section = dept.sections[sectionIdx]?.s || '';
-  tabName = Object.entries(DEPT_META).find(([,m]) => m.id === deptId)?.[0] || deptId.toUpperCase();
+  tabName = Object.entries(CATEGORIE_META).find(([,m]) => m.id === categorieId)?.[0] || categorieId.toUpperCase();
   }
 
   const ttcReel = typeof line.tva === 'number' ? (line.reel || 0) * (1 + line.tva) : (line.reel || 0);
   const ttcEst  = typeof line.tva === 'number' ? (line.est  || 0) * (1 + line.tva) : (line.est  || 0);
-  // seam 27dc — engagé (flat devis-signés reference) for Courbe B. Mirrors renderDept's SIGNED-line
+  // seam 27dc — engagé (flat devis-signés reference) for Courbe B. Mirrors renderCategorie's SIGNED-line
   // logic (seam 27cu): a line is engagé iff signed; figure = (l.engage ?? l.est). TTC-scaled exactly
   // like ttcEst so it sits on the same axis as ceiling + the TTC cum series. Unsigned → 0 → the
   // renderer hides the engagé layer ("Absent → couche engagé masquée"). NOT a series; no cum/réel reconcile.
@@ -6408,7 +6408,7 @@ async function openReelDrawer(deptId, sectionIdx, lineIdx, recRef) {
     // is assigned and the link resolves — so it is excluded from this total (Cas-2 "counts nowhere"
     // invariant, CL-20). It only subtracts once resolved (Phase-D propagation, CL-38).
     const total = matchLogTx.reduce((a,t) => t.refundPendingAssign ? a : (t.remboursement ? a - Math.abs(t.ttc||0) : a + Math.abs(t.ttc||0)), 0);
-    const _deptId = deptId;
+    const _deptId = categorieId;
     const _lineL = line.l;
     const _si = sectionIdx;
     const _li = lineIdx;
@@ -6456,11 +6456,11 @@ async function openReelDrawer(deptId, sectionIdx, lineIdx, recRef) {
 
 }
 
-async function openImprevuesDrawer(deptId) {
-  const dept = DEPTS.find(d => d.id === deptId);
+async function openImprevuesDrawer(categorieId) {
+  const dept = CATEGORIES.find(d => d.id === categorieId);
   if (!dept) return;
-  const deptName = dept.name;
-  const tabName = Object.keys(DEPT_META).find(k => DEPT_META[k].id === deptId) || deptId.toUpperCase();
+  const categorieName = dept.name;
+  const tabName = Object.keys(CATEGORIE_META).find(k => CATEGORIE_META[k].id === categorieId) || categorieId.toUpperCase();
   const impSection = dept.sections.find(s => s.s === 'DÉPENSES IMPRÉVUES');
 
   const lines = impSection ? impSection.lines.filter(l => l.l && !l.l.startsWith('(ligne') && ((l.est||0) > 0 || (l.reel||0) > 0)) : [];
@@ -6468,7 +6468,7 @@ async function openImprevuesDrawer(deptId) {
   const totalEst = lines.reduce((a,l) => a + (l.est||0), 0);
 
   document.getElementById('drawer-title').innerHTML = `<span style="color:var(--red)">⚡</span> Dépenses imprévues`;
-  document.getElementById('drawer-sub').innerHTML = `${deptName} · ${lines.length} ligne${lines.length>1?'s':''} · ${totalReel > 0 ? '−'+fe(totalReel)+' dépensé' : fe(totalEst)+' budgeté'}`;
+  document.getElementById('drawer-sub').innerHTML = `${categorieName} · ${lines.length} ligne${lines.length>1?'s':''} · ${totalReel > 0 ? '−'+fe(totalReel)+' dépensé' : fe(totalEst)+' budgeté'}`;
 
   // Show drawer with loading for transactions
   const linesHtml = lines.length > 0 ? lines.map(l => {
@@ -6493,7 +6493,7 @@ async function openImprevuesDrawer(deptId) {
   }).join('') : `<div style="text-align:center;padding:30px 0">
     <div style="font-size:1.5em;margin-bottom:8px">✅</div>
     <div style="font-size:.82em;color:var(--text-muted);font-weight:600">Aucune dépense imprévue</div>
-    <div style="font-size:.7em;color:var(--text-dim);margin-top:4px">La section est vide pour ${deptName}</div>
+    <div style="font-size:.7em;color:var(--text-dim);margin-top:4px">La section est vide pour ${categorieName}</div>
   </div>`;
 
   document.getElementById('drawer-body').innerHTML = `
@@ -6506,7 +6506,7 @@ async function openImprevuesDrawer(deptId) {
   document.getElementById('drawer-footer').style.display = 'flex';
   document.getElementById('drawer-footer').innerHTML = `
     <button class="drawer-btn" onclick="closeDrawer()">Fermer</button>
-    <button class="drawer-btn" onclick="closeDrawer();go('${deptId}',null)">Voir le département →</button>
+    <button class="drawer-btn" onclick="closeDrawer();go('${categorieId}',null)">Voir le département →</button>
   `;
   document.getElementById('drawer-overlay').classList.add('open');
   document.getElementById('drawer').classList.add('open');
@@ -6611,12 +6611,12 @@ function populateAssignLines(tabName) {
 
   let lines = [];
   /* C2: dead _assignIsBill billetterie-wires branch removed (incl. its __BILL?.tx read);
-     live RECETTES / DEPT_META assign paths below are unchanged. */
+     live RECETTES / CATEGORIE_META assign paths below are unchanged. */
   if (tabName === 'RECETTES') {
     lines = REC.flatMap(cat => cat.rows).filter(r => r.l).map(r => r.l);
   } else {
-    const meta = DEPT_META[tabName];
-    const dept = DEPTS.find(d => d.id === meta?.id);
+    const meta = CATEGORIE_META[tabName];
+    const dept = CATEGORIES.find(d => d.id === meta?.id);
     if (!dept) { wrap.style.display = 'none'; return; }
     lines = dept.sections.filter(s => s.s !== 'À TRIER').flatMap(s => s.lines).filter(l => l.l && !l.l.startsWith('(ligne')).map(l => l.l);
   }
@@ -6872,7 +6872,7 @@ function _optBuildTx(s){
   return tx;
 }
 
-// flattened dept→catégorie→ligne index from the live data (DEPTS for dépense,
+// flattened dept→catégorie→ligne index from the live data (CATEGORIES for dépense,
 // REC for recette), dept-first ranked against the hinted dept. note-word match
 // is approximated as accent-insensitive substring (line / cat / dept label).
 function _optLineIndex(s){
@@ -6881,15 +6881,15 @@ function _optLineIndex(s){
   // line. _rembLineMode forces the all-dept expense branch even when the tx is a recette (isRevenue).
   if (s.isRevenue && !s._rembLineMode && !(typeof window !== 'undefined' && window._rembLineMode)) {
     (typeof REC !== 'undefined' ? REC : []).forEach(c => {
-      (c.rows || []).filter(r => r.l).forEach(r => out.push({ dept: c.cat, deptLabel: c.cat, cat: c.cat, line: r.l }));
+      (c.rows || []).filter(r => r.l).forEach(r => out.push({ dept: c.cat, categorieLabel: c.cat, cat: c.cat, line: r.l }));
     });
   } else {
-    Object.entries(typeof DEPT_META !== 'undefined' ? DEPT_META : {}).forEach(([tab, m]) => {
-      const dept = (typeof DEPTS !== 'undefined' ? DEPTS : []).find(d => d.id === m.id);
+    Object.entries(typeof CATEGORIE_META !== 'undefined' ? CATEGORIE_META : {}).forEach(([tab, m]) => {
+      const dept = (typeof CATEGORIES !== 'undefined' ? CATEGORIES : []).find(d => d.id === m.id);
       if (!dept) return;
       (dept.sections || []).filter(sec => sec.s !== 'À TRIER').forEach(sec => {
         (sec.lines || []).filter(l => l.l && !l.l.startsWith('(ligne')).forEach(l =>
-          out.push({ dept: tab, deptLabel: m.name, cat: sec.s, line: l.l, reel: (l.reel || 0) }));   // reel = line's current real total (Item 39 effect-summary)
+          out.push({ dept: tab, categorieLabel: m.name, cat: sec.s, line: l.l, reel: (l.reel || 0) }));   // reel = line's current real total (Item 39 effect-summary)
       });
     });
   }
@@ -6918,21 +6918,21 @@ function optFilterLignes(){
     res.classList.add('on');
     res.innerHTML = depts.length
       ? depts.map(d => `<div class="lr-row" onclick="optAtrierPickDept('${_optJs(d.tab)}')">
-          <div class="lr-dept"><span class="dpl-dot" style="background:${(typeof deptColorFor==='function'?deptColorFor(d.tab):null)||'#fbbf24'}"></span>${_optEsc(d.name)}</div>
+          <div class="lr-dept"><span class="dpl-dot" style="background:${(typeof categorieColorFor==='function'?categorieColorFor(d.tab):null)||'#fbbf24'}"></span>${_optEsc(d.name)}</div>
           <div class="lr-line">Relier \u00e0 ce mois</div></div>`).join('')
       : '<div class="lr-empty">Aucun mois</div>';
     return;
   }
   let rows = _optLineIndex(_optState);
   const hint = _optState.dept || _optState.preselect || '';
-  if (q) rows = rows.filter(r => _optTokMatch(q, [r.deptLabel, r.line, r.cat]));
+  if (q) rows = rows.filter(r => _optTokMatch(q, [r.categorieLabel, r.line, r.cat]));
   // dept-first ranking: hinted dept's lines float to the top
   rows.sort((a, b) => (a.dept === hint ? 0 : 1) - (b.dept === hint ? 0 : 1));
   rows = rows.slice(0, 40);
   res.classList.toggle('on', !!inp.value || _optState._ligneFocusOpen === true);
   res.innerHTML = rows.length
     ? rows.map(r => `<div class="lr-row" onclick="optPickLigne('${_optJs(r.dept)}','${_optJs(r.line)}','${_optJs(r.cat)}')">
-        <div class="lr-dept"><span class="dpl-dot" style="background:${(typeof deptColorFor==='function'?deptColorFor(r.deptLabel):null)||'#fbbf24'}"></span>${_optEsc(r.deptLabel)}</div>
+        <div class="lr-dept"><span class="dpl-dot" style="background:${(typeof categorieColorFor==='function'?categorieColorFor(r.categorieLabel):null)||'#fbbf24'}"></span>${_optEsc(r.categorieLabel)}</div>
         <div class="lr-line"><span class="lr-cat">${_optEsc(r.cat)}</span> ${_optEsc(r.line)}</div></div>`).join('')
     : '<div class="lr-empty">Aucune ligne — ou utilisez « À relier » ci-dessous</div>';
 }
@@ -6950,7 +6950,7 @@ function optLigneFocus(){
 function _optAssignedCardHtml(s){
   if (!(s.dept && (s.line || s.relier))) return '';
   const _mLbl = ((_OPT_MONTHS.find(m => m.key === s.dept) || {}).label || '').toUpperCase();
-  const label = _mLbl || (s.isRevenue ? (s.cat || s.dept) : ((typeof DEPT_META !== 'undefined' && DEPT_META[s.dept]) ? DEPT_META[s.dept].name : s.dept));
+  const label = _mLbl || (s.isRevenue ? (s.cat || s.dept) : ((typeof CATEGORIE_META !== 'undefined' && CATEGORIE_META[s.dept]) ? CATEGORIE_META[s.dept].name : s.dept));
   const line  = s.line || (s.relier ? '\u0053\u00e9lectionner une ligne' : s.line);
   // §v23a.2 (#4): the ✕ (vcard-rm) is gated in frozen assignedCard on onRemove. Omit onRemove when
   // the foot is locked (settled/cas1recv — same predicate as optApplyLock) so the assigned card is
@@ -6970,7 +6970,7 @@ function _optOrientHtml(s){
 // v23a.1 — committed-ventilation view (states ventile/ventchild). RENDER ONLY: the ventilation
 // is supplied by hydration (s.ventLines); the Ventiler INPUT stays inert/v23b. committedPie donut
 // (proportional, derived from the split amounts — no baked figure) + one assignedCard per split.
-// seam 27dl — ventilé-pie palette: base slice = dept brand colour (deptColorFor), siblings =
+// seam 27dl — ventilé-pie palette: base slice = dept brand colour (categorieColorFor), siblings =
 // clearly-distinguishable hue-rotated colours (golden-angle), not near-identical shades.
 function _hexToHsl(hex){let c=String(hex||'').replace('#','');if(c.length===3)c=c.split('').map(x=>x+x).join('');
   const r=parseInt(c.slice(0,2),16)/255,g=parseInt(c.slice(2,4),16)/255,b=parseInt(c.slice(4,6),16)/255;
@@ -6986,7 +6986,7 @@ function _optVentHtml(s){
   const lines = s.ventLines || [];
   if (!lines.length) return _optAssignedCardHtml(s);
   const total = lines.reduce((a, l) => a + Math.abs(l.amt || 0), 0) || 1;
-  const COLORS = _ventPalette(lines.length, (typeof deptColorFor === 'function' ? deptColorFor(s.dept) : null) || '#818cf8');
+  const COLORS = _ventPalette(lines.length, (typeof categorieColorFor === 'function' ? categorieColorFor(s.dept) : null) || '#818cf8');
   const R = 15.9155, CIRC = 2 * Math.PI * R; let off = 0;
   const segs = lines.map((l, i) => {
     const len = (Math.abs(l.amt || 0) / total) * CIRC;
@@ -6998,9 +6998,9 @@ function _optVentHtml(s){
   const ring = '<svg class="vp-ring" width="44" height="44" viewBox="0 0 36 36"><circle cx="18" cy="18" r="' + R
              + '" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="5"></circle>' + segs + '</svg>';
   const _mLbl = ((_OPT_MONTHS.find(m => m.key === s.dept) || {}).label || '').toUpperCase();
-  const deptLabel = _mLbl || ((typeof DEPT_META !== 'undefined' && DEPT_META[s.dept]) ? DEPT_META[s.dept].name : s.dept);
+  const categorieLabel = _mLbl || ((typeof CATEGORIE_META !== 'undefined' && CATEGORIE_META[s.dept]) ? CATEGORIE_META[s.dept].name : s.dept);
   const splits = lines.map(l =>
-    assignedCard(deptLabel, l.name, { cat: l.cat || '', amt: '\u2212' + fmtAmt(Math.abs(l.amt || 0)) })
+    assignedCard(categorieLabel, l.name, { cat: l.cat || '', amt: '\u2212' + fmtAmt(Math.abs(l.amt || 0)) })
   ).join('');
   return '<div class="opt-vent-pie">' + ring + '<div class="vp-cap">Ventil\u00e9 \u00b7 ' + lines.length
        + ' ligne' + (lines.length > 1 ? 's' : '') + '</div></div><div class="opt-vent-splits">' + splits + '</div>';
@@ -7558,11 +7558,11 @@ function pickIntraSession(id){
   const box = document.getElementById('intra-line-res'); if (box){ box.innerHTML = ''; box.classList.remove('on'); }
   renderIntraLineCard(); renderIntraSummary();
 }
-// destination line pool — every department's lines (DEPT_META→DEPTS→sections→lines; cat = section name).
+// destination line pool — every department's lines (CATEGORIE_META→CATEGORIES→sections→lines; cat = section name).
 function _intraLinePool(){
   const out = [];
-  Object.entries(typeof DEPT_META !== 'undefined' ? DEPT_META : {}).forEach(([tab, m]) => {
-    const dept = (typeof DEPTS !== 'undefined' ? DEPTS : []).find(d => d.id === m.id);
+  Object.entries(typeof CATEGORIE_META !== 'undefined' ? CATEGORIE_META : {}).forEach(([tab, m]) => {
+    const dept = (typeof CATEGORIES !== 'undefined' ? CATEGORIES : []).find(d => d.id === m.id);
     if (!dept) return;
     (dept.sections || []).filter(sec => sec.s !== '\u00c0 TRIER').forEach(sec => {
       (sec.lines || []).filter(l => l.l && !l.l.startsWith('(ligne')).forEach(l =>
@@ -7580,16 +7580,16 @@ function filterIntraLines(){
   const pool = _intraLinePool().filter(x => _optTokMatch(q, [x.dept, x.line, x.cat])).slice(0, 12);
   box.innerHTML = pool.length
     ? pool.map(x => '<div class="lr-row" onclick="pickIntraLine(\'' + x.tab.replace(/'/g, "\\'") + '\',\'' + x.line.replace(/'/g, "\\'") + '\')">'
-        + '<div class="lr-dept"><span class="dpl-dot" style="background:' + ((typeof deptColorFor === 'function' ? deptColorFor(x.dept) : null) || '#fbbf24') + '"></span>' + x.dept + '</div><div class="lr-line">' + ((x.cat || '') ? '<span class="lr-cat">' + x.cat + '</span> ' : '') + x.line + '</div></div>').join('')
+        + '<div class="lr-dept"><span class="dpl-dot" style="background:' + ((typeof categorieColorFor === 'function' ? categorieColorFor(x.dept) : null) || '#fbbf24') + '"></span>' + x.dept + '</div><div class="lr-line">' + ((x.cat || '') ? '<span class="lr-cat">' + x.cat + '</span> ' : '') + x.line + '</div></div>').join('')
     : '<div class="lr-empty">Aucune</div>';
   box.classList.add('on');
 }
 function pickIntraLine(tab, line){
   const s = _optState; if (!s) return;
-  const m = (typeof DEPT_META !== 'undefined') ? DEPT_META[tab] : null;
-  const deptLabel = m ? m.name : tab;
+  const m = (typeof CATEGORIE_META !== 'undefined') ? CATEGORIE_META[tab] : null;
+  const categorieLabel = m ? m.name : tab;
   const hit = _intraLinePool().find(x => x.tab === tab && x.line === line);
-  s.intraLine = { tab: tab, dept: deptLabel, line: line, cat: hit ? (hit.cat || '') : '' };
+  s.intraLine = { tab: tab, dept: categorieLabel, line: line, cat: hit ? (hit.cat || '') : '' };
   const inp = document.getElementById('intra-line-input'); if (inp){ inp.value = ''; inp.blur(); }
   const box = document.getElementById('intra-line-res'); if (box){ box.innerHTML = ''; box.classList.remove('on'); }
   renderIntraLineCard(); renderIntraSummary();
@@ -7664,10 +7664,10 @@ function ventTint(hex, i, n){
 }
 function _ventTotal(s){ return Math.abs((s && s.ttc) || 0); }
 function _ventBaseColor(s){
-  // committed-view parity: dept BRAND colour first (deptColorFor), else stable palette-by-index fallback.
-  const dc = (typeof deptColorFor === 'function') ? deptColorFor(s && s.dept) : null;
+  // committed-view parity: dept BRAND colour first (categorieColorFor), else stable palette-by-index fallback.
+  const dc = (typeof categorieColorFor === 'function') ? categorieColorFor(s && s.dept) : null;
   if (dc) return dc;
-  const keys = (typeof DEPT_META !== 'undefined') ? Object.keys(DEPT_META) : [];
+  const keys = (typeof CATEGORIE_META !== 'undefined') ? Object.keys(CATEGORIE_META) : [];
   const idx = Math.max(0, keys.indexOf(s && s.dept));
   return _VENT_COLORS[idx % _VENT_COLORS.length];
 }
@@ -7795,10 +7795,10 @@ function ventPie(){
   const s = (typeof _optState !== 'undefined' && _optState) ? _optState : window._optState; if (!s) return;
   const el = document.getElementById('vent-pie'); if (!el) return;
   const ring = document.getElementById('vent-pie-ring');
-  const amtEl = document.getElementById('vent-pie-amt'), deptEl = document.getElementById('vent-pie-dept'), leg = document.getElementById('vent-pie-legend');
+  const amtEl = document.getElementById('vent-pie-amt'), categorieEl = document.getElementById('vent-pie-dept'), leg = document.getElementById('vent-pie-legend');
   const v = s.ventLines || []; const TOTAL = _ventTotal(s); const base = _ventBaseColor(s);
   if (amtEl) amtEl.textContent = TOTAL ? fmtEurShort(TOTAL) : '\u2014';
-  if (deptEl) deptEl.textContent = (v.length && s.dept) ? s.dept : 'D\u00e9partement \u00e0 choisir';
+  if (categorieEl) categorieEl.textContent = (v.length && s.dept) ? s.dept : 'D\u00e9partement \u00e0 choisir';
   const n = v.length;
   if (n<1 || !TOTAL){
     if (ring){ ring.style.background = 'conic-gradient(rgba(255,255,255,.06) 0deg 360deg)'; ring.style.opacity = '1'; }
@@ -7846,7 +7846,7 @@ function ventSummary(){
   const rows = v.map((ln, i) => {
     const pct = TOTAL ? Math.round((ln.amt || 0) / TOTAL * 100) : 0;
     const _mLbl = ((_OPT_MONTHS.find(m => m.key === s.dept) || {}).label || '').toUpperCase();
-    const deptLbl = _mLbl || ((typeof DEPT_META !== 'undefined' && DEPT_META[s.dept]) ? DEPT_META[s.dept].name : (s.dept || ''));
+    const deptLbl = _mLbl || ((typeof CATEGORIE_META !== 'undefined' && CATEGORIE_META[s.dept]) ? CATEGORIE_META[s.dept].name : (s.dept || ''));
     return '<div class="rkv" style="align-items:flex-start">'
          + '<span class="rkv-k" style="display:flex;flex-direction:column;gap:2px;min-width:0">'
          +   '<span class="lr-dept"><span class="dpl-dot" style="background:' + ventTint(base, i, v.length) + '"></span>' + _optEsc(deptLbl) + '</span>'
@@ -7920,7 +7920,7 @@ function ventFilterLignes(){
   box.classList.add('on');
   let html = list.length
     ? list.map(r => '<div class="lr-row" onclick="ventAddLine(\'' + _optJs(r.dept) + '\',\'' + _optJs(r.line) + '\',\'' + _optJs(r.cat || '') + '\')">'
-        + '<div class="lr-dept"><span class="dpl-dot" style="background:' + ((typeof deptColorFor === 'function' ? deptColorFor(r.deptLabel || r.dept) : null) || '#fbbf24') + '"></span>' + _optEsc(r.deptLabel || r.dept) + '</div>'
+        + '<div class="lr-dept"><span class="dpl-dot" style="background:' + ((typeof categorieColorFor === 'function' ? categorieColorFor(r.categorieLabel || r.dept) : null) || '#fbbf24') + '"></span>' + _optEsc(r.categorieLabel || r.dept) + '</div>'
         + '<div class="lr-line"><span class="lr-cat">' + _optEsc(r.cat || '') + '</span> ' + _optEsc(r.line) + '</div></div>').join('')
     : '<div class="lr-empty">Aucune ligne</div>';
   if (lockDept && !q){ html += '<div class="lr-hint">ou tapez le nom d\u2019une ligne du d\u00e9partement ' + _optEsc(lockDept) + '</div>'; }
@@ -8178,11 +8178,11 @@ function _openAssignDrawerCore(src, c) {
   // openAssignDrawer ('unmatched') and openOrphanAssign ('orphan'). The src discriminant
   // controls ONLY what differs: tx-data source, title/sub, tx-card (incl. the assign-only
   // tag-editor), the orphan-only remboursement-candidates block, the assign-only Cas 1/2
-  // session block, the per-src deptOptions construction, and WHICH confirm handler the footer
+  // session block, the per-src categorieOptions construction, and WHICH confirm handler the footer
   // wires. confirmAssign / confirmOrphanAssign are untouched, stay separate, and stay wired
   // exactly as today. Render/open path only -- no write path lives here.
   const { unmatchedIdx, fourn, note, ht, ttc, cat, isReattribuer, date } = c;
-  let isRevenue, deptOptions, preselect;
+  let isRevenue, categorieOptions, preselect;
   if (src === 'unmatched') {
     window._currentAssignFourn = fourn || 'Transaction';
     // LOCK-15 Item 8: capture this drawer's reconstruct-thunk so a nested open (Cas 1/2 → openIntraDrawer)
@@ -8194,9 +8194,9 @@ function _openAssignDrawerCore(src, c) {
     // picking a category → that category's lines (populateAssignLines middle branch). Identical to
     // openOrphanAssign. Expense depts are offered only for a real spend (negative).
     isRevenue = (ttc||0) > 0;
-    deptOptions = isRevenue
+    categorieOptions = isRevenue
       ? `<option value="RECETTES" selected>RECETTES</option>` + REC.map(c => `<option value="${c.cat.replace(/"/g,'&quot;')}">${c.cat}</option>`).join('')
-      : Object.entries(DEPT_META).map(([tab, m]) => `<option value="${tab}">${m.name}</option>`).join('');
+      : Object.entries(CATEGORIE_META).map(([tab, m]) => `<option value="${tab}">${m.name}</option>`).join('');
 
     // Pre-select dept based on catégorie if possible (recette → RECETTES, populates flat recette lines)
     const catNorm = normStr(cat||'');
@@ -8211,21 +8211,21 @@ function _openAssignDrawerCore(src, c) {
     // expense-depts-for-a-recette was a bug, the screenshot Leo flagged). Default RECETTES →
     // all recette lines flat; picking a category → that category's lines. Identical to
     // openAssignDrawer. A non-revenue orphan keeps the expense-dept dropdown byte-unchanged.
-    deptOptions = isRevenue
+    categorieOptions = isRevenue
       ? `<option value="RECETTES" selected>RECETTES</option>` + REC.map(c => `<option value="${c.cat.replace(/"/g,'&quot;')}">${c.cat}</option>`).join('')
-      : Object.keys(DEPT_META).map(k =>
-          `<option value="${k}" ${k === POLE_MAP_CLIENT[normStr(cat||'')] ? 'selected' : ''}>${DEPT_META[k].name}</option>`
+      : Object.keys(CATEGORIE_META).map(k =>
+          `<option value="${k}" ${k === POLE_MAP_CLIENT[normStr(cat||'')] ? 'selected' : ''}>${CATEGORIE_META[k].name}</option>`
         ).join('');
     preselect = isRevenue ? 'RECETTES' : (POLE_MAP_CLIENT[normStr(cat||'')] || '');
   }
 
-  // shared destination-picker render core (written once; ${deptOptions} is the per-src value)
+  // shared destination-picker render core (written once; ${categorieOptions} is the per-src value)
   const _picker = `      <div class="drawer-section-title">Destination</div>
       <div style="margin-bottom:14px">
         <label style="font-size:.7em;color:var(--text-dim);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Département</label>
         <select id="assign-dept" style="width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:9px 10px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.85em;outline:none" onchange="populateAssignLines(this.value)">
           <option value="">Choisir un département…</option>
-          ${deptOptions}
+          ${categorieOptions}
         </select>
       </div>
       <div id="assign-ligne-wrap" style="margin-bottom:14px;display:none">
@@ -8659,7 +8659,7 @@ function optDeepLinkNotes(dept, ligne, fourn, note, ht, ttc, cas, tag, societe){
   setTimeout(() => { try { optTab('notes'); } catch (e) {} }, 60);
 }
 
-async function dissociateTransaction(dept, ligne, fourn, note, ht, ttc, deptId, si, li) {
+async function dissociateTransaction(dept, ligne, fourn, note, ht, ttc, categorieId, si, li) {
   if (!confirm(`Dissocier cette transaction de « ${ligne} » ?\n\n${fourn} · −${fmtAmt(Math.abs(ttc))} €\n\nLa transaction sera replacée dans les non reliées.`)) return;
 
   try {
@@ -8679,7 +8679,7 @@ async function dissociateTransaction(dept, ligne, fourn, note, ht, ttc, deptId, 
     showToast('✅ Transaction dissociée', `${fourn} · −${fmtAmt(Math.abs(ttc))} € retiré de « ${ligne} »`, 'green');
 
     // Re-open the drawer to show updated state
-    setTimeout(() => openReelDrawer(deptId, si, li), 300);
+    setTimeout(() => openReelDrawer(categorieId, si, li), 300);
   } catch (e) {
     showToast('⚠ Erreur dissociation', e.message, 'red');
   }
@@ -8858,12 +8858,12 @@ async function renderReleve() {
   if (advice) advice.style.display = '';
   if (filters) filters.style.display = 'flex';
 
-  const deptSet = new Set();
-  matchLog.forEach(m => { if (m.dept) deptSet.add(m.dept); });
-  allTx.forEach(t => { if (t.cat) deptSet.add(t.cat); });
+  const categorieSet = new Set();
+  matchLog.forEach(m => { if (m.dept) categorieSet.add(m.dept); });
+  allTx.forEach(t => { if (t.cat) categorieSet.add(t.cat); });
   const catSel = document.getElementById('releve-filter-cat');
   if (catSel && catSel.options.length <= 1) {
-    [...deptSet].sort().forEach(c => {
+    [...categorieSet].sort().forEach(c => {
       const o = document.createElement('option');
       o.value = c; o.textContent = c; catSel.appendChild(o);
     });
@@ -8962,12 +8962,12 @@ function filterReleve() {
     const amtColor = isRec ? 'var(--green)' : isZero ? 'var(--text-dim)' : 'var(--red)';
     const amtVal = isRec ? `+${fmtAmt(tx.ttc)}` : isZero ? '0' : `\u2212${fmtAmt(Math.abs(tx.ttc))}`;
 
-    // Département column — event-verbatim dept-column block (deptPill grey via deptColorFor: months → null → grey),
+    // Département column — event-verbatim dept-column block (categoriePill grey via categorieColorFor: months → null → grey),
     // re-keyed so the month renders ALL-CAPS (canonical DISPLAY CONVENTION). Subtexts EVENT-VERBATIM: partial → "ligne à
     // relier"; unmatched → "non relié". Replaces general's ad-hoc green-text + provenance-noise rendering (LOCK-10 single pill).
-    let deptHtml = '';
-    const deptPill = (label) => {
-      const c = (typeof deptColorFor === 'function' ? deptColorFor(label) : null);   // #rrggbb or null (months → null → grey)
+    let categorieHtml = '';
+    const categoriePill = (label) => {
+      const c = (typeof categorieColorFor === 'function' ? categorieColorFor(label) : null);   // #rrggbb or null (months → null → grey)
       const bg = c ? `${c}22` : 'rgba(255,255,255,.05)';
       const fg = c ? c : 'var(--text-muted)';
       const bd = c ? `${c}55` : 'var(--border)';
@@ -8976,16 +8976,16 @@ function filterReleve() {
     const lineSub   = (txt) => `<div style="font-size:.7em;color:var(--text-muted);font-weight:500;margin-top:4px">${txt}</div>`;   // assigned line
     const statusSub = (txt) => `<div style="font-size:.7em;color:var(--text-dim);font-style:italic;margin-top:4px">${txt}</div>`;   // pending status
     // month key → ALL-CAPS label (accent-safe toUpperCase); non-months fall through. Pill fires only on matched tx.
-    const _deptLabel = (dept) => ((_OPT_MONTHS.find(m => m.key === dept) || {}).label || dept || '').toUpperCase();
+    const _categorieLabel = (dept) => ((_OPT_MONTHS.find(m => m.key === dept) || {}).label || dept || '').toUpperCase();
     if (isMatched) {
       const noLineCell = (!matchInfo.ligne || matchInfo.ligne === '(non affecté)');
-      deptHtml = `${deptPill(_deptLabel(matchInfo.dept||''))}${ noLineCell ? statusSub('ligne \u00e0 relier') : lineSub(matchInfo.ligne) }`;
+      categorieHtml = `${categoriePill(_categorieLabel(matchInfo.dept||''))}${ noLineCell ? statusSub('ligne \u00e0 relier') : lineSub(matchInfo.ligne) }`;
     } else {
       // §C AUTO-MATCH DORMANT: general's tx.cat is a bank category (NOT a month departement) and note-detection is not
-      // promoted in V1, so the event's cat/note deptPill branches are held dormant here → unmatched renders "non relié"
+      // promoted in V1, so the event's cat/note categoriePill branches are held dormant here → unmatched renders "non relié"
       // with NO pill (the R1 case: an unmatched tx WITH tx.cat still → "non relié", filed under "Non reliée", not "À relier").
-      // Reactivate deptPill(_deptLabel(tx.cat|noteDept)) + statusSub('ligne à relier') when auto-match is turned on.
-      deptHtml = `<span style="font-size:.72em;color:var(--text-dim);font-style:italic">non reli\u00e9</span>`;
+      // Reactivate categoriePill(_categorieLabel(tx.cat|noteCategorie)) + statusSub('ligne à relier') when auto-match is turned on.
+      categorieHtml = `<span style="font-size:.72em;color:var(--text-dim);font-style:italic">non reli\u00e9</span>`;
     }
 
     // Statut badge — DROPPED (R3 / event LOCK-10): match-state is carried by the dept column (non relié / ligne à
@@ -9031,12 +9031,12 @@ function filterReleve() {
       } else if (unmatchInfo) {
         const safeF2 = (tx.fourn||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
         const safeN2 = (tx.note||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-        const safeDept = (unmatchInfo.dept||tx.cat||deptFromNote(tx.note)||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+        const safeDept = (unmatchInfo.dept||tx.cat||categorieFromNote(tx.note)||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
         rowClick = `assignReopen(openAssignDrawer,${unmatchInfo.idx},'${safeF2}','${safeN2}',${tx.ttc||0},'${safeDept}')`;
       } else {
         const safeF3 = (tx.fourn||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
         const safeN3 = (tx.note||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-        const safeDept3 = (tx.cat||deptFromNote(tx.note)||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+        const safeDept3 = (tx.cat||categorieFromNote(tx.note)||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
         rowClick = `assignReopen(openOrphanAssign,'${safeF3}','${safeN3}',${tx.ht||0},${tx.ttc||0},'${safeDept3}','${tx.date||''}')`;
       }
     }
@@ -9046,7 +9046,7 @@ function filterReleve() {
       <td style="padding:9px 14px;font-size:.85em;vertical-align:top"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-weight:600;color:#fff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:100%">${tx.fourn || '\u2014'}</span>${fournChips}</div></td>
       <td style="padding:9px 14px;color:var(--text-muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:.82em;vertical-align:top" title="${(tx.note||'').replace(/"/g,'&quot;')}">${tx.note || ''}</td>
       <td style="padding:9px 14px;text-align:right;font-family:var(--ff-num);font-variant-numeric:tabular-nums lining-nums;font-weight:700;color:${amtColor};white-space:nowrap;font-size:.85em;vertical-align:top">${amtVal}</td>
-      <td class="releve-dept" style="padding:9px 14px;overflow:hidden;vertical-align:top">${deptHtml}</td>
+      <td class="releve-dept" style="padding:9px 14px;overflow:hidden;vertical-align:top">${categorieHtml}</td>
     </tr>`;
   }).join('') || `<tr><td colspan="5" style="padding:32px;text-align:center;color:var(--text-dim)">Aucun r\u00E9sultat</td></tr>`;
 
@@ -9167,9 +9167,9 @@ if (document.readyState === 'loading') {
 
 // Boot to Bilan landing — the router owns initial page+nav state, killing the
 // multi-page-stack bug class (two pages shipped active at boot). Authoritative call
-// is from initApp() AFTER DEPTS is populated, so renderBilan() runs against real data
+// is from initApp() AFTER CATEGORIES is populated, so renderBilan() runs against real data
 // (this engine's init is async — a bare DOMContentLoaded hook would run against an
-// empty DEPTS). Defined in this block (alongside go/initApp) so it always exists.
+// empty CATEGORIES). Defined in this block (alongside go/initApp) so it always exists.
 function bootLanding(){ if (typeof go === 'function') go('bilan'); }
 
 // On load — boot

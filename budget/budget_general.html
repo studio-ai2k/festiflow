@@ -111,11 +111,11 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .sdt{font-size:.63em;text-transform:uppercase;letter-spacing:3px;color:var(--text-dim);font-weight:600;white-space:nowrap}
 .tsep{width:36px;height:1px;background:var(--border);margin:18px auto}
 /* ── Option C dept header ── */
-.dept-hdr{display:grid;grid-template-columns:3px 1fr;border-radius:12px 12px 0 0;overflow:hidden;border:1px solid var(--border);border-bottom:none;margin:8px 0 0}
-.dept-hdr-rail{width:3px}
-.dept-hdr-body{background:var(--surface);padding:14px 18px}
-.dept-hdr-top{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-.dept-hdr-name{font-size:16px;font-weight:700;color:#fff;letter-spacing:-.2px}
+.categorie-hdr{display:grid;grid-template-columns:3px 1fr;border-radius:12px 12px 0 0;overflow:hidden;border:1px solid var(--border);border-bottom:none;margin:8px 0 0}
+.categorie-hdr-rail{width:3px}
+.categorie-hdr-body{background:var(--surface);padding:14px 18px}
+.categorie-hdr-top{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.categorie-hdr-name{font-size:16px;font-weight:700;color:#fff;letter-spacing:-.2px}
 
 
 /* ── PROGRESS ────────────────────────── */
@@ -805,7 +805,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .opt-pane .lineres.on{display:block}
 .opt-pane .lr-row{padding:9px 12px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.03);transition:background .1s}
 .opt-pane .lr-row:hover{background:rgba(255,255,255,.05)}
-.opt-pane .lr-dept{font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:.5px;color:var(--text-dim);font-weight:700;display:flex;align-items:center;gap:6px}
+.opt-pane .lr-categorie{font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:.5px;color:var(--text-dim);font-weight:700;display:flex;align-items:center;gap:6px}
 .opt-pane .lr-line{font-size:var(--fs-strong);color:#ddd;margin-top:1px}
 .opt-pane .lr-cat{font-family:var(--ff-num);font-size:var(--fs-caption);color:var(--text-muted)}
 .opt-pane .lr-empty{padding:12px;font-size:var(--fs-body);color:var(--text-dim);text-align:center}
@@ -929,7 +929,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
 .devis-line-group{font-size:var(--fs-caption);font-weight:700;color:var(--text-muted);margin:16px 0 9px;display:flex;align-items:center;gap:8px}
 .devis-line-group:first-child{margin-top:0}
 .devis-line-group .lg-dot{width:5px;height:5px;border-radius:50%;background:var(--text-dim);flex-shrink:0}
-.dep-devis-deptview .dv-line-only{display:none}
+.dep-devis-categorieview .dv-line-only{display:none}
 .avenir{font-size:var(--fs-micro);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);background:var(--surface-2);border:1px solid var(--border-h);border-radius:5px;padding:2px 7px}
 .split-row .sr-name{font-size:var(--fs-body);font-weight:600;display:flex;align-items:center;gap:8px}
 .split-row .sr-amt{font-family:var(--ff-num);font-size:var(--fs-strong);font-weight:700;font-variant-numeric:tabular-nums lining-nums}
@@ -1382,11 +1382,11 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
     <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
   </div>
-  <div class="dept-hdr">
-    <div class="dept-hdr-rail" style="background:#fff"></div>
-    <div class="dept-hdr-body">
-      <div class="dept-hdr-top">
-        <span class="dept-hdr-name">CATÉGORIES</span>
+  <div class="categorie-hdr">
+    <div class="categorie-hdr-rail" style="background:#fff"></div>
+    <div class="categorie-hdr-body">
+      <div class="categorie-hdr-top">
+        <span class="categorie-hdr-name">CATÉGORIES</span>
         <span style="margin-left:auto;display:flex;gap:6px">
           <div class="sec-view-toggle">
             <button type="button" data-act="expand" title="Tout déplier" aria-label="Tout déplier" onclick="setAllRecSections('b-rec-hb',true)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg></button>
@@ -1405,11 +1405,11 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:v
     <div class="sdl"></div>
     <span style="font-size:10px;color:var(--text-dim);margin-left:8px;letter-spacing:.5px;flex-shrink:0">HT</span>
   </div>
-  <div class="dept-hdr">
-    <div class="dept-hdr-rail" style="background:#fff"></div>
-    <div class="dept-hdr-body">
-      <div class="dept-hdr-top">
-        <span class="dept-hdr-name">CATÉGORIES</span>
+  <div class="categorie-hdr">
+    <div class="categorie-hdr-rail" style="background:#fff"></div>
+    <div class="categorie-hdr-body">
+      <div class="categorie-hdr-top">
+        <span class="categorie-hdr-name">CATÉGORIES</span>
         <span style="margin-left:auto;display:flex;gap:6px">
           <div class="sec-view-toggle">
             <button type="button" data-act="expand" title="Tout déplier" aria-label="Tout déplier" onclick="setAllRecSections('b-rec-be',true)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg></button>
@@ -2705,8 +2705,8 @@ function monthReel(N){
 // invariant lives in this walk (budget+dépensé+engagé spread into the same month under lissé); do NOT
 // re-derive the spread. eng uses the SAME NON-vivifying UPPERCASE-CATEGORIE_META-tab devis bridge as monthEngage
 // (_edDevisStore[key]||[] → computeEngage; NEVER _edDevisGet, which write-vivifies). By construction Σ over
-// CATEGORIES of deptMonth(d,N) === monthBudget(N)/monthReel(N)/monthEngage(N) in both lissé states.
-function deptMonth(d, N){
+// CATEGORIES of categorieMonth(d,N) === monthBudget(N)/monthReel(N)/monthEngage(N) in both lissé states.
+function categorieMonth(d, N){
   let est=0, reel=0, eng=0;
   const TAB = Object.entries(CATEGORIE_META).find(([,m]) => m.id === d.id)?.[0] || d.id.toUpperCase();
   d.sections.forEach(s=>s.lines.forEach(l=>{
@@ -2729,15 +2729,15 @@ function computeEngage(devis){
     a + (( d.statut === 'Validé' || d.statut === 'Signé' ||
           (d.statut === 'Payé' && !d.matched_transaction_id) ) ? (d.montant_ht || 0) : 0), 0);
 }
-// Per-month ENGAGÉ for month index N (1-12), model (a)/lissé. SINGLE-SOURCED through deptMonth(d,N).eng
+// Per-month ENGAGÉ for month index N (1-12), model (a)/lissé. SINGLE-SOURCED through categorieMonth(d,N).eng
 // (A1 refactor): the per-line UPPERCASE-CATEGORIE_META-tab devis bridge + M/A/P + _lisse walk now lives ONCE,
-// inside deptMonth (own NON-vivifying read: _edDevisStore[key]||[], never _edDevisGet). This reduce
+// inside categorieMonth (own NON-vivifying read: _edDevisStore[key]||[], never _edDevisGet). This reduce
 // reassociates the former flat accumulator into per-dept subtotals → the result is MATHEMATICALLY EQUAL
 // + DISPLAY-IDENTICAL (fe()=Math.round rounds sub-euro deltas away), NOT bit-identical: only the eng/12
 // lissé-annual branch can differ by ≤~1 ULP (today _edDevisStore empty → both exactly 0). By construction
-// the Synthèse TOTAL and the D2 band both flow through Σ deptMonth().eng → equal to each other.
+// the Synthèse TOTAL and the D2 band both flow through Σ categorieMonth().eng → equal to each other.
 function monthEngage(N){
-  return EXP_CATEGORIES().reduce((a, d) => a + deptMonth(d, N).eng, 0);
+  return EXP_CATEGORIES().reduce((a, d) => a + categorieMonth(d, N).eng, 0);
 }
 let _monthlyReelCache = null; // { month: 'YYYY-MM', byDept: { HUMAIN: 1234, ... } }
 
@@ -2866,7 +2866,7 @@ function togRec(sid){
   if(vis) _openSecs.delete(sid); else _openSecs.add(sid);  // §ITEM29 persist
 }
 
-// Recette expand/collapse-all — PARAMETERIZED by container (each mount's dept-hdr drives its own table).
+// Recette expand/collapse-all — PARAMETERIZED by container (each mount's categorie-hdr drives its own table).
 // Reads the rendered tbody ids straight from the DOM and drives each through togRec (flips + persists).
 function setAllRecSections(containerId, open){
   const wrap = document.getElementById(containerId);
@@ -3527,11 +3527,11 @@ function renderCategorie(id){
 
     ${techniqueNote}
 
-    <div class="dept-hdr">
-      <div class="dept-hdr-rail" style="background:${CATEGORIE_COLORS[CATEGORIES.findIndex(d=>d.id===id)]||'var(--indigo)'}"></div>
-      <div class="dept-hdr-body">
-        <div class="dept-hdr-top">
-          <span class="dept-hdr-name">${dept.name}</span>
+    <div class="categorie-hdr">
+      <div class="categorie-hdr-rail" style="background:${CATEGORIE_COLORS[CATEGORIES.findIndex(d=>d.id===id)]||'var(--indigo)'}"></div>
+      <div class="categorie-hdr-body">
+        <div class="categorie-hdr-top">
+          <span class="categorie-hdr-name">${dept.name}</span>
           <span style="margin-left:auto;display:flex;gap:6px">
             <div class="sec-view-toggle">
               <button type="button" data-act="expand" title="Tout déplier" aria-label="Tout déplier" onclick="setAllSections('${id}', true)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg></button>
@@ -3914,7 +3914,7 @@ function renderMonth(monthId){
     if(!target||!deptPage) return;
     renderCategorie(catId);                   // renderCategorie writes full dept page into #page-<id>
     const kids=Array.from(deptPage.children);
-    const hdrIdx=kids.findIndex(el=>el.classList && el.classList.contains('dept-hdr'));
+    const hdrIdx=kids.findIndex(el=>el.classList && el.classList.contains('categorie-hdr'));
     if(hdrIdx>=0){
       target.innerHTML='';
       for(let i=hdrIdx;i<kids.length;i++) target.appendChild(kids[i].cloneNode(true));
@@ -4089,16 +4089,16 @@ function fillMonthKPIs(monthId, N){
 function renderMonthSummary(monthId){
   // Month-page summary = per-DEPARTMENT roll-up (distinct from the Bilan page, which is per-MONTH).
   // Built independently here so the two tables don't share render. Click a dept row → scrollToCategorie.
-  // Month-scoped + lissé-aware via deptMonth(d,N) — the SAME M/A/P walk as monthBudget/monthReel
+  // Month-scoped + lissé-aware via categorieMonth(d,N) — the SAME M/A/P walk as monthBudget/monthReel
   // (Σ over depts === monthBudget(N)/monthReel(N) in both lissé states; écart-stays-valid invariant preserved).
   const target=document.getElementById('month-summary-'+monthId);
   if(!target) return;
   const N=monthIndexOf(monthId);
   let ge=0,gr=0;
-  EXP_CATEGORIES().forEach(d=>{const t=deptMonth(d,N);ge+=t.est;gr+=t.reel;});
+  EXP_CATEGORIES().forEach(d=>{const t=categorieMonth(d,N);ge+=t.est;gr+=t.reel;});
   let rows='';
   EXP_CATEGORIES().forEach((d,i)=>{
-    const t=deptMonth(d,N);const ec4=t.est-t.reel;const p3=pct(t.reel,t.est);
+    const t=categorieMonth(d,N);const ec4=t.est-t.reel;const p3=pct(t.reel,t.est);
     const col=CATEGORIE_COLORS[i]||'var(--indigo)';
     rows+=`<tr style="cursor:pointer" onclick="scrollToCategorie('${d.id}')">
       <td><span style="display:inline-flex;align-items:center;gap:7px"><span style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0"></span>${d.name}</span></td>
@@ -4956,7 +4956,7 @@ function buildEditDrawer(categorieId, sectionIdx, lineIdx, isNew, recRef) {
 
     </div>
 
-    <input type="hidden" id="ef-dept" value="${tabName}">
+    <input type="hidden" id="ef-categorie" value="${tabName}">
     <input type="hidden" id="ef-qonto-ref" value="${line.qonto_ref||''}">
   `;
 
@@ -5000,7 +5000,7 @@ async function saveLigne(categorieId, sectionIdx, lineIdx, isNew) {
   const obs        = document.getElementById('ef-obs')?.value.trim();
   const qonto_ref  = document.getElementById('ef-qonto-ref')?.value.trim();
   // Read dept from dropdown (user may have changed it)
-  const selectedCategorie = document.getElementById('ef-dept')?.value || null;
+  const selectedCategorie = document.getElementById('ef-categorie')?.value || null;
   const effectiveCategorieId = selectedCategorie
     ? (CATEGORIE_META[selectedCategorie]?.id || categorieId)
     : categorieId;
@@ -5042,7 +5042,7 @@ async function saveLigne(categorieId, sectionIdx, lineIdx, isNew) {
     } else {
       // Resolve the ORIGINAL line against the ORIGINAL dept (the param categorieId, baked into the drawer
       // at build time) — NOT the effective/target dept — so line.l is the true pre-edit name and the
-      // move detection compares original→target correctly even when ef-dept was changed.
+      // move detection compares original→target correctly even when ef-categorie was changed.
       const origDept = CATEGORIES.find(d => d.id === categorieId);
       const line = origDept?.sections[sectionIdx]?.lines[lineIdx];
       if (!line?._row) throw new Error('Numéro de ligne introuvable');
@@ -5261,7 +5261,7 @@ function edDevisPaneHTML(key, est, tabName){
     <div class="dsec">
       <div class="dsec-t dv-line-only">Devis enregistrés</div>
       <div class="edit dv-line-only">${lineRows}</div>
-      <div class="dv-dept-only" style="display:none">${_devisCategorieHTML(tabName)}</div>
+      <div class="dv-categorie-only" style="display:none">${_devisCategorieHTML(tabName)}</div>
     </div>`;
   const actions = `
     <div class="dsec dv-line-only" style="margin-top:6px">
@@ -5356,8 +5356,8 @@ function edDevisCancel(btn){
 /* ==== showCategorieDevis (ev L4760) ==== */
 function showCategorieDevis(el){
   const pane = el.closest('.ed-pane[data-edpane="devis"]');
-  pane.classList.add('dep-devis-deptview');
-  pane.querySelectorAll('.dv-dept-only').forEach(n => n.style.display='');
+  pane.classList.add('dep-devis-categorieview');
+  pane.querySelectorAll('.dv-categorie-only').forEach(n => n.style.display='');
   pane.querySelectorAll('.devis-row.expanded').forEach(r => r.classList.remove('expanded'));
   // §Retour — the top-right SHELL control becomes Retour for the dept-devis view (mirrors openVentiler / .rail-x). hideCategorieDevis restores it.
   (function(){ const rx = document.getElementById('rail-hdr-host') && document.getElementById('rail-hdr-host').querySelector('.rail-x');
@@ -5368,8 +5368,8 @@ function showCategorieDevis(el){
 function hideCategorieDevis(el){
   const pane = (el && el.closest && el.closest('.ed-pane[data-edpane="devis"]')) || document.querySelector('#drawer .ed-pane[data-edpane="devis"]');
   if (!pane) return;
-  pane.classList.remove('dep-devis-deptview');
-  pane.querySelectorAll('.dv-dept-only').forEach(n => n.style.display='none');
+  pane.classList.remove('dep-devis-categorieview');
+  pane.querySelectorAll('.dv-categorie-only').forEach(n => n.style.display='none');
   // §Retour teardown — restore the edit-drawer's NORMAL rail-x (verified: buildEditDrawer sets railXState 'close' → Fermer ✕ / closeDrawer).
   (function(){ const rx = document.getElementById('rail-hdr-host') && document.getElementById('rail-hdr-host').querySelector('.rail-x');
     if (rx){ rx.innerHTML = 'Fermer \u2715'; rx.onclick = closeDrawer; } })();
@@ -6739,7 +6739,7 @@ async function confirmOrphanAssign() {
 }
 
 async function confirmAssign(unmatchedIdx) {
-  // STEP 5 §C — tier path from _optState ONLY (NOT the DOM #assign-dept/#assign-ligne). departement =
+  // STEP 5 §C — tier path from _optState ONLY (NOT the DOM #assign-categorie/#assign-ligne). departement =
   // the user's MONTH (never from the ligne); ligne optional (à-relier); categorie NULL-GATED on
   // ligne-presence so an à-relier POST carries categorie:null. À-TRIER fabrication retired.
   const departement = _optState ? _optState.dept : null;
@@ -6918,7 +6918,7 @@ function optFilterLignes(){
     res.classList.add('on');
     res.innerHTML = depts.length
       ? depts.map(d => `<div class="lr-row" onclick="optAtrierPickDept('${_optJs(d.tab)}')">
-          <div class="lr-dept"><span class="dpl-dot" style="background:${(typeof categorieColorFor==='function'?categorieColorFor(d.tab):null)||'#fbbf24'}"></span>${_optEsc(d.name)}</div>
+          <div class="lr-categorie"><span class="dpl-dot" style="background:${(typeof categorieColorFor==='function'?categorieColorFor(d.tab):null)||'#fbbf24'}"></span>${_optEsc(d.name)}</div>
           <div class="lr-line">Relier \u00e0 ce mois</div></div>`).join('')
       : '<div class="lr-empty">Aucun mois</div>';
     return;
@@ -6932,7 +6932,7 @@ function optFilterLignes(){
   res.classList.toggle('on', !!inp.value || _optState._ligneFocusOpen === true);
   res.innerHTML = rows.length
     ? rows.map(r => `<div class="lr-row" onclick="optPickLigne('${_optJs(r.dept)}','${_optJs(r.line)}','${_optJs(r.cat)}')">
-        <div class="lr-dept"><span class="dpl-dot" style="background:${(typeof categorieColorFor==='function'?categorieColorFor(r.categorieLabel):null)||'#fbbf24'}"></span>${_optEsc(r.categorieLabel)}</div>
+        <div class="lr-categorie"><span class="dpl-dot" style="background:${(typeof categorieColorFor==='function'?categorieColorFor(r.categorieLabel):null)||'#fbbf24'}"></span>${_optEsc(r.categorieLabel)}</div>
         <div class="lr-line"><span class="lr-cat">${_optEsc(r.cat)}</span> ${_optEsc(r.line)}</div></div>`).join('')
     : '<div class="lr-empty">Aucune ligne — ou utilisez « À relier » ci-dessous</div>';
 }
@@ -7006,12 +7006,12 @@ function _optVentHtml(s){
        + ' ligne' + (lines.length > 1 ? 's' : '') + '</div></div><div class="opt-vent-splits">' + splits + '</div>';
 }
 
-// pick a line → backfills dept, bridges the hidden #assign-dept/#assign-ligne so the
+// pick a line → backfills dept, bridges the hidden #assign-categorie/#assign-ligne so the
 // preserved orphan-remb machinery stays consistent, renders the shared assignedCard.
 // STEP 5 §C — NO-CLOBBER: a ligne pick sets ONLY the derived categorie (= section sec.s) + the line.
-// It does NOT touch _optState.dept (the user's MONTH) and does NOT bridge #assign-dept. relier is
-// cleared (a full assign is not partial). The `dept` arg (a category key from _optLineIndex) is IGNORED.
-function optPickLigne(dept, line, cat){
+// It does NOT touch _optState.dept (the user's MONTH) and does NOT bridge #assign-categorie. relier is
+// cleared (a full assign is not partial). The `categorie` arg (a category key from _optLineIndex) is IGNORED.
+function optPickLigne(categorie, line, cat){
   if (!_optState) return;
   _optState.cat = cat || _optState.cat; _optState.line = line; _optState.atrier = false;
   _optState.relier = false;
@@ -7580,7 +7580,7 @@ function filterIntraLines(){
   const pool = _intraLinePool().filter(x => _optTokMatch(q, [x.dept, x.line, x.cat])).slice(0, 12);
   box.innerHTML = pool.length
     ? pool.map(x => '<div class="lr-row" onclick="pickIntraLine(\'' + x.tab.replace(/'/g, "\\'") + '\',\'' + x.line.replace(/'/g, "\\'") + '\')">'
-        + '<div class="lr-dept"><span class="dpl-dot" style="background:' + ((typeof categorieColorFor === 'function' ? categorieColorFor(x.dept) : null) || '#fbbf24') + '"></span>' + x.dept + '</div><div class="lr-line">' + ((x.cat || '') ? '<span class="lr-cat">' + x.cat + '</span> ' : '') + x.line + '</div></div>').join('')
+        + '<div class="lr-categorie"><span class="dpl-dot" style="background:' + ((typeof categorieColorFor === 'function' ? categorieColorFor(x.dept) : null) || '#fbbf24') + '"></span>' + x.dept + '</div><div class="lr-line">' + ((x.cat || '') ? '<span class="lr-cat">' + x.cat + '</span> ' : '') + x.line + '</div></div>').join('')
     : '<div class="lr-empty">Aucune</div>';
   box.classList.add('on');
 }
@@ -7704,7 +7704,7 @@ function openVentiler(){
     +   '<div class="vent-pie" id="vent-pie">'
     +     '<div class="vent-pie-ring" id="vent-pie-ring"><div class="vent-pie-hole" id="vent-pie-hole"><span class="vph-amt" id="vent-pie-amt">\u2014</span><span class="vph-lbl">total</span></div></div>'
     +     '<div class="vent-pie-side">'
-    +       '<div class="vent-pie-dept" id="vent-pie-dept">\u2014</div>'
+    +       '<div class="vent-pie-categorie" id="vent-pie-categorie">\u2014</div>'
     +       '<div class="vent-pie-legend" id="vent-pie-legend"></div>'
     +     '</div>'
     +   '</div>'
@@ -7795,7 +7795,7 @@ function ventPie(){
   const s = (typeof _optState !== 'undefined' && _optState) ? _optState : window._optState; if (!s) return;
   const el = document.getElementById('vent-pie'); if (!el) return;
   const ring = document.getElementById('vent-pie-ring');
-  const amtEl = document.getElementById('vent-pie-amt'), categorieEl = document.getElementById('vent-pie-dept'), leg = document.getElementById('vent-pie-legend');
+  const amtEl = document.getElementById('vent-pie-amt'), categorieEl = document.getElementById('vent-pie-categorie'), leg = document.getElementById('vent-pie-legend');
   const v = s.ventLines || []; const TOTAL = _ventTotal(s); const base = _ventBaseColor(s);
   if (amtEl) amtEl.textContent = TOTAL ? fmtEurShort(TOTAL) : '\u2014';
   if (categorieEl) categorieEl.textContent = (v.length && s.dept) ? s.dept : 'D\u00e9partement \u00e0 choisir';
@@ -7841,7 +7841,7 @@ function ventSummary(){
     + '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-top:7px">ventil\u00e9 sur</div>'
     + '</div><div class="rkv-div"></div>';
   // #4 — per-split rows in the canonical dept/cat/line treatment (the .lr-row house pattern):
-  // dept as the .lr-dept label WITH the dept-color dot, cat as the .lr-cat monospace tag, line as
+  // dept as the .lr-categorie label WITH the dept-color dot, cat as the .lr-cat monospace tag, line as
   // plain text — visually distinct, consistent with the search results (post scope-miss sweep).
   const rows = v.map((ln, i) => {
     const pct = TOTAL ? Math.round((ln.amt || 0) / TOTAL * 100) : 0;
@@ -7849,7 +7849,7 @@ function ventSummary(){
     const deptLbl = _mLbl || ((typeof CATEGORIE_META !== 'undefined' && CATEGORIE_META[s.dept]) ? CATEGORIE_META[s.dept].name : (s.dept || ''));
     return '<div class="rkv" style="align-items:flex-start">'
          + '<span class="rkv-k" style="display:flex;flex-direction:column;gap:2px;min-width:0">'
-         +   '<span class="lr-dept"><span class="dpl-dot" style="background:' + ventTint(base, i, v.length) + '"></span>' + _optEsc(deptLbl) + '</span>'
+         +   '<span class="lr-categorie"><span class="dpl-dot" style="background:' + ventTint(base, i, v.length) + '"></span>' + _optEsc(deptLbl) + '</span>'
          +   '<span class="lr-line"><span class="lr-cat">' + _optEsc(ln.cat || '') + '</span> ' + _optEsc(ln.name || '') + '</span>'
          + '</span>'
          + '<span class="rkv-v" style="color:#fff;flex-shrink:0">\u2212' + fmtAmt(Math.abs(ln.amt || 0)) + ' \u20ac <span style="color:var(--text-dim);font-weight:400">\u00b7 ' + pct + '%</span></span></div>';
@@ -7920,7 +7920,7 @@ function ventFilterLignes(){
   box.classList.add('on');
   let html = list.length
     ? list.map(r => '<div class="lr-row" onclick="ventAddLine(\'' + _optJs(r.dept) + '\',\'' + _optJs(r.line) + '\',\'' + _optJs(r.cat || '') + '\')">'
-        + '<div class="lr-dept"><span class="dpl-dot" style="background:' + ((typeof categorieColorFor === 'function' ? categorieColorFor(r.categorieLabel || r.dept) : null) || '#fbbf24') + '"></span>' + _optEsc(r.categorieLabel || r.dept) + '</div>'
+        + '<div class="lr-categorie"><span class="dpl-dot" style="background:' + ((typeof categorieColorFor === 'function' ? categorieColorFor(r.categorieLabel || r.dept) : null) || '#fbbf24') + '"></span>' + _optEsc(r.categorieLabel || r.dept) + '</div>'
         + '<div class="lr-line"><span class="lr-cat">' + _optEsc(r.cat || '') + '</span> ' + _optEsc(r.line) + '</div></div>').join('')
     : '<div class="lr-empty">Aucune ligne</div>';
   if (lockDept && !q){ html += '<div class="lr-hint">ou tapez le nom d\u2019une ligne du d\u00e9partement ' + _optEsc(lockDept) + '</div>'; }
@@ -8056,7 +8056,7 @@ function _optPaint(){
   const s = _optState; if (!s) return;
   document.getElementById('drawer-body').innerHTML = _optRenderBody(s);
   // re-establish the hidden bridge to the current selection (no POST; for the preserved orphan machinery)
-  if (s.dept) { const d = document.getElementById('assign-dept'); if (d) { d.value = s.dept; if (typeof populateAssignLines === 'function') populateAssignLines(s.dept); } }
+  if (s.dept) { const d = document.getElementById('assign-categorie'); if (d) { d.value = s.dept; if (typeof populateAssignLines === 'function') populateAssignLines(s.dept); } }
   if (s.line) { const l = document.getElementById('assign-ligne'); if (l) { l.innerHTML = '<option selected>' + _optEsc(s.line) + '</option>'; l.value = s.line; } }
   document.getElementById('drawer-footer').innerHTML = _optRenderFoot(s);
   optApplyLock();
@@ -8067,7 +8067,7 @@ function _optPaint(){
 function _optRenderBody(s){
   const tx = _optBuildTx(s);
   const picked = !!(s.dept && (s.line || s.relier));
-  // hidden bridge (#assign-dept/#assign-ligne/divers) so the sealed line engine + the
+  // hidden bridge (#assign-categorie/#assign-ligne/divers) so the sealed line engine + the
   // preserved orphan-remb machinery keep working; the new search drives it.
   const bridge = '<div id="opt-bridge" style="display:none">' + (s._picker || '') + '</div>';
 
@@ -8223,7 +8223,7 @@ function _openAssignDrawerCore(src, c) {
   const _picker = `      <div class="drawer-section-title">Destination</div>
       <div style="margin-bottom:14px">
         <label style="font-size:.7em;color:var(--text-dim);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Département</label>
-        <select id="assign-dept" style="width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:9px 10px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.85em;outline:none" onchange="populateAssignLines(this.value)">
+        <select id="assign-categorie" style="width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:9px 10px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.85em;outline:none" onchange="populateAssignLines(this.value)">
           <option value="">Choisir un département…</option>
           ${categorieOptions}
         </select>
@@ -8340,10 +8340,10 @@ function _openAssignDrawerCore(src, c) {
   document.getElementById('drawer-footer').innerHTML = _optRenderFoot(_optState);
 
   // re-establish the hidden write-bridge to the preselected dept (the old L4980 setTimeout,
-  // byte-preserved — drives the sealed #assign-dept select + the preserved remb machinery).
+  // byte-preserved — drives the sealed #assign-categorie select + the preserved remb machinery).
   if (preselect) {
     setTimeout(() => {
-      const sel = document.getElementById('assign-dept');
+      const sel = document.getElementById('assign-categorie');
       if (sel) { sel.value = preselect; populateAssignLines(preselect); }
     }, 0);
   }

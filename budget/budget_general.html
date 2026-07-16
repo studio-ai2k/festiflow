@@ -2837,7 +2837,7 @@ const DEPT_COLORS = [
 /* ═══ BILAN ═══ */
 /* ═══ RECETTE TABLES (seam 27es) ═══
    Two event-style recette tables ported from budget_pa BUILD92 (SRC L2377-2512), mounted TWICE by
-   renderBilan (hors-billetterie ← REC, billetterie ← __BILL). ONE renderer; state namespaced per mount.
+   renderBilan (hors-billetterie ← REC, billetterie ← REC). ONE renderer; state namespaced per mount.
    ── Kept deliberately separate from general's dépense tog()/setAllSections(), which stay byte-untouched:
       general's dépense .cat-head never takes the .expanded class, so the ported togRec (which toggles it)
       must not be the shared tog() or expanding a dépense section would hide its .cat-vals. ── */
@@ -9147,7 +9147,7 @@ function sortReleve(col) {
   });
 
   // Update sort indicators
-  ['date','fourn','note','dept','ttc','statut'].forEach(c => {
+  ['date','fourn','note','dept','ttc'].forEach(c => {
     const el = document.getElementById('sort-ind-' + c);
     if (el) {
       if (c === _releveSortCol) {

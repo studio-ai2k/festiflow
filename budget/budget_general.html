@@ -17,6 +17,7 @@
 :root {
   --bg:#08080d; --surface:#101017; --surface-2:#16161f;
   --border:rgba(255,255,255,0.05); --border-h:rgba(255,255,255,0.08);
+  --sky:#38bdf8;
   --text:#f0f0f5; --text-muted:#a0a0b0; --text-dim:#5a5a6a;
   --green:#34d399; --red:#f87171; --amber:#fbbf24;
   --purple:#a855f7; --indigo:#6366f1;
@@ -2637,6 +2638,12 @@ const fe = n => {
   // Replace narrow no-break space with regular non-breaking space
   return s.replace(/\u202f/g,'\u00a0') + '\u00a0€';
 };
+function feShort(n){
+  const v=Math.round(Number(n)||0), a=Math.abs(v), sg=v<0?'\u2212':'';
+  if(a>=1e6){ let s=(Math.round(a/1e4)/100).toFixed(2).replace('.',','); s=s.replace(/,?0+$/,''); return sg+s+'\u00a0M\u00a0€'; }
+  if(a>=1e4){ let s=(Math.round(a/100)/10).toFixed(1).replace('.',','); s=s.replace(/,0$/,''); return sg+s+'\u00a0k\u00a0€'; }
+  return fe(v);
+}
 const fmtAmt = (n, decimals=2) => {
   if (n==null || isNaN(n)) return '—';
   const s = n.toLocaleString('fr-FR', {minimumFractionDigits:decimals, maximumFractionDigits:decimals});
@@ -3271,47 +3278,6 @@ function renderBilan(){
   renderRecetteTable('b-rec-be', _recIdx.filter(c=> TICKETING_CATS.includes(c.cat)),
      {sidPrefix:'recs-be', title:'Billetterie encaissé', hasEstime:true});
 
-  // ── Résultat net — P&L bottom line ────────────────────────────
-  if(el('b-resultat-net')) {
-    const resultat = totalRecEst - ge;
-    const resultatReel = totalRecReel - gr;
-    const margin = totalRecEst > 0 ? (resultat / totalRecEst * 100).toFixed(1) : 0;
-    const isPositive = resultat >= 0;
-    const color = isPositive ? 'var(--green)' : 'var(--red)';
-    const sign = isPositive ? '+' : '';
-
-    el('b-resultat-net').innerHTML = `
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden">
-        <table class="tbl">
-          <thead><tr>
-            <th class="tl" style="min-width:180px">Résultat</th>
-            <th>Estimé</th>
-            <th>Réel</th>
-            <th>Écart</th>
-          </tr></thead>
-          <tbody>
-            <tr>
-              <td style="font-weight:500;color:var(--green)">Total Recettes</td>
-              <td><span class="cro" style="color:var(--green);font-weight:600">${sign}${fe(totalRecEst)}</span></td>
-              <td><span class="cro" style="color:var(--green)">${totalRecReel?sign+fe(totalRecReel):'—'}</span></td>
-              <td>${ecH(totalRecEst-totalRecReel,false,totalRecReel>0)}</td>
-            </tr>
-            <tr>
-              <td style="font-weight:500;color:var(--red)">Total Dépenses</td>
-              <td><span class="cro" style="color:var(--red);font-weight:600">−${fe(ge)}</span></td>
-              <td><span class="cro" style="color:var(--red)">${gr?'−'+fe(gr):'—'}</span></td>
-              <td>${ecH(ge-gr,false,gr>0)}</td>
-            </tr>
-          </tbody>
-          <tr style="border-top:2px solid var(--border)!important">
-            <td style="font-size:14px;font-weight:700;color:${color}">RÉSULTAT NET</td>
-            <td><span class="cro" style="font-size:14px;font-weight:700;color:${color}">${sign}${fe(Math.abs(resultat))}</span></td>
-            <td><span class="cro" style="font-weight:700;color:${color}">${(totalRecReel||gr)?sign+fe(Math.abs(resultatReel)):'—'}</span></td>
-            <td><span style="font-size:12px;color:var(--text-dim);display:block;text-align:right;padding:3px 6px">Marge ${margin}%</span></td>
-          </tr>
-        </table>
-      </div>`;
-  }
 
 }
 /* ═══ DEPT PAGES ═══ */

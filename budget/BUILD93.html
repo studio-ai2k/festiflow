@@ -16,6 +16,7 @@
 :root {
   --bg:#08080d; --surface:#101017; --surface-2:#16161f;
   --border:rgba(255,255,255,0.05); --border-h:rgba(255,255,255,0.08);
+  --sky:#38bdf8;
   --text:#f0f0f5; --text-muted:#a0a0b0; --text-dim:#5a5a6a;
   --green:#34d399; --red:#f87171; --amber:#fbbf24;
   --purple:#a855f7; --indigo:#6366f1;
@@ -2155,7 +2156,7 @@ function renderBilan(){
 
   if(el('bilan-chips')) {
     // ── BUILD75 (seam 27ec) — Bilan (global) KPI card: the department .dkpi-* card grammar, at global scope. ──
-    // Doctrine A-out honoured: a Bilan-LOCAL copy of computeEngage (renderDept's original stays byte-untouched; nothing leaks).
+    // Doctrine A-out honoured: a Bilan-LOCAL copy of computeEngage (renderDepartement's original stays byte-untouched; nothing leaks).
     const computeEngageB = devis => (devis || []).reduce((a, d) =>
       a + (( d.statut === 'Validé' || d.statut === 'Signé' ||
             (d.statut === 'Payé' && !d.matched_transaction_id) ) ? (d.montant_ht || 0) : 0), 0);
@@ -2428,7 +2429,7 @@ function renderBilan(){
       const catReel = cat.rows.reduce((a,r)=>a+(r.reel||0),0);
       // BUILD71 step 3 — recette cat-head value math (from catEst/catReel), mirroring the dépense burn.
       // ÉCART neutral this build; polarity + over-recolour = step 4. `sPct` is inlined here because the
-      // renderDept-scoped sPct (L2699) is out of scope in this recette map.
+      // renderDepartement-scoped sPct (L2699) is out of scope in this recette map.
       const rEc    = catEst - catReel;                                        // écart (estimé − encaissé)
       const rPeak  = Math.max(catEst, catReel) || 1;
       const rReelW = Math.min(catReel, catEst) / rPeak * 100;                 // encaissé segment (.reel green)
@@ -2640,7 +2641,7 @@ function openLigneDevis(id, si, li){
   const t = document.querySelector('.ed-tab[data-edpane="devis"]');
   if (t) edTab(t);
 }
-function renderDept(id){
+function renderDepartement(id){
   const dept=DEPTS.find(d=>d.id===id);
   const cont=document.getElementById('page-'+id);
   if(!dept||!cont) return;
@@ -2681,7 +2682,7 @@ function renderDept(id){
   // ══════════════════════════════════════════════════════════════════════════
   // ══════════════════════════════════════════════════════════════════════════
   // BUILD61 §1.2/§1.3/§1.8 — TABLE-LOCAL bindings. Suffix `T` = table-local.
-  // Doctrine A-out: computeEngage is defined INSIDE renderDept — cannot leak.
+  // Doctrine A-out: computeEngage is defined INSIDE renderDepartement — cannot leak.
   // Doctrine C: ONE filtered set (allLT) feeds EVERY table aggregate.
   // Base bindings above are left BYTE-IDENTICAL (Santé card reads them, out of scope).
   // ══════════════════════════════════════════════════════════════════════════
@@ -3010,7 +3011,7 @@ function renderDept(id){
 
   const VERDICT = { ok:'Sous contrôle', watch:'À surveiller', drift:'Dérive' };  // BUILD68 B1 — dead after the Santé-card deletion (its only reader). renderBilan uses its own vLab strings, not this. Retire-not-delete.
   // BUILD61 §1.1/§4.4 — 'HT' hoisted to Ligne header. Technique keeps its two-word swap (Leo).
-  //   `id === 'technique'` conditional survives (unique special-case in renderDept per §1.1).
+  //   `id === 'technique'` conditional survives (unique special-case in renderDepartement per §1.1).
   const kBudget = id==='technique' ? 'SIGNÉ' : 'BUDGET';
   const kSpent  = id==='technique' ? 'PAYÉ'  : 'RÉEL';
   // §1.7 solde flip — label + value class change on sign(soldeT). NEVER shows a signed value in the header.
@@ -3149,7 +3150,7 @@ function renderDept(id){
 // Col 3: 3 stacked dashed cards (flex:1), last = Comparaison
 // ════════════════════════════════════════════════════
 // ════════════════════════════════════════════════════
-// BUILD63 §1.1 — HOISTED from buildDeptG3Cards to module scope. renderDept needs
+// BUILD63 §1.1 — HOISTED from buildDeptG3Cards to module scope. renderDepartement needs
 // unmatchedForDept too, and there must be exactly ONE definition of "which transactions
 // belong to this department". Bodies are unchanged from BUILD62 (only the 2-space function
 // indentation is removed; the token stream is identical). Every dependency is module-scope
@@ -3216,7 +3217,7 @@ function buildDeptG3Cards(id, dept, tot, allL, p) {
           <span class="unm-note" style="font-size:13px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.note||'—'}</span>
           <span style="font-size:13px;font-weight:600;color:#fff;white-space:nowrap;text-align:right">${r.ttc?'−'+fmtAmt(Math.abs(r.ttc)):'—'}</span>
         </div>`}).join('')}
-      </div>` : `<div style="font-size:13px;color:var(--text-dim);padding:9px 14px">Aucune transaction à relier</div>`/* BUILD67 Fix 3 — DEAD after this build: renderDept now gates the whole à-relier block on
+      </div>` : `<div style="font-size:13px;color:var(--text-dim);padding:9px 14px">Aucune transaction à relier</div>`/* BUILD67 Fix 3 — DEAD after this build: renderDepartement now gates the whole à-relier block on
         unmatchedForDept(id).length, so buildDeptG3Cards is never called with 0 rows. Retire-not-delete. */;
     return `
     <div class="card unm-card" style="padding:16px">
@@ -3356,9 +3357,9 @@ function upSt(sel){
   }
 }
 // §ITEM29: session-lived open-section store. Keys are the EXACT rendered sid
-// (renderBilan: 'recs'+ci · renderDept: 's'+id+origIdx). recs/s prefixes don't
+// (renderBilan: 'recs'+ci · renderDepartement: 's'+id+origIdx). recs/s prefixes don't
 // collide so one global Set is safe. Read at emit time in both render fns so a
-// re-render (confirm/renderBilan/renderDept) restores whatever was open.
+// re-render (confirm/renderBilan/renderDepartement) restores whatever was open.
 const _openSecs = new Set();
 // seam 27db — recette encaissé source selector: in-session per-line persistence (mode + manual value).
 // Keyed by the drawer's canonical line key (_edDevisKey composite). UI-only, survives reopen within the
@@ -3446,7 +3447,7 @@ function go(id,tabEl){
     // Dept navigation — highlight matching tab strip button
     const dtMatch = [...document.querySelectorAll('.dt')].find(d=>(d.getAttribute('onclick')||'').includes(`'${id}'`));
     if(dtMatch) dtMatch.classList.add('on');
-    renderDept(id);
+    renderDepartement(id);
   }
   if(isTabChange) window.scrollTo({top:0,behavior:'smooth'});
   applyDeptTabColor();
@@ -3460,7 +3461,7 @@ function goDeptTab(id, tabEl){
   const page=document.getElementById('page-'+id);
   if(!page) return;
   page.classList.add('on');
-  renderDept(id);
+  renderDepartement(id);
   applyDeptTabColor();
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -3480,7 +3481,7 @@ async function initApp(){
   // Render whichever dept tab is active
   const activeNav = document.querySelector('.dt.on');
   if(activeNav && activeNav.dataset.page && activeNav.dataset.page !== 'bilan'){
-    renderDept(activeNav.dataset.page);
+    renderDepartement(activeNav.dataset.page);
   }
   // Load QONTO_RAW and rebuild match map on init
   loadAndMatchQontoRaw();
@@ -3806,7 +3807,7 @@ async function refreshBudgetData() {
       const onclick = activeNl.getAttribute('onclick') || '';
       const match = onclick.match(/'([^']+)'/);
       if (match && match[1] !== 'bilan') {
-        renderDept(match[1]);
+        renderDepartement(match[1]);
       }
     }
   } catch (e) {
@@ -5815,7 +5816,7 @@ async function openReelDrawer(deptId, sectionIdx, lineIdx, recRef) {
 
   const ttcReel = typeof line.tva === 'number' ? (line.reel || 0) * (1 + line.tva) : (line.reel || 0);
   const ttcEst  = typeof line.tva === 'number' ? (line.est  || 0) * (1 + line.tva) : (line.est  || 0);
-  // seam 27dc — engagé (flat devis-signés reference) for Courbe B. Mirrors renderDept's SIGNED-line
+  // seam 27dc — engagé (flat devis-signés reference) for Courbe B. Mirrors renderDepartement's SIGNED-line
   // logic (seam 27cu): a line is engagé iff signed; figure = (l.engage ?? l.est). TTC-scaled exactly
   // like ttcEst so it sits on the same axis as ceiling + the TTC cum series. Unsigned → 0 → the
   // renderer hides the engagé layer ("Absent → couche engagé masquée"). NOT a series; no cum/réel reconcile.

@@ -5,9 +5,8 @@ name: Fetch Billetterie Data
 # recette consume. Secrets injected at runtime from GitHub Actions secrets.
 
 on:
-  schedule:
-    # 06:00 UTC daily (08:00 Europe/Paris).
-    - cron: '0 6 * * *'
+  # Automatic fetching is DISABLED — no scheduled runs hit DICE/Shotgun.
+  # Manual-only: trigger from the Actions tab if/when a pull is explicitly wanted.
   workflow_dispatch:
     inputs:
       mode:
